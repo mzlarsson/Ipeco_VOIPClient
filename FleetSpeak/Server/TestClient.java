@@ -4,8 +4,11 @@ import java.net.*;
 
 public class TestClient{
     public static void main(String[] args) throws IOException, InterruptedException{
+    	String ip = (args!=null&&args.length>0?args[0]:"localhost");
+    	int port = (args!=null&&args.length>1?Integer.parseInt(args[1]):8868);
+    	
         try{
-            Socket socket = new Socket("localhost", 1235);
+            Socket socket = new Socket(ip, port);
             
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             

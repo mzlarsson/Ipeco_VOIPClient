@@ -8,9 +8,11 @@ public class ServerMain{
     
     
     public static void main(String[] args) throws IOException{
-        
+        int port = (args!=null&&args.length>0?Integer.parseInt(args[0]):8868);
+    	System.out.println("Starting server @LAN-IP "+InetAddress.getLocalHost().getHostAddress()+":"+port);
+    	
         try {
-            ServerSocket serverSocket = new ServerSocket(1235);
+            ServerSocket serverSocket = new ServerSocket(port);
             while(true){
                 clientSocket = serverSocket.accept();
                 chatHandler c = new chatHandler(clientSocket);
