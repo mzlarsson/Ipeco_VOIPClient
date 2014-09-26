@@ -3,66 +3,77 @@ import java.lang.System;
 import java.net.*;
 import java.util.*;
 public class ServerMain{
-    private static Socket clientSocket;
-    private static ArrayList<PrintStream> streams = new ArrayList<PrintStream>();
+	
+    private static ArrayList<Handler> handlers = new ArrayList<Handler>();
+    private static ServerSocket serverSocket;
     
     
     public static void main(String[] args) throws IOException{
+    	//Setup info about connection
         int port = (args!=null&&args.length>0?Integer.parseInt(args[0]):8868);
     	System.out.println("Starting server @LAN-IP "+InetAddress.getLocalHost().getHostAddress()+":"+port);
+    
+    	Runtime.getRuntime().addShutdownHook(new Thread(new Runnable(){
+    		public void run(){
+    	    	for(int i = 0; i<handlers.size(); i++){
+    	    		handlers.get(i).terminate();
+    	    	}
+    	    	
+    	    	try {
+    				serverSocket.close();
+    			} catch (IOException e) {}
+    		}
+    	}));
     	
-        try {
-            ServerSocket serverSocket = new ServerSocket(port);
-            while(true){
-                clientSocket = serverSocket.accept();
-                chatHandler c = new chatHandler(clientSocket);
-                c.start();
-                for(PrintStream stream : streams){
-                    stream.println("New user");
-                }
-                
-            }
-            
-        }catch(IOException e){
-            System.out.println(e.getMessage());
-            
-        }
-        
+    	new ServerMain(port);
     }
-    private static class chatHandler extends Thread{
-        
-        private Socket clientSocket;
-        private BufferedReader streamIn;
-        private PrintStream streamOut;
-        
-        public chatHandler(Socket clientSocket){
-            super("chatHander");
-            this.clientSocket = clientSocket;
-        }
-        
-        public void run(){
-            
-            try{
-                streamIn = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                streamOut = new PrintStream(clientSocket.getOutputStream(), true);
-                streams.add(streamOut);
-                streamOut.println("Welcome");
-                System.out.println(streams.size());
-                while(true){
-                    String message = streamIn.readLine();
-                    if(message != null){
-                        for(PrintStream stream : streams){
-                                stream.println(message);
-                        }
-                    }
-                }
+    
+    public ServerMain(int port){
+    	//Start the server
+        try {
+            serverSocket = new ServerSocket(port);
+            Socket clientSocket = null;
+            while(true){
+            	//Create connection
+                clientSocket = serverSocket.accept();
+                Handler c = getHandler(clientSocket, port);
+                c.start();
+                //Save the handler for more interaction
+                handlers.add(c);
                 
-            }catch(IOException e){
-                System.out.println(e.getMessage());
-                
+                System.out.println("A new person joined ("+handlers.size()+")");
             }
-            
+        }catch(IOException e){
+            System.out.println("[SERVER] "+e.getMessage());
         }
-        
+    }
+    
+    private static Handler getHandler(Socket socket, int port){
+    	return new SoundHandler(socket);
+    }
+    
+    
+    public static int getHandlerCount(){
+    	return handlers.size();
+    }
+    
+    public static void unregisterHandler(Handler handler){
+    	handlers.remove(handler);
+    	System.out.println("A person left the room ("+handlers.size()+")");
+    }
+
+    public static void sendMessage(Handler sender, byte[] message){
+    	OutputStream out = null;
+    	for(int i = 0; i<handlers.size(); i++){
+    		if(handlers.get(i) != sender){
+    			try {
+    				out = handlers.get(i).getOutputStream();
+					out.write(message, 0, message.length);
+					out.flush();
+				} catch (IOException e) {
+					System.out.println("Could not send message to client!");
+				}
+    		}
+    	}
     }
 }
