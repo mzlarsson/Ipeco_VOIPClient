@@ -7,7 +7,7 @@ import java.util.Arrays;
 
 public class SoundHandler extends Handler{
 	
-	private static final int bufferSize = 8000;
+	private static final int bufferSize = 2200;
 
 	public SoundHandler(Socket clientSocket) {
 		super(clientSocket);
