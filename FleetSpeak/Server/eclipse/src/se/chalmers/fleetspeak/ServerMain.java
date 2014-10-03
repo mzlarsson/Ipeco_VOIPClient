@@ -13,14 +13,18 @@ public class ServerMain{
     
     private static List<Client> clients = new ArrayList<Client>();
     
+    
     public static void main(String[] args) throws IOException{
     	//Setup info about connection
-        int tcpPort = (args!=null&&args.length>0?Integer.parseInt(args[0]):DEFAULT_PORT_TCP);
+        
+    	int tcpPort = (args!=null&&args.length>0?Integer.parseInt(args[0]):DEFAULT_PORT_TCP);
         int rtpPort = (args!=null&&args.length>1?Integer.parseInt(args[1]):DEFAULT_PORT_RTP);
     	System.out.println("Starting server @LAN-IP "+InetAddress.getLocalHost().getHostAddress()+" tcp:"+tcpPort+" rtp:"+rtpPort);
     
     	Runtime.getRuntime().addShutdownHook(new Thread(new Runnable(){
+    		
     		public void run(){
+    			
     	    	for(int i = 0; i<clients.size(); i++){
     	    		clients.get(i).close();
     	    	}
@@ -28,7 +32,8 @@ public class ServerMain{
     	}));
     	
     	new ServerMain(tcpPort, rtpPort);
-    }
+      
+        }
     
     public ServerMain(int tcpPort, int rtpPort){
     	ServerSocket serverSocket = null;

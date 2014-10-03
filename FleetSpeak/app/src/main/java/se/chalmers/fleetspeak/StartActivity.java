@@ -8,10 +8,16 @@ import android.view.MenuItem;
 
 public class StartActivity extends ActionBarActivity {
 
+    Connector c;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
+        c = new Connector("192.168.1.89", 8867);
+        c.connect();
+        if(c.isConnected());
+            c.sendCommand("/mute");
     }
 
 

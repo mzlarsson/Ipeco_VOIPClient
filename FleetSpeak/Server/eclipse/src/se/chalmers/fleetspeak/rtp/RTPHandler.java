@@ -24,6 +24,7 @@ public abstract class RTPHandler implements ConnectionHandler, ReceiveStreamList
 	}
 	
 	public void init(InetAddress ip, int port) throws IOException{
+		/*
 		try{
 			this.manager = RTPManager.newInstance();
 			SessionAddress localAddress = new SessionAddress();
@@ -38,7 +39,7 @@ public abstract class RTPHandler implements ConnectionHandler, ReceiveStreamList
 			this.output.start();
 		}catch(Exception e){
 			throw new IOException("Could not create RTP connection ["+e.getClass().getCanonicalName()+"]");
-		}
+		}*/
 	}
 
 	public void close(){
