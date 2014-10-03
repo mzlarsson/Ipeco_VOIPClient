@@ -20,16 +20,22 @@ public class CommandHandler extends TCPHandler{
 			//Listen for messages from the client
 			BufferedReader reader = new BufferedReader(new InputStreamReader(this.getInputStream()));
 			while(true){
+				
 				String message = reader.readLine();
 				if(message != null){
+					System.out.print("Command recived: ");
 					if(message.startsWith("/disconnect")){
 						Command.setValue("disconnect", true);
 					}else if(message.startsWith("/nick")){
 						Command.setValue("nick", message.substring(6));
 					}else if(message.equals("/mute")){
+						System.out.println("Mute");
 						Command.setValue("mute", true);
 					}else if(message.equals("/unmute")){
 						Command.setValue("mute", false);
+						System.out.println("Unmute");
+					}else{
+						System.out.println("Unknown command. " + message);
 					}
 				}
 			}
