@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 public class ServerMain{
@@ -13,11 +14,12 @@ public class ServerMain{
     
     private static List<Client> clients = new ArrayList<Client>();
     
+    private volatile boolean running;
+    
     public static void main(String[] args) throws IOException{
     	//Setup info about connection
         int tcpPort = (args!=null&&args.length>0?Integer.parseInt(args[0]):DEFAULT_PORT_TCP);
         int rtpPort = (args!=null&&args.length>1?Integer.parseInt(args[1]):DEFAULT_PORT_RTP);
-    	System.out.println("Starting server @LAN-IP "+InetAddress.getLocalHost().getHostAddress()+" tcp:"+tcpPort+" rtp:"+rtpPort);
     
     	Runtime.getRuntime().addShutdownHook(new Thread(new Runnable(){
     		public void run(){
@@ -30,14 +32,15 @@ public class ServerMain{
     	new ServerMain(tcpPort, rtpPort);
     }
     
-    public ServerMain(int tcpPort, int rtpPort){
+    public ServerMain(int tcpPort, int rtpPort) throws UnknownHostException{
+    	System.out.println("Starting server @LAN-IP "+InetAddress.getLocalHost().getHostAddress()+" tcp:"+tcpPort+" rtp:"+rtpPort);
     	ServerSocket serverSocket = null;
     	
     	//Start the server
         try {
             serverSocket = new ServerSocket(tcpPort);
             Socket clientSocket = null;
-            while(true){
+            while(running){
             	//Create connection
                 clientSocket = serverSocket.accept();
                 //Create client
@@ -45,6 +48,7 @@ public class ServerMain{
                 //Add to client list
                 addClient(client);
             }
+            serverSocket.close();
         }catch(IOException e){
             System.out.println("[SERVER] "+e.getMessage());
             try {
@@ -81,5 +85,9 @@ public class ServerMain{
     	
         //Print info in server console
     	System.out.println("A person left the room ("+clients.size()+")");
+    }
+    
+    public void terminate() {
+    	running = false;
     }
 }
