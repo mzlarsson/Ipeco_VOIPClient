@@ -10,6 +10,9 @@ import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.TargetDataLine;
 
 public class TestClient {
+	
+	private static final int BUFFERSIZE = 2200;
+	
 	private Socket socket;
     private OutputStream outStream;
     private InputStream inputStream;
@@ -24,9 +27,7 @@ public class TestClient {
     }
 
     public TestClient(String ip, int port) {
-        final AudioFormat format = getFormat();
-        int bufferSize = (int) format.getSampleRate()*format.getFrameSize();
-        System.out.println("Using "+bufferSize+" as buffer size");
+        System.out.println("Using "+BUFFERSIZE+" as buffer size");
         
         try {
             socket = new Socket(ip, port);
@@ -44,14 +45,14 @@ public class TestClient {
     private void broadcastAudio() {
         try {
             final AudioFormat format = getFormat();
+            //final int bufferSize = (int) format.getSampleRate()*format.getFrameSize();
             DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
             final TargetDataLine line = (TargetDataLine) AudioSystem.getLine(info);
-            line.open(format);
+            line.open(format, BUFFERSIZE);
             line.start();
             Runnable runner = new Runnable() {
                 ByteArrayOutputStream outAudio;
-                int bufferSize = (int) format.getSampleRate()*format.getFrameSize();
-                byte buffer[] = new byte[bufferSize];
+                byte buffer[] = new byte[BUFFERSIZE];
 
                 public void run() {
                     outAudio = new ByteArrayOutputStream();
@@ -79,7 +80,6 @@ public class TestClient {
                 }
             };
             Thread captureThread = new Thread(runner);
-            //captureThread.setDaemon(true);
             captureThread.start();
         } catch (LineUnavailableException e) {
             System.err.println("Line unavailable: " + e);
@@ -96,8 +96,8 @@ public class TestClient {
             line.start();
 
             Runnable runner = new Runnable() {
-                int bufferSize = (int) format.getSampleRate()*format.getFrameSize();
-                byte buffer[] = new byte[bufferSize];
+                //int bufferSize = (int) format.getSampleRate()*format.getFrameSize();
+                byte buffer[] = new byte[BUFFERSIZE];
 
                 public void run() {
                     try {
@@ -121,7 +121,6 @@ public class TestClient {
                 }
             };
             Thread playThread = new Thread(runner);
-            //playThread.setDaemon(true);
             playThread.start();
         } catch (LineUnavailableException e) {
             System.err.println("Line unavailable: " + e);
@@ -130,7 +129,7 @@ public class TestClient {
     }
 
     private AudioFormat getFormat() {
-        float sampleRate = 8000;
+        float sampleRate = 44100;
         int sampleSizeInBits = 8;
         int channels = 1;
         boolean signed = true;
