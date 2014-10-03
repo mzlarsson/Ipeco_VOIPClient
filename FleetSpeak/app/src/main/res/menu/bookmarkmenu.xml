@@ -1,9 +1,16 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
 xmlns:app="http://schemas.android.com/apk/res-auto"
 xmlns:tools="http://schemas.android.com/tools"
-tools:context=".StartActivity" >
+tools:context=".BookmarkScreen" >
 <item android:id="@+id/action_settings"
     android:title="@string/action_settings"
     android:orderInCategory="100"
     app:showAsAction="never" />
+
+<item android:id="@+id/new_server"
+    android:title="@string/new_server"
+    app:showAsAction="ifRoom"
+    android:orderInCategory="101"
+    android:icon="@drawable/ic_action_new"
+    />
 </menu>
