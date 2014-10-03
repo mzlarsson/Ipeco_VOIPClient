@@ -55,7 +55,6 @@ public class Connector{
                     output = new PrintWriter(socket.getOutputStream(), true);
                     Log.i("Connector", "Outputsteam ready");
 
-                    sendCommand("/mute");
                 }catch(IOException e){
                     Log.i("Connector", "Connection failed " + e.getMessage() );
                 }

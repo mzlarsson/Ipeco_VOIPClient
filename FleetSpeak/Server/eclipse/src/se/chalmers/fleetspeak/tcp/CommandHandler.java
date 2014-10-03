@@ -23,7 +23,7 @@ public class CommandHandler extends TCPHandler{
 				
 				String message = reader.readLine();
 				if(message != null){
-					System.out.println("Test");
+					System.out.print("Command recived: ");
 					if(message.startsWith("/disconnect")){
 						Command.setValue("disconnect", true);
 					}else if(message.startsWith("/nick")){
@@ -34,6 +34,8 @@ public class CommandHandler extends TCPHandler{
 					}else if(message.equals("/unmute")){
 						Command.setValue("mute", false);
 						System.out.println("Unmute");
+					}else{
+						System.out.println("Unknown command. " + message);
 					}
 				}
 			}
