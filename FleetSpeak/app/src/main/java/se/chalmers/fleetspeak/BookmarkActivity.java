@@ -22,6 +22,7 @@ public class BookmarkActivity extends ActionBarActivity {
         setContentView(R.layout.activity_bookmark);
 
         serverView = (ListView)findViewById(R.id.serverView);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         String[] demoServers = {"Server1", "Server2"};
 
