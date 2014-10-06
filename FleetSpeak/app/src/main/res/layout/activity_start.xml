@@ -22,9 +22,8 @@
             android:layout_weight="0.1"
             android:linksClickable="false"
             android:hint="IP adress"
-            android:textSize="24dp"/>
-            android:id="@+id/ipTextField"
-            android:text="ipName"
+            android:textSize="24dp"
+            android:id="@+id/ipField"
             android:inputType="text"/>
 
         <EditText
