@@ -21,7 +21,7 @@ public class StartActivity extends ActionBarActivity {
         new TruckCommunicator().execute(AutomotiveSignalId.FMS_WHEEL_BASED_SPEED, AutomotiveSignalId.FMS_SELECTED_GEAR);
         ipTextField = (EditText) findViewById(R.id.ipField);
         portTextField = (EditText) findViewById(R.id.portField);
-
+        getActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     @Override
