@@ -7,8 +7,9 @@ import java.util.List;
 import se.chalmers.fleetspeak.rtp.RTPHandler;
 import se.chalmers.fleetspeak.rtp.SoundHandler;
 import se.chalmers.fleetspeak.tcp.CommandHandler;
+import se.chalmers.fleetspeak.tcp.CommandListener;
 
-public class Client implements ConnectionListener{
+public class Client implements ConnectionListener, CommandListener{
 
 	private String usercode;
 	
@@ -19,6 +20,7 @@ public class Client implements ConnectionListener{
 		this.rtp = new SoundHandler(socket.getInetAddress(), rtpPort);
 		this.cmd = new CommandHandler(socket);
 		this.cmd.start();
+		this.cmd.addCommandListener(this);
 		this.usercode = usercode;
 	}
 	
@@ -59,5 +61,13 @@ public class Client implements ConnectionListener{
 		}
 		
 		return null;
+	}
+
+	@Override
+	public void commandChanged(String key, Object oldValue, Object value) {
+		if(oldValue == null){
+			oldValue = "null";
+		}
+		System.out.println("[CLIENT] Got command: "+key+" changed like "+oldValue.toString()+" --> "+value.toString());
 	}
 }
