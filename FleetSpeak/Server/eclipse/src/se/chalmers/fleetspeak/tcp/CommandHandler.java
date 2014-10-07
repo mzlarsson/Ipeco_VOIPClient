@@ -11,9 +11,12 @@ import java.util.List;
 import se.chalmers.fleetspeak.Client;
 
 public class CommandHandler extends TCPHandler{
+	
+	private CommandData cmd;
 
 	public CommandHandler(Socket clientSocket) {
 		super(clientSocket);
+		this.cmd = new CommandData();
 	}
 
 	@Override
@@ -28,15 +31,15 @@ public class CommandHandler extends TCPHandler{
 				String message = reader.readLine();
 				if(message != null){
 					System.out.print("Command recived: ");
-					if(message.startsWith(Commands.DISCONNECT)){
-						Command.setValue("disconnect", true);
-					}else if(message.startsWith(Commands.SET_NAME)){
-						Command.setValue("nick", message.substring(6));
-					}else if(message.equals(Commands.MUTE)){
+					if(message.startsWith("/disconnect")){
+						setCommandValue("disconnect", true);
+					}else if(message.startsWith("/nick ")){
+						setCommandValue("nick", message.substring(6));
+					}else if(message.equals("/mute")){
 						System.out.println("Mute");
-						Command.setValue("mute", true);
-					}else if(message.equals(Commands.UNMUTE)){
-						Command.setValue("mute", false);
+						setCommandValue("mute", true);
+					}else if(message.equals("/unmute")){
+						setCommandValue("mute", false);
 						System.out.println("Unmute");
 					}else if(message.equals("data")){
 						//send data to client
@@ -53,6 +56,18 @@ public class CommandHandler extends TCPHandler{
 			System.out.println("[CommandHandler] "+e.getMessage());
 			notifyConnectionLost(this);
 		}
+	}
+	
+	public void addCommandListener(CommandListener listener){
+		cmd.addCommandListener(listener);
+	}
+	
+	public void removeCommandListener(CommandListener listener){
+		cmd.removeCommandListener(listener);
+	}
+	
+	private void setCommandValue(String command, Object value){
+		cmd.setValue(command, value);
 	}
 
 	@Override
