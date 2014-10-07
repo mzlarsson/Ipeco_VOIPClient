@@ -50,5 +50,7 @@ public class StartActivity extends ActionBarActivity {
         int portNumber = Integer.parseInt(String.valueOf(portTextField.getText()));
         Toast.makeText(this, ipAdress + portNumber , Toast.LENGTH_SHORT).show();
         // Connector.connect(ipAdress, portNumber);s
+        Intent intent = new Intent(this, ChatRoomActivity.class);
+        startActivity(intent);
     }
 }

@@ -5,12 +5,16 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 
 /**
  * Created by TwiZ on 2014-09-26.
+ * TODO: Make it possible to add/remove servers and update the list.
  */
 
 public class BookmarkActivity extends ActionBarActivity {
@@ -24,10 +28,21 @@ public class BookmarkActivity extends ActionBarActivity {
         serverView = (ListView)findViewById(R.id.serverView);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        String[] demoServers = {"Server1", "Server2"};
+        String[] demoServers = {"DemoServer1", "Server2"};
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, demoServers);
+        ArrayAdapter<String> adapter = new BookmarkListAdapter(this,demoServers);
         serverView.setAdapter(adapter);
+
+        serverView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+
+                String example = String.valueOf(adapterView.getItemAtPosition(position)  );
+
+                Toast.makeText(BookmarkActivity.this, example, Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
