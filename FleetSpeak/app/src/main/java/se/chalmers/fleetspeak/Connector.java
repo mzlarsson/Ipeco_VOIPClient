@@ -5,7 +5,7 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.ObjectInputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 
@@ -17,6 +17,7 @@ public class Connector{
 
     private Socket socket;
     private InputStream input;
+    private ObjectInputStream ois;
     private PrintWriter output;
     private final String ip;
     private final int port;
@@ -32,12 +33,21 @@ public class Connector{
      */
     public void sendCommand(String command){
 
-        if(output != null){
+        if(isConnected){
             output.println(command);
-            Log.i("Connector", "Sent command: " + command);
+            Log.i("Connector.sendCommand", "Sent command: " + command);
         }
     }
+    public void getData(String command){
+        if(isConnected){
+            sendCommand(command);
+            new getDataListener().execute("");
 
+
+        }
+        Log.i("Connector.getData", "notConnected");
+
+    }
     /**
      * tries to etablish a connection to a server
 
@@ -49,14 +59,18 @@ public class Connector{
             public void run() {
                 try {
                     socket = new Socket(ip, port);
-                    Log.i("Connector", "Connection established to" + socket.toString());
+                    Log.i("Connector.connect", "Connection established to" + socket.toString());
                     isConnected = true;
 
                     output = new PrintWriter(socket.getOutputStream(), true);
-                    Log.i("Connector", "Outputsteam ready");
+                    Log.i("Connector.connect", "Outputsteam ready");
+
+                    input = socket.getInputStream();
+                    ois = new ObjectInputStream(input);
+                    Log.i("Connector.connect", "InputStream ready");
 
                 }catch(IOException e){
-                    Log.i("Connector", "Connection failed " + e.getMessage() );
+                    Log.i("Connector.connect", "Connection failed " + e.getMessage() );
                 }
             }
         });
@@ -70,5 +84,38 @@ public class Connector{
 
     public boolean isConnected() {
         return isConnected;
+    }
+
+    private class getDataListener extends AsyncTask<String,Void,Object>{
+        @Override
+        protected Object doInBackground(String... params){
+            try {
+                Object a ;
+                a =  ois.readObject();
+
+                if (a != null) {
+                    return a;
+
+                }
+            }catch(IOException e){
+                Log.i("Connector.getData", e.getMessage());
+            }catch(ClassNotFoundException e){
+                Log.i("Connector.getData", e.getMessage());
+            }catch(NullPointerException e){
+                Log.i("Connector.getData", e.getMessage());
+            }
+            return null;
+
+        }
+        @Override
+        protected void onPostExecute(Object result){
+            Log.i("Connector.getData", result.toString());
+            //update the GUI here
+        }
+        @Override
+        protected void onPreExecute() {}
+
+        @Override
+        protected void onProgressUpdate(Void... values) {}
     }
 }
