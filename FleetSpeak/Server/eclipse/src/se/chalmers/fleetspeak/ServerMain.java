@@ -13,6 +13,7 @@ public class ServerMain{
     private static int DEFAULT_PORT_RTP = 8868;
     
     private static List<Client> clients = new ArrayList<Client>();
+    private static RoomInterface room;
     private static ServerSocket serverSocket = null;
     
     private volatile boolean running;
@@ -26,9 +27,8 @@ public class ServerMain{
     	Runtime.getRuntime().addShutdownHook(new Thread(new Runnable(){
     		
     		public void run(){
-    			
-    	    	for(int i = 0; i<clients.size(); i++){
-    	    		clients.get(i).close();
+    	    	for(int i = 0; i<room.getNbrOfUsers(); i++){
+    	    		room.getUser(i).close();
     	    	}
     		}
     	}));
@@ -40,7 +40,7 @@ public class ServerMain{
     public ServerMain(int tcpPort, int rtpPort) throws UnknownHostException{
     	System.out.println("Starting server @LAN-IP "+InetAddress.getLocalHost().getHostAddress()+" tcp:"+tcpPort+" rtp:"+rtpPort);
     	this.running = true;
-    	
+    	room = new FleetRoom("THE ROOM");
     	start(tcpPort, rtpPort);
     }
     
@@ -69,32 +69,32 @@ public class ServerMain{
     
     public static void addClient(Client client){
         //Save the handler for more interaction
-        clients.add(client);
+        room.addUser(client);
         
         //Notice about change in clients
-        for(int i = 0; i<clients.size(); i++){
-        	if(clients.get(i)!=client){
-	        	clients.get(i).clientConnected(clients);
+        for(int i = 0; i<room.getNbrOfUsers(); i++){
+        	if(room.getUser(i)!=client){
+	        	room.getUser(i).clientConnected(room.getUsers());
         	}
         }
 
         //Print info in server console
-        System.out.println("A new person joined ("+clients.size()+")");
+        System.out.println("A new person joined ("+room.getNbrOfUsers()+")");
     }
     
     public static void removeClient(Client client){
         //Remove the handler from more interaction
-    	clients.remove(client);
+    	room.removeUser(client);
     	
         //Notice about change in clients
-        for(int i = 0; i<clients.size(); i++){
-        	if(clients.get(i)!=client){
-	        	clients.get(i).clientDisconnected(clients);
+        for(int i = 0; i<room.getNbrOfUsers(); i++){
+        	if(room.getUser(i)!=client){
+	        	room.getUser(i).clientDisconnected(room.getUsers());
         	}
         }
     	
         //Print info in server console
-    	System.out.println("A person left the room ("+clients.size()+")");
+    	System.out.println("A person left the room ("+room.getNbrOfUsers()+")");
     }
     
     public void terminate() {

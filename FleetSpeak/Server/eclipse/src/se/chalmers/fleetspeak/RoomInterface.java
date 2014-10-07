@@ -8,7 +8,7 @@ public interface RoomInterface{
 	
 	public List<Client> getUsers();
 	
-	public Client getUser(int i) throws IOException;
+	public Client getUser(int i);
 	
 	public int getNbrOfUsers();
 	

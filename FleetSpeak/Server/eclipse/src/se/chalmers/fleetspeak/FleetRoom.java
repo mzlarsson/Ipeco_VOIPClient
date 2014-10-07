@@ -3,6 +3,7 @@ package se.chalmers.fleetspeak;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
 
 public class FleetRoom implements RoomInterface {
@@ -12,6 +13,7 @@ public class FleetRoom implements RoomInterface {
 	private String id;
 
 	public FleetRoom(String s){
+		clients = new ArrayList<Client>();
 		id = s;
 	}
 	
@@ -47,14 +49,14 @@ public class FleetRoom implements RoomInterface {
 	}
 
 	@Override
-	public Client getUser(int i) throws IOException {
-		Client c = new Client(new Socket(),0,"");
+	public Client getUser(int i){
+		//TODO See if there is a safer way of handling and returning Client
 		try{
-		 c = clients.get(i);
+		return clients.get(i);
 		}catch(IndexOutOfBoundsException e){
 			System.out.println(e.getMessage());
 		}
-		return c;
+		return clients.get(i);
 	}
 	
 	@Override
