@@ -57,8 +57,11 @@ public class StartActivity extends ActionBarActivity {
             c = new Connector(a, Integer.parseInt(b));
             c.connect();
         }else{
-            //c.sendCommand(a);
-           c.getData("data");
+            c.sendCommand("/nick asdfghj");
+            c.sendCommand("/disconnect");
+            c.sendCommand("/mute");
+            c.sendCommand("/unmute");
+           //c.getData("data");
            // port.setText(s, TextView.BufferType.EDITABLE);
         }
     }

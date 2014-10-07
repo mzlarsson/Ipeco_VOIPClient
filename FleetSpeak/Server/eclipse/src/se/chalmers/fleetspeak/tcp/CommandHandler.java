@@ -2,21 +2,22 @@ package se.chalmers.fleetspeak.tcp;
 
 import java.io.BufferedReader;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
 
 import se.chalmers.fleetspeak.Client;
 
 public class CommandHandler extends TCPHandler{
 	
-	private CommandData cmd;
-
+	
+	private List<CommandListener> listeners = new ArrayList<CommandListener>();
 	public CommandHandler(Socket clientSocket) {
 		super(clientSocket);
-		this.cmd = new CommandData();
+		
 	}
 
 	@Override
@@ -31,16 +32,18 @@ public class CommandHandler extends TCPHandler{
 				String message = reader.readLine();
 				if(message != null){
 					System.out.print("Command recived: ");
-					if(message.startsWith("/disconnect")){
-						setCommandValue("disconnect", true);
-					}else if(message.startsWith("/nick ")){
-						setCommandValue("nick", message.substring(6));
-					}else if(message.equals("/mute")){
-						System.out.println("Mute");
-						setCommandValue("mute", true);
-					}else if(message.equals("/unmute")){
-						setCommandValue("mute", false);
-						System.out.println("Unmute");
+					if(message.startsWith(Commands.DISCONNECT.getName())){
+						System.out.println(Commands.DISCONNECT);
+						notifyListeners(Commands.DISCONNECT, true);
+					}else if(message.startsWith(Commands.SET_NAME.getName())){
+						System.out.println(Commands.SET_NAME);
+						notifyListeners(Commands.SET_NAME, message.substring(6));
+					}else if(message.equals(Commands.MUTE.getName())){
+						System.out.println(Commands.MUTE);
+						notifyListeners(Commands.MUTE, true);
+					}else if(message.equals(Commands.UNMUTE.getName())){
+						System.out.println(Commands.UNMUTE);
+						notifyListeners(Commands.MUTE, false);
 					}else if(message.equals("data")){
 						//send data to client
 						System.out.println("Data");
@@ -59,16 +62,19 @@ public class CommandHandler extends TCPHandler{
 	}
 	
 	public void addCommandListener(CommandListener listener){
-		cmd.addCommandListener(listener);
+		listeners.add(listener);
 	}
 	
 	public void removeCommandListener(CommandListener listener){
-		cmd.removeCommandListener(listener);
+		listeners.remove(listener);
 	}
 	
-	private void setCommandValue(String command, Object value){
-		cmd.setValue(command, value);
+	private void notifyListeners(Commands command, Object value){
+		for(int i = 0; i<listeners.size(); i++){
+			listeners.get(i).commandChanged(command, value);
+		}
 	}
+	
 
 	@Override
 	public void onClientConnect(List<Client> clients) {

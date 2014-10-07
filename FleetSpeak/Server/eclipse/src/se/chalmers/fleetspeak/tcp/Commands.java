@@ -1,10 +1,19 @@
 package se.chalmers.fleetspeak.tcp;
 
-public  class Commands {
-	public final static String DISCONNECT = "/disconnect";
-	public final static String SET_NAME = "/nick";
-	public final static String MUTE = "/mute";
-	public final static String UNMUTE = "/unmute";
+public enum Commands {
+	DISCONNECT("/disconnect"), 
+	SET_NAME("/nick"),
+	MUTE("/mute"),
+	UNMUTE("/unmute");
 	
+	
+	private String name;
+	
+	private Commands(String s){
+		name = s;
+	}
+	public String getName(){
+		return name;
+	}
 }
 	
