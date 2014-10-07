@@ -6,6 +6,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -52,11 +53,13 @@ public class StartActivity extends ActionBarActivity {
         String a = String.valueOf(ip.getText());
         String b = String.valueOf(port.getText());
         Toast.makeText(this, a + b, Toast.LENGTH_SHORT).show();
-        if(c == null){
+        if(c == null ||  !c.isConnected()){
             c = new Connector(a, Integer.parseInt(b));
             c.connect();
         }else{
-            c.sendCommand(a);
+            //c.sendCommand(a);
+           c.getData("data");
+           // port.setText(s, TextView.BufferType.EDITABLE);
         }
     }
 

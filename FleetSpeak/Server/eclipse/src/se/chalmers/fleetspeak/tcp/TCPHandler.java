@@ -2,6 +2,7 @@ package se.chalmers.fleetspeak.tcp;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -57,7 +58,18 @@ public abstract class TCPHandler extends Thread implements ConnectionHandler{
 			return null;
 		}
 	}
-	
+	protected ObjectOutputStream getObjectOutputStream(){
+		if(clientSocket == null){
+			return null;
+		}
+
+		try {
+			return new ObjectOutputStream(getOutputStream());
+		} catch (IOException e) {
+			System.out.println("Could not fetch output stream: "+e.getClass().getCanonicalName());
+			return null;
+		}
+	}
 	public void addConnectionListener(ConnectionListener listener){
 		this.listeners.add(listener);
 	}
