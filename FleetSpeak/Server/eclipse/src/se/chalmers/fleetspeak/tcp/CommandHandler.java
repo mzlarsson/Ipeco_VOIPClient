@@ -32,16 +32,16 @@ public class CommandHandler extends TCPHandler{
 				String message = reader.readLine();
 				if(message != null){
 					System.out.print("Command recived: ");
-					if(message.startsWith(Commands.DISCONNECT.getName())){
+					if(message.startsWith(Commands.DISCONNECT.toString())){
 						System.out.println(Commands.DISCONNECT);
 						notifyListeners(Commands.DISCONNECT, true);
-					}else if(message.startsWith(Commands.SET_NAME.getName())){
+					}else if(message.startsWith(Commands.SET_NAME.toString())){
 						System.out.println(Commands.SET_NAME);
 						notifyListeners(Commands.SET_NAME, message.substring(6));
-					}else if(message.equals(Commands.MUTE.getName())){
+					}else if(message.equals(Commands.MUTE.toString())){
 						System.out.println(Commands.MUTE);
 						notifyListeners(Commands.MUTE, true);
-					}else if(message.equals(Commands.UNMUTE.getName())){
+					}else if(message.equals(Commands.UNMUTE.toString())){
 						System.out.println(Commands.UNMUTE);
 						notifyListeners(Commands.MUTE, false);
 					}else if(message.equals("data")){
