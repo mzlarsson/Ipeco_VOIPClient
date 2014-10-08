@@ -1,6 +1,8 @@
 package se.chalmers.fleetspeak;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 
 import android.os.Bundle;
@@ -14,6 +16,10 @@ import android.widget.Toast;
 public class StartActivity extends ActionBarActivity {
     private EditText ipTextField;
     private EditText portTextField;
+    private EditText userNameTextField;
+    private SharedPreferences prefs;
+    private SharedPreferences.Editor prefEdit;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -21,7 +27,15 @@ public class StartActivity extends ActionBarActivity {
         new TruckCommunicator().execute(AutomotiveSignalId.FMS_WHEEL_BASED_SPEED, AutomotiveSignalId.FMS_SELECTED_GEAR);
         ipTextField = (EditText) findViewById(R.id.ipField);
         portTextField = (EditText) findViewById(R.id.portField);
-
+        userNameTextField = (EditText) findViewById(R.id.usernameField);
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        prefEdit = prefs.edit();
+        String portNumber = prefs.getString("portNumber", "portNumber");
+        String username = prefs.getString("username", "username");
+        String ipAdress = prefs.getString("ipAdress", "ipAdress");
+        userNameTextField.setText(username);
+        portTextField.setText(portNumber);
+        ipTextField.setText(ipAdress);
     }
 
     @Override
@@ -52,5 +66,15 @@ public class StartActivity extends ActionBarActivity {
         // Connector.connect(ipAdress, portNumber);s
         Intent intent = new Intent(this, ChatRoomActivity.class);
         startActivity(intent);
+
     }
+    public void saveUsername(View view){
+       String newUsername = String.valueOf(userNameTextField.getText());
+       String newIpAdress = String.valueOf(ipTextField.getText());
+       String newPortNumber = String.valueOf(portTextField.getText());
+       prefEdit.putString("username", newUsername);
+       prefEdit.putString("ipAdress", newIpAdress );
+       prefEdit.putString("portNumber", newPortNumber);
+    }
+
 }
