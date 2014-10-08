@@ -47,11 +47,14 @@ public class FleetRoom implements RoomInterface {
 
 	@Override
 	public Client getUser(int i){
-		//TODO See if there is a safer way of handling and returning Client
+		Client c;
 		try{
-		return clients.get(i);
+		c = clients.get(i);
 		}catch(IndexOutOfBoundsException e){
 			System.out.println(e.getMessage());
+		c = clients.get(0);
+		}catch(NullPointerException e){
+			System.out.println(e.toString());
 		}
 		return clients.get(i);
 	}

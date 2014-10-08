@@ -12,8 +12,8 @@ public class ServerMain{
     private static int DEFAULT_PORT_TCP = 8867;
     private static int DEFAULT_PORT_RTP = 8868;
     
-    private static List<Client> clients = new ArrayList<Client>();
     private static RoomInterface room;
+    private static RoomHandler roomhandler;
     private static ServerSocket serverSocket = null;
     
     private volatile boolean running;
@@ -41,6 +41,8 @@ public class ServerMain{
     	System.out.println("Starting server @LAN-IP "+InetAddress.getLocalHost().getHostAddress()+" tcp:"+tcpPort+" rtp:"+rtpPort);
     	this.running = true;
     	room = new FleetRoom("THE ROOM");
+    	roomhandler = new RoomHandler();
+    	roomhandler.addRoom(room);
     	start(tcpPort, rtpPort);
     }
     
