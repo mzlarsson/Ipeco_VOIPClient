@@ -80,24 +80,27 @@ public class Client implements ConnectionListener, CommandListener {
 
 	@Override
 	public void commandChanged(Commands key, Object value) {
-		
+		System.out.println("[CLIENT] Got command: " + key + " changed to: " + value.toString());
 		switch (key) {
 		case DISCONNECT:
 			// TODO
 			break;
 		case SET_NAME:
 			this.setName((String) value);
+			System.out.println("Current name " + name);
 			break;
 		case MUTE:
 			this.muted = true;
+			System.out.println("is muted: " + muted);
 			break;
 		case UNMUTE:
 			this.muted = false;
+			System.out.println("is muted: " + muted);
 			break;
 		default:
 			System.out.println(key.getName() + " is not implemented");
 			break;
 		}
-		System.out.println("[CLIENT] Got command: " + key + " changed to: " + value.toString());
+		
 	}
 }
