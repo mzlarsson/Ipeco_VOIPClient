@@ -18,9 +18,9 @@ public class StartActivity extends ActionBarActivity {
     private EditText ipTextField;
     private EditText portTextField;
     private EditText userNameTextField;
-    private CheckBox savePref;
     private SharedPreferences prefs;
     private SharedPreferences.Editor prefEdit;
+    private CheckBox savePrefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +38,7 @@ public class StartActivity extends ActionBarActivity {
         userNameTextField.setText(username);
         portTextField.setText(portNumber);
         ipTextField.setText(ipAdress);
-        savePref = (CheckBox) findViewById(R.id.saveUserPref);
+        savePrefs = (CheckBox) findViewById(R.id.saveUserPref);
     }
 
     @Override
@@ -65,9 +65,11 @@ public class StartActivity extends ActionBarActivity {
        String ipAdress = String.valueOf(ipTextField.getText());
        int portNumber = Integer.parseInt(String.valueOf(portTextField.getText()));
        //Connector.connect(ipAdress, portNumber);
-        if(savePref.isChecked()){
+        if(savePrefs.isChecked()){
             saveUsername(view);
         }
+        Intent intent = new Intent(this,ChatRoomActivity.class);
+        startActivity(intent);
     }
     public void saveUsername(View view){
        String newUsername = String.valueOf(userNameTextField.getText());
