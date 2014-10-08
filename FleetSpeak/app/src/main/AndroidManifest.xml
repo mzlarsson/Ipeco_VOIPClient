@@ -23,6 +23,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".BookmarkActivity"
+            android:label="Bookmark"
+            android:theme="@style/AppTheme"/>
+
+        <activity android:name=".NewServerActivity"
+            android:label="NewServer"
+            android:theme="@style/AppTheme"/>
+
     </application>
 
 </manifest>
