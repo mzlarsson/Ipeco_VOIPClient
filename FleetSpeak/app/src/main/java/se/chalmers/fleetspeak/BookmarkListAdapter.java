@@ -8,13 +8,15 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 /**
  * Created by TwiZ on 2014-10-08.
  * TODO: Make this an inner class in activity_Bookmarks?
  *  */
 public class BookmarkListAdapter extends ArrayAdapter<String> {
 
-    public BookmarkListAdapter(Context context, String[] values) {
+    public BookmarkListAdapter(Context context, ArrayList<String> values) {
         super(context, R.layout.list_item_servers, values);
     }
 

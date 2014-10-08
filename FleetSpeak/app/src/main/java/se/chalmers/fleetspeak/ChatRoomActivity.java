@@ -9,15 +9,16 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
 /**
  * Created by TwiZ on 2014-10-06.
- *  TODO: Make it possible to add/remove users and update the list.
  */
 public class ChatRoomActivity extends ActionBarActivity {
 
-
     ListView userListView;
-    Button debugg;
+    ArrayList<String> listItems = new ArrayList<String>();
+    ArrayAdapter<String> adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,11 +27,10 @@ public class ChatRoomActivity extends ActionBarActivity {
 
         userListView = (ListView)findViewById(R.id.userList);
 
-        /*Users that is inside the room */
+        listItems.add("Olle");
 
-        String[] demoUsers = {"User 1", "User2" ,"User3", "User4"};
-
-        ArrayAdapter<String> adapter = new ChatRoomListAdapter(this, demoUsers);
+        adapter = new ChatRoomListAdapter(this, listItems);
+        //adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, listItems);
         userListView.setAdapter(adapter);
 
         userListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -42,6 +42,27 @@ public class ChatRoomActivity extends ActionBarActivity {
         });
     }
 
+    private void addUserToList(View v,String idPerson) {
+        listItems.add(idPerson);
+        adapter.notifyDataSetChanged();
+    }
 
 
+    private void removeUserFromList(View v, String idUser) {
+        for(int i = 0; i < listItems.size(); i++){
+            if(listItems.get(i).equals(idUser)){
+                listItems.remove(i);
+                break;
+            }
+        }
+        adapter.notifyDataSetChanged();
+    }
+
+    public void subUserDebug(View view) {
+        removeUserFromList(view, "PelleID");
+    }
+
+    public void addUserDebug(View view) {
+        addUserToList(view, "PelleID");
+    }
 }

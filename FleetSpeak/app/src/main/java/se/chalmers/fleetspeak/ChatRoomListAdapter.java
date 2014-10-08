@@ -16,7 +16,7 @@ import java.util.ArrayList;
  *  */
 public class ChatRoomListAdapter extends ArrayAdapter<String> {
 
-    public ChatRoomListAdapter(Context context, String[] values) {
+    public ChatRoomListAdapter(Context context, ArrayList<String> values) {
         super(context, R.layout.list_item_users, values);
     }
 
@@ -33,6 +33,7 @@ public class ChatRoomListAdapter extends ArrayAdapter<String> {
         ImageView imageView = (ImageView) view.findViewById(R.id.userTalkImage);
 
         textView.setText(user);
+
         imageView.setImageResource(R.drawable.ic_mute_status);
 
         return view;

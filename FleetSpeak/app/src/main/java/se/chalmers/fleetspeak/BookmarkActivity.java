@@ -11,6 +11,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
 
 /**
  * Created by TwiZ on 2014-09-26.
@@ -20,6 +22,7 @@ import android.widget.Toast;
 public class BookmarkActivity extends ActionBarActivity {
 
     ListView serverView;
+    ArrayList<String> listItems = new ArrayList<String>();
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,9 +31,11 @@ public class BookmarkActivity extends ActionBarActivity {
         serverView = (ListView)findViewById(R.id.serverView);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        String[] demoServers = {"DemoServer1", "Server2"};
+        listItems.add("DemoServer1");
+        listItems.add("DemoServer2");
+        //String[] demoServers = {"DemoServer1", "Server2"};
 
-        ArrayAdapter<String> adapter = new BookmarkListAdapter(this,demoServers);
+        ArrayAdapter<String> adapter = new BookmarkListAdapter(this, listItems);
         serverView.setAdapter(adapter);
 
         serverView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
