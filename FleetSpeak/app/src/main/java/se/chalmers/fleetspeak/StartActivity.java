@@ -10,6 +10,7 @@ import android.swedspot.automotiveapi.AutomotiveSignalId;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -17,6 +18,7 @@ public class StartActivity extends ActionBarActivity {
     private EditText ipTextField;
     private EditText portTextField;
     private EditText userNameTextField;
+    private CheckBox savePref;
     private SharedPreferences prefs;
     private SharedPreferences.Editor prefEdit;
 
@@ -36,6 +38,7 @@ public class StartActivity extends ActionBarActivity {
         userNameTextField.setText(username);
         portTextField.setText(portNumber);
         ipTextField.setText(ipAdress);
+        savePref = (CheckBox) findViewById(R.id.saveUserPref);
     }
 
     @Override
@@ -62,6 +65,9 @@ public class StartActivity extends ActionBarActivity {
        String ipAdress = String.valueOf(ipTextField.getText());
        int portNumber = Integer.parseInt(String.valueOf(portTextField.getText()));
        //Connector.connect(ipAdress, portNumber);
+        if(savePref.isChecked()){
+            saveUsername(view);
+        }
     }
     public void saveUsername(View view){
        String newUsername = String.valueOf(userNameTextField.getText());
