@@ -28,7 +28,6 @@ public class StartActivity extends ActionBarActivity {
         ip = (EditText) findViewById(R.id.ipField);
         port = (EditText) findViewById(R.id.portField);
 
->>>>>>> Temporary merge branch 2
     }
 
 
