@@ -52,6 +52,7 @@ public class ServerMain{
             while(running){
             	//Create connection
                 clientSocket = serverSocket.accept();
+                System.out.println("Receiving connection request from client...");
                 //Create client
                 Client client = new Client(clientSocket, rtpPort, StringUtil.generateRandomCode(16));
                 //Add to client list
