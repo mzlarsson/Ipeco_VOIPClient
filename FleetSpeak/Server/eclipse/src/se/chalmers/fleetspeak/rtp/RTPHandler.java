@@ -4,7 +4,6 @@ import java.net.InetAddress;
 import java.util.Scanner;
 
 import se.chalmers.fleetspeak.ConnectionHandler;
-import se.chalmers.fleetspeak.TmpConnector;
 
 import com.biasedbit.efflux.packet.DataPacket;
 import com.biasedbit.efflux.participant.RtpParticipant;
@@ -16,38 +15,20 @@ import com.biasedbit.efflux.session.RtpSessionDataListener;
 public abstract class RTPHandler implements ConnectionHandler{
 	
 	private RtpSession session;
+	private static int CLIENT_RTP_DATA_PORT = 1024;
+	private static int CLIENT_RTP_CTRL_PORT = 1025;
 
-	public RTPHandler(InetAddress ip, int port, int payloadType) throws IOException{
-		init(ip, port, payloadType);
+	public RTPHandler(InetAddress clientIP, int serverPort, int payloadType) throws IOException{
+		initRTPSession(clientIP, serverPort, payloadType);
+		startHandler();
 	}
 	
-	public void init(final InetAddress ip, final int port, final int payloadType) throws IOException{
-		fml();
-	}
-    	
-	public void fml(){
-		Thread thread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				initRTPSession();
-
-				Scanner in = new Scanner(System.in);
-				String s = "";
-				while(true){
-					s = in.nextLine();
-					session.sendData(s.getBytes(), 123456789, true);
-				}
-			}
-		});
-		thread.start();
-	}
-	
-	private void initRTPSession(){
+	private void initRTPSession(InetAddress clientIP, int serverPort, int payloadType){
 		String sessionid = "uid_here"; // you need to set this
 
-		RtpParticipant server = getParticipant(TmpConnector.SERVER, 1028, 1029);
-		RtpParticipant client = getParticipant(TmpConnector.SERVER, 1024, 1025);
-		session = new MultiParticipantSession(sessionid, 0, server);
+		RtpParticipant server = getParticipant("localhost", serverPort, serverPort+1);
+		RtpParticipant client = getParticipant(clientIP, CLIENT_RTP_DATA_PORT, CLIENT_RTP_CTRL_PORT);
+		session = new MultiParticipantSession(sessionid, payloadType, server);
 		
 		session.addReceiver(client);
 		
@@ -66,6 +47,22 @@ public abstract class RTPHandler implements ConnectionHandler{
 	private RtpParticipant getParticipant(String ip, int dataport, int ctrlport){
 		return RtpParticipant.createReceiver(ip, dataport, ctrlport);
 	}
+    	
+	public void startHandler(){
+		Thread thread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				Scanner in = new Scanner(System.in);
+				String s = "";
+				while(true){
+					s = in.nextLine();
+					session.sendData(s.getBytes(), 123456789, true);
+				}
+			}
+		});
+		thread.start();
+	}
+	
 
 	public void close(){
 		session.terminate();

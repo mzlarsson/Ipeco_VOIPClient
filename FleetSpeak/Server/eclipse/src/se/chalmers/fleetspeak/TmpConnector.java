@@ -25,9 +25,14 @@ public class TmpConnector{
     private final String ip;
     private final int port;
     private boolean isConnected = false;
-    
+        
+	private static int CLIENT_RTP_DATA_PORT = 1024;
+	private static int CLIENT_RTP_CTRL_PORT = 1025;
+
+	//Values provided by client, now hard coded for practical reasons.
     public static String SERVER = "localhost";
     public static int SERVER_PORT = 8867;
+    public static int SERVER_RTP_DATA_PORT = 8868;
     
     private RtpSession session;
     
@@ -89,8 +94,8 @@ public class TmpConnector{
     private void initRTPSession(){
 		String sessionid = "uid_here"; // you need to set this
 		
-		RtpParticipant client = getParticipant(this.ip, 1024, 1025);
-		RtpParticipant server = getParticipant(SERVER, 1028, 1029);
+		RtpParticipant client = getParticipant(this.ip, CLIENT_RTP_DATA_PORT, CLIENT_RTP_CTRL_PORT);
+		RtpParticipant server = getParticipant(SERVER, SERVER_RTP_DATA_PORT, SERVER_RTP_DATA_PORT+1);
 		session = new MultiParticipantSession(sessionid, 0, client);
 		
 		session.addReceiver(server);

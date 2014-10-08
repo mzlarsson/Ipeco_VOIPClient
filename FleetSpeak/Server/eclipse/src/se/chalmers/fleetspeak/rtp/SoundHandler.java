@@ -6,23 +6,12 @@ import java.util.List;
 
 import se.chalmers.fleetspeak.Client;
 
-import com.biasedbit.efflux.packet.DataPacket;
-import com.biasedbit.efflux.participant.RtpParticipant;
-import com.biasedbit.efflux.participant.RtpParticipantInfo;
-import com.biasedbit.efflux.session.RtpSession;
-import com.biasedbit.efflux.session.RtpSessionDataListener;
-import com.biasedbit.efflux.session.SingleParticipantSession;
-
 public class SoundHandler extends RTPHandler{
 	
 	private static final int PAYLOAD_TYPE = 0;		//http://www.iana.org/assignments/rtp-parameters/rtp-parameters.xml
 
-	public SoundHandler(InetAddress ip, int port) throws IOException{
-		super(ip, port, PAYLOAD_TYPE);
-		test();
-	}
-	
-	public void test(){
+	public SoundHandler(InetAddress clientIP, int serverPort) throws IOException{
+		super(clientIP, serverPort, PAYLOAD_TYPE);
 	}
 	
 	@Override
