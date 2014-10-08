@@ -12,7 +12,9 @@ import se.chalmers.fleetspeak.tcp.CommandListener;
 public class Client implements ConnectionListener, CommandListener{
 
 	private String usercode;
+	private int ID;
 	
+
 	private RTPHandler rtp;
 	private CommandHandler cmd;
 	
@@ -69,5 +71,9 @@ public class Client implements ConnectionListener, CommandListener{
 			oldValue = "null";
 		}
 		System.out.println("[CLIENT] Got command: "+key+" changed like "+oldValue.toString()+" --> "+value.toString());
+	}
+	
+	public int getClientID() {
+		return ID;
 	}
 }

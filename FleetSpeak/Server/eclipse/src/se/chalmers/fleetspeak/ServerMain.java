@@ -40,9 +40,9 @@ public class ServerMain{
     public ServerMain(int tcpPort, int rtpPort) throws UnknownHostException{
     	System.out.println("Starting server @LAN-IP "+InetAddress.getLocalHost().getHostAddress()+" tcp:"+tcpPort+" rtp:"+rtpPort);
     	this.running = true;
-    	room = new FleetRoom("THE ROOM");
+    	room = new FleetRoom(1);
     	roomhandler = new RoomHandler();
-    	roomhandler.addRoom(room);
+    	
     	start(tcpPort, rtpPort);
     }
     

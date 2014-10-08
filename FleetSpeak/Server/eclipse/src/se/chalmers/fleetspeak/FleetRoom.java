@@ -7,15 +7,14 @@ public class FleetRoom implements RoomInterface {
 	
 	private List<Client> clients;
 	
-	private String id;
+	private int id;
 
-	public FleetRoom(String s){
+	public FleetRoom(int i){
 		clients = new ArrayList<Client>();
-		id = s;
+		id = i;
 	}
 	
 	
-	@Override
 	public void addUser(Client c) {
 		try{
 			clients.add(c);
@@ -24,7 +23,6 @@ public class FleetRoom implements RoomInterface {
 		}
 	}
 	
-	@Override
 	public void removeUser(Client c) {
 		try{
 		clients.remove(c);	
@@ -35,7 +33,6 @@ public class FleetRoom implements RoomInterface {
 		}
 	}
 	
-	@Override
 	public List<Client> getUsers() {
 		if(clients==null || clients.size()<=0){
 			System.out.println("There are no clients in this room");
@@ -45,7 +42,6 @@ public class FleetRoom implements RoomInterface {
 		}
 	}
 
-	@Override
 	public Client getUser(int i){
 		Client c;
 		try{
@@ -59,13 +55,12 @@ public class FleetRoom implements RoomInterface {
 		return clients.get(i);
 	}
 	
-	@Override
 	public int getNbrOfUsers() {
 		return clients.size();	
 	}
 
 	@Override
-	public String getRoomID() {
+	public int getRoomID() {
 		return id;
 	}
 	
