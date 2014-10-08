@@ -8,17 +8,19 @@ import se.chalmers.fleetspeak.rtp.RTPHandler;
 import se.chalmers.fleetspeak.rtp.SoundHandler;
 import se.chalmers.fleetspeak.tcp.CommandHandler;
 import se.chalmers.fleetspeak.tcp.CommandListener;
+import se.chalmers.fleetspeak.tcp.Commands;
 
-public class Client implements ConnectionListener, CommandListener{
-
-	private String usercode;
-	private int ID;
+public class Client implements ConnectionListener, CommandListener {
 	
-
+	private String usercode;
+	private String name;
 	private RTPHandler rtp;
 	private CommandHandler cmd;
+	private boolean muted = false;
+	private int clientID;
 	
-	public Client(Socket socket, int rtpPort, String usercode) throws IOException{
+	public Client(Socket socket, int rtpPort, String usercode)
+			throws IOException {
 		this.rtp = new SoundHandler(socket.getInetAddress(), rtpPort);
 		this.cmd = new CommandHandler(socket);
 		this.cmd.start();
@@ -26,54 +28,81 @@ public class Client implements ConnectionListener, CommandListener{
 		this.usercode = usercode;
 	}
 	
-	public String getUserCode(){
+	private void setName(String name) {
+		// TODO add filter
+		this.name = name;
+	}
+	
+	public String getName(){
+		return name;
+	}
+	
+	public String getUserCode() {
 		return this.usercode;
 	}
-
-	public void clientConnected(List<Client> clients){
+	
+	public boolean isMuted() {
+		return muted;
+	}
+	
+	public void clientConnected(List<Client> clients) {
 		rtp.onClientConnect(clients);
 		cmd.onClientConnect(clients);
 	}
 	
-	public void clientDisconnected(List<Client> clients){
+	public void clientDisconnected(List<Client> clients) {
 		rtp.onClientDisconnect(clients);
 		cmd.onClientDisconnect(clients);
 	}
 	
-	public void close(){
-		if(rtp != null){
+	public void close() {
+		if (rtp != null) {
 			rtp.close();
 		}
-		if(cmd != null){
+		if (cmd != null) {
 			cmd.close();
 		}
 	}
 	
-	public void connectionLost(ConnectionHandler handler){
-		System.out.println("A "+handler.getClass().getCanonicalName()+" has lost connection");
+	public void connectionLost(ConnectionHandler handler) {
+		System.out.println("A " + handler.getClass().getCanonicalName()
+				+ " has lost connection");
 		this.close();
 	}
-	
-	
-	public static Client getClient(List<Client> clients, String usercode){
-		for(int i = 0; i<clients.size(); i++){
-			if(clients.get(i).getUserCode().equals(usercode)){
+
+	public static Client getClient(List<Client> clients, String usercode) {
+		for (int i = 0; i < clients.size(); i++) {
+			if (clients.get(i).getUserCode().equals(usercode)) {
 				return clients.get(i);
 			}
 		}
-		
 		return null;
 	}
-
+	
 	@Override
-	public void commandChanged(String key, Object oldValue, Object value) {
-		if(oldValue == null){
-			oldValue = "null";
+	public void commandChanged(Commands key, Object value) {
+		switch (key) {
+		case DISCONNECT:
+			// TODO
+			break;
+		case SET_NAME:
+			this.setName((String) value);
+			break;
+		case MUTE:
+			this.muted = true;
+			break;
+		case UNMUTE:
+			this.muted = false;
+			break;
+		default:
+			System.out.println(key.getName() + " is not implemented");
+			break;
 		}
-		System.out.println("[CLIENT] Got command: "+key+" changed like "+oldValue.toString()+" --> "+value.toString());
+		System.out.println("[CLIENT] Got command: " + key + " changed to: " + value.toString());
 	}
+
 	
 	public int getClientID() {
-		return ID;
+		return clientID;
 	}
 }
