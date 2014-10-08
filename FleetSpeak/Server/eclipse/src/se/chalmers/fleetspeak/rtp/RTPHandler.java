@@ -1,56 +1,73 @@
 package se.chalmers.fleetspeak.rtp;
 import java.io.IOException;
 import java.net.InetAddress;
-
-import javax.media.Manager;
-import javax.media.MediaLocator;
-import javax.media.protocol.DataSource;
-import javax.media.rtp.InvalidSessionAddressException;
-import javax.media.rtp.RTPManager;
-import javax.media.rtp.ReceiveStreamListener;
-import javax.media.rtp.SendStream;
-import javax.media.rtp.SessionAddress;
+import java.util.Scanner;
 
 import se.chalmers.fleetspeak.ConnectionHandler;
+import se.chalmers.fleetspeak.TmpConnector;
 
-public abstract class RTPHandler implements ConnectionHandler, ReceiveStreamListener{
+import com.biasedbit.efflux.packet.DataPacket;
+import com.biasedbit.efflux.participant.RtpParticipant;
+import com.biasedbit.efflux.participant.RtpParticipantInfo;
+import com.biasedbit.efflux.session.MultiParticipantSession;
+import com.biasedbit.efflux.session.RtpSession;
+import com.biasedbit.efflux.session.RtpSessionDataListener;
+
+public abstract class RTPHandler implements ConnectionHandler{
 	
-	private RTPManager manager;
-	private SendStream output;
-	private SessionAddress client;
+	private RtpSession session;
 
-	public RTPHandler(InetAddress ip, int port) throws IOException{
-		init(ip, port);
+	public RTPHandler(InetAddress ip, int port, int payloadType) throws IOException{
+		init(ip, port, payloadType);
 	}
 	
-	public void init(InetAddress ip, int port) throws IOException{
-		/*
-		try{
-			this.manager = RTPManager.newInstance();
-			SessionAddress localAddress = new SessionAddress();
-			manager.initialize(localAddress);
-			manager.addReceiveStreamListener(this);
-			
-			client = new SessionAddress(ip, port);
-			manager.addTarget(client);
-			MediaLocator locator = new MediaLocator("rtp://"+ip.getHostAddress()+":"+port);
-			DataSource dataSource = Manager.createDataSource(locator);
-			this.output = manager.createSendStream(dataSource, 1);
-			this.output.start();
-		}catch(Exception e){
-			throw new IOException("Could not create RTP connection ["+e.getClass().getCanonicalName()+"]");
-		}*/
+	public void init(final InetAddress ip, final int port, final int payloadType) throws IOException{
+		fml();
+	}
+    	
+	public void fml(){
+		Thread thread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				initRTPSession();
+
+				Scanner in = new Scanner(System.in);
+				String s = "";
+				while(true){
+					s = in.nextLine();
+					session.sendData(s.getBytes(), 123456789, true);
+				}
+			}
+		});
+		thread.start();
+	}
+	
+	private void initRTPSession(){
+		String sessionid = "uid_here"; // you need to set this
+
+		RtpParticipant server = getParticipant(TmpConnector.SERVER, 1028, 1029);
+		RtpParticipant client = getParticipant(TmpConnector.SERVER, 1024, 1025);
+		session = new MultiParticipantSession(sessionid, 0, server);
+		
+		session.addReceiver(client);
+		
+		session.addDataListener(new RtpSessionDataListener() {
+		    @Override
+		    public void dataPacketReceived(RtpSession session, RtpParticipantInfo participant, DataPacket packet) {
+		    	System.out.println("Server got packet: '"+new String(packet.getDataAsArray())+"'");
+		    }
+		});
+
+		session.init();
+	}
+	private RtpParticipant getParticipant(InetAddress ip, int dataport, int ctrlport){
+		return getParticipant(ip.getHostAddress(), dataport, ctrlport);
+	}
+	private RtpParticipant getParticipant(String ip, int dataport, int ctrlport){
+		return RtpParticipant.createReceiver(ip, dataport, ctrlport);
 	}
 
 	public void close(){
-		try {
-			manager.removeTarget(client, "Client disconnected");
-		} catch (InvalidSessionAddressException e) {}
-		try {
-			output.stop();
-		} catch (IOException e) {}
-		
-		output.close();
-		manager.dispose();
+		session.terminate();
 	}
 }

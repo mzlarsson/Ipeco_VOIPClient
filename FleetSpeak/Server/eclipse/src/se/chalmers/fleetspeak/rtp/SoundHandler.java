@@ -4,14 +4,25 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.List;
 
-import javax.media.rtp.event.ReceiveStreamEvent;
-
 import se.chalmers.fleetspeak.Client;
 
+import com.biasedbit.efflux.packet.DataPacket;
+import com.biasedbit.efflux.participant.RtpParticipant;
+import com.biasedbit.efflux.participant.RtpParticipantInfo;
+import com.biasedbit.efflux.session.RtpSession;
+import com.biasedbit.efflux.session.RtpSessionDataListener;
+import com.biasedbit.efflux.session.SingleParticipantSession;
+
 public class SoundHandler extends RTPHandler{
+	
+	private static final int PAYLOAD_TYPE = 0;		//http://www.iana.org/assignments/rtp-parameters/rtp-parameters.xml
 
 	public SoundHandler(InetAddress ip, int port) throws IOException{
-		super(ip, port);
+		super(ip, port, PAYLOAD_TYPE);
+		test();
+	}
+	
+	public void test(){
 	}
 	
 	@Override
@@ -22,10 +33,5 @@ public class SoundHandler extends RTPHandler{
 	@Override
 	public void onClientDisconnect(List<Client> clients){
 		System.out.println("[SoundHandler] Disconnect Notification");
-	}
-
-	@Override
-	public void update(ReceiveStreamEvent data) {
-		System.out.println("Got data!");
 	}
 }
