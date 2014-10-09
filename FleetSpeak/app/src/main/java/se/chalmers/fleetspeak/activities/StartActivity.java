@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak;
+package se.chalmers.fleetspeak.activities;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -10,6 +10,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
+
+import se.chalmers.fleetspeak.R;
+import se.chalmers.fleetspeak.TruckCommunicator;
+import se.chalmers.fleetspeak.activities.BookmarkActivity;
+import se.chalmers.fleetspeak.activities.ChatRoomActivity;
 
 public class StartActivity extends ActionBarActivity {
     private EditText ipTextField;

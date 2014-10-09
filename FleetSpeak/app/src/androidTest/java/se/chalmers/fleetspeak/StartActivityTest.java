@@ -1,7 +1,8 @@
 package se.chalmers.fleetspeak;
 
-import android.content.Intent;
 import android.test.ActivityInstrumentationTestCase2;
+
+import se.chalmers.fleetspeak.activities.StartActivity;
 
 /**
  * Created following the instructions at https://developer.android.com/training/activity-testing/activity-basic-testing.html
