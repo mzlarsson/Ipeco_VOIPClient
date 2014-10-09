@@ -99,7 +99,7 @@ public class ChatRoomActivity extends ActionBarActivity {
 
             textView.setText(user);
 
-            imageView.setImageResource(R.drawable.ic_mute_status);
+            imageView.setImageResource(R.drawable.ic_inactive_status);
 
             return view;
         }

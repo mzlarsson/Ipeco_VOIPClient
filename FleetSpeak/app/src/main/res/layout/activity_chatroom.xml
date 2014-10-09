@@ -8,7 +8,8 @@
         android:layout_height="wrap_content"
         android:id="@+id/pushToTalkButton"
         android:layout_gravity="bottom"
-        android:src="@drawable/ic_launcher"
+        android:src="@drawable/ic_mic_grey"
+        android:background="@android:color/transparent"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
 

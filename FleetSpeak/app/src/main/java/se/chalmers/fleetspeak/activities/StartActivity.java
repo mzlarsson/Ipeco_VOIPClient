@@ -65,15 +65,15 @@ public class StartActivity extends ActionBarActivity {
     }
 
     public void onConnectButtonClick(View view) {
-
+/*
         String ipAdress = String.valueOf(ipTextField.getText());
         int portNumber = Integer.parseInt(String.valueOf(portTextField.getText()));
 
         //Connector.connect(ipAdress, portNumber);
         if(savePrefs.isChecked()){
             saveUsername(view);
-        }
-        Intent intent = new Intent(this,ChatRoomActivity.class);
+        }*/
+        Intent intent = new Intent(this,JoinRoomActivity.class);
         startActivity(intent);
     }
 
