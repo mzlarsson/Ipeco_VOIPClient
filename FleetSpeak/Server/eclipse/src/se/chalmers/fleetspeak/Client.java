@@ -21,6 +21,7 @@ public class Client implements ConnectionListener, CommandListener {
 	public Client(Socket socket, int rtpPort, String usercode)
 			throws IOException {
 		this.rtp = new SoundHandler(socket.getInetAddress(), rtpPort);
+		this.rtp.start();
 		this.cmd = new CommandHandler(socket);
 		this.cmd.start();
 		this.cmd.addCommandListener(this);
@@ -44,21 +45,19 @@ public class Client implements ConnectionListener, CommandListener {
 	}
 
 	public void clientConnected(List<Client> clients) {
-		rtp.onClientConnect(clients);
 		cmd.onClientConnect(clients);
 	}
 
 	public void clientDisconnected(List<Client> clients) {
-		rtp.onClientDisconnect(clients);
 		cmd.onClientDisconnect(clients);
 	}
 
 	public void close() {
 		if (rtp != null) {
-			rtp.close();
+			rtp.terminate();
 		}
 		if (cmd != null) {
-			cmd.close();
+			cmd.terminate();
 		}
 	}
 
