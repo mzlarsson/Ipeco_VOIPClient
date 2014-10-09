@@ -25,7 +25,7 @@ public class SoundHandler extends RTPHandler implements RtpSessionDataListener{
 	public void run() {
 		while(this.isAlive()){
 			RTPConnector.sendData(mixer.getMixedSound(getParticipant().getInfo(), currSeqNumber+1), getParticipant());
-			currSeqNumber = mixer.getSequenceNumber(getParticipant());
+			currSeqNumber = mixer.getCurrentSequenceOffset();
 			
 			try {
 				Thread.sleep(5000);

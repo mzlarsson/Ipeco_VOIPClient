@@ -54,7 +54,7 @@ public class SoundMixer implements RtpSessionDataListener{
 	public void dataPacketReceived(RtpSession session, RtpParticipantInfo participant, DataPacket packet) {
 		SoundPacket soundPacket = data.get(participant);
 		if(soundPacket == null){
-			soundPacket = new SoundPacket();
+			soundPacket = new SoundPacket(getCurrentSequenceOffset());
 		}
 		soundPacket.setData(packet);
 		
@@ -64,10 +64,18 @@ public class SoundMixer implements RtpSessionDataListener{
 	public int getSequenceNumber(RtpParticipant participant){
 		SoundPacket p = data.get(participant.getInfo());
 		if(p != null){
-			return p.getSequenceNumber();
+			return p.getRelativeSequenceNumber();
 		}else{
 			return 0;
 		}
 	}
 	
+	public int getCurrentSequenceOffset(){
+		int offset = 0;
+		for(SoundPacket packet : data.values()){
+			offset = Math.max(offset, packet.getRelativeSequenceNumber());
+		}
+		
+		return offset;
+	}
 }
