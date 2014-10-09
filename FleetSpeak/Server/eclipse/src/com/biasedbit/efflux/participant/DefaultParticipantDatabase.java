@@ -114,7 +114,7 @@ public class DefaultParticipantDatabase implements ParticipantDatabase {
      * NOTE: Created by Deadliest Trucks.
      */
     public void doWithReceivers(ParticipantOperation operation, RtpParticipant receiver) {
-        if(this.members.values().contains(receiver)){
+        if(receiver != null && this.members.values().contains(receiver)){
 	        this.lock.readLock().lock();
 	        try {
 	            try {

@@ -31,15 +31,23 @@ public class TmpConnector{
 
 	//Values provided by client, now hard coded for practical reasons.
 	//TODO SERVER and CLIENT must be set for testing!
-    public static String SERVER = "129.16.184.146";
-    public static String CLIENT = "129.16.184.146";
+    public static String SERVER = "192.168.43.36";
+    public static String CLIENT = "192.168.43.36";
     public static int SERVER_PORT = 8867;
     public static int SERVER_RTP_DATA_PORT = 8868;
     
     private RtpSession session;
     
     public static void main(String[] args){
-    	new TmpConnector(SERVER, SERVER_PORT).connect();
+
+    	final TmpConnector connector = new TmpConnector(SERVER, SERVER_PORT);
+		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+			public void run() {
+				connector.disconnect();
+			}
+		}));
+    	
+		connector.connect();
     }
 
     public TmpConnector(String ip, int port){

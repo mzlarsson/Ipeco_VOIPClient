@@ -24,6 +24,7 @@ public class Client implements ConnectionListener, CommandListener {
 		this.rtp.start();
 		this.cmd = new CommandHandler(socket);
 		this.cmd.start();
+		this.cmd.addConnectionListener(this);
 		this.cmd.addCommandListener(this);
 		this.usercode = usercode;
 	}
@@ -59,11 +60,12 @@ public class Client implements ConnectionListener, CommandListener {
 		if (cmd != null) {
 			cmd.terminate();
 		}
+		
+		ServerMain.removeClient(this);
 	}
 
 	public void connectionLost(ConnectionHandler handler) {
-		System.out.println("A " + handler.getClass().getCanonicalName()
-				+ " has lost connection");
+		System.out.println("Client disconnected - closing streams");
 		this.close();
 	}
 

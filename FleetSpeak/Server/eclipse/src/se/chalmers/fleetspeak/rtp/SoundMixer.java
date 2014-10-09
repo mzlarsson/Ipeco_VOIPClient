@@ -33,7 +33,8 @@ public class SoundMixer implements RtpSessionDataListener{
 	public byte[] getMixedSound(RtpParticipantInfo client, int minSequenceNumber){
 		List<RtpParticipantInfo> participants = new ArrayList<RtpParticipantInfo>(data.keySet());
 		if(participants.size()>0){
-			byte[] output = data.get(participants.get(0)).getData(minSequenceNumber);
+			System.out.println("Getting mixed sound: "+minSequenceNumber);
+			byte[] output = new byte[100];		//FIXME fix the set size
 			byte[] tmp = null;
 			for(int i = 0; i<participants.size(); i++){
 				if(participants.get(i) != client){
@@ -44,7 +45,13 @@ public class SoundMixer implements RtpSessionDataListener{
 				}
 			}
 			
-			return output;
+			for(int i = 0; i<output.length; i++){
+				if(output[i]!=0){
+					return output;
+				}
+			}
+			
+			return new byte[0];
 		}else{
 			return new byte[0];
 		}
@@ -59,6 +66,7 @@ public class SoundMixer implements RtpSessionDataListener{
 		soundPacket.setData(packet);
 		
 		data.put(participant, soundPacket);
+		System.out.println("PACKET: '"+new String(packet.getDataAsArray())+"'");
 	}
 	
 	public int getSequenceNumber(RtpParticipant participant){

@@ -31,7 +31,9 @@ public class RTPConnector {
 	public static RtpParticipant addClient(InetAddress clientIP){
 		if(isStarted()){
 			RtpParticipant client = getParticipant(clientIP, CLIENT_RTP_DATA_PORT, CLIENT_RTP_CTRL_PORT);
-			session.addReceiver(client);
+			if(client != null){
+				session.addReceiver(client);
+			}
 			return client;
 		}else{
 			throw new IllegalArgumentException("[RTPConnector] Session has not been started.");
@@ -39,8 +41,9 @@ public class RTPConnector {
 	}
 	
 	public static void removeClient(RtpParticipant participant){
-		if(isStarted()){
+		if(isStarted() && participant != null){
 			session.removeReceiver(participant);
+			System.out.println("UDP: "+session.getRemoteParticipants().size());
 		}else{
 			throw new IllegalArgumentException("[RTPConnector] Session has not been started.");
 		}
@@ -66,10 +69,11 @@ public class RTPConnector {
 		return session != null;
 	}
 	
-	public static void sendData(byte[] data, RtpParticipant participant){
+	public static boolean sendData(byte[] data, RtpParticipant participant){
 		if(isStarted()){
 			long timestamp = Calendar.getInstance(Locale.GERMANY).getTime().getTime();
 			session.sendData(data, timestamp, true, participant);		//TODO Fix the boolean value?
+			return data.length>0;
 		}else{
 			throw new IllegalArgumentException("[RTPConnector] Session has not been started.");
 		}
