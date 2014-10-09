@@ -29,7 +29,7 @@ public class SoundPacket {
 	}
 	
 	public byte[] getData(int minSequenceNumber){
-		System.out.print("\t[MIN: "+minSequenceNumber+" CURR: "+getRelativeSequenceNumber()+" ID: "+tmpNum+"]");
+		//System.out.print("\t[MIN: "+minSequenceNumber+" CURR: "+getRelativeSequenceNumber()+" ID: "+tmpNum+"]");
 		if(minSequenceNumber<=getRelativeSequenceNumber()){
 			return data;
 		}else{

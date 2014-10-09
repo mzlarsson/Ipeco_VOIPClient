@@ -1,6 +1,7 @@
 package se.chalmers.fleetspeak.rtp;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,25 +34,25 @@ public class SoundMixer implements RtpSessionDataListener{
 	public byte[] getMixedSound(RtpParticipantInfo client, int minSequenceNumber){
 		List<RtpParticipantInfo> participants = new ArrayList<RtpParticipantInfo>(data.keySet());
 		if(participants.size()>0){
-			System.out.println("Getting mixed sound: "+minSequenceNumber);
 			byte[] output = new byte[100];		//FIXME fix the set size
 			byte[] tmp = null;
 			for(int i = 0; i<participants.size(); i++){
 				if(participants.get(i) != client){
 					tmp = data.get(participants.get(i)).getData(minSequenceNumber);
 					for(int j = 0; j<tmp.length&&j<output.length; j++){
-						output[j] = (byte)((output[j]+tmp[j])/2);
+						output[j] = (byte)((output[j]+tmp[j]));
 					}
 				}
 			}
+			System.out.println();
 			
 			for(int i = 0; i<output.length; i++){
-				if(output[i]!=0){
-					return output;
+				if(output[i]==0){
+					return Arrays.copyOf(output, i);
 				}
 			}
 			
-			return new byte[0];
+			return output;
 		}else{
 			return new byte[0];
 		}
