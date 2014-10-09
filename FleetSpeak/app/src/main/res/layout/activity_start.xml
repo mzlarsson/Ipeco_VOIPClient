@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/ipField"
         android:layout_marginTop="139dp"
-        android:text="192.168.43.97"
+        android:text="192.168.10.100"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:inputType="text"/>
