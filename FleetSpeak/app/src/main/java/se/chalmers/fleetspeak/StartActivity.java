@@ -20,6 +20,8 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
 
+import se.chalmers.fleetspeak.sound.SoundController;
+
 public class StartActivity extends ActionBarActivity {
 
     private EditText ipTextField;
@@ -30,6 +32,8 @@ public class StartActivity extends ActionBarActivity {
     private CheckBox savePrefs;
 
     private boolean isConnected;
+
+    private SoundController soundController;
 
     Messenger mService = null;
     final Messenger mMessenger = new Messenger(new CommandHandler());
@@ -48,6 +52,7 @@ public class StartActivity extends ActionBarActivity {
         public void onServiceDisconnected(ComponentName className) {
             // This is called when the connection with the service has been unexpectedly disconnected - process crashed.
             mService = null;
+            soundController.close();
             Log.i("SERVICECONNECTION", "Disconnected");
         }
     };
@@ -139,5 +144,8 @@ public class StartActivity extends ActionBarActivity {
             } catch (RemoteException e) {
             }
         }
+
+        int rtpPort = port+1;
+        soundController = SoundController.create(this, ip, rtpPort);
     }
 }
