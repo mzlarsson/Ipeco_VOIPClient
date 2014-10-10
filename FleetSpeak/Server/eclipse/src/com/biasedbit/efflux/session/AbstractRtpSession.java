@@ -16,6 +16,35 @@
 
 package com.biasedbit.efflux.session;
 
+import java.net.SocketAddress;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+
+import org.jboss.netty.bootstrap.ConnectionlessBootstrap;
+import org.jboss.netty.channel.ChannelPipeline;
+import org.jboss.netty.channel.ChannelPipelineFactory;
+import org.jboss.netty.channel.Channels;
+import org.jboss.netty.channel.FixedReceiveBufferSizePredictorFactory;
+import org.jboss.netty.channel.socket.DatagramChannel;
+import org.jboss.netty.channel.socket.DatagramChannelFactory;
+import org.jboss.netty.channel.socket.nio.NioDatagramChannelFactory;
+import org.jboss.netty.channel.socket.oio.OioDatagramChannelFactory;
+import org.jboss.netty.handler.execution.ExecutionHandler;
+import org.jboss.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
+import org.jboss.netty.util.HashedWheelTimer;
+import org.jboss.netty.util.Timeout;
+import org.jboss.netty.util.TimerTask;
+
 import com.biasedbit.efflux.logging.Logger;
 import com.biasedbit.efflux.network.ControlHandler;
 import com.biasedbit.efflux.network.ControlPacketDecoder;
@@ -35,38 +64,11 @@ import com.biasedbit.efflux.packet.SdesChunk;
 import com.biasedbit.efflux.packet.SdesChunkItems;
 import com.biasedbit.efflux.packet.SenderReportPacket;
 import com.biasedbit.efflux.packet.SourceDescriptionPacket;
+import com.biasedbit.efflux.participant.DefaultParticipantDatabase;
 import com.biasedbit.efflux.participant.ParticipantDatabase;
 import com.biasedbit.efflux.participant.ParticipantOperation;
 import com.biasedbit.efflux.participant.RtpParticipant;
 import com.biasedbit.efflux.participant.RtpParticipantInfo;
-import org.jboss.netty.bootstrap.ConnectionlessBootstrap;
-import org.jboss.netty.channel.ChannelPipeline;
-import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.jboss.netty.channel.Channels;
-import org.jboss.netty.channel.FixedReceiveBufferSizePredictorFactory;
-import org.jboss.netty.channel.socket.DatagramChannel;
-import org.jboss.netty.channel.socket.DatagramChannelFactory;
-import org.jboss.netty.channel.socket.nio.NioDatagramChannelFactory;
-import org.jboss.netty.channel.socket.oio.OioDatagramChannelFactory;
-import org.jboss.netty.handler.execution.ExecutionHandler;
-import org.jboss.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
-import org.jboss.netty.util.HashedWheelTimer;
-import org.jboss.netty.util.Timeout;
-import org.jboss.netty.util.TimerTask;
-
-import java.net.SocketAddress;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.Collections;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Collection;
 /**
  * @author <a:mailto="bruno.carvalho@wit-software.com" />Bruno de Carvalho</a>
  */
@@ -323,6 +325,24 @@ public abstract class AbstractRtpSession implements RtpSession, TimerTask {
 
         return this.sendDataPacket(packet);
     }
+    
+    /**
+     * NOTE: Created by Deadliest Trucks.
+     */
+    @Override
+    public boolean sendData(byte[] data, long timestamp, boolean marked, RtpParticipant receiver) {
+        if (!this.running.get()) {
+            return false;
+        }
+
+        DataPacket packet = new DataPacket();
+        // Other fields will be set by sendDataPacket()
+        packet.setTimestamp(timestamp);
+        packet.setData(data);
+        packet.setMarker(marked);
+
+        return this.sendDataPacket(packet, receiver);
+    }
 
     @Override
     public boolean sendDataPacket(DataPacket packet) {
@@ -336,6 +356,24 @@ public abstract class AbstractRtpSession implements RtpSession, TimerTask {
         packet.setSsrc(this.localParticipant.getSsrc());
         packet.setSequenceNumber(this.sequence.incrementAndGet());
         this.internalSendData(packet);
+        return true;
+    }
+
+    /**
+     * NOTE: Created by Deadliest Trucks.
+     */
+    @Override
+    public boolean sendDataPacket(DataPacket packet, RtpParticipant receiver) {
+        if (!this.running.get()) {
+            return false;
+        }
+        if (!this.payloadTypes.contains(packet.getPayloadType()) && this.payloadTypes.size() == 1) {
+        	packet.setPayloadType(this.payloadTypes.iterator().next());
+        }
+        		
+        packet.setSsrc(this.localParticipant.getSsrc());
+        packet.setSequenceNumber(this.sequence.incrementAndGet());
+        this.internalSendData(packet, receiver);
         return true;
     }
 
@@ -637,6 +675,37 @@ public abstract class AbstractRtpSession implements RtpSession, TimerTask {
                 return "internalSendData() for session with id " + id;
             }
         });
+    }
+    
+    /**
+     * Sends a data packet, ignoring one participant
+     * NOTE: This method was created by Deadliest Trucks
+     * @param packet The packet to send
+     * @param sourceParticipant The participant to ignore
+     */
+    protected void internalSendData(final DataPacket packet, RtpParticipant receiver) {
+    	if(this.participantDatabase instanceof DefaultParticipantDatabase){
+	        ((DefaultParticipantDatabase)this.participantDatabase).doWithReceivers(new ParticipantOperation() {
+	            @Override
+	            public void doWithParticipant(RtpParticipant participant) throws Exception {
+	                if (participant.receivedBye()) {
+	                    return;
+	                }
+	                try {
+	                    writeToData(packet, participant.getDataDestination());
+	                } catch (Exception e) {
+	                    LOG.error("Failed to send RTP packet to participants in session with id {}.", id);
+	                }
+	            }
+	
+	            @Override
+	            public String toString() {
+	                return "internalSendData() for session with id " + id;
+	            }
+	        }, receiver);
+    	}else{
+    		throw new IllegalArgumentException("This method is not valid for this session setup");
+    	}
     }
 
     protected void internalSendControl(ControlPacket packet, RtpParticipant participant) {

@@ -110,6 +110,26 @@ public class DefaultParticipantDatabase implements ParticipantDatabase {
         }
     }
 
+    /**
+     * NOTE: Created by Deadliest Trucks.
+     */
+    public void doWithReceivers(ParticipantOperation operation, RtpParticipant receiver) {
+        if(receiver != null && this.members.values().contains(receiver)){
+	        this.lock.readLock().lock();
+	        try {
+	            try {
+	            	operation.doWithParticipant(receiver);
+	            } catch (Exception e) {
+	            	LOG.error("Failed to perform operation {} on receiver {}.", e, operation, receiver);
+	            }
+	        } finally {
+	            this.lock.readLock().unlock();
+	        }
+        }else{
+        	System.out.println("ERROR: The receiver is not registered to the session.");
+        }
+    }
+
     @Override
     public void doWithParticipants(ParticipantOperation operation) {
         this.lock.readLock().lock();

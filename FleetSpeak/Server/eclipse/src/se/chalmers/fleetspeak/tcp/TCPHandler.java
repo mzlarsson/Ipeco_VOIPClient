@@ -17,12 +17,12 @@ public abstract class TCPHandler extends Thread implements ConnectionHandler{
 	private List<ConnectionListener> listeners;
 
 	public TCPHandler(Socket clientSocket){
-		super("ChatHandler");
+		super("TCPHandler");
 		this.clientSocket = clientSocket;
 		this.listeners = new ArrayList<ConnectionListener>();
 	}
 
-	public boolean close(){
+	public boolean terminate(){
 		try {
 			if(clientSocket != null){
 				clientSocket.close();

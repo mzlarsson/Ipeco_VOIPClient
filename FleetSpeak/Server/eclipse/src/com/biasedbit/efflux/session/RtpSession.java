@@ -39,8 +39,14 @@ public interface RtpSession extends DataPacketReceiver, ControlPacketReceiver {
     void terminate();
 
     boolean sendData(byte[] data, long timestamp, boolean marked);
+    
+    /** NOTE: Created by Deadliest Trucks. */
+    boolean sendData(byte[] data, long timestamp, boolean marked, RtpParticipant receiver);
 
     boolean sendDataPacket(DataPacket packet);
+    
+    /** NOTE: Created by Deadliest Trucks. */
+    boolean sendDataPacket(DataPacket packet, RtpParticipant receiver);
 
     boolean sendControlPacket(ControlPacket packet);
 

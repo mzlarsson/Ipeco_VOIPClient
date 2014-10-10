@@ -20,9 +20,15 @@ public class Client implements ConnectionListener, CommandListener {
 
 	public Client(Socket socket, int rtpPort, String usercode)
 			throws IOException {
+<<<<<<< HEAD
 		//this.rtp = new SoundHandler(socket.getInetAddress(), rtpPort);
+=======
+		this.rtp = new SoundHandler(socket.getInetAddress(), rtpPort);
+		this.rtp.start();
+>>>>>>> eed645cd6e5421fb6e3c88d68d53e4df4f5253a0
 		this.cmd = new CommandHandler(socket);
 		this.cmd.start();
+		this.cmd.addConnectionListener(this);
 		this.cmd.addCommandListener(this);
 		this.usercode = usercode;
 	}
@@ -44,27 +50,26 @@ public class Client implements ConnectionListener, CommandListener {
 	}
 
 	public void clientConnected(List<Client> clients) {
-		rtp.onClientConnect(clients);
 		cmd.onClientConnect(clients);
 	}
 
 	public void clientDisconnected(List<Client> clients) {
-		rtp.onClientDisconnect(clients);
 		cmd.onClientDisconnect(clients);
 	}
 
 	public void close() {
 		if (rtp != null) {
-			rtp.close();
+			rtp.terminate();
 		}
 		if (cmd != null) {
-			cmd.close();
+			cmd.terminate();
 		}
+		
+		ServerMain.removeClient(this);
 	}
 
 	public void connectionLost(ConnectionHandler handler) {
-		System.out.println("A " + handler.getClass().getCanonicalName()
-				+ " has lost connection");
+		System.out.println("Client disconnected - closing streams");
 		this.close();
 	}
 
