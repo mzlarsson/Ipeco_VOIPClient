@@ -2,30 +2,31 @@ package se.chalmers.fleetspeak.rtp;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.List;
-
-import javax.media.rtp.event.ReceiveStreamEvent;
-
-import se.chalmers.fleetspeak.Client;
 
 public class SoundHandler extends RTPHandler{
+	
+	private static final int PAYLOAD_TYPE = 0;		//http://www.iana.org/assignments/rtp-parameters/rtp-parameters.xml
 
-	public SoundHandler(InetAddress ip, int port) throws IOException{
-		super(ip, port);
-	}
+	private SoundMixer mixer;
+	private int currSeqNumber = 0;
 	
-	@Override
-	public void onClientConnect(List<Client> clients){
-		System.out.println("[SoundHandler] Connect Notification");
-	}
-	
-	@Override
-	public void onClientDisconnect(List<Client> clients){
-		System.out.println("[SoundHandler] Disconnect Notification");
+	public SoundHandler(InetAddress clientIP, int serverPort) throws IOException{
+		super(clientIP, serverPort, PAYLOAD_TYPE);
+		mixer = SoundMixer.getInstance();
 	}
 
 	@Override
-	public void update(ReceiveStreamEvent data) {
-		System.out.println("Got data!");
+	public void run() {
+		while(this.isAlive()){
+			//System.out.println("[SH print] "+currSeqNumber);
+			currSeqNumber = Math.max(mixer.getCurrentSequenceOffset(), currSeqNumber);
+			if(RTPConnector.sendData(mixer.getMixedSound(getParticipant().getInfo(), currSeqNumber), getParticipant())){
+				currSeqNumber++;
+			}
+			
+			try {
+				Thread.sleep(5000);
+			} catch (InterruptedException e) {}
+		}
 	}
 }

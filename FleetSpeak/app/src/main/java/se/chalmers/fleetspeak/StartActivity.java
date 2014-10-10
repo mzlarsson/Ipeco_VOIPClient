@@ -1,22 +1,60 @@
 package se.chalmers.fleetspeak;
 
-import android.support.v7.app.ActionBarActivity;
-
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
+import android.preference.PreferenceManager;
+import android.support.v7.app.ActionBarActivity;
 import android.swedspot.automotiveapi.AutomotiveSignalId;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.Toast;
 
 public class StartActivity extends ActionBarActivity {
 
-    Connector c = null;
+    private EditText ipTextField;
+    private EditText portTextField;
+    private EditText userNameTextField;
+    private SharedPreferences prefs;
+    private SharedPreferences.Editor prefEdit;
+    private CheckBox savePrefs;
+
+    private boolean isConnected;
 
     private EditText ip;
     private EditText port;
 
+
+    Messenger mService = null;
+    final Messenger mMessenger = new Messenger(new CommandHandler());
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            mService = new Messenger(service);
+            try {
+                Message msg = Message.obtain(null, SocketService.SETMESSENGER, mMessenger);
+                mService.send(msg);
+            }catch (RemoteException e){
+
+            }
+        }
+
+        public void onServiceDisconnected(ComponentName className) {
+            // This is called when the connection with the service has been unexpectedly disconnected - process crashed.
+            mService = null;
+            Log.i("SERVICECONNECTION", "Disconnected");
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,24 +63,32 @@ public class StartActivity extends ActionBarActivity {
 
         new TruckCommunicator().execute(AutomotiveSignalId.FMS_WHEEL_BASED_SPEED, AutomotiveSignalId.FMS_SELECTED_GEAR);
 
-        ip = (EditText) findViewById(R.id.ipField);
-        port = (EditText) findViewById(R.id.portField);
+        ipTextField = (EditText) findViewById(R.id.ipField);
+        portTextField = (EditText) findViewById(R.id.portField);
+        userNameTextField = (EditText) findViewById(R.id.usernameField);
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        prefEdit = prefs.edit();
 
+        String portNumber = prefs.getString("portNumber", "portNumber");
+        String username = prefs.getString("username", "username");
+        String ipAdress = prefs.getString("ipAdress", "ipAdress");
+
+        userNameTextField.setText(username);
+        portTextField.setText(portNumber);
+        ipTextField.setText(ipAdress);
+        savePrefs = (CheckBox) findViewById(R.id.saveUserPref);
+
+        bindService(new Intent(this, SocketService.class), mConnection, Context.BIND_AUTO_CREATE);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.start, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_settings) {
             return true;
@@ -50,18 +96,52 @@ public class StartActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
-    public void onConnectButtonClick(View view) {
-
-        String a = String.valueOf(ip.getText());
-        String b = String.valueOf(port.getText());
-        Toast.makeText(this, a + b, Toast.LENGTH_SHORT).show();
-        if(c == null){
-            c = new Connector(a, Integer.parseInt(b));
-            c.connect();
-        }else{
-            c.sendCommand(a);
-        }
+    public void goToBookmarks(View view) {
+        Intent getBookmarkIntent = new Intent(this, BookmarkActivity.class);
+        startActivity(getBookmarkIntent);
     }
 
+    public void onConnectButtonClick(View view) {
+        String ipAdress = String.valueOf(ipTextField.getText());
+        int portNumber = Integer.parseInt(String.valueOf(portTextField.getText()));
+
+        //Connector.connect(ipAdress, portNumber);
+        if(savePrefs.isChecked()){
+            saveUsername(view);
+        }
+
+        startConnection(ipAdress, portNumber);
+
+        Intent intent = new Intent(this,ChatRoomActivity.class);
+        startActivity(intent);
+    }
+
+    public void saveUsername(View view){
+        String newUsername = String.valueOf(userNameTextField.getText());
+        String newIpAdress = String.valueOf(ipTextField.getText());
+        String newPortNumber = String.valueOf(portTextField.getText());
+        prefEdit.putString("username", newUsername);
+        prefEdit.putString("ipAdress", newIpAdress );
+        prefEdit.putString("portNumber", newPortNumber);
+    }
+
+    public void startConnection(String ip, int port){
+        if (!isConnected) {
+            try {
+                Message msg = Message.obtain(null, SocketService.CONNECT, ip);
+                msg.replyTo = mMessenger;
+                mService.send(msg);
+                isConnected = true;
+            } catch (RemoteException e) {
+            }
+        }else{
+            Log.i("Hej","hej");
+            try {
+                Message msg = Message.obtain(null, SocketService.SENDTESTDATA);
+                msg.replyTo = mMessenger;
+                mService.send(msg);
+            } catch (RemoteException e) {
+            }
+        }
+    }
 }

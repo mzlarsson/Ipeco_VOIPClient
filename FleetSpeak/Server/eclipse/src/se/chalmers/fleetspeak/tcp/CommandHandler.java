@@ -1,19 +1,18 @@
 package se.chalmers.fleetspeak.tcp;
 
 import java.io.BufferedReader;
-import java.io.ObjectOutputStream;
-
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-import se.chalmers.fleetspeak.Client;
+import se.chalmers.fleetspeak.Log;
 
 public class CommandHandler extends TCPHandler{
 	
-	
+	ObjectOutputStream sender;
 	private List<CommandListener> listeners = new ArrayList<CommandListener>();
 	public CommandHandler(Socket clientSocket) {
 		super(clientSocket);
@@ -25,41 +24,70 @@ public class CommandHandler extends TCPHandler{
 		try{
 			//Listen for messages from the client
 			BufferedReader reader = new BufferedReader(new InputStreamReader(this.getInputStream()));
-			ObjectOutputStream sender = this.getObjectOutputStream();
-			
+			sender = this.getObjectOutputStream();
+			 
+			 //for testing if the app can recive object from the server 
+			Thread a = new Thread(new Spammer());
+			 // a.start();  // uncomment this to start
 			while(true){
 				
-				String message = reader.readLine();
+				String message =reader.readLine();
 				if(message != null){
-					System.out.print("Command recived: ");
-					if(message.startsWith(Commands.DISCONNECT.toString())){
-						System.out.println(Commands.DISCONNECT);
+					System.out.print("[COMMANDHANDLER] Command recived: ");
+					if(message.startsWith(Commands.DISCONNECT.getName())){
+						Log.log(Commands.DISCONNECT.toString());
 						notifyListeners(Commands.DISCONNECT, true);
-					}else if(message.startsWith(Commands.SET_NAME.toString())){
-						System.out.println(Commands.SET_NAME);
+					}else if(message.startsWith(Commands.SET_NAME.getName())){
+						Log.log(Commands.SET_NAME.toString());
 						notifyListeners(Commands.SET_NAME, message.substring(6));
-					}else if(message.equals(Commands.MUTE.toString())){
-						System.out.println(Commands.MUTE);
+					}else if(message.equals(Commands.MUTE.getName())){
+						Log.log(Commands.MUTE.toString());
 						notifyListeners(Commands.MUTE, true);
-					}else if(message.equals(Commands.UNMUTE.toString())){
-						System.out.println(Commands.UNMUTE);
+					}else if(message.equals(Commands.UNMUTE.getName())){
+						Log.log(Commands.UNMUTE.toString());
 						notifyListeners(Commands.MUTE, false);
 					}else if(message.equals("data")){
 						//send data to client
-						System.out.println("Data");
-						String s = "This string can be sent to the phone";
-						sender.writeObject(s);
+						Log.log("Data");
+						String ss = "This string can be sent to the phone";
+						sender.writeObject(ss);
 						sender.flush();
 					}else{
-						System.out.println("Unknown command. " + message);
+						Log.log("Unknown command. " + message);
 					}
 				}
 			}
 		}catch(IOException e){
-			System.out.println("[CommandHandler] "+e.getMessage());
-			notifyConnectionLost(this);
+			Log.log("[CommandHandler] "+e.getMessage());
+			notifyConnectionLost();
 		}
 	}
+	
+	
+	// sends a lot of strings to app. only for testing
+	class Spammer implements Runnable{
+
+		@Override
+		public void run() {
+			while(true){
+			String s = "\nEverything is awesome\nEverything is cool when you're part of a team"
+					+ "\nEverything is awesome when we're living our dream";
+			try {
+				sender.writeObject(s);
+				sender.flush();
+				Thread.sleep(500);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			}
+		}
+		
+	}
+	
 	
 	public void addCommandListener(CommandListener listener){
 		listeners.add(listener);
@@ -73,16 +101,5 @@ public class CommandHandler extends TCPHandler{
 		for(int i = 0; i<listeners.size(); i++){
 			listeners.get(i).commandChanged(command, value);
 		}
-	}
-	
-
-	@Override
-	public void onClientConnect(List<Client> clients) {
-		System.out.println("[CommandHandler] Someone connected");
-	}
-
-	@Override
-	public void onClientDisconnect(List<Client> clients) {
-		System.out.println("[CommandHandler] Someone disconnected");
 	}
 }
