@@ -8,21 +8,21 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-import se.chalmers.fleetspeak.ConnectionHandler;
 import se.chalmers.fleetspeak.ConnectionListener;
+import se.chalmers.fleetspeak.Log;
 
-public abstract class TCPHandler extends Thread implements ConnectionHandler{
+public abstract class TCPHandler extends Thread{
 
 	private Socket clientSocket;
 	private List<ConnectionListener> listeners;
 
 	public TCPHandler(Socket clientSocket){
-		super("ChatHandler");
+		super("TCPHandler");
 		this.clientSocket = clientSocket;
 		this.listeners = new ArrayList<ConnectionListener>();
 	}
 
-	public boolean close(){
+	public boolean terminate(){
 		try {
 			if(clientSocket != null){
 				clientSocket.close();
@@ -41,7 +41,7 @@ public abstract class TCPHandler extends Thread implements ConnectionHandler{
 		try {
 			return clientSocket.getInputStream();
 		} catch (IOException e) {
-			System.out.println("Could not fetch input stream: "+e.getClass().getCanonicalName());
+			Log.log("Could not fetch input stream: "+e.getClass().getCanonicalName());
 			return null;
 		}
 	}
@@ -54,7 +54,7 @@ public abstract class TCPHandler extends Thread implements ConnectionHandler{
 		try {
 			return clientSocket.getOutputStream();
 		} catch (IOException e) {
-			System.out.println("Could not fetch output stream: "+e.getClass().getCanonicalName());
+			Log.log("Could not fetch output stream: "+e.getClass().getCanonicalName());
 			return null;
 		}
 	}
@@ -66,7 +66,7 @@ public abstract class TCPHandler extends Thread implements ConnectionHandler{
 		try {
 			return new ObjectOutputStream(getOutputStream());
 		} catch (IOException e) {
-			System.out.println("Could not fetch output stream: "+e.getClass().getCanonicalName());
+			Log.log("Could not fetch output stream: "+e.getClass().getCanonicalName());
 			return null;
 		}
 	}
@@ -78,9 +78,9 @@ public abstract class TCPHandler extends Thread implements ConnectionHandler{
 		this.listeners.remove(listener);
 	}
 	
-	protected void notifyConnectionLost(ConnectionHandler handler){
+	protected void notifyConnectionLost(){
 		for(int i = 0; i<listeners.size(); i++){
-			listeners.get(i).connectionLost(handler);
+			listeners.get(i).connectionLost();
 		}
 	}
 }

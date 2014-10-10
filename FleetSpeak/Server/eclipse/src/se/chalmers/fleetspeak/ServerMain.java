@@ -5,12 +5,14 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
+
 public class ServerMain{
 	
     private static int DEFAULT_PORT_TCP = 8867;
     private static int DEFAULT_PORT_RTP = 8868;
+    
+    private int tcpPort;
+    private int rtpPort;
     
     private static RoomInterface room;
     private static RoomHandler roomhandler;
@@ -20,12 +22,11 @@ public class ServerMain{
     
     public static void main(String[] args) throws IOException{
     	//Setup info about connection
-        
     	int tcpPort = (args!=null&&args.length>0?Integer.parseInt(args[0]):DEFAULT_PORT_TCP);
         int rtpPort = (args!=null&&args.length>1?Integer.parseInt(args[1]):DEFAULT_PORT_RTP);
     
     	Runtime.getRuntime().addShutdownHook(new Thread(new Runnable(){
-    		
+    		@Override
     		public void run(){
     	    	for(int i = 0; i<room.getNbrOfUsers(); i++){
     	    		room.getUser(i).close();
@@ -38,15 +39,19 @@ public class ServerMain{
     }
     
     public ServerMain(int tcpPort, int rtpPort) throws UnknownHostException{
-    	System.out.println("Starting server @LAN-IP "+InetAddress.getLocalHost().getHostAddress()+" tcp:"+tcpPort+" rtp:"+rtpPort);
+    	Log.log("Starting server @LAN-IP "+InetAddress.getLocalHost().getHostAddress()+
+    			" tcp:"+tcpPort+" rtp:"+rtpPort);
     	this.running = true;
-    	room = new FleetRoom("THE ROOM");
+    	room = new FleetRoom("Le Fleetspeak Room");
     	roomhandler = new RoomHandler();
     	roomhandler.addRoom(room);
-    	start(tcpPort, rtpPort);
+
+    	this.tcpPort = tcpPort;
+    	this.rtpPort = rtpPort;
     }
     
-    private void start(int tcpPort, int rtpPort){
+    public void start() throws UnknownHostException{
+        this.running = true;
     	//Start the server
         try {
             serverSocket = new ServerSocket(tcpPort);
@@ -64,7 +69,7 @@ public class ServerMain{
             	serverSocket.close();
             }
         }catch(IOException e){
-            System.out.println("[SERVER] "+e.getMessage());
+            Log.log("[SERVER] "+e.getMessage());
             terminate();
         }
     }
@@ -72,31 +77,17 @@ public class ServerMain{
     public static void addClient(Client client){
         //Save the handler for more interaction
         room.addUser(client);
-        
-        //Notice about change in clients
-        for(int i = 0; i<room.getNbrOfUsers(); i++){
-        	if(room.getUser(i)!=client){
-	        	room.getUser(i).clientConnected(room.getUsers());
-        	}
-        }
 
         //Print info in server console
-        System.out.println("A new person joined ("+room.getNbrOfUsers()+")");
+        Log.log("A new person joined ("+room.getNbrOfUsers()+")");
     }
     
     public static void removeClient(Client client){
         //Remove the handler from more interaction
     	room.removeUser(client);
     	
-        //Notice about change in clients
-        for(int i = 0; i<room.getNbrOfUsers(); i++){
-        	if(room.getUser(i)!=client){
-	        	room.getUser(i).clientDisconnected(room.getUsers());
-        	}
-        }
-    	
         //Print info in server console
-    	System.out.println("A person left the room ("+room.getNbrOfUsers()+")");
+    	Log.log("A person left the room ("+room.getNbrOfUsers()+")");
     }
     
     public void terminate() {

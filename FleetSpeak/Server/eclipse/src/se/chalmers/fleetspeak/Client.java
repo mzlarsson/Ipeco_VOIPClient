@@ -18,11 +18,12 @@ public class Client implements ConnectionListener, CommandListener {
 	private CommandHandler cmd;
 	private boolean muted = false;
 
-	public Client(Socket socket, int rtpPort, String usercode)
-			throws IOException {
+	public Client(Socket socket, int rtpPort, String usercode) throws IOException {
 		this.rtp = new SoundHandler(socket.getInetAddress(), rtpPort);
+		this.rtp.start();
 		this.cmd = new CommandHandler(socket);
 		this.cmd.start();
+		this.cmd.addConnectionListener(this);
 		this.cmd.addCommandListener(this);
 		this.usercode = usercode;
 	}
@@ -43,28 +44,19 @@ public class Client implements ConnectionListener, CommandListener {
 		return muted;
 	}
 
-	public void clientConnected(List<Client> clients) {
-		rtp.onClientConnect(clients);
-		cmd.onClientConnect(clients);
-	}
-
-	public void clientDisconnected(List<Client> clients) {
-		rtp.onClientDisconnect(clients);
-		cmd.onClientDisconnect(clients);
-	}
-
 	public void close() {
 		if (rtp != null) {
-			rtp.close();
+			rtp.terminate();
 		}
 		if (cmd != null) {
-			cmd.close();
+			cmd.terminate();
 		}
+		
+		ServerMain.removeClient(this);
 	}
 
-	public void connectionLost(ConnectionHandler handler) {
-		System.out.println("A " + handler.getClass().getCanonicalName()
-				+ " has lost connection");
+	public void connectionLost() {
+		Log.log("Client disconnected - closing streams");
 		this.close();
 	}
 
@@ -80,24 +72,27 @@ public class Client implements ConnectionListener, CommandListener {
 
 	@Override
 	public void commandChanged(Commands key, Object value) {
-		
+		Log.log("[CLIENT] Got command: " + key + " changed to: " + value.toString());
 		switch (key) {
 		case DISCONNECT:
 			// TODO
 			break;
 		case SET_NAME:
 			this.setName((String) value);
+			Log.log("Current name " + name);
 			break;
 		case MUTE:
 			this.muted = true;
+			Log.log("is muted: " + muted);
 			break;
 		case UNMUTE:
 			this.muted = false;
+			Log.log("is muted: " + muted);
 			break;
 		default:
-			System.out.println(key.getName() + " is not implemented");
+			Log.log(key.getName() + " is not implemented");
 			break;
 		}
-		System.out.println("[CLIENT] Got command: " + key + " changed to: " + value.toString());
+		
 	}
 }

@@ -1,10 +1,19 @@
 package se.chalmers.fleetspeak;
+
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
 import android.swedspot.automotiveapi.AutomotiveSignalId;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -12,12 +21,36 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 
 public class StartActivity extends ActionBarActivity {
+
     private EditText ipTextField;
     private EditText portTextField;
     private EditText userNameTextField;
     private SharedPreferences prefs;
     private SharedPreferences.Editor prefEdit;
     private CheckBox savePrefs;
+
+    private boolean isConnected;
+
+    Messenger mService = null;
+    final Messenger mMessenger = new Messenger(new CommandHandler());
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            mService = new Messenger(service);
+            try {
+                Message msg = Message.obtain(null, SocketService.SETMESSENGER, mMessenger);
+                mService.send(msg);
+            }catch (RemoteException e){
+
+            }
+        }
+
+        public void onServiceDisconnected(ComponentName className) {
+            // This is called when the connection with the service has been unexpectedly disconnected - process crashed.
+            mService = null;
+            Log.i("SERVICECONNECTION", "Disconnected");
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,12 +73,16 @@ public class StartActivity extends ActionBarActivity {
         portTextField.setText(portNumber);
         ipTextField.setText(ipAdress);
         savePrefs = (CheckBox) findViewById(R.id.saveUserPref);
+
+        bindService(new Intent(this, SocketService.class), mConnection, Context.BIND_AUTO_CREATE);
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.start, menu);
         return true;
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -54,13 +91,13 @@ public class StartActivity extends ActionBarActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
     public void goToBookmarks(View view) {
         Intent getBookmarkIntent = new Intent(this, BookmarkActivity.class);
         startActivity(getBookmarkIntent);
     }
 
     public void onConnectButtonClick(View view) {
-
         String ipAdress = String.valueOf(ipTextField.getText());
         int portNumber = Integer.parseInt(String.valueOf(portTextField.getText()));
 
@@ -68,6 +105,9 @@ public class StartActivity extends ActionBarActivity {
         if(savePrefs.isChecked()){
             saveUsername(view);
         }
+
+        startConnection(ipAdress, portNumber);
+
         Intent intent = new Intent(this,ChatRoomActivity.class);
         startActivity(intent);
     }
@@ -79,5 +119,25 @@ public class StartActivity extends ActionBarActivity {
         prefEdit.putString("username", newUsername);
         prefEdit.putString("ipAdress", newIpAdress );
         prefEdit.putString("portNumber", newPortNumber);
+    }
+
+    public void startConnection(String ip, int port){
+        if (!isConnected) {
+            try {
+                Message msg = Message.obtain(null, SocketService.CONNECT, ip);
+                msg.replyTo = mMessenger;
+                mService.send(msg);
+                isConnected = true;
+            } catch (RemoteException e) {
+            }
+        }else{
+            Log.i("Hej","hej");
+            try {
+                Message msg = Message.obtain(null, SocketService.SENDDATA);
+                msg.replyTo = mMessenger;
+                mService.send(msg);
+            } catch (RemoteException e) {
+            }
+        }
     }
 }

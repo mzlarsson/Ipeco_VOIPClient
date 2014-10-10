@@ -2,55 +2,31 @@ package se.chalmers.fleetspeak.rtp;
 import java.io.IOException;
 import java.net.InetAddress;
 
-import javax.media.Manager;
-import javax.media.MediaLocator;
-import javax.media.protocol.DataSource;
-import javax.media.rtp.InvalidSessionAddressException;
-import javax.media.rtp.RTPManager;
-import javax.media.rtp.ReceiveStreamListener;
-import javax.media.rtp.SendStream;
-import javax.media.rtp.SessionAddress;
+import se.chalmers.fleetspeak.TmpConnector;
 
-import se.chalmers.fleetspeak.ConnectionHandler;
+import com.biasedbit.efflux.participant.RtpParticipant;
 
-public abstract class RTPHandler implements ConnectionHandler, ReceiveStreamListener{
+public abstract class RTPHandler extends Thread{
 	
-	private RTPManager manager;
-	private SendStream output;
-	private SessionAddress client;
-
-	public RTPHandler(InetAddress ip, int port) throws IOException{
-		init(ip, port);
-	}
+	private RtpParticipant participant;
 	
-	public void init(InetAddress ip, int port) throws IOException{
-		/*
-		try{
-			this.manager = RTPManager.newInstance();
-			SessionAddress localAddress = new SessionAddress();
-			manager.initialize(localAddress);
-			manager.addReceiveStreamListener(this);
-			
-			client = new SessionAddress(ip, port);
-			manager.addTarget(client);
-			MediaLocator locator = new MediaLocator("rtp://"+ip.getHostAddress()+":"+port);
-			DataSource dataSource = Manager.createDataSource(locator);
-			this.output = manager.createSendStream(dataSource, 1);
-			this.output.start();
-		}catch(Exception e){
-			throw new IOException("Could not create RTP connection ["+e.getClass().getCanonicalName()+"]");
-		}*/
-	}
+	//TODO THIS MUST BE SET FOR TESTING!
+	public static final String SERVER_IP = TmpConnector.SERVER;		//Only temporary solution
 
-	public void close(){
-		try {
-			manager.removeTarget(client, "Client disconnected");
-		} catch (InvalidSessionAddressException e) {}
-		try {
-			output.stop();
-		} catch (IOException e) {}
+	public RTPHandler(InetAddress clientIP, int serverPort, int payloadType) throws IOException{
+		if(!RTPConnector.isStarted()){
+			RTPConnector.start(SERVER_IP, serverPort, payloadType);
+		}
 		
-		output.close();
-		manager.dispose();
+		participant = RTPConnector.addClient(clientIP);
+	}
+	
+	protected RtpParticipant getParticipant(){
+		return this.participant;
+	}
+
+	public void terminate(){
+		RTPConnector.removeClient(participant);
+		this.interrupt();
 	}
 }
