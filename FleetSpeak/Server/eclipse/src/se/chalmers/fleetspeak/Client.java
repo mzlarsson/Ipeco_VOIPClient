@@ -18,8 +18,7 @@ public class Client implements ConnectionListener, CommandListener {
 	private CommandHandler cmd;
 	private boolean muted = false;
 
-	public Client(Socket socket, int rtpPort, String usercode)
-			throws IOException {
+	public Client(Socket socket, int rtpPort, String usercode) throws IOException {
 		this.rtp = new SoundHandler(socket.getInetAddress(), rtpPort);
 		this.rtp.start();
 		this.cmd = new CommandHandler(socket);

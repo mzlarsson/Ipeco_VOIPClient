@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
+import android.os.RemoteException;
 import android.util.Log;
 
 import java.io.IOException;
@@ -21,12 +22,14 @@ public class SocketService extends Service {
     private ObjectInputStream objectInputStream;
     private PrintWriter printWriter;
     private Timer timer = new Timer();
-    private Messenger Client;
+    private Messenger messenger;
+    private boolean isConnected = false;
 
     //Commands
     public static final int CONNECT = 1;
     public static final int DISCONNECT = 2;
-    public static final int SETNAME = 3; 
+    public static final int SETNAME = 3;
+    public static final int SETMESSENGER = 4;
     public static final int SENDDATA = 44; // only for testing will send a string from the server when used
 
     private String LOGNAME = "SocketService";
@@ -63,7 +66,7 @@ public class SocketService extends Service {
 
                                 objectInputStream = new ObjectInputStream(socket.getInputStream());
                                 Log.i(LOGNAME, "InputStream ready");
-
+                                isConnected = true;
                             }catch(IOException e){
                                 Log.i("Connector.connect", "Connection failed " + e.getMessage() );
                             }
@@ -79,8 +82,12 @@ public class SocketService extends Service {
                 case SETNAME:
                     //TODO
                     break;
+                case SETMESSENGER:
+                    messenger = (Messenger) msg.obj;
+                    break;
                 case SENDDATA:
                     printWriter.println("data");
+                    lookForMessage();
                     break;
             }
         }
@@ -90,26 +97,30 @@ public class SocketService extends Service {
 
     @Override
     public void onCreate(){
-         timer.scheduleAtFixedRate(new TimerTask(){ public void run() {lookForMessage();}}, 0, 500L);
+         timer.scheduleAtFixedRate(new TimerTask(){ public void run() {lookForMessage();}}, 0, 5000L);
     }
 
     private void lookForMessage() {
-        Log.i(LOGNAME, "Looking for message form server");
-        try {
-            Object o ;
-            o =  objectInputStream.readObject();
+        if(isConnected) {
+            Log.i(LOGNAME, "Looking for message form server");
+            try {
+                Object o;
+                o = objectInputStream.readObject();
 
-            if (o != null) {
-                Log.i(LOGNAME, " Something have been found: " + o.toString());
-                //TODO
-                //DO SOMETHING WITH Object HERE
+                if (o != null) {
+                    Log.i(LOGNAME, " Something have been found: " + o.toString());
+                    messenger.send(Message.obtain(null, 0, o));
+                }
+
+            } catch (IOException e) {
+                Log.i(LOGNAME, e.getMessage());
+            } catch (ClassNotFoundException e) {
+                Log.i(LOGNAME, e.getMessage());
+            } catch (NullPointerException e) {
+                Log.i(LOGNAME, e.getMessage());
+            } catch (RemoteException e) {
+                Log.i(LOGNAME, e.getMessage());
             }
-        }catch(IOException e){
-            Log.i(LOGNAME, e.getMessage());
-        }catch(ClassNotFoundException e){
-            Log.i(LOGNAME, e.getMessage());
-        }catch(NullPointerException e){
-            Log.i(LOGNAME, e.getMessage());
         }
     }
 
