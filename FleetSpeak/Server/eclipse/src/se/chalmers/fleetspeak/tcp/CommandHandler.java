@@ -8,6 +8,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+import se.chalmers.fleetspeak.Log;
+
 public class CommandHandler extends TCPHandler{
 	
 	ObjectOutputStream sender;
@@ -33,30 +35,30 @@ public class CommandHandler extends TCPHandler{
 				if(message != null){
 					System.out.print("[COMMANDHANDLER] Command recived: ");
 					if(message.startsWith(Commands.DISCONNECT.getName())){
-						System.out.println(Commands.DISCONNECT);
+						Log.log(Commands.DISCONNECT.toString());
 						notifyListeners(Commands.DISCONNECT, true);
 					}else if(message.startsWith(Commands.SET_NAME.getName())){
-						System.out.println(Commands.SET_NAME);
+						Log.log(Commands.SET_NAME.toString());
 						notifyListeners(Commands.SET_NAME, message.substring(6));
 					}else if(message.equals(Commands.MUTE.getName())){
-						System.out.println(Commands.MUTE);
+						Log.log(Commands.MUTE.toString());
 						notifyListeners(Commands.MUTE, true);
 					}else if(message.equals(Commands.UNMUTE.getName())){
-						System.out.println(Commands.UNMUTE);
+						Log.log(Commands.UNMUTE.toString());
 						notifyListeners(Commands.MUTE, false);
 					}else if(message.equals("data")){
 						//send data to client
-						System.out.println("Data");
+						Log.log("Data");
 						String ss = "This string can be sent to the phone";
 						sender.writeObject(ss);
 						sender.flush();
 					}else{
-						System.out.println("Unknown command. " + message);
+						Log.log("Unknown command. " + message);
 					}
 				}
 			}
 		}catch(IOException e){
-			System.out.println("[CommandHandler] "+e.getMessage());
+			Log.log("[CommandHandler] "+e.getMessage());
 			notifyConnectionLost();
 		}
 	}

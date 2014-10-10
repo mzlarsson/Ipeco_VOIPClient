@@ -1,5 +1,7 @@
 package se.chalmers.fleetspeak.rtp;
 
+import se.chalmers.fleetspeak.Log;
+
 import com.biasedbit.efflux.packet.DataPacket;
 
 public class SoundPacket {
@@ -13,11 +15,9 @@ public class SoundPacket {
 	public SoundPacket(int sequenceOffset){
 		this.sequenceOffset = sequenceOffset;
 		counter++;
-		System.out.println("CREATED PACKET offset="+sequenceOffset);
 	}
 	
 	public void setData(DataPacket packet){
-		System.out.println("PACKET CHANGED");
 		sequenceNumber = packet.getSequenceNumber();
 		data = packet.getDataAsArray();
 	}

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import se.chalmers.fleetspeak.ConnectionListener;
+import se.chalmers.fleetspeak.Log;
 
 public abstract class TCPHandler extends Thread{
 
@@ -40,7 +41,7 @@ public abstract class TCPHandler extends Thread{
 		try {
 			return clientSocket.getInputStream();
 		} catch (IOException e) {
-			System.out.println("Could not fetch input stream: "+e.getClass().getCanonicalName());
+			Log.log("Could not fetch input stream: "+e.getClass().getCanonicalName());
 			return null;
 		}
 	}
@@ -53,7 +54,7 @@ public abstract class TCPHandler extends Thread{
 		try {
 			return clientSocket.getOutputStream();
 		} catch (IOException e) {
-			System.out.println("Could not fetch output stream: "+e.getClass().getCanonicalName());
+			Log.log("Could not fetch output stream: "+e.getClass().getCanonicalName());
 			return null;
 		}
 	}
@@ -65,7 +66,7 @@ public abstract class TCPHandler extends Thread{
 		try {
 			return new ObjectOutputStream(getOutputStream());
 		} catch (IOException e) {
-			System.out.println("Could not fetch output stream: "+e.getClass().getCanonicalName());
+			Log.log("Could not fetch output stream: "+e.getClass().getCanonicalName());
 			return null;
 		}
 	}

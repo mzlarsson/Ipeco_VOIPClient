@@ -4,6 +4,8 @@ import java.net.InetAddress;
 import java.util.Calendar;
 import java.util.Locale;
 
+import se.chalmers.fleetspeak.Log;
+
 import com.biasedbit.efflux.participant.RtpParticipant;
 import com.biasedbit.efflux.session.MultiParticipantSession;
 import com.biasedbit.efflux.session.RtpSession;
@@ -24,7 +26,7 @@ public class RTPConnector {
 			
 			session.init();
 		}else{
-			System.out.println("[RTPConnector] Warning! Session has already been started.");
+			Log.log("[RTPConnector] Warning! Session has already been started.");
 		}
 	}
 	
@@ -43,7 +45,7 @@ public class RTPConnector {
 	public static void removeClient(RtpParticipant participant){
 		if(isStarted() && participant != null){
 			session.removeReceiver(participant);
-			System.out.println("UDP: "+session.getRemoteParticipants().size());
+			Log.log("UDP: "+session.getRemoteParticipants().size());
 		}else{
 			throw new IllegalArgumentException("[RTPConnector] Session has not been started.");
 		}

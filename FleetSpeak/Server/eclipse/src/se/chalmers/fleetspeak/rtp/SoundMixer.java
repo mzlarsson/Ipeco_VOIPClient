@@ -44,7 +44,6 @@ public class SoundMixer implements RtpSessionDataListener{
 					}
 				}
 			}
-			System.out.println();
 			
 			for(int i = 0; i<output.length; i++){
 				if(output[i]==0){
@@ -67,7 +66,6 @@ public class SoundMixer implements RtpSessionDataListener{
 		soundPacket.setData(packet);
 		
 		data.put(participant, soundPacket);
-		System.out.println("PACKET: '"+new String(packet.getDataAsArray())+"'");
 	}
 	
 	public int getSequenceNumber(RtpParticipant participant){
