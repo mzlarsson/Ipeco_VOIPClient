@@ -64,8 +64,8 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener {
 		LayoutManager layout = new BorderLayout();
 		setLayout(layout);
 		setLocation(500, 200);
-		populate();
 		setupLogger();
+		populate();
 
 		pack();
 		setVisible(true);
@@ -152,6 +152,7 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener {
 			}
 		};
 		log.addHandler(logHandler);
+		Log.setupLogger(log);
 	}
 
 	@Override
@@ -180,7 +181,7 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener {
 						try {
 							server = new ServerMain(Integer.parseInt(tcpText
 									.getText()),
-									Integer.parseInt(udpText.getText()), true);
+									Integer.parseInt(udpText.getText()));
 							server.start();
 						} catch (UnknownHostException e) {
 							// TODO Auto-generated catch block

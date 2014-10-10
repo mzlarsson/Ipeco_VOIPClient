@@ -7,8 +7,6 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class ServerMain {
 
@@ -20,8 +18,6 @@ public class ServerMain {
 
 	private static List<Client> clients = new ArrayList<Client>();
 	private static ServerSocket serverSocket = null;
-	
-	private static Logger logger;
 
 	private volatile boolean running;
 
@@ -41,20 +37,19 @@ public class ServerMain {
 			}
 		}));
 
-		new ServerMain(tcpPort, rtpPort, false).start();
+		new ServerMain(tcpPort, rtpPort).start();
 		;
 
 	}
 
-	public ServerMain(int tcpPort, int rtpPort, boolean globLogOn) {
+	public ServerMain(int tcpPort, int rtpPort) {
 		this.tcpPort = tcpPort;
 		this.rtpPort = rtpPort;
-		this.logger = globLogOn?Logger.getGlobal():null;
 	}
 
 	public void start() throws UnknownHostException {
 		// Start the server
-		log("Starting server @LAN-IP "
+		Log.log("Starting server @LAN-IP "
 				+ InetAddress.getLocalHost().getHostAddress() + " tcp:"
 				+ tcpPort + " rtp:" + rtpPort);
 		this.running = true;
@@ -64,7 +59,7 @@ public class ServerMain {
 			while (running) {
 				// Create connection
 				clientSocket = serverSocket.accept();
-				log("Receiving connection request from client...");
+				Log.log("Receiving connection request from client...");
 				// Create client
 				Client client = new Client(clientSocket, rtpPort,
 						StringUtil.generateRandomCode(16));
@@ -76,7 +71,7 @@ public class ServerMain {
 				serverSocket.close();
 			}
 		} catch (IOException e) {
-			log("[SERVER] " + e.getMessage());
+			Log.log("[SERVER] " + e.getMessage());
 			terminate();
 		}
 	}
@@ -86,7 +81,7 @@ public class ServerMain {
 		clients.add(client);
 
 		// Print info in server console
-		log("A new person joined (" + clients.size() + ")");
+		Log.log("A new person joined (" + clients.size() + ")");
 	}
 
 	public static void removeClient(Client client) {
@@ -94,15 +89,7 @@ public class ServerMain {
 		clients.remove(client);
 
 		// Print info in server console
-		log("A person left the room (" + clients.size() + ")");
-	}
-
-	private static void log(String msg) {
-		if (logger!=null) {
-			logger.log(Level.ALL, msg);
-		} else {
-			System.out.println(msg);
-		}
+		Log.log("A person left the room (" + clients.size() + ")");
 	}
 
 	public void terminate() {
