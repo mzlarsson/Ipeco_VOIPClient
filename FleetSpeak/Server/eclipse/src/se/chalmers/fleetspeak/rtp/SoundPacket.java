@@ -8,12 +8,10 @@ public class SoundPacket {
 	private int sequenceOffset;
 	private byte[] data;
 	
-	private int tmpNum;
 	private static int counter = 0;
 	
 	public SoundPacket(int sequenceOffset){
 		this.sequenceOffset = sequenceOffset;
-		this.tmpNum = counter;
 		counter++;
 		System.out.println("CREATED PACKET offset="+sequenceOffset);
 	}
@@ -29,7 +27,7 @@ public class SoundPacket {
 	}
 	
 	public byte[] getData(int minSequenceNumber){
-		//System.out.print("\t[MIN: "+minSequenceNumber+" CURR: "+getRelativeSequenceNumber()+" ID: "+tmpNum+"]");
+		//System.out.print("\t[MIN: "+minSequenceNumber+" CURR: "+getRelativeSequenceNumber()+"]");
 		if(minSequenceNumber<=getRelativeSequenceNumber()){
 			return data;
 		}else{

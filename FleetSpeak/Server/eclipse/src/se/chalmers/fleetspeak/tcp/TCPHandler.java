@@ -8,10 +8,9 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-import se.chalmers.fleetspeak.ConnectionHandler;
 import se.chalmers.fleetspeak.ConnectionListener;
 
-public abstract class TCPHandler extends Thread implements ConnectionHandler{
+public abstract class TCPHandler extends Thread{
 
 	private Socket clientSocket;
 	private List<ConnectionListener> listeners;
@@ -78,9 +77,9 @@ public abstract class TCPHandler extends Thread implements ConnectionHandler{
 		this.listeners.remove(listener);
 	}
 	
-	protected void notifyConnectionLost(ConnectionHandler handler){
+	protected void notifyConnectionLost(){
 		for(int i = 0; i<listeners.size(); i++){
-			listeners.get(i).connectionLost(handler);
+			listeners.get(i).connectionLost();
 		}
 	}
 }

@@ -71,13 +71,6 @@ public class ServerMain{
     public static void addClient(Client client){
         //Save the handler for more interaction
         clients.add(client);
-        
-        //Notice about change in clients
-        for(int i = 0; i<clients.size(); i++){
-        	if(clients.get(i)!=client){
-	        	clients.get(i).clientConnected(clients);
-        	}
-        }
 
         //Print info in server console
         System.out.println("A new person joined ("+clients.size()+")");
@@ -86,13 +79,6 @@ public class ServerMain{
     public static void removeClient(Client client){
         //Remove the handler from more interaction
     	clients.remove(client);
-    	
-        //Notice about change in clients
-        for(int i = 0; i<clients.size(); i++){
-        	if(clients.get(i)!=client){
-	        	clients.get(i).clientDisconnected(clients);
-        	}
-        }
     	
         //Print info in server console
     	System.out.println("A person left the room ("+clients.size()+")");

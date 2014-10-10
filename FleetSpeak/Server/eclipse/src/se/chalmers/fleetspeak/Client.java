@@ -45,14 +45,6 @@ public class Client implements ConnectionListener, CommandListener {
 		return muted;
 	}
 
-	public void clientConnected(List<Client> clients) {
-		cmd.onClientConnect(clients);
-	}
-
-	public void clientDisconnected(List<Client> clients) {
-		cmd.onClientDisconnect(clients);
-	}
-
 	public void close() {
 		if (rtp != null) {
 			rtp.terminate();
@@ -64,7 +56,7 @@ public class Client implements ConnectionListener, CommandListener {
 		ServerMain.removeClient(this);
 	}
 
-	public void connectionLost(ConnectionHandler handler) {
+	public void connectionLost() {
 		System.out.println("Client disconnected - closing streams");
 		this.close();
 	}

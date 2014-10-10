@@ -1,14 +1,12 @@
 package se.chalmers.fleetspeak.tcp;
 
 import java.io.BufferedReader;
-import java.io.ObjectOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-
-import se.chalmers.fleetspeak.Client;
 
 public class CommandHandler extends TCPHandler{
 	
@@ -59,7 +57,7 @@ public class CommandHandler extends TCPHandler{
 			}
 		}catch(IOException e){
 			System.out.println("[CommandHandler] "+e.getMessage());
-			notifyConnectionLost(this);
+			notifyConnectionLost();
 		}
 	}
 	
@@ -101,16 +99,5 @@ public class CommandHandler extends TCPHandler{
 		for(int i = 0; i<listeners.size(); i++){
 			listeners.get(i).commandChanged(command, value);
 		}
-	}
-	
-
-	@Override
-	public void onClientConnect(List<Client> clients) {
-		System.out.println("[CommandHandler] Someone connected");
-	}
-
-	@Override
-	public void onClientDisconnect(List<Client> clients) {
-		System.out.println("[CommandHandler] Someone disconnected");
 	}
 }
