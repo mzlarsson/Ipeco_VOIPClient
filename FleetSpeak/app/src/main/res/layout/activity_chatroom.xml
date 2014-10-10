@@ -4,12 +4,11 @@
     android:layout_height="match_parent">
 
     <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:id="@+id/pushToTalkButton"
-        android:layout_gravity="bottom"
-        android:src="@drawable/ic_mic_grey"
-        android:background="@android:color/transparent"
+        android:layout_gravity="bottom" 
+        android:background="@drawable/ic_mic_grey"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
 
@@ -28,9 +27,9 @@
         android:text="Debug +"
         android:onClick="addUserDebug"
         android:id="@+id/buttonAddDebug"
-        android:layout_alignTop="@+id/pushToTalkButton"
-        android:layout_toRightOf="@+id/pushToTalkButton"
-        android:layout_toEndOf="@+id/pushToTalkButton" />
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
     <Button
         android:layout_width="wrap_content"
@@ -38,8 +37,8 @@
         android:text="Debug -"
         android:onClick="subUserDebug"
         android:id="@+id/buttonSubDebug"
-        android:layout_alignTop="@+id/pushToTalkButton"
-        android:layout_toLeftOf="@+id/pushToTalkButton"
-        android:layout_toStartOf="@+id/pushToTalkButton" />
+        android:layout_alignTop="@+id/buttonAddDebug"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
 </RelativeLayout>
