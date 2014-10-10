@@ -30,7 +30,12 @@ public class SocketService extends Service {
     public static final int DISCONNECT = 2;
     public static final int SETNAME = 3;
     public static final int SETMESSENGER = 4;
-    public static final int SENDDATA = 44; // only for testing will send a string from the server when used
+    public static final int CREATEROOM = 5;
+    public static final int MOVEUSER = 6;
+    public static final int GETROOMS = 7;
+    public static final int GETUSERSINROOM = 8;
+    public static final int MUTEUSER = 9;
+    public static final int SENDTESTDATA = 44; // only for testing will send a string from the server when used
 
     private String LOGNAME = "SocketService";
 
@@ -78,14 +83,36 @@ public class SocketService extends Service {
                     break;
                 case DISCONNECT:
                     //TODO
+                    Log.i(LOGNAME, "Command not implemented");
                     break;
                 case SETNAME:
                     //TODO
+                    Log.i(LOGNAME, "Command not implemented");
                     break;
                 case SETMESSENGER:
                     messenger = (Messenger) msg.obj;
                     break;
-                case SENDDATA:
+                case CREATEROOM:
+                    //TODO
+                    Log.i(LOGNAME, "Command not implemented");
+                    break;
+                case MOVEUSER:
+                    //TODO
+                    Log.i(LOGNAME, "Command not implemented");
+                    break;
+                case GETROOMS:
+                    //TODO
+                    Log.i(LOGNAME, "Command not implemented");
+                    break;
+                case GETUSERSINROOM:
+                    //TODO
+                    Log.i(LOGNAME, "Command not implemented");
+                    break;
+                case MUTEUSER:
+                    //TODO
+                    Log.i(LOGNAME, "Command not implemented");
+                    break;
+                case SENDTESTDATA:
                     printWriter.println("data");
                     lookForMessage();
                     break;
@@ -126,8 +153,10 @@ public class SocketService extends Service {
 
     @Override
     public void onDestroy(){
+        super.onDestroy();
         if(timer != null){timer.cancel();}
         Log.i(LOGNAME, "Service Stopped.");
+
     }
 
 

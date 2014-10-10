@@ -21,6 +21,7 @@ public class Client implements ConnectionListener, CommandListener {
 	public Client(Socket socket, int rtpPort, String usercode) throws IOException {
 		this.rtp = new SoundHandler(socket.getInetAddress(), rtpPort);
 		this.rtp.start();
+
 		this.cmd = new CommandHandler(socket);
 		this.cmd.start();
 		this.cmd.addConnectionListener(this);

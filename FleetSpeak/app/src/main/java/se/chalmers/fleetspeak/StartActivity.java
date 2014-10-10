@@ -31,6 +31,10 @@ public class StartActivity extends ActionBarActivity {
 
     private boolean isConnected;
 
+    private EditText ip;
+    private EditText port;
+
+
     Messenger mService = null;
     final Messenger mMessenger = new Messenger(new CommandHandler());
 
@@ -133,7 +137,7 @@ public class StartActivity extends ActionBarActivity {
         }else{
             Log.i("Hej","hej");
             try {
-                Message msg = Message.obtain(null, SocketService.SENDDATA);
+                Message msg = Message.obtain(null, SocketService.SENDTESTDATA);
                 msg.replyTo = mMessenger;
                 mService.send(msg);
             } catch (RemoteException e) {
