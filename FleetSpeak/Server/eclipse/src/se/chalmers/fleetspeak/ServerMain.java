@@ -5,8 +5,6 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
 public class ServerMain{
 	
     private static int DEFAULT_PORT_TCP = 8867;
@@ -46,13 +44,13 @@ public class ServerMain{
     	this.running = true;
     	room = new FleetRoom(1);
     	roomhandler = new RoomHandler();
-    	roomhandler.addRoom(room);
+    	
 
     	this.tcpPort = tcpPort;
     	this.rtpPort = rtpPort;
     	
     	
-    	start(tcpPort, rtpPort);
+    	start();
     }
     
     public void start() throws UnknownHostException{
@@ -83,23 +81,23 @@ public class ServerMain{
         //Save the handler for more interaction
         room.addUser(client);
         
-        roomhandler.addClient(client, 1);//FIXME Generate better room id
+//        roomhandler.addClient(client, 1);//FIXME Generate better room id
        
         
-        int nbrOfClients = roomhandler.getClients(roomhandler.findRoom(1)).length;
-        
-        for(int i = 0; i<nbrOfClients;i++){
-        	if(roomhandler.findRoom(1).getUsers().get(i).equals(client)){
-        		
-        	}
-        }
+//        int nbrOfClients = roomhandler.getClients(roomhandler.findRoom(1)).length;
+//        
+//        for(int i = 0; i<nbrOfClients;i++){
+//        	if(roomhandler.findRoom(1).getUsers().get(i).equals(client)){
+//        		
+//        	}
+//        }
         
         //Notice about change in clients
-        for(int i = 0; i<room.getNbrOfUsers(); i++){
-        	if(room.getUser(i)!=client){
-	        	room.getUser(i).clientConnected(room.getUsers());
-        	}
-        }
+//        for(int i = 0; i<room.getNbrOfUsers(); i++){
+//        	if(room.getUser(i)!=client){
+//	        	room.getUser(i).clientConnected(room.getUsers());
+//        	}
+//        }
 
         //Print info in server console
         Log.log("A new person joined ("+room.getNbrOfUsers()+")");

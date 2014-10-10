@@ -48,13 +48,13 @@ public class Client implements ConnectionListener, CommandListener {
 	}
 	
 	public void clientConnected(List<Client> clients) {
-		rtp.onClientConnect(clients);
-		cmd.onClientConnect(clients);
+//		rtp.onClientConnect(clients);
+//		cmd.onClientConnect(clients);
 	}
 	
 	public void clientDisconnected(List<Client> clients) {
-		rtp.onClientDisconnect(clients);
-		cmd.onClientDisconnect(clients);
+//		rtp.onClientDisconnect(clients);
+//		cmd.onClientDisconnect(clients);
 	}
 	
 	public void close() {
