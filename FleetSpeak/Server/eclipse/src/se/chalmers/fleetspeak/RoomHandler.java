@@ -3,6 +3,8 @@ package se.chalmers.fleetspeak;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.TreeMap;
+
+import com.sun.org.apache.xalan.internal.xsltc.util.IntegerArray;
 /**
  * An class for handling the rooms and client on the server side.
  * Based on the RoomHandler on the client side.
@@ -16,6 +18,7 @@ public class RoomHandler {
 	public RoomHandler(){
 		rooms = new TreeMap<RoomInterface,ArrayList<Client>>();
 	}
+
 	
 	public void addClient(Client c, RoomInterface r){
 		if (!rooms.containsKey(r) || rooms.get(r) == null) {
@@ -27,8 +30,7 @@ public class RoomHandler {
 			 if(!list.contains(c)){
 				 list.add(c); 
 			 }
-		}
-            
+		}   
 	}
 	
 	public void addClient(Client c, int roomID){
@@ -87,6 +89,35 @@ public class RoomHandler {
 			}
 		}
 		throw new NoSuchElementException("A user with ID: \"" + roomID + "\" doesn't exit.");
+	}
+	
+	private int generateRoomID(){
+		int t = 0;
+		
+		if(!(this.getRooms()== null)){
+		for(int i: this.getRoomIDs()){
+			if(t == i){
+				t++;
+			}	
+		}
+		}
+		return t;
+	}
+	
+	public int[] getRoomIDs(){
+		int[] t;
+		
+		if(this.getRooms() == null){
+		t = new int[this.getNbrOfRooms()];
+		int i = 0;
+		for (RoomInterface ri : this.getRooms()) {
+			t[i] = ri.getRoomID();
+			i++;
+		}
+		}else{
+		t = new int[0];
+		}
+		return t;
 	}
 	
 	public int getNbrOfClients(RoomInterface ri){

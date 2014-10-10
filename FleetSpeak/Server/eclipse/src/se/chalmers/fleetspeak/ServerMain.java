@@ -43,6 +43,8 @@ public class ServerMain{
     	room = new FleetRoom(1);
     	roomhandler = new RoomHandler();
     	
+    	
+    	System.out.println(roomhandler.getRooms()[0].getRoomID());
     	start(tcpPort, rtpPort);
     }
     
