@@ -13,6 +13,7 @@ import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.swedspot.automotiveapi.AutomotiveSignalId;
+import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -77,6 +78,9 @@ public class StartActivity extends ActionBarActivity {
         userNameTextField.setText(username);
         portTextField.setText(portNumber);
         ipTextField.setText(ipAdress);
+
+        ipTextField.setInputType(InputType.TYPE_CLASS_PHONE);
+
         savePrefs = (CheckBox) findViewById(R.id.saveUserPref);
 
         bindService(new Intent(this, SocketService.class), mConnection, Context.BIND_AUTO_CREATE);
