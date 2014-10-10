@@ -23,7 +23,7 @@ import android.widget.Toast;
 
 public class StartActivity extends ActionBarActivity {
 
-    Connector c = null;
+
 
     private EditText ip;
     private EditText port;
@@ -35,8 +35,12 @@ public class StartActivity extends ActionBarActivity {
     private ServiceConnection mConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className, IBinder service) {
             mService = new Messenger(service);
+            try {
+                Message msg = Message.obtain(null, SocketService.SETMESSENGER, mMessenger);
+                mService.send(msg);
+            }catch (RemoteException e){
 
-
+            }
         }
 
         public void onServiceDisconnected(ComponentName className) {
@@ -54,7 +58,7 @@ public class StartActivity extends ActionBarActivity {
         setContentView(R.layout.activity_start);
         ip = (EditText) findViewById(R.id.ipField);
         port = (EditText) findViewById(R.id.portField);
-        startService(new Intent(StartActivity.this, SocketService.class));
+
         bindService(new Intent(this, SocketService.class), mConnection, Context.BIND_AUTO_CREATE);
     }
 
@@ -101,17 +105,7 @@ public class StartActivity extends ActionBarActivity {
             } catch (RemoteException e) {
             }
         }
-       /* if(c == null ||  !c.isConnected()){
-            c = new Connector(a, Integer.parseInt(b));
-            c.connect();
-        }else{
-            c.sendCommand("/nick xxx");
-            c.sendCommand("/disconnect");
-            c.sendCommand("/mute");
-            c.sendCommand("/unmute");
-           //c.getData("data");
-           // port.setText(s, TextView.BufferType.EDITABLE);
-        }*/
+
     }
 
 

@@ -20,7 +20,7 @@ public class Client implements ConnectionListener, CommandListener {
 
 	public Client(Socket socket, int rtpPort, String usercode)
 			throws IOException {
-		this.rtp = new SoundHandler(socket.getInetAddress(), rtpPort);
+		//this.rtp = new SoundHandler(socket.getInetAddress(), rtpPort);
 		this.cmd = new CommandHandler(socket);
 		this.cmd.start();
 		this.cmd.addCommandListener(this);

@@ -70,7 +70,7 @@ public class CommandHandler extends TCPHandler{
 		@Override
 		public void run() {
 			while(true){
-			String s = "\nEverything is awesome{nEverything is cool when you're part of a team"
+			String s = "\nEverything is awesome\nEverything is cool when you're part of a team"
 					+ "\nEverything is awesome when we're living our dream";
 			try {
 				sender.writeObject(s);
