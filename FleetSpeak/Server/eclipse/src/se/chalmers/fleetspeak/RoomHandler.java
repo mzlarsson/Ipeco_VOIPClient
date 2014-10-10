@@ -69,7 +69,7 @@ public class RoomHandler {
 		return rooms.get(r).toArray(new Client[rooms.get(r).size()]);
 	}
 	
- 	private Client findClient(int clientID) throws NoSuchElementException {
+ 	public Client findClient(int clientID) throws NoSuchElementException {
 		for(ArrayList<Client> clients:rooms.values()){
 			for(Client c: clients){
 				if(c.getClientID()==clientID){
@@ -80,7 +80,7 @@ public class RoomHandler {
 		throw new NoSuchElementException("A client with ID: \"" + clientID + "\" doesn't exit.");
 	}
 
-	private RoomInterface findRoom(int roomID) throws NoSuchElementException {
+	public RoomInterface findRoom(int roomID) throws NoSuchElementException {
 		for(RoomInterface room:rooms.keySet() ){
 			if(room.getRoomID()==roomID){
 				return room;
@@ -88,8 +88,14 @@ public class RoomHandler {
 		}
 		throw new NoSuchElementException("A user with ID: \"" + roomID + "\" doesn't exit.");
 	}
-
 	
+	public int getNbrOfClients(RoomInterface ri){
+		return rooms.get(ri).size();
+	}
+	
+	public int getNbrOfRooms(){
+		return this.getRooms().length;
+	}
 	
 	
 }

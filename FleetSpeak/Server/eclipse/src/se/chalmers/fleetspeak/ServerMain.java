@@ -73,6 +73,17 @@ public class ServerMain{
         //Save the handler for more interaction
         room.addUser(client);
         
+        roomhandler.addClient(client, 1);//FIXME Generate better room id
+       
+        
+        int nbrOfClients = roomhandler.getClients(roomhandler.findRoom(1)).length;
+        
+        for(int i = 0; i<nbrOfClients;i++){
+        	if(roomhandler.findRoom(1).getUsers().get(i).equals(client)){
+        		
+        	}
+        }
+        
         //Notice about change in clients
         for(int i = 0; i<room.getNbrOfUsers(); i++){
         	if(room.getUser(i)!=client){
