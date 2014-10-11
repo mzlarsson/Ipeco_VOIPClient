@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -57,7 +58,7 @@ public class JoinRoomActivity extends ActionBarActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
 
-                String example = String.valueOf(adapterView.getItemAtPosition(position)  );
+                String example = String.valueOf(adapterView.getItemAtPosition(position));
 
                 Toast.makeText(JoinRoomActivity.this, example, Toast.LENGTH_SHORT).show();
 
@@ -70,6 +71,17 @@ public class JoinRoomActivity extends ActionBarActivity {
         startActivity(intent);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch (item.getItemId()){
+
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
     private void addRoomToList(View v, String roomName) {
         listItems.add(roomName);
         adapter.notifyDataSetChanged();

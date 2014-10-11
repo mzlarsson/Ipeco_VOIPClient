@@ -3,12 +3,15 @@ package se.chalmers.fleetspeak.activities;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -30,12 +33,14 @@ public class ChatRoomActivity extends ActionBarActivity {
     ArrayList<String> listItems = new ArrayList<String>();
     User[] userList;
     ArrayAdapter<String> adapter;
+    private boolean isTalkActive = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chatroom);
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         userListView = (ListView) findViewById(R.id.userList);
 
@@ -75,9 +80,37 @@ public class ChatRoomActivity extends ActionBarActivity {
         removeUserFromList(view, "PelleID");
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch (item.getItemId()){
+
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
     //For test purposes
     public void addUserDebug(View view) {
         addUserToList(view, "PelleID");
+    }
+
+    /**
+     * Changes the pushtoTalkButton icon based on isTalkActive
+     * @param view
+     */
+    public void pushToTalk(View view) {
+        ImageButton button = (ImageButton) findViewById(R.id.pushToTalkButton);
+        if(isTalkActive){
+            button.setImageResource(getResources().getIdentifier("ic_mic.grey", "drawable", getPackageName()));
+            isTalkActive = false;
+        }
+        else{
+            button.setImageResource(getResources().getIdentifier("ic_mic.blue", "drawable", getPackageName()));
+            isTalkActive = true;
+        }
     }
 
     //Inner class, Adapter for the ChatRoom ListView
