@@ -11,6 +11,7 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Timer;
@@ -20,7 +21,7 @@ public class SocketService extends Service {
 
     private Socket socket;
     private ObjectInputStream objectInputStream;
-    private PrintWriter printWriter;
+    private ObjectOutputStream objectOutputStream;
     private Timer timer = new Timer();
     private Messenger messenger;
     private boolean isConnected = false;
@@ -57,15 +58,17 @@ public class SocketService extends Service {
             switch (msg.what) {
                 case CONNECT:
                     final String s = (String) msg.obj;
+                    final int i = msg.arg1;
                     Thread thread = new Thread(new Runnable() {
                         @Override
                         public void run() {
+                            Log.i(LOGNAME, "Trying to connect to " + s );
                             try {
                                 socket = new Socket(s, 8867);
                                 Log.i(LOGNAME, "Connection established to" + socket.toString());
 
 
-                                printWriter = new PrintWriter(socket.getOutputStream(), true);
+                                objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
                                 Log.i(LOGNAME, "Outputsteam ready");
 
 
@@ -113,8 +116,13 @@ public class SocketService extends Service {
                     Log.i(LOGNAME, "Command not implemented");
                     break;
                 case SENDTESTDATA:
-                    printWriter.println("data");
-                    lookForMessage();
+                    try {
+                        objectOutputStream.writeObject(new Command("data",null,null));
+                        objectOutputStream.flush();
+                        //lookForMessage();
+                    }catch(IOException e){
+                        Log.i(LOGNAME, e.getMessage());
+                    }
                     break;
             }
         }
@@ -131,12 +139,12 @@ public class SocketService extends Service {
         if(isConnected) {
             Log.i(LOGNAME, "Looking for message form server");
             try {
-                Object o;
-                o = objectInputStream.readObject();
+                Command c;
+                c = (Command) objectInputStream.readObject();
 
-                if (o != null) {
-                    Log.i(LOGNAME, " Something have been found: " + o.toString());
-                    messenger.send(Message.obtain(null, 0, o));
+                if (c != null) {
+                    Log.i(LOGNAME, " Something have been found: " + c.getCommand());
+                    messenger.send(Message.obtain(null, 0, c));
                 }
 
             } catch (IOException e) {

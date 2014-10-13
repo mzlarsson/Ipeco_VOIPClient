@@ -251,7 +251,8 @@ public class RtpParticipant {
         RtpParticipant that = (RtpParticipant) o;
         return this.controlDestination.equals(that.controlDestination) &&
                this.dataDestination.equals(that.dataDestination) &&
-               this.info.getCname().equals(that.info.getCname());
+               ((this.info.getCname()==null && that.info.getCname()==null) || 
+            	(this.info.getCname().equals(that.info.getCname())));
     }
 
     @Override
