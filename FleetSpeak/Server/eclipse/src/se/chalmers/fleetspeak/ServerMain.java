@@ -6,6 +6,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import se.chalmers.fleetspeak.rtp.RTPHandler;
+
 import se.chalmers.fleetspeak.tcp.CommandHandler;
 public class ServerMain{
 	
@@ -46,7 +48,6 @@ public class ServerMain{
     			" tcp:"+tcpPort+" rtp:"+rtpPort);
     	this.running = true;
     	commandHandler = new CommandHandler();
-    	
     	
 
     	this.tcpPort = tcpPort;
