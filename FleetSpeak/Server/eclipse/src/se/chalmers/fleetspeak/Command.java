@@ -3,8 +3,11 @@ package se.chalmers.fleetspeak;
 import java.io.Serializable;
 
 /**
- * A class holding a command for communication between server and client
- * Created by Patrik on 2014-10-10.
+ * A class that creates an Event that is used by the EventBus and it's
+ * subscribers.
+ * @author Patrik
+ * @version 1.0
+ * 
  */
 public class Command implements Serializable{
     private String command;

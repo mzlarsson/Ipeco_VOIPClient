@@ -7,66 +7,48 @@ import java.util.List;
 import se.chalmers.fleetspeak.rtp.RTPHandler;
 import se.chalmers.fleetspeak.rtp.SoundHandler;
 import se.chalmers.fleetspeak.tcp.CommandHandler;
+import se.chalmers.fleetspeak.tcp.OLDCommandHandler;
 import se.chalmers.fleetspeak.tcp.CommandListener;
 import se.chalmers.fleetspeak.tcp.Commands;
+import se.chalmers.fleetspeak.tcp.TCPHandler;
 
-public class Client implements ConnectionListener, CommandListener {
+public class Client {
 
-	private String usercode;
 	private String name;
 	private RTPHandler rtp;
-	private CommandHandler cmd;
+	private TCPHandler tcp;
 	private boolean muted = false;
 	private int clientID;
-	
-	public Client(Socket socket, int rtpPort, String usercode)
-			throws IOException {
+
+	public Client(Socket socket, int rtpPort) throws IOException {
+		this.clientID = IDFactory.getInstance().getID();
 		this.rtp = new SoundHandler(socket.getInetAddress(), rtpPort);
 		this.rtp.start();
+		this.tcp = new TCPHandler(socket);
+		this.tcp.start();
 
-		this.cmd = new CommandHandler(socket);
-		this.cmd.start();
-		this.cmd.addConnectionListener(this);
-		this.cmd.addCommandListener(this);
-		this.usercode = usercode;
 	}
-	
+
 	private void setName(String name) {
 		// TODO add filter
 		this.name = name;
 	}
-	
-	public String getName(){
+
+	public String getName() {
 		return name;
 	}
-	
-	public String getUserCode() {
-		return this.usercode;
-	}
-	
+
 	public boolean isMuted() {
 		return muted;
 	}
-	
-	public void clientConnected(List<Client> clients) {
-//		rtp.onClientConnect(clients);
-//		cmd.onClientConnect(clients);
-	}
-	
-	public void clientDisconnected(List<Client> clients) {
-//		rtp.onClientDisconnect(clients);
-//		cmd.onClientDisconnect(clients);
-	}
-	
+
 	public void close() {
 		if (rtp != null) {
 			rtp.terminate();
 		}
-		if (cmd != null) {
-			cmd.terminate();
+		if (tcp != null) {
+			tcp.terminate();
 		}
-		
-		ServerMain.removeClient(this);
 	}
 
 	public void connectionLost() {
@@ -74,43 +56,6 @@ public class Client implements ConnectionListener, CommandListener {
 		this.close();
 	}
 
-	public static Client getClient(List<Client> clients, String usercode) {
-		for (int i = 0; i < clients.size(); i++) {
-			if (clients.get(i).getUserCode().equals(usercode)) {
-				return clients.get(i);
-			}
-		}
-
-		return null;
-	}
-
-	@Override
-	public void commandChanged(Commands key, Object value) {
-		Log.log("[CLIENT] Got command: " + key + " changed to: " + value.toString());
-		switch (key) {
-		case DISCONNECT:
-			// TODO
-			break;
-		case SET_NAME:
-			this.setName((String) value);
-			Log.log("Current name " + name);
-			break;
-		case MUTE:
-			this.muted = true;
-			Log.log("is muted: " + muted);
-			break;
-		case UNMUTE:
-			this.muted = false;
-			Log.log("is muted: " + muted);
-			break;
-		default:
-			Log.log(key.getName() + " is not implemented");
-			break;
-		}
-		
-	}
-
-	
 	public int getClientID() {
 		return clientID;
 	}

@@ -1,7 +1,9 @@
-package se.chalmers.fleetspeak.eventbuss;
+package se.chalmers.fleetspeak.eventbus;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import se.chalmers.fleetspeak.Command;
 
 /**
  * A singleton that forwards events inside the server.
@@ -60,9 +62,9 @@ public class EventBus {
 	 * @param event
 	 *            that has been performed.
 	 */
-	public void fireEvent(EventBusEvent event) {
+	public void fireEvent(Command command) {
 		for (IEventBusSubscriber subscriber : subscribers) {
-			subscriber.eventPerformed(event);
+			subscriber.eventPerformed(command);
 		}
 	}
 	public List<IEventBusSubscriber> getSubscribers(){

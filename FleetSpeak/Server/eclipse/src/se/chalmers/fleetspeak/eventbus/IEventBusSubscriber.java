@@ -1,4 +1,6 @@
-package se.chalmers.fleetspeak.eventbuss;
+package se.chalmers.fleetspeak.eventbus;
+
+import se.chalmers.fleetspeak.Command;
 
 /**
  * Interface for subscribers to the eventbus.
@@ -14,6 +16,6 @@ public interface IEventBusSubscriber {
 	 * @param event
 	 *            the event that has been performed.
 	 */
-	public void eventPerformed(EventBusEvent event);
+	public void eventPerformed(Command command);
 
 }

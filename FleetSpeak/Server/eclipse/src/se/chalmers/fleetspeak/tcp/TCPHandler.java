@@ -1,30 +1,45 @@
 package se.chalmers.fleetspeak.tcp;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
 
-import se.chalmers.fleetspeak.ConnectionListener;
+import se.chalmers.fleetspeak.Command;
 import se.chalmers.fleetspeak.Log;
+import se.chalmers.fleetspeak.eventbus.EventBus;
+import se.chalmers.fleetspeak.eventbus.IEventBusSubscriber;
 
-public abstract class TCPHandler extends Thread{
+public class TCPHandler extends Thread implements IEventBusSubscriber {
 
 	private Socket clientSocket;
-	private List<ConnectionListener> listeners;
+	private ObjectOutputStream objectOutputStream;
+	private ObjectInputStream objectInputStream;
+	EventBus eventBus;
+	private boolean isRunning = false;
 
-	public TCPHandler(Socket clientSocket){
-		super("TCPHandler");
+	public TCPHandler(Socket clientSocket) {
+
 		this.clientSocket = clientSocket;
-		this.listeners = new ArrayList<ConnectionListener>();
+		try {
+			Log.log("Trying to get streams");
+			objectOutputStream = new ObjectOutputStream(
+					clientSocket.getOutputStream());
+			objectInputStream = new ObjectInputStream(
+					clientSocket.getInputStream());
+			Log.log("Got streams");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		eventBus = EventBus.getInstance();
+		eventBus.addSubscriber(this);
+
 	}
 
-	public boolean terminate(){
+	public boolean terminate() {
+		isRunning = false;
 		try {
-			if(clientSocket != null){
+			if (clientSocket != null) {
 				clientSocket.close();
 			}
 			return true;
@@ -33,54 +48,37 @@ public abstract class TCPHandler extends Thread{
 		}
 	}
 
-	protected InputStream getInputStream(){
-		if(clientSocket == null){
-			return null;
-		}
-
+	public void run() {
+		isRunning = true;
 		try {
-			return clientSocket.getInputStream();
+			while (isRunning) {
+				Command c = (Command) objectInputStream.readObject();
+				Log.log("Got command " + c.getCommand());
+				eventBus.fireEvent(c);
+				Thread.sleep(500L);
+			}
 		} catch (IOException e) {
-			Log.log("Could not fetch input stream: "+e.getClass().getCanonicalName());
-			return null;
-		}
-	}
-
-	protected OutputStream getOutputStream(){
-		if(clientSocket == null){
-			return null;
-		}
-
-		try {
-			return clientSocket.getOutputStream();
-		} catch (IOException e) {
-			Log.log("Could not fetch output stream: "+e.getClass().getCanonicalName());
-			return null;
-		}
-	}
-	protected ObjectOutputStream getObjectOutputStream(){
-		if(clientSocket == null){
-			return null;
+			Log.log(e.getMessage());
+		} catch (ClassNotFoundException e) {
+			Log.log(e.getMessage());
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			Log.log(e.getMessage());
 		}
 
-		try {
-			return new ObjectOutputStream(getOutputStream());
-		} catch (IOException e) {
-			Log.log("Could not fetch output stream: "+e.getClass().getCanonicalName());
-			return null;
+	}
+
+	@Override
+	public void eventPerformed(Command command) {
+		if (command.getCommand().startsWith("broadcast")) {
+			try {
+				objectOutputStream.writeObject(command);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
+
 	}
-	public void addConnectionListener(ConnectionListener listener){
-		this.listeners.add(listener);
-	}
-	
-	public void removeConnectionListener(ConnectionListener listener){
-		this.listeners.remove(listener);
-	}
-	
-	protected void notifyConnectionLost(){
-		for(int i = 0; i<listeners.size(); i++){
-			listeners.get(i).connectionLost();
-		}
-	}
+
 }
