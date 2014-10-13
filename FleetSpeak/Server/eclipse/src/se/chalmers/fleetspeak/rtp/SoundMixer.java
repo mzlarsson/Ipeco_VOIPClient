@@ -30,8 +30,13 @@ public class SoundMixer implements RtpSessionDataListener{
 	}
 
 	public byte[] getMixedSound(RtpParticipantInfo client, int minSequenceNumber){
+		return new byte[0];
+		/*if(data.size()>0){
+			return data.get(0).getData(minSequenceNumber);
+		}
+		
 		if(data.size()>0){
-			byte[] output = new byte[100];		//FIXME fix the set size
+			byte[] output = new byte[160];		//FIXME fix the set size
 			byte[] tmp = null;
 			for(int i = 0; i<data.size(); i++){
 				if(data.get(i).getParticipant() != client){
@@ -51,11 +56,15 @@ public class SoundMixer implements RtpSessionDataListener{
 			return output;
 		}else{
 			return new byte[0];
-		}
+		}*/
 	}
 	
 	@Override
 	public void dataPacketReceived(RtpSession session, RtpParticipantInfo participant, DataPacket packet) {
+		if(data.size()>0&&participant.getSsrc()==data.get(0).getParticipant().getSsrc()){
+			session.sendDataPacket(packet);
+		}
+		
 		SoundPacket soundPacket = SoundPacket.getPacket(data, participant);
 		if(soundPacket == null){
 			soundPacket = new SoundPacket(participant, getCurrentSequenceOffset());

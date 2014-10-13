@@ -8,6 +8,7 @@ import android.net.rtp.AudioStream;
 import android.net.rtp.RtpStream;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.StrictMode;
 import android.text.format.Formatter;
 import android.util.Log;
 
@@ -36,8 +37,9 @@ public class SoundController {
         audioManager.setMicrophoneMute(false);
         audioManager.setSpeakerphoneOn(true);
 
-
-
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+        
         AudioStream inRtpStream = null;
         try {
             inRtpStream = new AudioStream(InetAddress.getByName(clientIP));
@@ -55,7 +57,7 @@ public class SoundController {
         }
 
         AudioGroup audioGroup = new AudioGroup();
-        audioGroup.setMode(AudioGroup.MODE_ECHO_SUPPRESSION);
+        audioGroup.setMode(AudioGroup.MODE_NORMAL);
         inRtpStream.join(audioGroup);
         Log.d("Sound"," Group joined"+inRtpStream.getLocalPort());
 

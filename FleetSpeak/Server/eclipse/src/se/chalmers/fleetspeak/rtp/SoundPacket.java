@@ -32,7 +32,7 @@ public class SoundPacket {
 	}
 	
 	public byte[] getData(int minSequenceNumber){
-		if(minSequenceNumber<=getRelativeSequenceNumber()){
+		if(minSequenceNumber<=getRelativeSequenceNumber() && data != null){
 			return data;
 		}else{
 			return new byte[0];
@@ -41,7 +41,7 @@ public class SoundPacket {
 
 	public static SoundPacket getPacket(List<SoundPacket> packets, RtpParticipantInfo participant){
 		for(int i = 0; i<packets.size(); i++){
-			if(packets.get(i).getParticipant().equals(participant)){
+			if(packets.get(i).getParticipant().getSsrc() == participant.getSsrc()){
 				return packets.get(i);
 			}
 		}

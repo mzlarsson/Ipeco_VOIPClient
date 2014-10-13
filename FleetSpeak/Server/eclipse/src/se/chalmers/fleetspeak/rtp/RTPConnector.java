@@ -20,6 +20,7 @@ public class RTPConnector {
 	private static RtpSession session;
 	
 	public static void start(String serverIP, int serverPort, int payloadType){
+		System.out.println("[Starting IP @ "+serverIP+":"+serverPort+"]");
 		if(session == null){
 			RtpParticipant server = getParticipant(serverIP, serverPort, serverPort+1);
 			session = new MultiParticipantSession(SESSION_ID, payloadType, server);
@@ -34,8 +35,7 @@ public class RTPConnector {
 		if(isStarted()){
 			RtpParticipant client = getParticipant(clientIP, CLIENT_RTP_DATA_PORT, CLIENT_RTP_CTRL_PORT);
 			if(client != null){
-				System.out.println(client.toString());
-				System.out.println(session.addReceiver(client));
+				session.addReceiver(client);
 			}
 			return client;
 		}else{

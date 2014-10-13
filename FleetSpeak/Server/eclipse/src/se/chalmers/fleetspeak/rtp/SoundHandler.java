@@ -18,14 +18,13 @@ public class SoundHandler extends RTPHandler{
 	@Override
 	public void run() {
 		while(this.isAlive()){
-			//System.out.println("[SH print] "+currSeqNumber);
 			currSeqNumber = Math.max(mixer.getCurrentSequenceOffset(), currSeqNumber);
 			if(RTPConnector.sendData(mixer.getMixedSound(getParticipant().getInfo(), currSeqNumber), getParticipant())){
 				currSeqNumber++;
 			}
 			
 			try {
-				Thread.sleep(5000);
+				Thread.sleep(1);
 			} catch (InterruptedException e) {}
 		}
 	}
