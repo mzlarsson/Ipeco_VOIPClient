@@ -7,7 +7,6 @@ import java.util.List;
 import se.chalmers.fleetspeak.rtp.RTPHandler;
 import se.chalmers.fleetspeak.rtp.SoundHandler;
 import se.chalmers.fleetspeak.tcp.CommandHandler;
-import se.chalmers.fleetspeak.tcp.OLDCommandHandler;
 import se.chalmers.fleetspeak.tcp.CommandListener;
 import se.chalmers.fleetspeak.tcp.Commands;
 import se.chalmers.fleetspeak.tcp.TCPHandler;
