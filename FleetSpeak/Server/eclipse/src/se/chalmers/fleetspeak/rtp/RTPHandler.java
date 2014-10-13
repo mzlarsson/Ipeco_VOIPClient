@@ -2,16 +2,13 @@ package se.chalmers.fleetspeak.rtp;
 import java.io.IOException;
 import java.net.InetAddress;
 
-import se.chalmers.fleetspeak.TmpConnector;
-
 import com.biasedbit.efflux.participant.RtpParticipant;
 
 public abstract class RTPHandler extends Thread{
 	
 	private RtpParticipant participant;
 	
-	//TODO THIS MUST BE SET FOR TESTING!
-	public static final String SERVER_IP = TmpConnector.SERVER;		//Only temporary solution
+	private static String SERVER_IP = "127.0.0.1";		//Only temporary solution
 
 	public RTPHandler(InetAddress clientIP, int serverPort, int payloadType) throws IOException{
 		if(!RTPConnector.isStarted()){
@@ -28,5 +25,10 @@ public abstract class RTPHandler extends Thread{
 	public void terminate(){
 		RTPConnector.removeClient(participant);
 		this.interrupt();
+	}
+	
+	
+	public static void setServerIP(String serverIP){
+		RTPHandler.SERVER_IP = serverIP;
 	}
 }
