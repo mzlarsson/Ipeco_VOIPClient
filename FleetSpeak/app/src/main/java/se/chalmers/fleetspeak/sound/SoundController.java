@@ -13,8 +13,10 @@ import android.text.format.Formatter;
 import android.util.Log;
 
 import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.Enumeration;
 
 /**
  * Created by Matz on 2014-10-10.
@@ -30,7 +32,7 @@ public class SoundController {
     }
 
     public static SoundController create(Context context, String serverIP, int serverPort){
-        fetchIP(context);
+        fetchIP();
 
         AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
@@ -64,11 +66,24 @@ public class SoundController {
         return new SoundController(audioGroup);
     }
 
-    private static void fetchIP(Context context){
-        WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-        int ip = wifiInfo.getIpAddress();
-        clientIP = String.format("%d.%d.%d.%d", (ip & 0xff), (ip >> 8 & 0xff), (ip >> 16 & 0xff), (ip >> 24 & 0xff));
+    private static void fetchIP(){
+        try {
+            NetworkInterface network = null;
+            InetAddress ip = null;
+
+            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
+                network = en.nextElement();
+                for (Enumeration<InetAddress> enumIp = network.getInetAddresses(); enumIp.hasMoreElements();) {
+                    ip = enumIp.nextElement();
+                    if (!ip.isLoopbackAddress()) {
+                        clientIP = ip.getHostAddress();
+                    }
+                }
+            }
+        } catch (SocketException ex) {
+            Log.i("SocketException ", ex.toString());
+        }
+
         Log.d("Sound", "Fetched IP: "+clientIP);
     }
 
