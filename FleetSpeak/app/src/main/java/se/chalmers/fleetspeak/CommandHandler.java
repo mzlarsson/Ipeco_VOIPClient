@@ -11,7 +11,8 @@ import android.widget.EditText;
 public class CommandHandler extends Handler {
 
     public void handleMessage(Message msg) {
-        String s = (String) msg.obj;
+        Command c = (Command) msg.obj;
+        String s = c.getCommand();
         Log.i("Commandhandler", "Got the message " + s);
         //TODO
     }

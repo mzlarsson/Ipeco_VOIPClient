@@ -74,8 +74,8 @@ public class StartActivity extends ActionBarActivity {
         String ipAdress = prefs.getString("ipAdress", "ipAdress");
 
         userNameTextField.setText(username);
-        portTextField.setText(portNumber);
-        ipTextField.setText(ipAdress);
+        portTextField.setText("8867");
+        ipTextField.setText("192.168.43.97");
         savePrefs = (CheckBox) findViewById(R.id.saveUserPref);
 
         bindService(new Intent(this, SocketService.class), mConnection, Context.BIND_AUTO_CREATE);
@@ -112,8 +112,8 @@ public class StartActivity extends ActionBarActivity {
 
         startConnection(ipAdress, portNumber);
 
-        Intent intent = new Intent(this,ChatRoomActivity.class);
-        startActivity(intent);
+        //Intent intent = new Intent(this,ChatRoomActivity.class);
+        //startActivity(intent);
     }
 
     public void saveUsername(View view){
