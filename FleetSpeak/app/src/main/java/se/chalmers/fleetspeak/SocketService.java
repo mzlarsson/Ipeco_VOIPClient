@@ -51,6 +51,7 @@ public class SocketService extends Service {
             Log.i(LOGNAME, "Command received. id: " + msg.what);
             switch (msg.what) {
                 case CONNECT:
+                    Log.d("humbug", "Connecting via TCP");
                     final String s = (String) msg.obj;
                     Thread thread = new Thread(new Runnable() {
                         @Override

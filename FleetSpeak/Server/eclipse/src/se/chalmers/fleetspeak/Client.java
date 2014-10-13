@@ -28,6 +28,7 @@ public class Client implements ConnectionListener, CommandListener {
 		this.cmd.addConnectionListener(this);
 		this.cmd.addCommandListener(this);
 		this.usercode = usercode;
+		System.out.println("[CLIENT] "+socket.getRemoteSocketAddress().toString()+":"+socket.getPort());
 	}
 	
 	private void setName(String name) {

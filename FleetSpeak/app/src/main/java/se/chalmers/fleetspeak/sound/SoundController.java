@@ -22,7 +22,7 @@ public class SoundController {
 
     private AudioGroup audioGroup;
 
-    private static String clientIP = "192.168.43.26";
+    private static String clientIP = "192.168.1.5";
 
     private SoundController(AudioGroup audioGroup){
         this.audioGroup = audioGroup;
@@ -36,6 +36,8 @@ public class SoundController {
         audioManager.setMicrophoneMute(false);
         audioManager.setSpeakerphoneOn(true);
 
+
+
         AudioStream inRtpStream = null;
         try {
             inRtpStream = new AudioStream(InetAddress.getByName(clientIP));
@@ -44,7 +46,7 @@ public class SoundController {
         }catch (SocketException e) {
             Log.d("Sound", "Socket Error");
         }
-        inRtpStream.setMode(RtpStream.MODE_SEND_ONLY);
+        inRtpStream.setMode(RtpStream.MODE_NORMAL);
         inRtpStream.setCodec(AudioCodec.PCMU);
         try{
             inRtpStream.associate(InetAddress.getByName(serverIP), serverPort);

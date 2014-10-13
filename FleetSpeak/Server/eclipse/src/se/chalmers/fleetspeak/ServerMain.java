@@ -57,13 +57,14 @@ public class ServerMain{
         this.running = true;
     	//Start the server
         try {
-            serverSocket = new ServerSocket(tcpPort);
+        	InetAddress locIP = InetAddress.getLocalHost();
+            serverSocket = new ServerSocket(tcpPort,0,locIP);
             Socket clientSocket = null;
             while(running){
             	//Create connection
                 clientSocket = serverSocket.accept();
                 //Create client
-                Client client = new Client(clientSocket, rtpPort, StringUtil.generateRandomCode(16));
+                Client client = new Client(clientSocket, rtpPort, "lul");
                 //Add to client list
                 addClient(client);
             }
@@ -92,12 +93,12 @@ public class ServerMain{
 //        	}
 //        }
         
-        //Notice about change in clients
-//        for(int i = 0; i<room.getNbrOfUsers(); i++){
-//        	if(room.getUser(i)!=client){
-//	        	room.getUser(i).clientConnected(room.getUsers());
-//        	}
-//        }
+//        Notice about change in clients
+        for(int i = 0; i<room.getNbrOfUsers(); i++){
+        	if(room.getUser(i)!=client){
+	        	room.getUser(i).clientConnected(room.getUsers());
+        	}
+        }
 
         //Print info in server console
         Log.log("A new person joined ("+room.getNbrOfUsers()+")");

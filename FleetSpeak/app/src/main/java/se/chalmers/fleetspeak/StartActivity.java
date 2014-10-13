@@ -71,15 +71,15 @@ public class StartActivity extends ActionBarActivity {
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         prefEdit = prefs.edit();
 
-        String portNumber = prefs.getString("portNumber", "portNumber");
+        String portNumber = prefs.getString("portNumber", "8867");
         String username = prefs.getString("username", "username");
-        String ipAdress = prefs.getString("ipAdress", "ipAdress");
+        String ipAdress = prefs.getString("ipAdress", "192.168.43.36");
 
         userNameTextField.setText(username);
         portTextField.setText(portNumber);
         ipTextField.setText(ipAdress);
 
-        ipTextField.setInputType(InputType.TYPE_CLASS_PHONE);
+        ipTextField.setInputType(InputType.TYPE_CLASS_TEXT);
 
         savePrefs = (CheckBox) findViewById(R.id.saveUserPref);
 
@@ -110,10 +110,11 @@ public class StartActivity extends ActionBarActivity {
         String ipAdress = String.valueOf(ipTextField.getText());
         int portNumber = Integer.parseInt(String.valueOf(portTextField.getText()));
 
-        //Connector.connect(ipAdress, portNumber);
+        new Connector(ipAdress, portNumber).connect();
         if(savePrefs.isChecked()){
             saveUsername(view);
         }
+
 
         startConnection(ipAdress, portNumber);
 

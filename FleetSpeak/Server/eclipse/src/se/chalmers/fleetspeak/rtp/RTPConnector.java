@@ -34,7 +34,8 @@ public class RTPConnector {
 		if(isStarted()){
 			RtpParticipant client = getParticipant(clientIP, CLIENT_RTP_DATA_PORT, CLIENT_RTP_CTRL_PORT);
 			if(client != null){
-				session.addReceiver(client);
+				System.out.println(client.toString());
+				System.out.println(session.addReceiver(client));
 			}
 			return client;
 		}else{
