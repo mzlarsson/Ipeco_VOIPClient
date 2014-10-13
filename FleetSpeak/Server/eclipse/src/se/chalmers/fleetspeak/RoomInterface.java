@@ -16,5 +16,5 @@ public interface RoomInterface{
 	
 	public void removeUser(Client c);
 	
-	public String getRoomID();
+	public int getRoomID();
 }

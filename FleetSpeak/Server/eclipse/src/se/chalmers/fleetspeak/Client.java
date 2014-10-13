@@ -17,8 +17,10 @@ public class Client implements ConnectionListener, CommandListener {
 	private RTPHandler rtp;
 	private CommandHandler cmd;
 	private boolean muted = false;
-
-	public Client(Socket socket, int rtpPort, String usercode) throws IOException {
+	private int clientID;
+	
+	public Client(Socket socket, int rtpPort, String usercode)
+			throws IOException {
 		this.rtp = new SoundHandler(socket.getInetAddress(), rtpPort);
 		this.rtp.start();
 
@@ -27,24 +29,36 @@ public class Client implements ConnectionListener, CommandListener {
 		this.cmd.addConnectionListener(this);
 		this.cmd.addCommandListener(this);
 		this.usercode = usercode;
+		System.out.println("[CLIENT] "+socket.getRemoteSocketAddress().toString()+":"+socket.getPort());
 	}
-
+	
 	private void setName(String name) {
 		// TODO add filter
 		this.name = name;
 	}
+	
 	public String getName(){
 		return name;
 	}
-
+	
 	public String getUserCode() {
 		return this.usercode;
 	}
-
+	
 	public boolean isMuted() {
 		return muted;
 	}
-
+	
+	public void clientConnected(List<Client> clients) {
+//		rtp.onClientConnect(clients);
+//		cmd.onClientConnect(clients);
+	}
+	
+	public void clientDisconnected(List<Client> clients) {
+//		rtp.onClientDisconnect(clients);
+//		cmd.onClientDisconnect(clients);
+	}
+	
 	public void close() {
 		if (rtp != null) {
 			rtp.terminate();
@@ -95,5 +109,10 @@ public class Client implements ConnectionListener, CommandListener {
 			break;
 		}
 		
+	}
+
+	
+	public int getClientID() {
+		return clientID;
 	}
 }

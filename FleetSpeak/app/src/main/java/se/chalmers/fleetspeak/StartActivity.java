@@ -13,12 +13,15 @@ import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.swedspot.automotiveapi.AutomotiveSignalId;
+import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
+
+import se.chalmers.fleetspeak.sound.SoundController;
 
 public class StartActivity extends ActionBarActivity {
 
@@ -31,9 +34,7 @@ public class StartActivity extends ActionBarActivity {
 
     private boolean isConnected;
 
-    private EditText ip;
-    private EditText port;
-
+    private SoundController soundController;
 
     Messenger mService = null;
     final Messenger mMessenger = new Messenger(new CommandHandler());
@@ -52,6 +53,7 @@ public class StartActivity extends ActionBarActivity {
         public void onServiceDisconnected(ComponentName className) {
             // This is called when the connection with the service has been unexpectedly disconnected - process crashed.
             mService = null;
+            soundController.close();
             Log.i("SERVICECONNECTION", "Disconnected");
         }
     };
@@ -74,8 +76,11 @@ public class StartActivity extends ActionBarActivity {
         String ipAdress = prefs.getString("ipAdress", "ipAdress");
 
         userNameTextField.setText(username);
-        portTextField.setText("8867");
-        ipTextField.setText("192.168.43.97");
+        portTextField.setText("8867");//portNumber);
+        ipTextField.setText("192.168.43.36");//ipAdress);
+
+        ipTextField.setInputType(InputType.TYPE_CLASS_TEXT);
+
         savePrefs = (CheckBox) findViewById(R.id.saveUserPref);
 
         bindService(new Intent(this, SocketService.class), mConnection, Context.BIND_AUTO_CREATE);
@@ -105,15 +110,15 @@ public class StartActivity extends ActionBarActivity {
         String ipAdress = String.valueOf(ipTextField.getText());
         int portNumber = Integer.parseInt(String.valueOf(portTextField.getText()));
 
-        //Connector.connect(ipAdress, portNumber);
+
         if(savePrefs.isChecked()){
             saveUsername(view);
         }
 
         startConnection(ipAdress, portNumber);
 
-        //Intent intent = new Intent(this,ChatRoomActivity.class);
-        //startActivity(intent);
+        Intent intent = new Intent(this,ChatRoomActivity.class);
+        startActivity(intent);
     }
 
     public void saveUsername(View view){
@@ -143,5 +148,8 @@ public class StartActivity extends ActionBarActivity {
             } catch (RemoteException e) {
             }
         }
+
+        int rtpPort = port+1;
+        soundController = SoundController.create(this, ip, rtpPort);
     }
 }

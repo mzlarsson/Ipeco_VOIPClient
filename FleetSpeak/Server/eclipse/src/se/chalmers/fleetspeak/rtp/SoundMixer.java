@@ -16,6 +16,9 @@ public class SoundMixer implements RtpSessionDataListener{
 
 	private static SoundMixer instance;
 	
+	private boolean fetchingData = false;
+	private boolean connectionWaiting = false;
+	
 	private Map<RtpParticipantInfo, SoundPacket> data;
 	
 	private SoundMixer(){
@@ -32,6 +35,11 @@ public class SoundMixer implements RtpSessionDataListener{
 	}
 
 	public byte[] getMixedSound(RtpParticipantInfo client, int minSequenceNumber){
+		while(connectionWaiting){
+			//Wait for it to connect...
+		}
+		
+		fetchingData = true;
 		List<RtpParticipantInfo> participants = new ArrayList<RtpParticipantInfo>(data.keySet());
 		if(participants.size()>0){
 			byte[] output = new byte[100];		//FIXME fix the set size
@@ -45,14 +53,17 @@ public class SoundMixer implements RtpSessionDataListener{
 				}
 			}
 			
+			fetchingData = false;
+			
 			for(int i = 0; i<output.length; i++){
 				if(output[i]==0){
 					return Arrays.copyOf(output, i);
 				}
 			}
-			
+
 			return output;
 		}else{
+			fetchingData = false;
 			return new byte[0];
 		}
 	}
@@ -65,7 +76,17 @@ public class SoundMixer implements RtpSessionDataListener{
 		}
 		soundPacket.setData(packet);
 		
-		data.put(participant, soundPacket);
+		addUser(participant, soundPacket);
+	}
+	
+	private void addUser(RtpParticipantInfo info, SoundPacket packet){
+		connectionWaiting = true;
+		while(fetchingData){
+			//Wait for it to end...
+		}
+		
+		data.put(info, packet);
+		connectionWaiting = false;
 	}
 	
 	public int getSequenceNumber(RtpParticipant participant){

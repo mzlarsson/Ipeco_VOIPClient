@@ -16,12 +16,6 @@
 
 package com.biasedbit.efflux.participant;
 
-import com.biasedbit.efflux.logging.Logger;
-import com.biasedbit.efflux.packet.DataPacket;
-import com.biasedbit.efflux.packet.SdesChunk;
-import com.biasedbit.efflux.packet.SdesChunkItem;
-import com.biasedbit.efflux.util.TimeUtils;
-
 import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,6 +24,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import com.biasedbit.efflux.logging.Logger;
+import com.biasedbit.efflux.packet.DataPacket;
+import com.biasedbit.efflux.packet.SdesChunk;
+import com.biasedbit.efflux.packet.SdesChunkItem;
+import com.biasedbit.efflux.util.TimeUtils;
 
 /**
  * @author <a href="http://bruno.biasedbit.com/">Bruno de Carvalho</a>
@@ -114,7 +114,7 @@ public class DefaultParticipantDatabase implements ParticipantDatabase {
      * NOTE: Created by Deadliest Trucks.
      */
     public void doWithReceivers(ParticipantOperation operation, RtpParticipant receiver) {
-        if(receiver != null && this.members.values().contains(receiver)){
+        if(receiver != null && this.receivers.contains(receiver)){
 	        this.lock.readLock().lock();
 	        try {
 	            try {
@@ -221,7 +221,9 @@ public class DefaultParticipantDatabase implements ParticipantDatabase {
                     created = true;
                 }
 
-                this.members.put(packet.getSsrc(), participant);
+                if(participant.getDataDestination()!=null || participant.getControlDestination()!=null){
+                	this.members.put(packet.getSsrc(), participant);
+                }
 
                 if (created) {
                     this.listener.participantCreatedFromDataPacket(participant);
