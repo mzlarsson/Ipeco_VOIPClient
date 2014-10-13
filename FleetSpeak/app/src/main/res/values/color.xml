@@ -1,2 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+<color name="action_bar">
+    #669900
+</color>
+
+<color name="homeAsUp">
+    #000000
+</color>
+
+</resources>

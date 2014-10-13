@@ -23,7 +23,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.1"
             android:linksClickable="false"
-            android:hint="Username"
+            android:hint="@string/username_text"
             android:textSize="24dp"
             android:id="@+id/usernameField"
             android:inputType="text"/>
@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.1"
             android:linksClickable="false"
-            android:hint="IP adress"
+            android:hint="@string/ip_adress_text"
             android:textSize="24dp"
             android:id="@+id/ipField"
             android:inputType="text"/>
@@ -46,12 +46,12 @@
             android:layout_weight="0.1"
             android:linksClickable="false"
             android:id="@+id/portField"
-            android:hint="Port"/>
+            android:hint="@string/port_number_text"/>
 
         <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Save preferences"
+            android:text="@string/save_preferences_text"
             android:id="@+id/saveUserPref"
             android:layout_weight="0.5"/>
 
@@ -60,7 +60,7 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Connect"
+        android:text="@string/connect_text"
         android:id="@+id/connectionButton"
         android:onClick="onConnectButtonClick"
         android:layout_alignParentBottom="true"

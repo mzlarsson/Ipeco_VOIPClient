@@ -2,10 +2,13 @@ package se.chalmers.fleetspeak.activities;
 
 import android.content.Context;
 import android.content.pm.ActivityInfo;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +17,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.PopupWindow;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,6 +35,8 @@ import se.chalmers.fleetspeak.User;
 public class ChatRoomActivity extends ActionBarActivity {
 
     ListView userListView;
+    private SeekBar volumeControlBar;
+    private SeekBar micControlBar;
 
     /*
     * Lista som innehåller alla users i ett rum
@@ -65,6 +72,7 @@ public class ChatRoomActivity extends ActionBarActivity {
                 Toast.makeText(ChatRoomActivity.this, examplePersonText, Toast.LENGTH_SHORT).show();
             }
         });
+
     }
 
     private void addUserToList(View v, String idUser) {
@@ -153,5 +161,48 @@ public class ChatRoomActivity extends ActionBarActivity {
 
             return view;
         }
+    }
+
+    public boolean onCreateOptionsMenu(Menu menu){
+        getMenuInflater().inflate(R.menu.chatroommenu, menu);
+        setUppVolumeMicDropDown(this);
+        return true;
+
+    }
+
+    /**
+     * Sets up two seekbar in a popupwindow to volume and mic seekbar
+     * @param context
+     */
+    private void setUppVolumeMicDropDown(Context context){
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View contentView = inflater.inflate(R.layout.drop_down_2seekbar, null);
+        volumeControlBar = (SeekBar) contentView.findViewById(R.id.first_seekbar);
+        micControlBar = (SeekBar) contentView.findViewById(R.id.second_seekbar);
+        final PopupWindow popupWindow = new PopupWindow(context, null, android.R.attr.actionDropDownStyle);
+        popupWindow.setFocusable(true);
+        popupWindow.setContentView(contentView);
+        setPopupSize(popupWindow);
+    }
+
+    private void setPopupSize(PopupWindow popupWindow) {
+        View contentView = popupWindow.getContentView();
+
+        int unspecified = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+        contentView.measure(unspecified, unspecified);
+
+        int width = contentView.getMeasuredWidth();
+        int height = contentView.getMeasuredHeight();
+
+        Drawable background = popupWindow.getBackground();
+        if (background != null) {
+            Rect rect = new Rect();
+            background.getPadding(rect);
+            width += rect.left + rect.right;
+            height += rect.top + rect.bottom;
+        }
+
+        popupWindow.setWidth(width);
+        popupWindow.setHeight(height);
     }
 }
