@@ -7,7 +7,7 @@
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:id="@+id/pushToTalkButton"
-        android:layout_gravity="bottom" 
+        android:layout_gravity="bottom"
         android:background="@drawable/ic_mic_grey"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />

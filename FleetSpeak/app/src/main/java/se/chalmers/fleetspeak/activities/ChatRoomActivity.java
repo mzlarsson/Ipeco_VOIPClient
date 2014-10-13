@@ -27,8 +27,12 @@ import se.chalmers.fleetspeak.User;
 public class ChatRoomActivity extends ActionBarActivity {
 
     ListView userListView;
+
+    /*
+    * Lista som innehåller alla users i ett rum
+    * */
     ArrayList<String> listItems = new ArrayList<String>();
-    User[] userList;
+
     ArrayAdapter<String> adapter;
 
     @Override
@@ -39,12 +43,16 @@ public class ChatRoomActivity extends ActionBarActivity {
 
         userListView = (ListView) findViewById(R.id.userList);
 
+        /*Ladda listan med users*/
         listItems.add("Olle");
 
         adapter = new ChatRoomListAdapter(this, listItems);
         //adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, listItems);
         userListView.setAdapter(adapter);
 
+        /*
+        * Vad som ska hända när man klicka på en user
+        * */
         userListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
@@ -95,12 +103,19 @@ public class ChatRoomActivity extends ActionBarActivity {
 
             String user = getItem(position);
 
-
             TextView textView = (TextView) view.findViewById(R.id.userName);
             ImageView imageView = (ImageView) view.findViewById(R.id.userTalkImage);
 
+            /*
+             * Sätter namnet i listan
+             */
             textView.setText(user);
 
+            /*
+            * För att ändra icon när någon pratar måste vi uppdatera adaptern varje gång.
+            * Adapter får då kolla om någon håller på och prata och på så vis väljer den vilken
+            * icon som ska sättas.
+            * */
             imageView.setImageResource(R.drawable.ic_inactive_status);
 
             return view;

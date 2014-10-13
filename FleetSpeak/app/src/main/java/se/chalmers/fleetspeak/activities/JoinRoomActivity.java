@@ -37,18 +37,10 @@ public class JoinRoomActivity extends ActionBarActivity {
 
         roomView = (ListView)findViewById(R.id.roomView);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-/*
+
+        //Ladda listan med rum
         listItems.add("Room 1");
         listItems.add("Room 2");
-        listItems.add("Room 3");
-        listItems.add("Room 4");
-        listItems.add("Room 5");
-        listItems.add("Room 6");
-        listItems.add("Room 7");
-        listItems.add("Room 8");
-        listItems.add("Room 9");
-        listItems.add("Room 10");
-*/
 
         adapter = new JoinRoomAdapter(this, listItems);
         roomView.setAdapter(adapter);
@@ -69,6 +61,7 @@ public class JoinRoomActivity extends ActionBarActivity {
         Intent intent = new Intent(this,ChatRoomActivity.class);
         startActivity(intent);
     }
+
 
     private void addRoomToList(View v, String roomName) {
         listItems.add(roomName);
@@ -106,12 +99,15 @@ public class JoinRoomActivity extends ActionBarActivity {
 
             View view = inflater.inflate(R.layout.list_item_rooms, parent, false);
 
+
             String whatRoom = getItem(position);
 
             TextView textView = (TextView) view.findViewById(R.id.roomName);
             ImageView imageView = (ImageView) view.findViewById(R.id.roomIcon);
 
+            //Sätter namnet på vad rummet ska heta på listan
             textView.setText(whatRoom);
+
             imageView.setImageResource(R.drawable.ic_room);
 
             return view;
