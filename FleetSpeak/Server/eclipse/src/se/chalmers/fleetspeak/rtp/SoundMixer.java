@@ -2,9 +2,7 @@ package se.chalmers.fleetspeak.rtp;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.biasedbit.efflux.packet.DataPacket;
 import com.biasedbit.efflux.participant.RtpParticipant;
@@ -16,13 +14,10 @@ public class SoundMixer implements RtpSessionDataListener{
 
 	private static SoundMixer instance;
 	
-	private boolean fetchingData = false;
-	private boolean connectionWaiting = false;
-	
-	private Map<RtpParticipantInfo, SoundPacket> data;
+	private List<SoundPacket> data;
 	
 	private SoundMixer(){
-		data = new HashMap<RtpParticipantInfo, SoundPacket>();
+		data = new ArrayList<SoundPacket>();
 		RTPConnector.addDataListener(this);
 	}
 	
@@ -35,25 +30,17 @@ public class SoundMixer implements RtpSessionDataListener{
 	}
 
 	public byte[] getMixedSound(RtpParticipantInfo client, int minSequenceNumber){
-		while(connectionWaiting){
-			//Wait for it to connect...
-		}
-		
-		fetchingData = true;
-		List<RtpParticipantInfo> participants = new ArrayList<RtpParticipantInfo>(data.keySet());
-		if(participants.size()>0){
+		if(data.size()>0){
 			byte[] output = new byte[100];		//FIXME fix the set size
 			byte[] tmp = null;
-			for(int i = 0; i<participants.size(); i++){
-				if(participants.get(i) != client){
-					tmp = data.get(participants.get(i)).getData(minSequenceNumber);
+			for(int i = 0; i<data.size(); i++){
+				if(data.get(i).getParticipant() != client){
+					tmp = data.get(i).getData(minSequenceNumber);
 					for(int j = 0; j<tmp.length&&j<output.length; j++){
 						output[j] = (byte)((output[j]+tmp[j]));
 					}
 				}
 			}
-			
-			fetchingData = false;
 			
 			for(int i = 0; i<output.length; i++){
 				if(output[i]==0){
@@ -63,34 +50,26 @@ public class SoundMixer implements RtpSessionDataListener{
 
 			return output;
 		}else{
-			fetchingData = false;
 			return new byte[0];
 		}
 	}
 	
 	@Override
 	public void dataPacketReceived(RtpSession session, RtpParticipantInfo participant, DataPacket packet) {
-		SoundPacket soundPacket = data.get(participant);
+		SoundPacket soundPacket = SoundPacket.getPacket(data, participant);
 		if(soundPacket == null){
-			soundPacket = new SoundPacket(getCurrentSequenceOffset());
+			soundPacket = new SoundPacket(participant, getCurrentSequenceOffset());
+			addNewPacket(soundPacket);
 		}
 		soundPacket.setData(packet);
-		
-		addUser(participant, soundPacket);
 	}
 	
-	private void addUser(RtpParticipantInfo info, SoundPacket packet){
-		connectionWaiting = true;
-		while(fetchingData){
-			//Wait for it to end...
-		}
-		
-		data.put(info, packet);
-		connectionWaiting = false;
+	private void addNewPacket(SoundPacket packet){
+		data.add(packet);
 	}
 	
 	public int getSequenceNumber(RtpParticipant participant){
-		SoundPacket p = data.get(participant.getInfo());
+		SoundPacket p = SoundPacket.getPacket(data, participant.getInfo());
 		if(p != null){
 			return p.getRelativeSequenceNumber();
 		}else{
@@ -100,8 +79,8 @@ public class SoundMixer implements RtpSessionDataListener{
 	
 	public int getCurrentSequenceOffset(){
 		int offset = 0;
-		for(SoundPacket packet : data.values()){
-			offset = Math.max(offset, packet.getRelativeSequenceNumber());
+		for(int i = 0; i<data.size(); i++){
+			offset = Math.max(offset, data.get(i).getRelativeSequenceNumber());
 		}
 		
 		return offset;

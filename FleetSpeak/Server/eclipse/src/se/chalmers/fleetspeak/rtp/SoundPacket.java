@@ -1,8 +1,9 @@
 package se.chalmers.fleetspeak.rtp;
 
-import se.chalmers.fleetspeak.Log;
+import java.util.List;
 
 import com.biasedbit.efflux.packet.DataPacket;
+import com.biasedbit.efflux.participant.RtpParticipantInfo;
 
 public class SoundPacket {
 
@@ -10,11 +11,11 @@ public class SoundPacket {
 	private int sequenceOffset;
 	private byte[] data;
 	
-	private static int counter = 0;
+	private RtpParticipantInfo participant;
 	
-	public SoundPacket(int sequenceOffset){
+	public SoundPacket(RtpParticipantInfo participant, int sequenceOffset){
+		this.participant = participant;
 		this.sequenceOffset = sequenceOffset;
-		counter++;
 	}
 	
 	public void setData(DataPacket packet){
@@ -22,16 +23,29 @@ public class SoundPacket {
 		data = packet.getDataAsArray();
 	}
 	
+	public RtpParticipantInfo getParticipant(){
+		return this.participant;
+	}
+	
 	public int getRelativeSequenceNumber(){
 		return this.sequenceNumber+this.sequenceOffset;
 	}
 	
 	public byte[] getData(int minSequenceNumber){
-		//System.out.print("\t[MIN: "+minSequenceNumber+" CURR: "+getRelativeSequenceNumber()+"]");
 		if(minSequenceNumber<=getRelativeSequenceNumber()){
 			return data;
 		}else{
 			return new byte[0];
 		}
+	}
+
+	public static SoundPacket getPacket(List<SoundPacket> packets, RtpParticipantInfo participant){
+		for(int i = 0; i<packets.size(); i++){
+			if(packets.get(i).getParticipant().equals(participant)){
+				return packets.get(i);
+			}
+		}
+		
+		return null;
 	}
 }
