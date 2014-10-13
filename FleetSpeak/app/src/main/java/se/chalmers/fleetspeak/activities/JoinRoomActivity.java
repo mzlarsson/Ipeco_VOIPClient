@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -49,7 +50,7 @@ public class JoinRoomActivity extends ActionBarActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
 
-                String example = String.valueOf(adapterView.getItemAtPosition(position)  );
+                String example = String.valueOf(adapterView.getItemAtPosition(position));
 
                 Toast.makeText(JoinRoomActivity.this, example, Toast.LENGTH_SHORT).show();
 
@@ -99,15 +100,12 @@ public class JoinRoomActivity extends ActionBarActivity {
 
             View view = inflater.inflate(R.layout.list_item_rooms, parent, false);
 
-
             String whatRoom = getItem(position);
 
             TextView textView = (TextView) view.findViewById(R.id.roomName);
             ImageView imageView = (ImageView) view.findViewById(R.id.roomIcon);
 
-            //Sätter namnet på vad rummet ska heta på listan
             textView.setText(whatRoom);
-
             imageView.setImageResource(R.drawable.ic_room);
 
             return view;
