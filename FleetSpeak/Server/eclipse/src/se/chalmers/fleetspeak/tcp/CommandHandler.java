@@ -1,12 +1,12 @@
 package se.chalmers.fleetspeak.tcp;
 
 import se.chalmers.fleetspeak.Client;
-import se.chalmers.fleetspeak.Command;
-import se.chalmers.fleetspeak.Log;
 import se.chalmers.fleetspeak.RoomHandler;
 import se.chalmers.fleetspeak.eventbus.EventBus;
 import se.chalmers.fleetspeak.eventbus.EventBusEvent;
 import se.chalmers.fleetspeak.eventbus.IEventBusSubscriber;
+import se.chalmers.fleetspeak.util.Command;
+import se.chalmers.fleetspeak.util.Log;
 
 public class CommandHandler implements IEventBusSubscriber {
 

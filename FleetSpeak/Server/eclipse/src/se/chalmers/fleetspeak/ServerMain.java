@@ -8,6 +8,7 @@ import java.net.UnknownHostException;
 
 import se.chalmers.fleetspeak.sound.Constants;
 import se.chalmers.fleetspeak.tcp.CommandHandler;
+import se.chalmers.fleetspeak.util.Log;
 
 public class ServerMain{
 	

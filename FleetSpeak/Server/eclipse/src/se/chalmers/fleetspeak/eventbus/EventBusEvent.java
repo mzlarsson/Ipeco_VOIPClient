@@ -1,6 +1,6 @@
 package se.chalmers.fleetspeak.eventbus;
 
-import se.chalmers.fleetspeak.Command;
+import se.chalmers.fleetspeak.util.Command;
 
 /**
  * A class that creates an Event that is used by the EventBus and it's

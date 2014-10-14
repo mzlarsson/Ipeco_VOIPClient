@@ -23,6 +23,8 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.text.DefaultCaret;
 
+import se.chalmers.fleetspeak.util.Log;
+
 public class ServerGUI extends JFrame implements ActionListener, KeyListener {
 
 	private static final long serialVersionUID = 1L;

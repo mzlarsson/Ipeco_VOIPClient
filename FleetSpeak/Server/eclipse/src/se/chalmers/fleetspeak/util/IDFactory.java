@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak;
+package se.chalmers.fleetspeak.util;
 
 /**
  * A Class for creating a new unique ID.

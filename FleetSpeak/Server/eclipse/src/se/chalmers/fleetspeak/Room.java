@@ -1,5 +1,7 @@
 package se.chalmers.fleetspeak;
 
+import se.chalmers.fleetspeak.util.IDFactory;
+
 /**
  * A class for representing a room.
  * Created by Patrik on 2014-10-07.
