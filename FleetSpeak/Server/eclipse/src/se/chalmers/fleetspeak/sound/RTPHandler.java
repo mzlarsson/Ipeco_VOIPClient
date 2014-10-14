@@ -30,7 +30,7 @@ public abstract class RTPHandler extends Thread{
 			throw new IllegalArgumentException("The server IP has not yet been set");
 		}
 		
-		RTPConnector connector = RTPConnector.getConnector(Constants.getServerIP(), serverPort, payloadType);	
+		connector = RTPConnector.getConnector(Constants.getServerIP(), serverPort, payloadType);
 		participantSourceID = connector.addParticipant(clientIP);
 	}
 	
