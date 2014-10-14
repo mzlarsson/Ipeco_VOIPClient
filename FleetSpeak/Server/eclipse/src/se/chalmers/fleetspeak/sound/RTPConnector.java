@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import se.chalmers.fleetspeak.util.Log;
+
 import com.biasedbit.efflux.packet.DataPacket;
 import com.biasedbit.efflux.participant.RtpParticipant;
 import com.biasedbit.efflux.participant.RtpParticipantInfo;
@@ -62,11 +64,15 @@ public class RTPConnector implements RtpSessionDataListener{
 		this.participants = new HashMap<Long, RtpParticipant>();
 		this.listeners = new HashMap<Long, RTPListener>();
 		
-		RtpParticipant server = getParticipant(serverIP, serverPort, serverPort+1);
+		int dataport = serverPort;
+		int ctrlport = serverPort+1;
+		RtpParticipant server = getParticipant(serverIP, dataport, ctrlport);
 		session = new MultiParticipantSession(Constants.RTP_SESSION_ID, payloadType, server);
 		
 		session.init();
 		session.addDataListener(this);
+		
+		Log.log("A new RTPConnector was created [IP="+serverIP+";dataport="+dataport+";ctrlport="+ctrlport+"]");
 	}
 	
 	/**
@@ -98,6 +104,7 @@ public class RTPConnector implements RtpSessionDataListener{
 		RtpParticipant participant = getParticipant(clientIP, Constants.CLIENT_RTP_DATA_PORT, Constants.CLIENT_RTP_CTRL_PORT);
 		if(participant != null){
 			if(!participants.containsKey(participant.getInfo().getSsrc())){
+				Log.log("Created RTP client for [IP="+clientIP.getHostAddress()+";SOURCEID="+participant.getInfo().getSsrc()+"]");
 				session.addReceiver(participant);
 				participants.put(participant.getInfo().getSsrc(), participant);
 			}
@@ -115,6 +122,7 @@ public class RTPConnector implements RtpSessionDataListener{
 	public boolean removeParticipant(long sourceID){
 		RtpParticipant participant = participants.get(sourceID);
 		if(participant != null){
+			Log.log("Removed RTP client with sourceID="+sourceID);
 			session.removeReceiver(participant);
 			participants.remove(sourceID);
 			return true;
@@ -190,6 +198,8 @@ public class RTPConnector implements RtpSessionDataListener{
 		connectors.remove(this);
 		participants.clear();
 		listeners.clear();
+		
+		Log.log("The RTPConnector at [IP="+ip+";dataport="+port+"] was stopped");
 	}
 
 	

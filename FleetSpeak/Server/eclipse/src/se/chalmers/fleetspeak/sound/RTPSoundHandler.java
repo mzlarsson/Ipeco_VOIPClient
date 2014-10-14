@@ -67,4 +67,16 @@ public class RTPSoundHandler extends RTPHandler implements SoundHandler{
 			} catch (InterruptedException e) {}
 		}
 	}
+	
+	/**
+	 * Closes this handler and releases all resources.
+	 */
+	@Override
+	public void terminate(){
+		if(mixer != null){
+			mixer.removeClientFromMixer(getParticipantSourceID());
+		}
+		
+		super.terminate();
+	}
 }
