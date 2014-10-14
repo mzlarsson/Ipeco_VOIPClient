@@ -14,6 +14,13 @@ public interface SoundHandler {
 	 */
 	public void start();
 	
+
+	/**
+	 * Changes the mixer that this SoundHandler is connected to.
+	 * @param mixerID The ID of the mixer to use.
+	 */
+	public void switchMixer(int mixerID);
+	
 	/**
 	 * Terminates the SoundHandler and releases resources
 	 */

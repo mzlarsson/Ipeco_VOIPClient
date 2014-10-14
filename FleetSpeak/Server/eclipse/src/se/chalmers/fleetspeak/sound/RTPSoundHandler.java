@@ -30,6 +30,11 @@ public class RTPSoundHandler extends RTPHandler implements SoundHandler{
 		switchMixer(0);
 	}
 	
+	/**
+	 * Changes the mixer that this SoundHandler is connected to.
+	 * @param mixerID The ID of the mixer to use.
+	 */
+	@Override
 	public void switchMixer(int mixerID){
 		if(mixer != null){
 			mixer.removeClientFromMixer(getParticipantSourceID());
