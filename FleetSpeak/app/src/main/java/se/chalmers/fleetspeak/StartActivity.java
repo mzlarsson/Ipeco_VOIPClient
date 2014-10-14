@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Message;
@@ -62,6 +63,7 @@ public class StartActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
+        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         new TruckCommunicator().execute(AutomotiveSignalId.FMS_WHEEL_BASED_SPEED, AutomotiveSignalId.FMS_SELECTED_GEAR);
 
@@ -117,8 +119,8 @@ public class StartActivity extends ActionBarActivity {
 
         startConnection(ipAdress, portNumber);
 
-        Intent intent = new Intent(this,ChatRoomActivity.class);
-        startActivity(intent);
+       // Intent intent = new Intent(this,ChatRoomActivity.class);
+       // startActivity(intent);
     }
 
     public void saveUsername(View view){
@@ -142,7 +144,6 @@ public class StartActivity extends ActionBarActivity {
             } catch (RemoteException e) {
             }
         }else{
-            Log.i("Hej","hej");
             try {
                 Message msg = Message.obtain(null, SocketService.SETNAME,"Coolman");
                 msg.replyTo = mMessenger;

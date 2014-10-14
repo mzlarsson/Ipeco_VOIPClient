@@ -101,8 +101,8 @@ public class SocketService extends Service {
                         }
                         break;
                     case SETNAME:
-                        //TODO
-                        Log.i(LOGNAME, "Command not implemented");
+
+                        Log.i(LOGNAME, "Sending setName command");
                         try {
                             if(socket != null && socket.isConnected()) {
                                 objectOutputStream.writeObject(new Command("newName", null, null));
@@ -110,7 +110,7 @@ public class SocketService extends Service {
                             }
                             //lookForMessage();
                         } catch (IOException e) {
-                            Log.i(LOGNAME, e.getMessage());
+                            Log.i(LOGNAME, e.toString());
                         }
                         break;
                     case SETMESSENGER:
@@ -142,9 +142,12 @@ public class SocketService extends Service {
                                 objectOutputStream.writeObject(new Command("data", null, null));
                                 objectOutputStream.flush();
                             }
+                            Thread.sleep(10L);
                             //lookForMessage();
                         } catch (IOException e) {
-                            Log.i(LOGNAME, e.getMessage());
+                            Log.i(LOGNAME, e.toString());
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
                         }
                         break;
                 }
@@ -161,7 +164,7 @@ public class SocketService extends Service {
 
     private void lookForMessage() {
         if(socket != null && socket.isConnected()) {
-           // Log.i(LOGNAME, "Looking for message form server");
+            //Log.i(LOGNAME, "Looking for message form server");
             try {
                 Command c;
                 c = (Command) objectInputStream.readObject();
@@ -169,17 +172,18 @@ public class SocketService extends Service {
                 if (c != null) {
                     Log.i(LOGNAME, " Something have been found: " + c.getCommand());
                     messenger.send(Message.obtain(null, 0, c));
+                }else {
+                    Log.i(LOGNAME, "Found nothing");
                 }
-
             } catch (IOException e) {
                 endSocketConnection();
-                Log.i(LOGNAME, e.toString());
+               // Log.i(LOGNAME, e.toString());
             } catch (ClassNotFoundException e) {
-                Log.i(LOGNAME, e.getMessage());
+                Log.e(LOGNAME, e.getMessage());
             } catch (NullPointerException e) {
-                Log.i(LOGNAME, e.getMessage());
+                Log.e(LOGNAME, e.getMessage());
             } catch (RemoteException e) {
-                Log.i(LOGNAME, e.getMessage());
+                Log.e(LOGNAME, e.getMessage());
             }
         }
     }

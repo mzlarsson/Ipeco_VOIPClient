@@ -6,6 +6,9 @@ package se.chalmers.fleetspeak;
  */
 public class User {
     private String name;
+
+
+
     private int id;
 
     public User(String name, int id) {
@@ -29,6 +32,9 @@ public class User {
     public void setName(String name) {
         this.name = name;
     }
+
+    public void setId(int id) {this.id = id;}
+
 
     @Override
     public boolean equals(Object o) {

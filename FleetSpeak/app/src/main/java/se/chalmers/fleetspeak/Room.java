@@ -30,6 +30,9 @@ public class Room {
         this.name = name;
     }
 
+    public void setId(int id){this.id = id;}
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
