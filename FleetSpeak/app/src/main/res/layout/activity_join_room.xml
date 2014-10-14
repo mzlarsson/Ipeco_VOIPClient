@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ImageButton
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:id="@+id/pushToTalkButton"
-        android:layout_gravity="bottom"
-        android:onClick="pushToTalk"
-        android:background="@drawable/ic_mic_grey"
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/create_room_text"
+        android:onClick="create_new_room_onClick"
+        android:id="@+id/buttonCreateRoom"
+        android:layout_gravity="center_horizontal"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
 
     <ListView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/userList"
-        android:layout_alignParentTop="true"
+        android:id="@+id/roomView"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_above="@+id/pushToTalkButton"
-      />
-
+        android:layout_above="@+id/buttonCreateRoom"
+        android:layout_alignParentTop="true" />
 
 </RelativeLayout>

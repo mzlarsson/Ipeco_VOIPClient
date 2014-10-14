@@ -1,7 +1,9 @@
-package se.chalmers.fleetspeak;
+package se.chalmers.fleetspeak.activities;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+
+import se.chalmers.fleetspeak.R;
 
 /**
  * Created by TwiZ on 2014-10-03.
