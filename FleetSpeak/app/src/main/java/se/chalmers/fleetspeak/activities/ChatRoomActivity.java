@@ -3,10 +3,13 @@ package se.chalmers.fleetspeak.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +18,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.PopupWindow;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,6 +37,9 @@ import se.chalmers.fleetspeak.User;
 public class ChatRoomActivity extends ActionBarActivity {
 
     ListView userListView;
+    private SeekBar volumeControlBar;
+    private SeekBar micControlBar;
+    private PopupWindow micAndVolumePanel;
 
     User[] users;
     private RoomHandler handler; //TODO: For test purposes
@@ -67,8 +75,7 @@ public class ChatRoomActivity extends ActionBarActivity {
                 Toast.makeText(ChatRoomActivity.this, examplePersonText + " "+currentRoomID, Toast.LENGTH_SHORT).show();
             }
         });
-
-*/
+        */
     }
 
     private void createSimulatedHandler() { //TODO: For test purposes. Simulerar en handler
@@ -101,7 +108,8 @@ public class ChatRoomActivity extends ActionBarActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
         switch (item.getItemId()){
-
+            case R.id.volume_mic_control:
+                micAndVolumePanel.showAsDropDown(getActionBar().getCustomView());
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
                 return true;
@@ -161,5 +169,47 @@ public class ChatRoomActivity extends ActionBarActivity {
 
             return view;
         }
+    }
+
+    public boolean onCreateOptionsMenu(Menu menu){
+        getMenuInflater().inflate(R.menu.chatroommenu, menu);
+        setUppVolumeMicDropDown(this);
+        return true;
+
+    }
+
+    /**
+     * Sets up two seekbar in a popupwindow to volume and mic seekbar
+     * @param context
+     */
+    private void setUppVolumeMicDropDown(Context context){
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View contentView = inflater.inflate(R.layout.drop_down_2seekbar, null);
+        volumeControlBar = (SeekBar) contentView.findViewById(R.id.first_seekbar);
+        micControlBar = (SeekBar) contentView.findViewById(R.id.second_seekbar);
+        micAndVolumePanel = new PopupWindow(context, null, android.R.attr.actionDropDownStyle);
+        micAndVolumePanel.setFocusable(true);
+        micAndVolumePanel.setContentView(contentView);
+        setPopupSize(micAndVolumePanel);
+    }
+
+    private void setPopupSize(PopupWindow popupWindow) {
+        View contentView = popupWindow.getContentView();
+
+        int unspecified = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+        contentView.measure(unspecified, unspecified);
+
+        int width = contentView.getMeasuredWidth();
+        int height = contentView.getMeasuredHeight();
+
+        Drawable background = popupWindow.getBackground();
+        if (background != null) {
+            Rect rect = new Rect();
+            background.getPadding(rect);
+            width += rect.left + rect.right;
+            height += rect.top + rect.bottom;
+        }
+        popupWindow.setWidth(width);
+        popupWindow.setHeight(height);
     }
 }

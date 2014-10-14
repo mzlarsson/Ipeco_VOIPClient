@@ -6,5 +6,17 @@
     <string name="action_settings">Settings</string>
     <string name="new_server"> New Server</string>
     <string name="Bookmarks">Bookmarks</string>
+    <string name="volume">Volume</string>
+    <string name="create_room_text">Create Room</string>
+    <string name="server_name_text">Server name</string>
+    <string name="ip_adress_text">IP adress</string>
+    <string name="port_number_text">Port number</string>
+    <string name="auto_connect_text">Auto Connect</string>
+    <string name="save_bookmark_text">Save bookmark</string>
+    <string name="connect_text">Connect</string>
+    <string name="save_preferences_text">Save preferences</string>
+    <string name="username_text">Username</string>
+    <string name="connection_error">Connection Error</string>
+    <string name="volume_mic_control">volume and mic control</string>
 
 </resources>

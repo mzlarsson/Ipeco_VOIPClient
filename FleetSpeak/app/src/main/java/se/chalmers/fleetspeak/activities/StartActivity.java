@@ -1,4 +1,7 @@
 package se.chalmers.fleetspeak.activities;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
@@ -20,8 +23,11 @@ import se.chalmers.fleetspeak.User;
 import se.chalmers.fleetspeak.activities.BookmarkActivity;
 import se.chalmers.fleetspeak.activities.ChatRoomActivity;
 
+import static android.app.PendingIntent.getActivity;
+
 public class StartActivity extends ActionBarActivity {
     private EditText ipTextField;
+    private Context context = this;
     private EditText portTextField;
     private EditText userNameTextField;
     private SharedPreferences prefs;
@@ -72,19 +78,61 @@ public class StartActivity extends ActionBarActivity {
     }
 
     public void onConnectButtonClick(View view) {
-/*
+
         String ipAdress = String.valueOf(ipTextField.getText());
-        int portNumber = Integer.parseInt(String.valueOf(portTextField.getText()));
+        String portNumber = String.valueOf(portTextField.getText());
 
         //Connector.connect(ipAdress, portNumber);
-        if(savePrefs.isChecked()){
-            saveUsername(view);
-        }*/
+        if(savePrefs.isChecked()) {
+            savePreferences();
+        }
         Intent intent = new Intent(this,JoinRoomActivity.class);
         startActivity(intent);
     }
-
-    public void saveUsername(View view){
+    /**
+     * Show Connection error message
+     */
+    public void showConnectionErrorMessage(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("Connection Error");
+        builder.setMessage("Connection to Server failed");
+        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.cancel();
+            }
+        });
+        AlertDialog connectionError = builder.create();
+        connectionError.show();
+    }
+    /**
+     * Show dialog message the Car is running
+     */
+    public void showCarRunningErrorMessage(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("Car Running");
+        builder.setMessage("Car is running several action are notpermited");
+        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialogInterface, int i){
+                dialogInterface.cancel();
+            }
+        });
+        AlertDialog carRunning = builder.create();
+        carRunning.show();
+    }
+    /**
+     * Enables or disable editing in textfield deping on isEditable
+     * @param isEditable
+     */
+    public void textFieldIsEditable(boolean isEditable){
+        userNameTextField.setFocusable(isEditable);
+        ipTextField.setFocusable(isEditable);
+        portTextField.setFocusable(isEditable);
+    }
+    /**
+     * Saves the preferences of the User
+     */
+    public void savePreferences(){
         String newUsername = String.valueOf(userNameTextField.getText());
         String newIpAdress = String.valueOf(ipTextField.getText());
         String newPortNumber = String.valueOf(portTextField.getText());
