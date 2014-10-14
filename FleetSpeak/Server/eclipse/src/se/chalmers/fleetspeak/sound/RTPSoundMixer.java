@@ -3,6 +3,8 @@ package se.chalmers.fleetspeak.sound;
 import java.util.ArrayList;
 import java.util.List;
 
+import se.chalmers.fleetspeak.util.Log;
+
 /**
  * Class for mixing sound based on RTP packages.
  * 
@@ -49,6 +51,8 @@ public class RTPSoundMixer implements RTPListener{
 		
 		//Adds an empty packet to be filled with data later
 		data.add(new RTPSoundPacket(sourceID, getCurrentSequenceOffset()));
+
+		Log.log("Client with sourceID="+sourceID+" joined mixer "+this.identifier);
 	}
 
 	/**
@@ -64,6 +68,8 @@ public class RTPSoundMixer implements RTPListener{
 		if(packet != null){
 			this.data.remove(packet);
 		}
+
+		Log.log("Client with sourceID="+sourceID+" disconnected from mixer "+this.identifier);
 	}
 
 	/**
