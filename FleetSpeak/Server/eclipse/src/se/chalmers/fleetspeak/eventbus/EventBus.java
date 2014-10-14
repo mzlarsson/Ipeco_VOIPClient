@@ -62,9 +62,9 @@ public class EventBus {
 	 * @param event
 	 *            that has been performed.
 	 */
-	public void fireEvent(Command command) {
+	public void fireEvent(EventBusEvent event) {
 		for (IEventBusSubscriber subscriber : subscribers) {
-			subscriber.eventPerformed(command);
+			subscriber.eventPerformed(event);
 		}
 	}
 	public List<IEventBusSubscriber> getSubscribers(){
