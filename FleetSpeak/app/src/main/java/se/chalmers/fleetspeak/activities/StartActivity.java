@@ -13,7 +13,10 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 
 import se.chalmers.fleetspeak.R;
+import se.chalmers.fleetspeak.Room;
+import se.chalmers.fleetspeak.RoomHandler;
 import se.chalmers.fleetspeak.TruckCommunicator;
+import se.chalmers.fleetspeak.User;
 import se.chalmers.fleetspeak.activities.BookmarkActivity;
 import se.chalmers.fleetspeak.activities.ChatRoomActivity;
 
@@ -47,6 +50,7 @@ public class StartActivity extends ActionBarActivity {
         portTextField.setText(portNumber);
         ipTextField.setText(ipAdress);
         savePrefs = (CheckBox) findViewById(R.id.saveUserPref);
+
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

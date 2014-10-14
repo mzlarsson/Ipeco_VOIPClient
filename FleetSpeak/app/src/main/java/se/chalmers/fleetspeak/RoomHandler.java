@@ -1,8 +1,8 @@
 package se.chalmers.fleetspeak;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.NoSuchElementException;
-import java.util.TreeMap;
 
 /**
  * A class for keeping tracks of which room the different users are in.
@@ -10,10 +10,10 @@ import java.util.TreeMap;
  */
 public class RoomHandler implements IUserHandler{
 
-    private TreeMap<Room,ArrayList<User>> rooms;
+    private HashMap<Room,ArrayList<User>> rooms;
 
     public RoomHandler() {
-        rooms = new TreeMap<Room,ArrayList<User>>();
+        rooms = new HashMap<Room,ArrayList<User>>();
     }
 
     public void addUser(User user, Room room) {
@@ -67,6 +67,14 @@ public class RoomHandler implements IUserHandler{
         return rooms.get(room).toArray(new User[rooms.get(room).size()]);
     }
 
+    /**
+     * @param id The ID of the room.
+     * @return List of users in the room with the given id
+     *
+     */
+    public User[] getUsers(int id) {
+        return getUsers(findRoom(id));
+    }
     /**
      * Finds the first user with the specified id.
      * @param id The ID of the user.

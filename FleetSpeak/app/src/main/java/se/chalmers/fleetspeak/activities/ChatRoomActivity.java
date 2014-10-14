@@ -1,6 +1,7 @@
 package se.chalmers.fleetspeak.activities;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 import se.chalmers.fleetspeak.IUserHandler;
 import se.chalmers.fleetspeak.R;
 import se.chalmers.fleetspeak.Room;
+import se.chalmers.fleetspeak.RoomHandler;
 import se.chalmers.fleetspeak.User;
 
 /**
@@ -31,13 +33,12 @@ public class ChatRoomActivity extends ActionBarActivity {
 
     ListView userListView;
 
-    /*
-    * Lista som innehåller alla users i ett rum
-    * */
-    ArrayList<String> listItems = new ArrayList<String>();
+    User[] users;
+    private RoomHandler handler; //TODO: For test purposes
 
-    ArrayAdapter<String> adapter;
+    ArrayAdapter<User> adapter;
     private boolean isTalkActive = false;
+    private int currentRoomID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,47 +46,56 @@ public class ChatRoomActivity extends ActionBarActivity {
         setContentView(R.layout.activity_chatroom);
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Intent intent = getIntent();
+        currentRoomID = intent.getIntExtra("roomID", 0);
+
+        createSimulatedHandler(); //TODO: For Test purposes
+        users = getUserList(); //init userList
 
         userListView = (ListView) findViewById(R.id.userList);
-
-        /*Ladda listan med users*/
-        listItems.add("Olle");
-
-        adapter = new ChatRoomListAdapter(this, listItems);
-        //adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, listItems);
+        adapter = new ChatRoomListAdapter(this, users);
         userListView.setAdapter(adapter);
 
         /*
         * Vad som ska hända när man klicka på en user
         * */
-        userListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+ /*         userListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 String examplePersonText = String.valueOf(adapterView.getItemAtPosition(position));
-                Toast.makeText(ChatRoomActivity.this, examplePersonText, Toast.LENGTH_SHORT).show();
+                Toast.makeText(ChatRoomActivity.this, examplePersonText + " "+currentRoomID, Toast.LENGTH_SHORT).show();
             }
         });
+
+*/
     }
 
-    private void addUserToList(View v, String idUser) {
-        listItems.add(idUser);
-        adapter.notifyDataSetChanged();
+    private void createSimulatedHandler() { //TODO: For test purposes. Simulerar en handler
+        handler = new RoomHandler();
+        Room room1 = new Room("Rum1", 11);
+        Room room2 = new Room("Rum2", 22);
+        User user0 = new User("User0", 0);
+        User user1 = new User("User1", 1);
+        User user2 = new User("User2",2);
+        handler.addUser(user1, room1);
+        handler.addUser(user2, room2);
+    }
+
+    /**
+     * Gets the user list from the handler.
+     * @return List of Users from the room with current room id.
+     */
+    private User[] getUserList(){
+        //TODO: Get users from the real handler.
+        return handler.getUsers(currentRoomID);
     }
 
 
-    private void removeUserFromList(View v, String idUser) {
-        for (int i = 0; i < listItems.size(); i++) {
-            if (listItems.get(i).equals(idUser)) {
-                listItems.remove(i);
-                break;
-            }
-        }
-        adapter.notifyDataSetChanged();
-    }
-
-    //Button action, For test purposes
-    public void subUserDebug(View view) {
-        removeUserFromList(view, "PelleID");
+    private void updateUserList() {
+        //TODO: When a user joins this room(currentRoomID) call this method
+        //users = TODO: Grab the new changes or load the new list.
+        adapter.notifyDataSetChanged(); //Pokes the adapter to view the new changes
     }
 
     @Override
@@ -98,11 +108,6 @@ public class ChatRoomActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    //For test purposes
-    public void addUserDebug(View view) {
-        addUserToList(view, "PelleID");
     }
 
     /**
@@ -121,10 +126,12 @@ public class ChatRoomActivity extends ActionBarActivity {
         }
     }
 
-    //Inner class, Adapter for the ChatRoom ListView
-    public class ChatRoomListAdapter extends ArrayAdapter<String> {
+    /**
+     * Inner class, Adapter for the ChatRoom ListView
+     */
+    public class ChatRoomListAdapter extends ArrayAdapter<User> {
 
-        public ChatRoomListAdapter(Context context, ArrayList<String> values) {
+        public ChatRoomListAdapter(Context context, User[] values) {
             super(context, R.layout.list_item_users, values);
         }
 
@@ -134,7 +141,8 @@ public class ChatRoomActivity extends ActionBarActivity {
 
             View view = inflater.inflate(R.layout.list_item_users,parent, false);
 
-            String user = getItem(position);
+            User user = getItem(position);
+            String userName = user.getName();
 
             TextView textView = (TextView) view.findViewById(R.id.userName);
             ImageView imageView = (ImageView) view.findViewById(R.id.userTalkImage);
@@ -142,7 +150,7 @@ public class ChatRoomActivity extends ActionBarActivity {
             /*
              * Sätter namnet i listan
              */
-            textView.setText(user);
+            textView.setText(userName);
 
             /*
             * För att ändra icon när någon pratar måste vi uppdatera adaptern varje gång.
