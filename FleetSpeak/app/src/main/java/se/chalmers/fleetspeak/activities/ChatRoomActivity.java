@@ -37,6 +37,7 @@ public class ChatRoomActivity extends ActionBarActivity {
     ListView userListView;
     private SeekBar volumeControlBar;
     private SeekBar micControlBar;
+    private PopupWindow micAndVolumePanel;
 
     /*
     * Lista som innehåller alla users i ett rum
@@ -99,7 +100,8 @@ public class ChatRoomActivity extends ActionBarActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
         switch (item.getItemId()){
-
+            case R.id.volume_mic_control:
+                micAndVolumePanel.showAsDropDown(getActionBar().getCustomView());
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
                 return true;
@@ -179,10 +181,10 @@ public class ChatRoomActivity extends ActionBarActivity {
         View contentView = inflater.inflate(R.layout.drop_down_2seekbar, null);
         volumeControlBar = (SeekBar) contentView.findViewById(R.id.first_seekbar);
         micControlBar = (SeekBar) contentView.findViewById(R.id.second_seekbar);
-        final PopupWindow popupWindow = new PopupWindow(context, null, android.R.attr.actionDropDownStyle);
-        popupWindow.setFocusable(true);
-        popupWindow.setContentView(contentView);
-        setPopupSize(popupWindow);
+        micAndVolumePanel = new PopupWindow(context, null, android.R.attr.actionDropDownStyle);
+        micAndVolumePanel.setFocusable(true);
+        micAndVolumePanel.setContentView(contentView);
+        setPopupSize(micAndVolumePanel);
     }
 
     private void setPopupSize(PopupWindow popupWindow) {
@@ -201,7 +203,6 @@ public class ChatRoomActivity extends ActionBarActivity {
             width += rect.left + rect.right;
             height += rect.top + rect.bottom;
         }
-
         popupWindow.setWidth(width);
         popupWindow.setHeight(height);
     }
