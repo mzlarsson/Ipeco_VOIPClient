@@ -3,7 +3,8 @@ package se.chalmers.fleetspeak;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.widget.EditText;
+
+import se.chalmers.fleetspeak.util.Command;
 
 /**
  * Created by Nieo on 08/10/14.

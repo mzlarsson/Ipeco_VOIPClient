@@ -17,6 +17,8 @@ import java.net.Socket;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import se.chalmers.fleetspeak.util.Command;
+
 public class SocketService extends Service {
 
     private Socket socket;
