@@ -54,6 +54,10 @@ public class CommandHandler implements IEventBusSubscriber {
 				Client c = roomHandler.getClient((Integer) command.getKey());
 				c.setName((String) command.getValue());
 				eventBus.fireEvent(new EventBusEvent("broadcast", command, null));
+			// Called to initiate the rtp sound transfer.
+//			} else if (commandName.equals("setRtpPort")) {
+//				Client c = roomHandler.getClient((Integer) command.getKey());
+//				c.startRTPTransfer((Integer)command.getValue());
 			// Called when a client changes rooms to a new room.
 			} else if (commandName.equals("createAndMove")) {
 				roomHandler.moveClient((Integer)command.getKey(), new Room((String)command.getValue()));
