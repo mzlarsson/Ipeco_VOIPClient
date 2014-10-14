@@ -22,7 +22,7 @@ public class Client {
 		this.clientID = IDFactory.getInstance().getID();
 		this.rtp = SoundHandlerFactory.getDefaultSoundHandler(socket.getInetAddress(), rtpPort);
 		this.rtp.start();
-		this.tcp = new TCPHandler(socket);
+		this.tcp = new TCPHandler(socket, clientID);
 		this.tcp.start();
 		this.tcp.sendData(new Command("setID",clientID,null ));
 

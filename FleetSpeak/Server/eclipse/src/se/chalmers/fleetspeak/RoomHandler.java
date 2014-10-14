@@ -3,11 +3,10 @@ package se.chalmers.fleetspeak;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
-import java.util.TreeMap;
 /**
  * An class for handling the rooms and client on the server side.
  * Based on the RoomHandler on the client side.
- * @author David Micha�lsson
+ * @author David Michaelsson
  *
  */
 public class RoomHandler {
@@ -63,15 +62,19 @@ public class RoomHandler {
 		this.addClient(c, r);
 	}
 	
+	public void moveClient(int clientID, Room room){
+		this.moveClient(this.getClient(clientID), room);
+	}
+	
 	public void moveClient(int clientID, int roomID){
 		this.moveClient(this.getClient(clientID), this.findRoom(roomID));
 	}
 	
-	public RoomInterface[] getRooms(){
-		return rooms.keySet().toArray(new RoomInterface[rooms.keySet().size()]);
+	public Room[] getRooms(){
+		return rooms.keySet().toArray(new Room[rooms.keySet().size()]);
 	}
 	
-	public Client[] getClients(RoomInterface r){
+	public Client[] getClients(Room r){
 		return rooms.get(r).toArray(new Client[rooms.get(r).size()]);
 	}
 	
@@ -103,8 +106,8 @@ public class RoomHandler {
 		}
 	}
 	
-	public int getNbrOfClients(RoomInterface ri){
-		return rooms.get(ri).size();
+	public int getNbrOfClients(Room r){
+		return rooms.get(r).size();
 	}
 	
 	public int getNbrOfRooms(){
