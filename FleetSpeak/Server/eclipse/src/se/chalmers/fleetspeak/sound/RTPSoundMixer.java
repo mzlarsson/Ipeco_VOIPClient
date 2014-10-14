@@ -22,7 +22,7 @@ import java.util.List;
 
 public class RTPSoundMixer implements RTPListener{
 
-	private static List<RTPSoundMixer> mixers;
+	private static List<RTPSoundMixer> mixers = new ArrayList<RTPSoundMixer>();
 	
 	private List<RTPSoundPacket> data;
 	private RTPConnector connector;
