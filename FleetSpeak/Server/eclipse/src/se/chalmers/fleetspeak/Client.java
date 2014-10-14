@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.List;
 
-import se.chalmers.fleetspeak.rtp.RTPHandler;
-import se.chalmers.fleetspeak.rtp.SoundHandler;
+import se.chalmers.fleetspeak.sound.SoundHandler;
+import se.chalmers.fleetspeak.sound.SoundHandlerFactory;
 import se.chalmers.fleetspeak.tcp.CommandHandler;
 import se.chalmers.fleetspeak.tcp.CommandListener;
 import se.chalmers.fleetspeak.tcp.Commands;
@@ -14,14 +14,14 @@ public class Client implements ConnectionListener, CommandListener {
 
 	private String usercode;
 	private String name;
-	private RTPHandler rtp;
+	private SoundHandler rtp;
 	private CommandHandler cmd;
 	private boolean muted = false;
 	private int clientID;
 	
 	public Client(Socket socket, int rtpPort, String usercode)
 			throws IOException {
-		this.rtp = new SoundHandler(socket.getInetAddress(), rtpPort);
+		this.rtp = SoundHandlerFactory.getDefaultSoundHandler(socket.getInetAddress(), rtpPort);
 		this.rtp.start();
 
 		this.cmd = new CommandHandler(socket);

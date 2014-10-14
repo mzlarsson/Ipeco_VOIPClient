@@ -6,7 +6,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import se.chalmers.fleetspeak.rtp.RTPHandler;
+import se.chalmers.fleetspeak.sound.Constants;
 public class ServerMain{
 	
     private static int DEFAULT_PORT_TCP = 8867;
@@ -47,7 +47,7 @@ public class ServerMain{
     	room = new FleetRoom(1);
     	roomhandler = new RoomHandler();
     	//TODO does this really work?
-    	RTPHandler.setServerIP(InetAddress.getLocalHost().getHostAddress());
+    	Constants.setServerIP(InetAddress.getLocalHost().getHostAddress());
     	
 
     	this.tcpPort = tcpPort;
