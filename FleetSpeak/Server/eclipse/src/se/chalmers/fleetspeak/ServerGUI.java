@@ -23,6 +23,9 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.text.DefaultCaret;
 
+import se.chalmers.fleetspeak.eventbus.EventBus;
+import se.chalmers.fleetspeak.eventbus.EventBusEvent;
+import se.chalmers.fleetspeak.util.Command;
 import se.chalmers.fleetspeak.util.Log;
 
 public class ServerGUI extends JFrame implements ActionListener, KeyListener {
@@ -219,7 +222,17 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener {
 	@Override
 	public void keyReleased(KeyEvent e) {
 		if (e.getKeyCode()==KeyEvent.VK_ENTER) {
-			log.log(Level.ALL, "COMMAND INPUT: " + cmdLine.getText());
+			String cmd = cmdLine.getText();
+			if(cmd.startsWith("startRTP")){
+				String[] data = cmd.split(" ");
+				int clientID = Integer.parseInt(data[1]);
+				int clientPort = Integer.parseInt(data[2]);
+				log.log(Level.ALL, "Starting RTP with port: "+clientPort);
+				EventBusEvent event = new EventBusEvent("CommandHandler", new Command("setRtpPort", clientID, clientPort), null);
+				EventBus.getInstance().fireEvent(event);
+			}else{
+				log.log(Level.ALL, "COMMAND INPUT: " + cmdLine.getText());
+			}
 			cmdLine.setText("");
 		}		
 	}

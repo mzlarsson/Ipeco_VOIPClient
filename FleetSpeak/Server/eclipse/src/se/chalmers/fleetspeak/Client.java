@@ -24,6 +24,7 @@ public class Client{
 
 	public Client(Socket socket, int serverRtpPort) throws IOException {
 		this.clientID = IDFactory.getInstance().getID();
+		Log.log("Created client with ID="+this.clientID);
 		this.tcp = new TCPHandler(socket, clientID);
 		this.tcp.start();
 		this.tcp.sendData(new Command("setID", clientID, null));
