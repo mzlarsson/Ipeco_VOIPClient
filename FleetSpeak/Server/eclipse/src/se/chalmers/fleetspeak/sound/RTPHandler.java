@@ -25,13 +25,13 @@ public abstract class RTPHandler extends Thread{
 	 * @param payloadType The expected payload type
 	 * @throws IllegalArgumentException If Constants.getServerIP() contains null
 	 */
-	protected RTPHandler(InetAddress clientIP, int serverPort, int payloadType) throws IllegalArgumentException{
+	protected RTPHandler(InetAddress clientIP, int serverPort, int clientPort, int payloadType) throws IllegalArgumentException{
 		if(Constants.getServerIP() == null){
 			throw new IllegalArgumentException("The server IP has not yet been set");
 		}
 		
 		connector = RTPConnector.getConnector(Constants.getServerIP(), serverPort, payloadType);
-		participantSourceID = connector.addParticipant(clientIP);
+		participantSourceID = connector.addParticipant(clientIP, clientPort);
 	}
 	
 	/**

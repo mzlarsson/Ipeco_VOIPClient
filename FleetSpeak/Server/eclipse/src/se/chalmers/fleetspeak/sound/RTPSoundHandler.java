@@ -25,8 +25,8 @@ public class RTPSoundHandler extends RTPHandler implements SoundHandler{
 	 * @param serverPort The port on the server to send/listen for RTP data.
 	 * @throws IllegalArgumentException If Constants.getServerIP() contains null
 	 */
-	protected RTPSoundHandler(InetAddress clientIP, int serverPort) throws IllegalArgumentException{
-		super(clientIP, serverPort, Constants.RTP_SOUND_PAYLOAD_TYPE);
+	protected RTPSoundHandler(InetAddress clientIP, int serverPort, int clientPort) throws IllegalArgumentException{
+		super(clientIP, serverPort, clientPort, Constants.RTP_SOUND_PAYLOAD_TYPE);
 		switchMixer(0);
 	}
 	

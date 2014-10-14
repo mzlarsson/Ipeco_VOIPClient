@@ -20,8 +20,8 @@ public class SoundHandlerFactory {
 	 * @param serverPort The port that the server should send/listen data to/from
 	 * @return A valid SoundHandler initiated with the given values
 	 */
-	public static SoundHandler getDefaultSoundHandler(InetAddress clientIP, int serverPort){
-		return getSoundHandler(Protocol.RTP, clientIP, serverPort);
+	public static SoundHandler getDefaultSoundHandler(InetAddress clientIP, int serverPort, int clientPort){
+		return getSoundHandler(Protocol.RTP, clientIP, serverPort, clientPort);
 	}
 	
 	/**
@@ -31,9 +31,9 @@ public class SoundHandlerFactory {
 	 * @param serverPort The port that the server should send/listen data to/from
 	 * @return A valid SoundHandler initiated with the given values
 	 */
-	public static SoundHandler getSoundHandler(Protocol protocol, InetAddress clientIP, int serverPort){
+	public static SoundHandler getSoundHandler(Protocol protocol, InetAddress clientIP, int serverPort, int clientPort){
 		switch(protocol){
-			case RTP: return new RTPSoundHandler(clientIP, serverPort);
+			case RTP: return new RTPSoundHandler(clientIP, serverPort, clientPort);
 			default: return null;
 		}
 	}

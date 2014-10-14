@@ -1,6 +1,7 @@
 package se.chalmers.fleetspeak;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.Socket;
 
 import se.chalmers.fleetspeak.sound.SoundHandler;
@@ -10,22 +11,35 @@ import se.chalmers.fleetspeak.util.Command;
 import se.chalmers.fleetspeak.util.IDFactory;
 import se.chalmers.fleetspeak.util.Log;
 
-public class Client {
+public class Client{
 
 	private String name;
 	private SoundHandler rtp;
 	private TCPHandler tcp;
 	private boolean muted = false;
 	private int clientID;
+	
+	private InetAddress ip;
+	private int serverRtpPort;
 
-	public Client(Socket socket, int rtpPort) throws IOException {
+	public Client(Socket socket, int serverRtpPort) throws IOException {
 		this.clientID = IDFactory.getInstance().getID();
-		this.rtp = SoundHandlerFactory.getDefaultSoundHandler(socket.getInetAddress(), rtpPort);
-		this.rtp.start();
 		this.tcp = new TCPHandler(socket, clientID);
 		this.tcp.start();
-		this.tcp.sendData(new Command("setID",clientID,null ));
+		this.tcp.sendData(new Command("setID", clientID, null));
 
+		this.ip = socket.getInetAddress();
+		this.serverRtpPort = serverRtpPort;
+	}
+	
+	public void startRTPTransfer(int clientRtpPort){
+		if(this.rtp == null){
+			this.rtp = SoundHandlerFactory.getDefaultSoundHandler(ip, serverRtpPort, clientRtpPort);
+			this.rtp.start();
+			Log.log("Connection successfully started to IP="+ip.getHostAddress());
+		}else{
+			Log.log("Error: Could not start RTP connection. Already started.");
+		}
 	}
 
 	public void setName(String name) {

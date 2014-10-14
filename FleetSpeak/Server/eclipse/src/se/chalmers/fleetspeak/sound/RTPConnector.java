@@ -25,8 +25,6 @@ import com.biasedbit.efflux.session.RtpSessionDataListener;
  * 
  * NOTE: This class uses properties from the se.chalmers.fleetspeak.sound.Constants class.
  * 			* Constants.RTP_SESSION_ID
- * 			* Constants.CLIENT_RTP_DATA_PORT
- * 			* Constants.CLIENT_RTP_CTRL_PORT
  * 
  * INFO: To retrieve data from a client, follow these steps.
  * 			1. Call getConnector(ip, dataPort, controlPort) to get a connector instance.
@@ -100,8 +98,8 @@ public class RTPConnector implements RtpSessionDataListener{
 	 * @param clientIP The IP to listen to
 	 * @return The source ID of the created participant
 	 */
-	public long addParticipant(InetAddress clientIP){
-		RtpParticipant participant = getParticipant(clientIP, Constants.CLIENT_RTP_DATA_PORT, Constants.CLIENT_RTP_CTRL_PORT);
+	public long addParticipant(InetAddress clientIP, int clientPort){
+		RtpParticipant participant = getParticipant(clientIP, clientPort, clientPort+1);
 		if(participant != null){
 			if(!participants.containsKey(participant.getInfo().getSsrc())){
 				Log.log("Created RTP client for [IP="+clientIP.getHostAddress()+";SOURCEID="+participant.getInfo().getSsrc()+"]");
