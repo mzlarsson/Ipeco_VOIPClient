@@ -13,14 +13,16 @@ import se.chalmers.fleetspeak.util.Log;
 
 public class TCPHandler extends Thread implements IEventBusSubscriber {
 
+	private int clientID;
 	private Socket clientSocket;
 	private ObjectOutputStream objectOutputStream;
 	private ObjectInputStream objectInputStream;
 	EventBus eventBus;
 	private boolean isRunning = false;
 
-	public TCPHandler(Socket clientSocket) {
-
+	public TCPHandler(Socket clientSocket, int clientID) {
+		
+		this.clientID = clientID;
 		this.clientSocket = clientSocket;
 		try {
 			Log.log("Trying to get streams");
@@ -64,24 +66,26 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 		} catch (ClassNotFoundException e) {
 			Log.log(e.getMessage());
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			Log.log(e.getMessage());
+			eventBus.fireEvent(new EventBusEvent("CommandHandler",
+					new Command("disconnect", clientID, null), this));
 		}
-
 	}
 
 	@Override
 	public void eventPerformed(EventBusEvent event) {
+		// Will forward the command to its client if this event starts with broadcast and the actor is this class or null.
 		if (event.getReciever().startsWith("broadcast")) {
-			try {
-				objectOutputStream.writeObject(event.getCommand());
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			if (event.getActor()==null || event.getActor()==this) {
+				try {
+					objectOutputStream.writeObject(event.getCommand());
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
-
 	}
+	
 	public void sendData(Command command){
 		try{
 			Log.log("[TCPHandler]Trying to send a command");
@@ -91,5 +95,4 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 			e.printStackTrace();
 		}
 	}
-
 }

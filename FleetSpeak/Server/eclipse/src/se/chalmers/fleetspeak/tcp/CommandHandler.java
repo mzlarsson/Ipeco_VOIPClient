@@ -1,6 +1,7 @@
 package se.chalmers.fleetspeak.tcp;
 
 import se.chalmers.fleetspeak.Client;
+import se.chalmers.fleetspeak.Room;
 import se.chalmers.fleetspeak.RoomHandler;
 import se.chalmers.fleetspeak.eventbus.EventBus;
 import se.chalmers.fleetspeak.eventbus.EventBusEvent;
@@ -37,22 +38,32 @@ public class CommandHandler implements IEventBusSubscriber {
 			Command command = event.getCommand();
 			String commandName = command.getCommand();
 			Log.log("[CommandHandler] Got a command \"" + commandName + "\"");
+			// Called when a user is disconnected.
 			if (commandName.equals("disconnect")) {
 				int i = (Integer) event.getCommand().getKey();
 				roomHandler.removeClient(i);
 				eventBus.fireEvent(new EventBusEvent("broadcast", new Command(
-						"userDisconnected", i, null), this));
+						"userDisconnected", i, null), null));
+			// TODO This is a test command!!!!
 			} else if (commandName.equals("data")) {
 				Log.log("[CommandHandler] Data");
 				TCPHandler t = (TCPHandler) event.getActor();
 				t.sendData(new Command("HurrDurr", null, null));
+			// Called when a client changes name.
 			} else if (commandName.equals("setName")) {
 				Client c = roomHandler.getClient((Integer) command.getKey());
 				c.setName((String) command.getValue());
-				eventBus.fireEvent(new EventBusEvent("broadcast", command, this));
+				eventBus.fireEvent(new EventBusEvent("broadcast", command, null));
+			// Called when a client changes rooms to a new room.
+			} else if (commandName.equals("createAndMove")) {
+				roomHandler.moveClient((Integer)command.getKey(), new Room((String)command.getValue()));
+				eventBus.fireEvent(new EventBusEvent("broadcast", command, null));
+				// Called when a client changes rooms to an existing room.
+			} else if (commandName.equals("move")) {
+				roomHandler.moveClient((Integer)command.getKey(), (Integer)command.getValue());
+				eventBus.fireEvent(new EventBusEvent("broadcast", command, null));
 			}
 		}
-
 	}
 
 }
