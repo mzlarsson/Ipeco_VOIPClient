@@ -95,8 +95,13 @@ public class RoomHandler {
 		throw new NoSuchElementException("A user with ID: \"" + roomID + "\" doesn't exit.");
 	}
 
-	
-	
+	public void terminate() {
+		for(ArrayList<Client> clients:rooms.values()){
+			for(Client c: clients){
+				c.terminate();
+			}
+		}
+	}
 	
 	public int getNbrOfClients(RoomInterface ri){
 		return rooms.get(ri).size();

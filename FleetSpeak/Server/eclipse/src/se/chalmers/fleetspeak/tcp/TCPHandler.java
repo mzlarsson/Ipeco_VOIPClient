@@ -38,6 +38,7 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 
 	public boolean terminate() {
 		isRunning = false;
+		eventBus.removeSubscriber(this);
 		try {
 			if (clientSocket != null) {
 				clientSocket.close();

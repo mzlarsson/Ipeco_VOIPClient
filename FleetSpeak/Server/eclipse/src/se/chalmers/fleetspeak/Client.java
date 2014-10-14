@@ -41,7 +41,7 @@ public class Client {
 		return muted;
 	}
 
-	public void close() {
+	public void terminate() {
 		if (rtp != null) {
 			rtp.terminate();
 		}
@@ -52,7 +52,7 @@ public class Client {
 
 	public void connectionLost() {
 		Log.log("Client disconnected - closing streams");
-		this.close();
+		this.terminate();
 	}
 
 	public int getClientID() {

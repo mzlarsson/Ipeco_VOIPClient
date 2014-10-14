@@ -6,8 +6,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import se.chalmers.fleetspeak.rtp.RTPHandler;
-
 import se.chalmers.fleetspeak.tcp.CommandHandler;
 public class ServerMain{
 	
@@ -32,14 +30,11 @@ public class ServerMain{
     	Runtime.getRuntime().addShutdownHook(new Thread(new Runnable(){
     		@Override
     		public void run(){
-    			//TODO
-    	    	/*for(int i = 0; i<room.getNbrOfUsers(); i++){
-    	    		room.getUser(i).close();
-    	    	}*/
+    			commandHandler.terminate();
     		}
     	}));
     	
-    	new ServerMain(tcpPort, rtpPort);
+    	new ServerMain(tcpPort, rtpPort).start();;
       
     }
     
@@ -52,9 +47,6 @@ public class ServerMain{
 
     	this.tcpPort = tcpPort;
     	this.rtpPort = rtpPort;
-    	
-    	
-    	start();
     }
     
     public void start() throws UnknownHostException{

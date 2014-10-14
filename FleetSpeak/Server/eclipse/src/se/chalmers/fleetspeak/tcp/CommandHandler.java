@@ -22,6 +22,10 @@ public class CommandHandler implements IEventBusSubscriber{
 		roomHandler.addClient(client);
 	}
 	
+	public void terminate() {
+		eventBus.removeSubscriber(this);
+		roomHandler.terminate();
+	}
 	
 	@Override
 	public void eventPerformed(Command command) {
