@@ -59,6 +59,7 @@ public class RTPConnector implements RtpSessionDataListener{
 	private RTPConnector(String serverIP, int serverPort, int payloadType){
 		this.ip = serverIP;
 		this.port = serverPort;
+		this.participants = new HashMap<Long, RtpParticipant>();
 		this.listeners = new HashMap<Long, RTPListener>();
 		
 		RtpParticipant server = getParticipant(serverIP, serverPort, serverPort+1);
