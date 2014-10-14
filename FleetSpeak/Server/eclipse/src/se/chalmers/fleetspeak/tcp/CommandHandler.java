@@ -4,6 +4,7 @@ import se.chalmers.fleetspeak.Client;
 import se.chalmers.fleetspeak.Command;
 import se.chalmers.fleetspeak.RoomHandler;
 import se.chalmers.fleetspeak.eventbus.EventBus;
+import se.chalmers.fleetspeak.eventbus.EventBusEvent;
 import se.chalmers.fleetspeak.eventbus.IEventBusSubscriber;
 
 public class CommandHandler implements IEventBusSubscriber{
@@ -28,11 +29,11 @@ public class CommandHandler implements IEventBusSubscriber{
 	}
 	
 	@Override
-	public void eventPerformed(Command command) {
-		if(command.getCommand() == "disconnect"){
-			int i = (Integer) command.getKey();
+	public void eventPerformed(EventBusEvent event) {
+		if(event.getReciever() == "disconnect"){
+			int i = (Integer) event.getCommand().getKey();
 			roomHandler.removeClient(i);
-			eventBus.fireEvent(new Command("broadcastUserDisconnected",i,null));
+			eventBus.fireEvent(new EventBusEvent("broadcast", new Command("userDisconnected",i,null),null));
 		}
 		
 	}

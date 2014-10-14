@@ -8,6 +8,7 @@ import java.net.Socket;
 import se.chalmers.fleetspeak.Command;
 import se.chalmers.fleetspeak.Log;
 import se.chalmers.fleetspeak.eventbus.EventBus;
+import se.chalmers.fleetspeak.eventbus.EventBusEvent;
 import se.chalmers.fleetspeak.eventbus.IEventBusSubscriber;
 
 public class TCPHandler extends Thread implements IEventBusSubscriber {
@@ -54,8 +55,8 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 		try {
 			while (isRunning) {
 				Command c = (Command) objectInputStream.readObject();
-				Log.log("Got command " + c.getCommand());
-				eventBus.fireEvent(c);
+				Log.log("[TCPHandler] Got command " + c.getCommand());
+				eventBus.fireEvent(new EventBusEvent("CommandHandler", c, this));
 				Thread.sleep(500L);
 			}
 		} catch (IOException e) {
@@ -70,16 +71,23 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 	}
 
 	@Override
-	public void eventPerformed(Command command) {
-		if (command.getCommand().startsWith("broadcast")) {
+	public void eventPerformed(EventBusEvent event) {
+		if (event.getReciever().startsWith("broadcast")) {
 			try {
-				objectOutputStream.writeObject(command);
+				objectOutputStream.writeObject(event.getCommand());
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 
+	}
+	public void sendData(Command command){
+		try{
+			objectOutputStream.writeObject(command);
+		}catch(IOException e){
+			e.printStackTrace();
+		}
 	}
 
 }

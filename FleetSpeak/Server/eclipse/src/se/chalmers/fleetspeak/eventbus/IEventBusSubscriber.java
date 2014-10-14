@@ -16,6 +16,6 @@ public interface IEventBusSubscriber {
 	 * @param event
 	 *            the event that has been performed.
 	 */
-	public void eventPerformed(Command command);
+	public void eventPerformed(EventBusEvent event);
 
 }
