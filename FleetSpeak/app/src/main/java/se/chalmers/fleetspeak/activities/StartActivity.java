@@ -120,7 +120,7 @@ public class StartActivity extends ActionBarActivity {
         String ipAdress = String.valueOf(ipTextField.getText());
         String portNumber = String.valueOf(portTextField.getText());
 
-        //Connector.connect(ipAdress, portNumber);
+
         if(savePrefs.isChecked()) {
             savePreferences();
         }
@@ -187,13 +187,13 @@ public class StartActivity extends ActionBarActivity {
                 mService.send(msg);
                 isConnected = true;
                 int rtpPort = port+1;
-                soundController = SoundController.create(this, ip, rtpPort);
+                //soundController = SoundController.create(this, ip, rtpPort);
             } catch (RemoteException e) {
             }
         }else{
             try {
-                Message msg = Message.obtain(null, SocketService.SETNAME,"Coolman");
-                msg.replyTo = mMessenger;
+                Message msg = Message.obtain(null, SocketService.DISCONNECT,"i cant set my name");
+                isConnected = false;
                 mService.send(msg);
             } catch (RemoteException e) {
             }
