@@ -57,7 +57,7 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 				Command c = (Command) objectInputStream.readObject();
 				Log.log("[TCPHandler] Got command " + c.getCommand());
 				eventBus.fireEvent(new EventBusEvent("CommandHandler", c, this));
-				Thread.sleep(500L);
+				Thread.sleep(500);
 			}
 		} catch (IOException e) {
 			Log.log(e.getMessage());
@@ -84,7 +84,9 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 	}
 	public void sendData(Command command){
 		try{
+			Log.log("[TCPHandler]Trying to send a command");
 			objectOutputStream.writeObject(command);
+			Log.log("[TCPHandler]Sent the command");
 		}catch(IOException e){
 			e.printStackTrace();
 		}

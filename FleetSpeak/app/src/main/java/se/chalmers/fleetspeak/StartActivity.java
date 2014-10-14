@@ -36,7 +36,7 @@ public class StartActivity extends ActionBarActivity {
 
     private SoundController soundController;
 
-    Messenger mService = null;
+    static Messenger mService = null;
     final Messenger mMessenger = new Messenger(new CommandHandler());
 
     private ServiceConnection mConnection = new ServiceConnection() {
@@ -77,7 +77,7 @@ public class StartActivity extends ActionBarActivity {
 
         userNameTextField.setText(username);
         portTextField.setText("8867");//portNumber);
-        ipTextField.setText("172.20.10.13");//ipAdress);
+        ipTextField.setText("192.168.43.147");//ipAdress);
 
         ipTextField.setInputType(InputType.TYPE_CLASS_TEXT);
 
@@ -117,8 +117,8 @@ public class StartActivity extends ActionBarActivity {
 
         startConnection(ipAdress, portNumber);
 
-        //Intent intent = new Intent(this,ChatRoomActivity.class);
-        //startActivity(intent);
+        Intent intent = new Intent(this,ChatRoomActivity.class);
+        startActivity(intent);
     }
 
     public void saveUsername(View view){
@@ -133,7 +133,7 @@ public class StartActivity extends ActionBarActivity {
     public void startConnection(String ip, int port){
         if (!isConnected) {
             try {
-                Message msg = Message.obtain(null, SocketService.CONNECT, ip);
+                Message msg = Message.obtain(null, SocketService.CONNECT, port,0,ip);
                 msg.replyTo = mMessenger;
                 mService.send(msg);
                 isConnected = true;
@@ -144,7 +144,7 @@ public class StartActivity extends ActionBarActivity {
         }else{
             Log.i("Hej","hej");
             try {
-                Message msg = Message.obtain(null, SocketService.SENDTESTDATA);
+                Message msg = Message.obtain(null, SocketService.SETNAME,"Coolman");
                 msg.replyTo = mMessenger;
                 mService.send(msg);
             } catch (RemoteException e) {

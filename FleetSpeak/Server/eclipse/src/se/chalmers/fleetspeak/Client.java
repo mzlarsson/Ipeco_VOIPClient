@@ -21,6 +21,8 @@ public class Client {
 		this.rtp.start();
 		this.tcp = new TCPHandler(socket);
 		this.tcp.start();
+		this.tcp.sendData(new Command("setID",clientID,null ));
+
 	}
 
 	public void setName(String name) {

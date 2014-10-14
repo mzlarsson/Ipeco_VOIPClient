@@ -9,14 +9,11 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
 
-import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
-import java.io.StreamCorruptedException;
+
 import java.net.Socket;
-import java.net.SocketException;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -58,6 +55,7 @@ public class SocketService extends Service {
         public void handleMessage(Message msg) {
             if (msg != null) {
                 Log.i(LOGNAME, "Command received. id: " + msg.what);
+
                 switch (msg.what) {
                     case CONNECT:
                         final String s = (String) msg.obj;
@@ -67,7 +65,7 @@ public class SocketService extends Service {
                             public void run() {
                                 Log.i(LOGNAME, "Trying to connect to " + s);
                                 try {
-                                    socket = new Socket(s, 8867);
+                                    socket = new Socket(s, i);
                                     Log.i(LOGNAME, "Connection established to" + socket.toString());
 
 
@@ -82,18 +80,36 @@ public class SocketService extends Service {
                                     Log.i("Connector.connect", "Connection failed " + e.getMessage());
                                 }
                             }
+
                         });
                         thread.start();
 
 
                         break;
                     case DISCONNECT:
-                        //TODO
-                        Log.i(LOGNAME, "Command not implemented");
+                        Log.i(LOGNAME, "Disconnecting");
+                        try {
+                            objectOutputStream.writeObject(new Command("disconnect", null, null));
+                            objectOutputStream.flush();
+
+                            socket.close();
+
+                        } catch (IOException e) {
+                            Log.i(LOGNAME, e.getMessage());
+                        }
                         break;
                     case SETNAME:
                         //TODO
                         Log.i(LOGNAME, "Command not implemented");
+                        try {
+                            if(socket != null && socket.isConnected()) {
+                                objectOutputStream.writeObject(new Command("newName", null, null));
+                                objectOutputStream.flush();
+                            }
+                            //lookForMessage();
+                        } catch (IOException e) {
+                            Log.i(LOGNAME, e.getMessage());
+                        }
                         break;
                     case SETMESSENGER:
                         messenger = (Messenger) msg.obj;
@@ -120,15 +136,15 @@ public class SocketService extends Service {
                         break;
                     case SENDTESTDATA:
                         try {
-                            objectOutputStream.writeObject(new Command("data", null, null));
-                            objectOutputStream.flush();
+                            if(socket != null && socket.isConnected()) {
+                                objectOutputStream.writeObject(new Command("data", null, null));
+                                objectOutputStream.flush();
+                            }
                             //lookForMessage();
                         } catch (IOException e) {
-                            Log.i(LOGNAME, e.toString());
+                            Log.i(LOGNAME, e.getMessage());
                         }
                         break;
-                    default:
-                        Log.i(LOGNAME, "Something unexpected happened with that command");
                 }
             }
         }
@@ -138,13 +154,12 @@ public class SocketService extends Service {
 
     @Override
     public void onCreate(){
-         timer.scheduleAtFixedRate(new TimerTask(){ public void run() {lookForMessage();}}, 0, 5000L);
+         timer.scheduleAtFixedRate(new TimerTask(){ public void run() {lookForMessage();}}, 0, 500L);
     }
 
     private void lookForMessage() {
-
-        if(socket != null && !socket.isClosed() ) {
-            Log.i(LOGNAME, "Looking for message form server");
+        if(socket != null && socket.isConnected()) {
+           // Log.i(LOGNAME, "Looking for message form server");
             try {
                 Command c;
                 c = (Command) objectInputStream.readObject();
@@ -164,7 +179,6 @@ public class SocketService extends Service {
             } catch (RemoteException e) {
                 Log.i(LOGNAME, e.getMessage());
             }
-
         }
     }
 

@@ -1,6 +1,8 @@
 package se.chalmers.fleetspeak;
 
 import android.os.Bundle;
+import android.os.Message;
+import android.os.RemoteException;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.AdapterView;
@@ -24,6 +26,13 @@ public class ChatRoomActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chatroom);
+
+
+        try {
+            StartActivity.mService.send(Message.obtain(null,SocketService.SENDTESTDATA,"data"));
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
 
         userListView = (ListView)findViewById(R.id.userList);
 
