@@ -7,6 +7,7 @@
 *.jar
 *.war
 *.ear
+*.orig
 
 # Exceptions #
 !FleetSpeak/Server/eclipse/libs/*.jar
