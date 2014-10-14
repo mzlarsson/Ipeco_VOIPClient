@@ -1,5 +1,6 @@
 package se.chalmers.fleetspeak.activities;
 
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
@@ -23,6 +24,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
+
 
 import se.chalmers.fleetspeak.CommandHandler;
 import se.chalmers.fleetspeak.R;
@@ -49,6 +51,7 @@ public class StartActivity extends ActionBarActivity {
 
     private ServiceConnection mConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className, IBinder service) {
+            Log.i("SERVICECONNECTION", "service started");
             mService = new Messenger(service);
             try {
                 Message msg = Message.obtain(null, SocketService.SETMESSENGER, mMessenger);
@@ -65,6 +68,15 @@ public class StartActivity extends ActionBarActivity {
             Log.i("SERVICECONNECTION", "Disconnected");
         }
     };
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,7 +104,15 @@ public class StartActivity extends ActionBarActivity {
 
         savePrefs = (CheckBox) findViewById(R.id.saveUserPref);
 
+
+        Log.i("STARTACTIVITY", "binding service");
+        startService(new Intent(this,SocketService.class));
+        boolean fuck = isMyServiceRunning(SocketService.class);
+        Log.i("STARTACTIVITY", "unfucked " + fuck);
         bindService(new Intent(this, SocketService.class), mConnection, Context.BIND_AUTO_CREATE);
+        fuck = isMyServiceRunning(SocketService.class);
+        Log.i("STARTACTIVITY", "unfucked " + fuck);
+
     }
 
     @Override
@@ -118,14 +138,14 @@ public class StartActivity extends ActionBarActivity {
 
     public void onConnectButtonClick(View view) {
         String ipAdress = String.valueOf(ipTextField.getText());
-        String portNumber = String.valueOf(portTextField.getText());
+        int portNumber = Integer.parseInt(String.valueOf(portTextField.getText()));
 
-
+        startConnection(ipAdress,portNumber);
         if(savePrefs.isChecked()) {
             savePreferences();
         }
-        Intent intent = new Intent(this,JoinRoomActivity.class);
-        startActivity(intent);
+      //  Intent intent = new Intent(this,JoinRoomActivity.class);
+      //  startActivity(intent);
     }
     /**
      * Show Connection error message
@@ -183,7 +203,6 @@ public class StartActivity extends ActionBarActivity {
         if (!isConnected) {
             try {
                 Message msg = Message.obtain(null, SocketService.CONNECT, port,0,ip);
-                msg.replyTo = mMessenger;
                 mService.send(msg);
                 isConnected = true;
                 int rtpPort = port+1;

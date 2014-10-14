@@ -26,7 +26,9 @@ public class SocketService extends Service {
     private ObjectOutputStream objectOutputStream;
     private Timer timer = new Timer();
     private Messenger messenger;
-    private boolean isConnected = false;
+
+
+    private int id;
 
     //Commands
     public static final int CONNECT = 1;
@@ -46,9 +48,9 @@ public class SocketService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
+        Log.i(LOGNAME, "I have beed bound");
         return mMessenger.getBinder();
     }
-
 
 
 
@@ -77,7 +79,7 @@ public class SocketService extends Service {
 
                                     objectInputStream = new ObjectInputStream(socket.getInputStream());
                                     Log.i(LOGNAME, "InputStream ready");
-                                    isConnected = true;
+
                                 } catch (IOException e) {
                                     Log.i("Connector.connect", "Connection failed " + e.getMessage());
                                 }
@@ -91,7 +93,7 @@ public class SocketService extends Service {
                     case DISCONNECT:
                         Log.i(LOGNAME, "Disconnecting");
                         try {
-                            objectOutputStream.writeObject(new Command("disconnect", null, null));
+                            objectOutputStream.writeObject(new Command("disconnect", id, null));
                             objectOutputStream.flush();
 
                             socket.close();
@@ -105,7 +107,7 @@ public class SocketService extends Service {
                         Log.i(LOGNAME, "Sending setName command");
                         try {
                             if(socket != null && socket.isConnected()) {
-                                objectOutputStream.writeObject(new Command("newName", null, null));
+                                objectOutputStream.writeObject(new Command("setName", id, "I FUCKING HATE THIS"));
                                 objectOutputStream.flush();
                             }
                             //lookForMessage();
@@ -159,6 +161,8 @@ public class SocketService extends Service {
 
     @Override
     public void onCreate(){
+        Log.i("FUUUUUUUUUCK" , "DIE MOTHERFUCKER DIE");
+
          timer.scheduleAtFixedRate(new TimerTask(){ public void run() {lookForMessage();}}, 0, 500L);
     }
 
@@ -171,6 +175,9 @@ public class SocketService extends Service {
 
                 if (c != null) {
                     Log.i(LOGNAME, " Something have been found: " + c.getCommand());
+                    if(c.getCommand().equals("setID")){
+                        id = (Integer) c.getKey();
+                    }
                     messenger.send(Message.obtain(null, 0, c));
                 }else {
                     Log.i(LOGNAME, "Found nothing");

@@ -37,7 +37,7 @@ public class CommandHandler implements IEventBusSubscriber {
 		if (event.getReciever() == "CommandHandler") {
 			Command command = event.getCommand();
 			String commandName = command.getCommand();
-			Log.log("[CommandHandler] Got a command \"" + commandName + "\"");
+			Log.log("[CommandHandler] Got a command \"" + commandName + "\" keytype: " + command.getKey().getClass());
 			// Called when a user is disconnected.
 			if (commandName.equals("disconnect")) {
 				int i = (Integer) event.getCommand().getKey();
