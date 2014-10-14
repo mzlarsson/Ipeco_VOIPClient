@@ -76,21 +76,16 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 		// Will forward the command to its client if this event starts with broadcast and the actor is this class or null.
 		if (event.getReciever().startsWith("broadcast")) {
 			if (event.getActor()==null || event.getActor()==this) {
-				try {
-					objectOutputStream.writeObject(event.getCommand());
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				sendData(event.getCommand());
 			}
 		}
 	}
 	
 	public void sendData(Command command){
 		try{
-			Log.log("[TCPHandler]Trying to send a command");
+			Log.log("[TCPHandler]Trying to send " + command.getCommand());
 			objectOutputStream.writeObject(command);
-			Log.log("[TCPHandler]Sent the command");
+			Log.log("[TCPHandler]Command sent");
 		}catch(IOException e){
 			e.printStackTrace();
 		}

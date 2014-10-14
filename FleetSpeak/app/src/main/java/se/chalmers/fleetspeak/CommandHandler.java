@@ -11,6 +11,14 @@ import se.chalmers.fleetspeak.util.Command;
  */
 public class CommandHandler extends Handler {
 
+    private RoomHandler roomHandler;
+
+
+    public CommandHandler(){
+        super();
+        roomHandler = new RoomHandler();
+    }
+
     public void handleMessage(Message msg) {
         Command c = (Command) msg.obj;
         String s = c.getCommand();
