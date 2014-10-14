@@ -43,6 +43,10 @@
 
         </activity>
 
+        <service android:enabled="true"
+            android:name="se.chalmers.fleetspeak.SocketService"  />
+
+
     </application>
 
 </manifest>

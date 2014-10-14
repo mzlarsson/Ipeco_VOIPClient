@@ -56,7 +56,9 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 		isRunning = true;
 		try {
 			while (isRunning) {
-				Command c = (Command) objectInputStream.readObject();
+				Object o = objectInputStream.readObject();
+				Log.log(o.getClass().toString());
+				Command c = (Command) o ;//objectInputStream.readObject();
 				Log.log("[TCPHandler] Got command " + c.getCommand());
 				eventBus.fireEvent(new EventBusEvent("CommandHandler", c, this));
 				Thread.sleep(500);
