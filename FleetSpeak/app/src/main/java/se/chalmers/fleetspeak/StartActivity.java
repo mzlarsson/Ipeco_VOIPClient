@@ -77,7 +77,7 @@ public class StartActivity extends ActionBarActivity {
 
         userNameTextField.setText(username);
         portTextField.setText("8867");//portNumber);
-        ipTextField.setText("192.168.43.36");//ipAdress);
+        ipTextField.setText("172.20.10.13");//ipAdress);
 
         ipTextField.setInputType(InputType.TYPE_CLASS_TEXT);
 
@@ -117,8 +117,8 @@ public class StartActivity extends ActionBarActivity {
 
         startConnection(ipAdress, portNumber);
 
-        Intent intent = new Intent(this,ChatRoomActivity.class);
-        startActivity(intent);
+        //Intent intent = new Intent(this,ChatRoomActivity.class);
+        //startActivity(intent);
     }
 
     public void saveUsername(View view){
@@ -137,6 +137,8 @@ public class StartActivity extends ActionBarActivity {
                 msg.replyTo = mMessenger;
                 mService.send(msg);
                 isConnected = true;
+                int rtpPort = port+1;
+                soundController = SoundController.create(this, ip, rtpPort);
             } catch (RemoteException e) {
             }
         }else{
@@ -149,7 +151,6 @@ public class StartActivity extends ActionBarActivity {
             }
         }
 
-        int rtpPort = port+1;
-        soundController = SoundController.create(this, ip, rtpPort);
+
     }
 }

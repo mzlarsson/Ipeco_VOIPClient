@@ -1,6 +1,5 @@
 package se.chalmers.fleetspeak;
 
-import java.io.IOException;
 import java.util.List;
 
 public interface RoomInterface{

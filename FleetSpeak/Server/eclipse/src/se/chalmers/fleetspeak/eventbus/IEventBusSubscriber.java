@@ -1,4 +1,5 @@
-package se.chalmers.fleetspeak.eventbuss;
+package se.chalmers.fleetspeak.eventbus;
+
 
 /**
  * Interface for subscribers to the eventbus.

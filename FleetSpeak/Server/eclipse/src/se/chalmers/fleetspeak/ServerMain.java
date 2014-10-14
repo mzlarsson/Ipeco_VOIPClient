@@ -7,6 +7,8 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 import se.chalmers.fleetspeak.sound.Constants;
+import se.chalmers.fleetspeak.tcp.CommandHandler;
+
 public class ServerMain{
 	
     private static int DEFAULT_PORT_TCP = 8867;
@@ -15,8 +17,8 @@ public class ServerMain{
     private int tcpPort;
     private int rtpPort;
     
-    private static RoomInterface room;
-    private static RoomHandler roomhandler;
+    
+    private static CommandHandler commandHandler;
     private static ServerSocket serverSocket = null;
     
     private volatile boolean running;
@@ -30,13 +32,11 @@ public class ServerMain{
     	Runtime.getRuntime().addShutdownHook(new Thread(new Runnable(){
     		@Override
     		public void run(){
-    	    	for(int i = 0; i<room.getNbrOfUsers(); i++){
-    	    		room.getUser(i).close();
-    	    	}
+    			commandHandler.terminate();
     		}
     	}));
     	
-    	new ServerMain(tcpPort, rtpPort);
+    	new ServerMain(tcpPort, rtpPort).start();;
       
     }
     
@@ -44,17 +44,13 @@ public class ServerMain{
     	Log.log("Starting server @LAN-IP "+InetAddress.getLocalHost().getHostAddress()+
     			" tcp:"+tcpPort+" rtp:"+rtpPort);
     	this.running = true;
-    	room = new FleetRoom(1);
-    	roomhandler = new RoomHandler();
-    	//TODO does this really work?
+    	commandHandler = new CommandHandler();
+    	//TODO fix this?
     	Constants.setServerIP(InetAddress.getLocalHost().getHostAddress());
     	
 
     	this.tcpPort = tcpPort;
     	this.rtpPort = rtpPort;
-    	
-    	
-    	start();
     }
     
     public void start() throws UnknownHostException{
@@ -68,7 +64,7 @@ public class ServerMain{
             	//Create connection
                 clientSocket = serverSocket.accept();
                 //Create client
-                Client client = new Client(clientSocket, rtpPort, "lul");
+                Client client = new Client(clientSocket, rtpPort);
                 //Add to client list
                 addClient(client);
             }
@@ -83,45 +79,14 @@ public class ServerMain{
     }
     
     public static void addClient(Client client){
-        //Save the handler for more interaction
-        room.addUser(client);
+        //give the client to the commandHandler
+        commandHandler.addClient(client);
         
-//        roomhandler.addClient(client, 1);//FIXME Generate better room id
-       
-        
-//        int nbrOfClients = roomhandler.getClients(roomhandler.findRoom(1)).length;
-//        
-//        for(int i = 0; i<nbrOfClients;i++){
-//        	if(roomhandler.findRoom(1).getUsers().get(i).equals(client)){
-//        		
-//        	}
-//        }
-        
-//        Notice about change in clients
-        for(int i = 0; i<room.getNbrOfUsers(); i++){
-        	if(room.getUser(i)!=client){
-	        	room.getUser(i).clientConnected(room.getUsers());
-        	}
-        }
-
         //Print info in server console
-        Log.log("A new person joined ("+room.getNbrOfUsers()+")");
+        Log.log("A new person joined ");
     }
     
-    public static void removeClient(Client client){
-        //Remove the handler from more interaction
-    	room.removeUser(client);
-    	
-        //Notice about change in clients
-        for(int i = 0; i<room.getNbrOfUsers(); i++){
-        	if(room.getUser(i)!=client){
-	        	room.getUser(i).clientDisconnected(room.getUsers());
-        	}
-        }
-    	
-        //Print info in server console
-    	Log.log("A person left the room ("+room.getNbrOfUsers()+")");
-    }
+    
     
     public void terminate() {
     	try {

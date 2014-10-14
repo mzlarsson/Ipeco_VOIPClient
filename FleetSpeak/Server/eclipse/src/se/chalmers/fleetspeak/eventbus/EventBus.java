@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.eventbuss;
+package se.chalmers.fleetspeak.eventbus;
 
 import java.util.ArrayList;
 import java.util.List;

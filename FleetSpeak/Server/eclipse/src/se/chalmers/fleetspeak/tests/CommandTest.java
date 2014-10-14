@@ -46,7 +46,7 @@ public class CommandTest {
 	}
 
 	/**
-	 * Test method for {@link se.chalmers.fleetspeak.tcp.Command#addCommandListener(se.chalmers.fleetspeak.tcp.CommandListener)}.
+	 * Test method for {@link se.chalmers.fleetspeak.Command#addCommandListener(se.chalmers.fleetspeak.tcp.CommandListener)}.
 	 */
 	@Test
 	public final void testAddCommandListener() {
@@ -54,7 +54,7 @@ public class CommandTest {
 	}
 
 	/**
-	 * Test method for {@link se.chalmers.fleetspeak.tcp.Command#removeCommandListener(se.chalmers.fleetspeak.tcp.CommandListener)}.
+	 * Test method for {@link se.chalmers.fleetspeak.Command#removeCommandListener(se.chalmers.fleetspeak.tcp.CommandListener)}.
 	 */
 	@Test
 	public final void testRemoveCommandListener() {
@@ -62,7 +62,7 @@ public class CommandTest {
 	}
 
 	/**
-	 * Test method for {@link se.chalmers.fleetspeak.tcp.Command#setValue(java.lang.String, java.lang.Object)}.
+	 * Test method for {@link se.chalmers.fleetspeak.Command#setValue(java.lang.String, java.lang.Object)}.
 	 */
 	@Test
 	public final void testSetValue() {
@@ -70,7 +70,7 @@ public class CommandTest {
 	}
 
 	/**
-	 * Test method for {@link se.chalmers.fleetspeak.tcp.Command#hasValue(java.lang.String)}.
+	 * Test method for {@link se.chalmers.fleetspeak.Command#hasValue(java.lang.String)}.
 	 */
 	@Test
 	public final void testHasValue() {
@@ -78,7 +78,7 @@ public class CommandTest {
 	}
 
 	/**
-	 * Test method for {@link se.chalmers.fleetspeak.tcp.Command#getValue(java.lang.String)}.
+	 * Test method for {@link se.chalmers.fleetspeak.Command#getValue(java.lang.String)}.
 	 */
 	@Test
 	public final void testGetValue() {

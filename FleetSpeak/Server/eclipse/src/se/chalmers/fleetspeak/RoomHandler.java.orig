@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.TreeMap;
+
+import com.sun.org.apache.xalan.internal.xsltc.util.IntegerArray;
 /**
  * An class for handling the rooms and client on the server side.
  * Based on the RoomHandler on the client side.
@@ -12,14 +14,14 @@ import java.util.TreeMap;
  */
 public class RoomHandler {
 	
-    private HashMap<Room,ArrayList<Client>> rooms;
-	private Room defaultRoom;
-	public RoomHandler(){
-		rooms = new HashMap<Room,ArrayList<Client>>();
-		defaultRoom = new Room("Default");
-	}
+    private HashMap<FleetRoom,ArrayList<Client>> rooms;
 	
-	public void addClient(Client c, Room r){
+	public RoomHandler(){
+		rooms = new HashMap<FleetRoom,ArrayList<Client>>();
+	}
+
+	
+	public void addClient(Client c, FleetRoom r){
 		if (!rooms.containsKey(r) || rooms.get(r) == null) {
             ArrayList<Client> list = new ArrayList<Client>();
             list.add(c);
@@ -36,13 +38,8 @@ public class RoomHandler {
 		this.addClient(c, findRoom(roomID)); 
 	}
 	
-	public void addClient(Client client) {
-		addClient(client, defaultRoom);
-		
-	}
-
 	public void removeClient(Client c){
-		for(Room r : rooms.keySet()){
+		for(FleetRoom r : rooms.keySet()){
 			ArrayList<Client> clientList = rooms.get(r);
 			if(clientList.contains(c)){
 				clientList.remove(c);
@@ -58,7 +55,7 @@ public class RoomHandler {
 		this.removeClient(findClient(clientID));
 	}
 	
-	public void moveClient(Client c, Room r){
+	public void moveClient(Client c, FleetRoom r){
 		this.removeClient(c);
 		this.addClient(c, r);
 	}
@@ -86,21 +83,47 @@ public class RoomHandler {
 		throw new NoSuchElementException("A client with ID: \"" + clientID + "\" doesn't exit.");
 	}
 
-	private Room findRoom(int roomID) throws NoSuchElementException {
-		for(Room room:rooms.keySet() ){
-			if(room.getId()==roomID){
+<<<<<<< Updated upstream
+	public RoomInterface findRoom(int roomID) throws NoSuchElementException {
+		for(RoomInterface room:rooms.keySet() ){
+=======
+	private FleetRoom findRoom(int roomID) throws NoSuchElementException {
+		for(FleetRoom room:rooms.keySet() ){
+>>>>>>> Stashed changes
+			if(room.getRoomID()==roomID){
 				return room;
 			}
 		}
 		throw new NoSuchElementException("A user with ID: \"" + roomID + "\" doesn't exit.");
 	}
-
-	public void terminate() {
-		for(ArrayList<Client> clients:rooms.values()){
-			for(Client c: clients){
-				c.terminate();
-			}
+	
+	private int generateRoomID(){
+		int t = 0;
+		
+		if(!(this.getRooms()== null)){
+		for(int i: this.getRoomIDs()){
+			if(t == i){
+				t++;
+			}	
 		}
+		}
+		return t;
+	}
+	
+	public int[] getRoomIDs(){
+		int[] t;
+		
+		if(this.getRooms() == null){
+		t = new int[this.getNbrOfRooms()];
+		int i = 0;
+		for (RoomInterface ri : this.getRooms()) {
+			t[i] = ri.getRoomID();
+			i++;
+		}
+		}else{
+		t = new int[0];
+		}
+		return t;
 	}
 	
 	public int getNbrOfClients(RoomInterface ri){
