@@ -43,6 +43,8 @@ public class RTPConnector implements RtpSessionDataListener{
 	//List of all the started active instances
 	private static List<RTPConnector> connectors = new ArrayList<RTPConnector>();
 	
+	private long currentUnknownSource = -1;
+	
 	private RtpSession session;
 	private String ip;
 	private int port;
@@ -99,9 +101,12 @@ public class RTPConnector implements RtpSessionDataListener{
 	 * @return The source ID of the created participant
 	 */
 	public long addParticipant(InetAddress clientIP, int clientPort){
+		this.currentUnknownSource = -1;
 		RtpParticipant participant = getParticipant(clientIP, clientPort, clientPort+1);
 		if(participant != null){
-			if(!participants.containsKey(participant.getInfo().getSsrc())){
+			resolveSourceID(participant);
+			
+			if(!participants.containsKey(participant.getInfo().getSsrc())){				
 				Log.log("Created RTP client for [IP="+clientIP.getHostAddress()+";SOURCEID="+participant.getInfo().getSsrc()+"]");
 				session.addReceiver(participant);
 				participants.put(participant.getInfo().getSsrc(), participant);
@@ -110,6 +115,22 @@ public class RTPConnector implements RtpSessionDataListener{
 		}else{
 			return 0;
 		}
+	}
+	
+	/**
+	 * Waits for a current unknown source and sets the given participants source ID
+	 * to the source ID of the unknown source
+	 * @param participant The participant to set source to
+	 */
+	private void resolveSourceID(RtpParticipant participant){
+		while(this.currentUnknownSource<0){
+			try{
+				Thread.sleep(1);
+			}catch(InterruptedException ie){}
+		}
+		
+		participant.getInfo().setSsrc(currentUnknownSource);
+		currentUnknownSource = -1;
 	}
 
 	/**
@@ -165,6 +186,11 @@ public class RTPConnector implements RtpSessionDataListener{
 		RTPListener listener = listeners.get(participant.getSsrc());
 		if(listener != null){
 			listener.dataPacketReceived(participant.getSsrc(), packet.getSequenceNumber(), packet.getDataAsArray());
+		}else{
+			//Check if the packet is from an unknown sender
+			if(participants.get(participant.getSsrc()) == null){
+				this.currentUnknownSource = participant.getSsrc();
+			}
 		}
 	}
 	
