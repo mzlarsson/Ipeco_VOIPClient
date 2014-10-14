@@ -1,6 +1,7 @@
 package se.chalmers.fleetspeak;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -19,9 +20,13 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
+import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultCaret;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 
 import se.chalmers.fleetspeak.eventbus.EventBus;
 import se.chalmers.fleetspeak.eventbus.EventBusEvent;
@@ -37,7 +42,7 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener {
 	private JButton stop;
 	private JButton start;
 	JScrollPane scrollableText;
-	private JTextArea terminal;
+	private JTextPane terminal;
 	private JTextField cmdLine;
 	
 	private static ServerMain server;
@@ -117,7 +122,7 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener {
 		westBorder.add(buttons, BorderLayout.SOUTH);
 		
 		// The scrollable terminal window.
-		terminal = new JTextArea();
+		terminal = new JTextPane();
 		DefaultCaret caret = (DefaultCaret)terminal.getCaret();
 		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 		scrollableText = new JScrollPane(terminal);
@@ -144,7 +149,21 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener {
 			
 			@Override
 			public void publish(LogRecord record) {
-				terminal.append(record.getMessage()+"\n");
+				try {
+					String msg = record.getMessage();
+					
+					SimpleAttributeSet attributes = new SimpleAttributeSet();
+					if(msg.startsWith("<b>") && msg.endsWith("</b>")){
+						StyleConstants.setBold(attributes, true);
+						msg = msg.substring(3, msg.length()-4);
+					}if(msg.startsWith("<error>") && msg.endsWith("</error>")){
+						StyleConstants.setForeground(attributes, Color.RED);
+						msg = msg.substring(7, msg.length()-8);
+					}
+					
+					StyledDocument doc = terminal.getStyledDocument();
+					doc.insertString(doc.getLength(), msg+"\n", attributes);
+				} catch (BadLocationException e) {}
 				scrollableText.getVerticalScrollBar().setValue(scrollableText.getVerticalScrollBar().getMaximum());
 			}
 			
@@ -223,6 +242,8 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener {
 	public void keyReleased(KeyEvent e) {
 		if (e.getKeyCode()==KeyEvent.VK_ENTER) {
 			String cmd = cmdLine.getText();
+			log.log(Level.ALL, "<b>"+cmd+"</b>");
+			
 			if(cmd.startsWith("startRTP")){
 				String[] data = cmd.split(" ");
 				int clientID = Integer.parseInt(data[1]);
@@ -230,9 +251,8 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener {
 				log.log(Level.ALL, "Starting RTP with port: "+clientPort);
 				EventBusEvent event = new EventBusEvent("CommandHandler", new Command("setRtpPort", clientID, clientPort), null);
 				EventBus.getInstance().fireEvent(event);
-			}else{
-				log.log(Level.ALL, "COMMAND INPUT: " + cmdLine.getText());
 			}
+
 			cmdLine.setText("");
 		}		
 	}
