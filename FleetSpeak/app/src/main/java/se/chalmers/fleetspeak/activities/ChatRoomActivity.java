@@ -173,6 +173,13 @@ public class ChatRoomActivity extends ActionBarActivity {
 
     public boolean onCreateOptionsMenu(Menu menu){
         getMenuInflater().inflate(R.menu.chatroommenu, menu);
+        ImageButton button = (ImageButton) findViewById(R.id.pushToTalkButton);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                pushToTalk(view);
+            }
+        });
         return true;
     }
 

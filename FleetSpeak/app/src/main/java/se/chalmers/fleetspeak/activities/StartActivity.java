@@ -17,7 +17,8 @@ import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.swedspot.automotiveapi.AutomotiveSignalId;
-import android.text.InputType;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,13 +36,13 @@ import se.chalmers.fleetspeak.sound.SoundController;
 
 public class StartActivity extends ActionBarActivity {
 
-    private EditText ipTextField;
+    private String ipText;
     private Context context = this;
-    private EditText portTextField;
-    private EditText userNameTextField;
+    private String portText;
+    private String userNameText;
     private SharedPreferences prefs;
     private SharedPreferences.Editor prefEdit;
-    private CheckBox savePrefs;
+    private boolean savePrefs;
 
     private boolean isConnected;
 
@@ -89,23 +90,86 @@ public class StartActivity extends ActionBarActivity {
 
         new TruckCommunicator().execute(AutomotiveSignalId.FMS_WHEEL_BASED_SPEED, AutomotiveSignalId.FMS_SELECTED_GEAR);
 
-        ipTextField = (EditText) findViewById(R.id.ipField);
-        portTextField = (EditText) findViewById(R.id.portField);
-        userNameTextField = (EditText) findViewById(R.id.usernameField);
+        final EditText ipTextField = (EditText) findViewById(R.id.ipField);
+
+        ipTextField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                ipText = String.valueOf(ipTextField.getText());
+            }
+        });
+        final EditText portField = (EditText) findViewById(R.id.portField);
+        portField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                portText = String.valueOf(ipTextField.getText());
+            }
+        });
+
+        final EditText userNameField = (EditText) findViewById(R.id.usernameField);
+        userNameField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                userNameText = String.valueOf(findViewById(R.id.usernameField));
+            }
+        });
+
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         prefEdit = prefs.edit();
 
-        String portNumber = prefs.getString("portNumber", "portNumber");
-        String username = prefs.getString("username", "username");
-        String ipAdress = prefs.getString("ipAdress", "ipAdress");
+        portText = prefs.getString("8867", "portNumber");
+        userNameText = prefs.getString("username", "username");
+        ipText = prefs.getString("192.168.43.147", "ipAdress");
+        ipTextField.setText(ipText);
+        portField.setText(portText);
+        userNameField.setText(userNameText);
+        final CheckBox savePrefsCheckbox = (CheckBox) findViewById(R.id.saveUserPref);
+        savePrefsCheckbox.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
 
-        userNameTextField.setText(username);
-        portTextField.setText("8867");//portNumber);
-        ipTextField.setText("192.168.43.147");//ipAdress);
+            }
 
-        ipTextField.setInputType(InputType.TYPE_CLASS_TEXT);
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
 
-        savePrefs = (CheckBox) findViewById(R.id.saveUserPref);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                savePreferences(savePrefsCheckbox.isChecked());
+            }
+        });
 
 
         Log.i("STARTACTIVITY", "binding service");
@@ -138,15 +202,18 @@ public class StartActivity extends ActionBarActivity {
         Intent getBookmarkIntent = new Intent(this, BookmarkActivity.class);
         startActivity(getBookmarkIntent);
     }
+    @Override
+    protected void onStop(){
+        unbindService(mConnection);
+    }
+    protected void onDestroy(){
+        unbindService(mConnection);
+    }
+    protected void onRestart(){
 
+    }
     public void onConnectButtonClick(View view) {
-        String ipAdress = String.valueOf(ipTextField.getText());
-        int portNumber = Integer.parseInt(String.valueOf(portTextField.getText()));
-
-        startConnection(ipAdress,portNumber);
-        if(savePrefs.isChecked()) {
-            savePreferences();
-        }
+        startConnection(ipText,Integer.parseInt(portText));
       //  Intent intent = new Intent(this,JoinRoomActivity.class);
       //  startActivity(intent);
     }
@@ -172,7 +239,7 @@ public class StartActivity extends ActionBarActivity {
     public void showCarRunningErrorMessage(){
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Car Running");
-        builder.setMessage("Car is running several action are notpermited");
+        builder.setMessage("Car is running several action are not permited");
         builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialogInterface, int i){
                 dialogInterface.cancel();
@@ -181,25 +248,21 @@ public class StartActivity extends ActionBarActivity {
         AlertDialog carRunning = builder.create();
         carRunning.show();
     }
-    /**
-     * Enables or disable editing in textfield deping on isEditable
-     * @param isEditable
-     */
-    public void textFieldIsEditable(boolean isEditable){
-        userNameTextField.setFocusable(isEditable);
-        ipTextField.setFocusable(isEditable);
-        portTextField.setFocusable(isEditable);
+    public void setCarMode(Boolean b){
+        if(b){
+            showCarRunningErrorMessage();
+        }
+        setContentView(b? R.layout.activity_car_start: R.layout.activity_start);
     }
     /**
      * Saves the preferences of the User
      */
-    public void savePreferences(){
-        String newUsername = String.valueOf(userNameTextField.getText());
-        String newIpAdress = String.valueOf(ipTextField.getText());
-        String newPortNumber = String.valueOf(portTextField.getText());
-        prefEdit.putString("username", newUsername);
-        prefEdit.putString("ipAdress", newIpAdress );
-        prefEdit.putString("portNumber", newPortNumber);
+    public void savePreferences(boolean b){
+        if(b) {
+            prefEdit.putString(getString(R.string.username_text), userNameText);
+            prefEdit.putString(getString(R.string.ip_adress_text), ipText);
+            prefEdit.putString(getString(R.string.port_number_text), portText);
+        }
     }
 
     public void startConnection(String ip, int port){

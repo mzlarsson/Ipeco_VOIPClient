@@ -8,7 +8,6 @@
         android:layout_height="100dp"
         android:id="@+id/pushToTalkButton"
         android:layout_gravity="bottom"
-        android:onClick="pushToTalk"
         android:background="@drawable/ic_mic_grey"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
