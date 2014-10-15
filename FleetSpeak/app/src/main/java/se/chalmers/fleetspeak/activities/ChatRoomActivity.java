@@ -109,7 +109,7 @@ public class ChatRoomActivity extends ActionBarActivity {
     public boolean onOptionsItemSelected(MenuItem item){
         switch (item.getItemId()){
             case R.id.volume_mic_control:
-                micAndVolumePanel.showAsDropDown(getActionBar().getCustomView());
+                micAndVolumePanel.showAsDropDown(findViewById(android.R.id.home));
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
                 return true;
@@ -173,24 +173,22 @@ public class ChatRoomActivity extends ActionBarActivity {
 
     public boolean onCreateOptionsMenu(Menu menu){
         getMenuInflater().inflate(R.menu.chatroommenu, menu);
-        setUppVolumeMicDropDown(this);
         return true;
-
     }
 
-    /**
-     * Sets up two seekbar in a popupwindow to volume and mic seekbar
-     * @param context
-     */
-    private void setUppVolumeMicDropDown(Context context){
+    private void setUpVolumeAndMicControl(Context context){
         LayoutInflater inflater = LayoutInflater.from(context);
-        View contentView = inflater.inflate(R.layout.drop_down_2seekbar, null);
-        volumeControlBar = (SeekBar) contentView.findViewById(R.id.first_seekbar);
-        micControlBar = (SeekBar) contentView.findViewById(R.id.second_seekbar);
-        micAndVolumePanel = new PopupWindow(context, null, android.R.attr.actionDropDownStyle);
-        micAndVolumePanel.setFocusable(true);
-        micAndVolumePanel.setContentView(contentView);
-        setPopupSize(micAndVolumePanel);
+
+        View contentView = inflater.inflate(R.layout.drop_down_seek_bar, null);
+        volumeControlBar = (SeekBar) findViewById(R.id.volume_seekbar);
+        micControlBar = (SeekBar) findViewById(R.id.mic_seekbar);
+
+        final PopupWindow popupWindow = new PopupWindow(context, null,
+                android.R.attr.actionDropDownStyle);
+        popupWindow.setFocusable(true); // seems to take care of dismissing on click outside
+        popupWindow.setContentView(contentView);
+        setPopupSize(popupWindow);
+
     }
 
     private void setPopupSize(PopupWindow popupWindow) {
@@ -209,7 +207,12 @@ public class ChatRoomActivity extends ActionBarActivity {
             width += rect.left + rect.right;
             height += rect.top + rect.bottom;
         }
+
         popupWindow.setWidth(width);
         popupWindow.setHeight(height);
     }
+
+
+
+
 }

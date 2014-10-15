@@ -18,5 +18,6 @@
     <string name="username_text">Username</string>
     <string name="connection_error">Connection Error</string>
     <string name="volume_mic_control">volume and mic control</string>
+    <string name="save_preferences">Save preferences</string>
 
 </resources>
