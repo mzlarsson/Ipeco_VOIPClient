@@ -1,5 +1,6 @@
 package se.chalmers.fleetspeak.sound;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -32,6 +33,10 @@ public class RTPSoundPacket {
 	 * @param data The data that was received
 	 */
 	public void setData(int sequenceNumber, byte[] data){
+		if(this.data==null){
+			sequenceOffset -= sequenceNumber;
+		}
+
 		this.sequenceNumber = sequenceNumber;
 		this.data = data;
 	}
@@ -60,7 +65,7 @@ public class RTPSoundPacket {
 	 * @return The most recent data. Empty byte array data (length=0) if the data is outdated.
 	 */
 	public byte[] getData(int minSequenceNumber){
-		if(minSequenceNumber<=getRelativeSequenceNumber() && data != null){
+		if(data != null){	//minSequenceNumber<=getRelativeSequenceNumber() && 
 			return data;
 		}else{
 			return new byte[0];

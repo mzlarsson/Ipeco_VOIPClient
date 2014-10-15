@@ -206,7 +206,7 @@ public class StartActivity extends ActionBarActivity {
                 mService.send(msg);
                 isConnected = true;
                 int rtpPort = port+1;
-                //soundController = SoundController.create(this, ip, rtpPort);
+                soundController = SoundController.create(this, ip, rtpPort);
             } catch (RemoteException e) {
             }
         }else{
