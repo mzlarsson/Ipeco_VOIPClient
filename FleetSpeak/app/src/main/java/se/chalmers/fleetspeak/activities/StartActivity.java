@@ -28,6 +28,7 @@ import android.widget.EditText;
 
 import se.chalmers.fleetspeak.CommandHandler;
 import se.chalmers.fleetspeak.R;
+import se.chalmers.fleetspeak.ServerHandler;
 import se.chalmers.fleetspeak.SocketService;
 import se.chalmers.fleetspeak.TruckCommunicator;
 import se.chalmers.fleetspeak.sound.SoundController;
@@ -206,6 +207,7 @@ public class StartActivity extends ActionBarActivity {
             try {
                 Message msg = Message.obtain(null, SocketService.CONNECT, port,0,ip);
                 mService.send(msg);
+                mService.send(Message.obtain(ServerHandler.getRooms()));
                 isConnected = true;
                 int rtpPort = port+1;
                 soundController = SoundController.create(this, ip, rtpPort);

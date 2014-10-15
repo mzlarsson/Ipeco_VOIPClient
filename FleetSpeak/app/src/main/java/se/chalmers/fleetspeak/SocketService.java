@@ -111,7 +111,7 @@ public class SocketService extends Service {
                                 objectOutputStream.flush();
                                 Log.i(LOGNAME, "Sent setName");
                             }
-                            //lookForMessage();
+
                         } catch (IOException e) {
                             Log.i(LOGNAME, e.toString());
                         }
@@ -128,8 +128,15 @@ public class SocketService extends Service {
                         Log.i(LOGNAME, "Command not implemented");
                         break;
                     case GETROOMS:
-                        //TODO
-                        Log.i(LOGNAME, "Command not implemented");
+                        Log.i(LOGNAME, "trying to send getRooms command");
+                        try{
+                            if(socket != null && socket.isConnected()){
+                                objectOutputStream.writeObject(new Command("getRooms", id, null));
+                                objectOutputStream.flush();
+                            }
+                        }catch (IOException e){
+                            Log.e(LOGNAME,e.toString());
+                        }
                         break;
                     case GETUSERSINROOM:
                         //TODO
@@ -164,7 +171,7 @@ public class SocketService extends Service {
     public void onCreate(){
         Log.i("FUUUUUUUUUCK" , "DIE MOTHERFUCKER DIE");
 
-         timer.scheduleAtFixedRate(new TimerTask(){ public void run() {lookForMessage();}}, 0, 500L);
+         timer.scheduleAtFixedRate(new TimerTask(){ public void run() {lookForMessage();}}, 0, 100L);
     }
 
     private void lookForMessage() {

@@ -23,7 +23,7 @@ public class CommandHandler implements IEventBusSubscriber {
 
 	public void addClient(Client client) {
 		roomHandler.addClient(client);
-		eventBus.fireEvent(new EventBusEvent("broadcast", new Command("newUser", client.getClientID(),null), this));
+		eventBus.fireEvent(new EventBusEvent("broadcast", new Command("newUser", client.getClientID(),null), null));
 	}
 
 	public void terminate() {
@@ -81,6 +81,12 @@ public class CommandHandler implements IEventBusSubscriber {
 			// Called when commands are manually entered into the command line.
 			} else if (commandName.equals("consoleCommand")) {
 				serverCommands((String)command.getValue(), event.getActor());
+			}else if(commandName.equals("getRooms")){
+				for(Room r: roomHandler.getRooms()){
+					for( Client c : roomHandler.getClients(r)){
+						eventBus.fireEvent(new EventBusEvent("broadcast", new Command("addUser", c.getClientID(),c.getName()), event.getActor()));
+					}
+				}
 			}
 		}
 	}
