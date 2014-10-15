@@ -57,7 +57,7 @@ public class CommandHandler implements IEventBusSubscriber {
 			// Called when a user is disconnected.
 			if (commandName.equals("disconnect")) {
 				int i = (Integer) event.getCommand().getKey();
-				roomHandler.removeClient(i);
+				roomHandler.removeClient(i, true);
 				eventBus.fireEvent(new EventBusEvent("broadcast", new Command(
 						"userDisconnected", i, null), null));
 			// TODO This is a test command!!!!

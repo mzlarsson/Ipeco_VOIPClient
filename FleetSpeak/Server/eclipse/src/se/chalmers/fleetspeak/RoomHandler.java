@@ -37,14 +37,16 @@ public class RoomHandler {
 	
 	public void addClient(Client client) {
 		addClient(client, defaultRoom);
-		
 	}
 
-	public void removeClient(Client c){
+	public void removeClient(Client c, boolean terminate){
 		for(Room r : rooms.keySet()){
 			ArrayList<Client> clientList = rooms.get(r);
 			if(clientList.contains(c)){
 				clientList.remove(c);
+				if (terminate) {
+					c.terminate();
+				}
 				if(clientList.isEmpty()){
 					rooms.remove(r);
 				}
@@ -53,12 +55,16 @@ public class RoomHandler {
 		}
 	}
 	
+	public void removeClient(int clientID, boolean terminate){
+		this.removeClient(getClient(clientID), terminate);
+	}
+
 	public void removeClient(int clientID){
-		this.removeClient(getClient(clientID));
+		this.removeClient(getClient(clientID), false);
 	}
 	
 	public void moveClient(Client c, Room r){
-		this.removeClient(c);
+		this.removeClient(c, false);
 		this.addClient(c, r);
 	}
 	
