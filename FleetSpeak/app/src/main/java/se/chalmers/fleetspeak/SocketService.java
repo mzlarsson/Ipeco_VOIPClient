@@ -48,7 +48,7 @@ public class SocketService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        Log.i(LOGNAME, "I have beed bound");
+        Log.i(LOGNAME, "I have been bound");
         return mMessenger.getBinder();
     }
 
@@ -165,6 +165,8 @@ public class SocketService extends Service {
                             e.printStackTrace();
                         }
                         break;
+                    default:
+                        break;
                 }
             }
         }
@@ -199,11 +201,11 @@ public class SocketService extends Service {
                 endSocketConnection();
                // Log.i(LOGNAME, e.toString());
             } catch (ClassNotFoundException e) {
-                Log.e(LOGNAME, e.getMessage());
+                Log.e(LOGNAME, e.toString());
             } catch (NullPointerException e) {
-                Log.e(LOGNAME, e.getMessage());
+                Log.e(LOGNAME, e.toString());
             } catch (RemoteException e) {
-                Log.e(LOGNAME, e.getMessage());
+                Log.e(LOGNAME, e.toString());
             }
         }
     }
