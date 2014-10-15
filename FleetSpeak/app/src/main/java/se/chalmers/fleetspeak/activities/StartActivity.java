@@ -47,7 +47,7 @@ public class StartActivity extends ActionBarActivity {
     private SoundController soundController;
 
     static Messenger mService = null;
-    final Messenger mMessenger = new Messenger(new CommandHandler());
+    Messenger mMessenger;
 
     private ServiceConnection mConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className, IBinder service) {
@@ -83,6 +83,8 @@ public class StartActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+        mMessenger = new Messenger(CommandHandler.getInstance());
 
         new TruckCommunicator().execute(AutomotiveSignalId.FMS_WHEEL_BASED_SPEED, AutomotiveSignalId.FMS_SELECTED_GEAR);
 
@@ -211,7 +213,7 @@ public class StartActivity extends ActionBarActivity {
             }
         }else{
             try {
-                Message msg = Message.obtain(null, SocketService.DISCONNECT,"i cant set my name");
+                Message msg = Message.obtain(null, SocketService.SETNAME,"i cant set my name");
                 isConnected = false;
                 mService.send(msg);
             } catch (RemoteException e) {

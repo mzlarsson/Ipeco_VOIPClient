@@ -104,11 +104,12 @@ public class SocketService extends Service {
                         break;
                     case SETNAME:
 
-                        Log.i(LOGNAME, "Sending setName command");
+                        Log.i(LOGNAME, "Trying  to sending setName command");
                         try {
                             if(socket != null && socket.isConnected()) {
                                 objectOutputStream.writeObject(new Command("setName", id, "I FUCKING HATE THIS"));
                                 objectOutputStream.flush();
+                                Log.i(LOGNAME, "Sent setName");
                             }
                             //lookForMessage();
                         } catch (IOException e) {

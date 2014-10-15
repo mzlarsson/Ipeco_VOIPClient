@@ -15,6 +15,10 @@ public class User {
         this.name = name;
         this.id = id;
     }
+    public User(int id){
+        this.name = "";
+        this.id = id;
+    }
 
     private static int tmpID;   //TODO This is a temporary solution for test purposes.
     public User(String name) {  //TODO This is a temporary solution for test purposes.

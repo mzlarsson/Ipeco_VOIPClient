@@ -64,7 +64,7 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 				Thread.sleep(500);
 			}
 		} catch (IOException e) {
-			Log.log(e.getMessage());
+			Log.log(e.toString());
 		} catch (ClassNotFoundException e) {
 			Log.log(e.getMessage());
 		} catch (InterruptedException e) {
