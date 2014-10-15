@@ -12,8 +12,11 @@ public class RoomHandler implements IUserHandler{
 
     private HashMap<Room,ArrayList<User>> rooms;
 
+    private Room defaultRoom;
+
     public RoomHandler() {
         rooms = new HashMap<Room,ArrayList<User>>();
+        defaultRoom = new Room("Default");
     }
 
     public void addUser(User user, Room room) {
@@ -32,6 +35,10 @@ public class RoomHandler implements IUserHandler{
     public void addUser(User user, int roomID) {
         addUser(user, findRoom(roomID));
     }
+    public void addUser(User user){
+        addUser(user,defaultRoom);
+    }
+
 
     public void removeUser(User user) {
         for (Room room : rooms.keySet()) {
@@ -47,7 +54,7 @@ public class RoomHandler implements IUserHandler{
     }
 
     public void removeUser(int userID) {
-        removeUser(findUser(userID));
+        removeUser(getUser(userID));
     }
 
     public void moveUser(User user, Room targetRoom) {
@@ -56,7 +63,7 @@ public class RoomHandler implements IUserHandler{
     }
 
     public void moveUser(int userID, int targetRoomID) {
-        moveUser(findUser(userID), findRoom(targetRoomID));
+        moveUser(getUser(userID), findRoom(targetRoomID));
     }
 
     public Room[] getRooms() {
@@ -80,7 +87,7 @@ public class RoomHandler implements IUserHandler{
      * @param id The ID of the user.
      * @return The User if found.
      */
-    private User findUser(int id) throws NoSuchElementException{
+    public User getUser(int id) throws NoSuchElementException{
         for (ArrayList<User> users : rooms.values()) {
             for (User user : users) {
                 if (user.getId()==id) {

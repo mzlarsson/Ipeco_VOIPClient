@@ -28,6 +28,7 @@ import android.widget.EditText;
 
 import se.chalmers.fleetspeak.CommandHandler;
 import se.chalmers.fleetspeak.R;
+import se.chalmers.fleetspeak.ServerHandler;
 import se.chalmers.fleetspeak.SocketService;
 import se.chalmers.fleetspeak.TruckCommunicator;
 import se.chalmers.fleetspeak.sound.SoundController;
@@ -47,7 +48,7 @@ public class StartActivity extends ActionBarActivity {
     private SoundController soundController;
 
     static Messenger mService = null;
-    final Messenger mMessenger = new Messenger(new CommandHandler());
+    Messenger mMessenger;
 
     private ServiceConnection mConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className, IBinder service) {
@@ -83,6 +84,8 @@ public class StartActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+        mMessenger = new Messenger(CommandHandler.getInstance());
 
         new TruckCommunicator().execute(AutomotiveSignalId.FMS_WHEEL_BASED_SPEED, AutomotiveSignalId.FMS_SELECTED_GEAR);
 
@@ -204,6 +207,7 @@ public class StartActivity extends ActionBarActivity {
             try {
                 Message msg = Message.obtain(null, SocketService.CONNECT, port,0,ip);
                 mService.send(msg);
+                mService.send(Message.obtain(ServerHandler.getRooms()));
                 isConnected = true;
                 int rtpPort = port+1;
                 soundController = SoundController.create(this, ip, rtpPort);
@@ -211,7 +215,7 @@ public class StartActivity extends ActionBarActivity {
             }
         }else{
             try {
-                Message msg = Message.obtain(null, SocketService.DISCONNECT,"i cant set my name");
+                Message msg = Message.obtain(null, SocketService.SETNAME,"i cant set my name");
                 isConnected = false;
                 mService.send(msg);
             } catch (RemoteException e) {

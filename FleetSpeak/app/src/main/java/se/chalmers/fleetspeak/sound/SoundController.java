@@ -12,6 +12,8 @@ import android.os.StrictMode;
 import android.text.format.Formatter;
 import android.util.Log;
 
+import org.apache.http.conn.util.InetAddressUtils;
+
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -75,7 +77,8 @@ public class SoundController {
                 network = en.nextElement();
                 for (Enumeration<InetAddress> enumIp = network.getInetAddresses(); enumIp.hasMoreElements();) {
                     ip = enumIp.nextElement();
-                    if (!ip.isLoopbackAddress()) {
+                    if (!ip.isLoopbackAddress() && InetAddressUtils.isIPv4Address(ip.getHostAddress())) {
+                        Log.d("Sound", "An IPv4 found: "+ip.getHostAddress());
                         clientIP = ip.getHostAddress();
                     }
                 }
@@ -83,7 +86,6 @@ public class SoundController {
         } catch (SocketException ex) {
             Log.i("SocketException ", ex.toString());
         }
-
         Log.d("Sound", "Fetched IP: "+clientIP);
     }
 

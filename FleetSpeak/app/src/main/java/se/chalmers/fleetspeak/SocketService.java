@@ -48,7 +48,7 @@ public class SocketService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        Log.i(LOGNAME, "I have beed bound");
+        Log.i(LOGNAME, "I have been bound");
         return mMessenger.getBinder();
     }
 
@@ -80,6 +80,11 @@ public class SocketService extends Service {
                                     objectInputStream = new ObjectInputStream(socket.getInputStream());
                                     Log.i(LOGNAME, "InputStream ready");
 
+                                    Log.i(LOGNAME, "trying to send getRooms");
+                                    objectOutputStream.writeObject(new Command("getRooms", id, null));
+                                    objectOutputStream.flush();
+                                    Log.i(LOGNAME, "sent getRooms");
+
                                 } catch (IOException e) {
                                     Log.i("Connector.connect", "Connection failed " + e.getMessage());
                                 }
@@ -104,13 +109,14 @@ public class SocketService extends Service {
                         break;
                     case SETNAME:
 
-                        Log.i(LOGNAME, "Sending setName command");
+                        Log.i(LOGNAME, "Trying  to sending setName command");
                         try {
                             if(socket != null && socket.isConnected()) {
                                 objectOutputStream.writeObject(new Command("setName", id, "I FUCKING HATE THIS"));
                                 objectOutputStream.flush();
+                                Log.i(LOGNAME, "Sent setName");
                             }
-                            //lookForMessage();
+
                         } catch (IOException e) {
                             Log.i(LOGNAME, e.toString());
                         }
@@ -127,8 +133,15 @@ public class SocketService extends Service {
                         Log.i(LOGNAME, "Command not implemented");
                         break;
                     case GETROOMS:
-                        //TODO
-                        Log.i(LOGNAME, "Command not implemented");
+                        Log.i(LOGNAME, "trying to send getRooms command");
+                        try{
+                            if(socket != null && socket.isConnected()){
+                                objectOutputStream.writeObject(new Command("getRooms", id, null));
+                                objectOutputStream.flush();
+                            }
+                        }catch (IOException e){
+                            Log.e(LOGNAME,e.toString());
+                        }
                         break;
                     case GETUSERSINROOM:
                         //TODO
@@ -152,6 +165,8 @@ public class SocketService extends Service {
                             e.printStackTrace();
                         }
                         break;
+                    default:
+                        break;
                 }
             }
         }
@@ -163,7 +178,7 @@ public class SocketService extends Service {
     public void onCreate(){
         Log.i("FUUUUUUUUUCK" , "DIE MOTHERFUCKER DIE");
 
-         timer.scheduleAtFixedRate(new TimerTask(){ public void run() {lookForMessage();}}, 0, 500L);
+         timer.scheduleAtFixedRate(new TimerTask(){ public void run() {lookForMessage();}}, 0, 100L);
     }
 
     private void lookForMessage() {
@@ -186,11 +201,11 @@ public class SocketService extends Service {
                 endSocketConnection();
                // Log.i(LOGNAME, e.toString());
             } catch (ClassNotFoundException e) {
-                Log.e(LOGNAME, e.getMessage());
+                Log.e(LOGNAME, e.toString());
             } catch (NullPointerException e) {
-                Log.e(LOGNAME, e.getMessage());
+                Log.e(LOGNAME, e.toString());
             } catch (RemoteException e) {
-                Log.e(LOGNAME, e.getMessage());
+                Log.e(LOGNAME, e.toString());
             }
         }
     }

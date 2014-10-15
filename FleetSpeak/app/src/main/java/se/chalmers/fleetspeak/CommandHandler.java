@@ -13,18 +13,56 @@ public class CommandHandler extends Handler {
 
     private RoomHandler roomHandler;
 
+    private User user;
 
-    public CommandHandler(){
+    private static CommandHandler commandHandler = new CommandHandler();
+
+    private CommandHandler(){
         super();
         roomHandler = new RoomHandler();
     }
 
-    public void handleMessage(Message msg) {
-        Command c = (Command) msg.obj;
-        String s = c.getCommand();
-        Log.i("Commandhandler", "Got the message " + s);
-        //TODO
+    public static CommandHandler getInstance(){
+        return commandHandler;
     }
 
+    public void handleMessage(Message msg) {
+        Command command = (Command) msg.obj;
+        String sCommand = command.getCommand();
+        Log.i("Commandhandler", "Got the message " + sCommand);
+        //TODO
+        if(sCommand.equals("setID")){
+            user = new User((Integer)command.getKey());
+            roomHandler.addUser(user);
+        }else if(sCommand.equals("setName")){
+            User u = roomHandler.getUser((Integer) command.getKey());
+            u.setName((String)command.getValue());
+        }else if(sCommand.equals("userDisconnected")){
+            roomHandler.removeUser((Integer)command.getKey());
+        }else if(sCommand.equals("setRtpPort")){
+            //TODO
+        }else if(sCommand.equals("createAndMove")){
+            //TODO
+        }else if(sCommand.equals("move")){
+            roomHandler.moveUser((Integer)command.getKey(),(Integer)command.getValue());
+        }else if(sCommand.equals("newUser")){
+            roomHandler.addUser(new User((Integer)command.getKey()));
+        }else if(sCommand.equals("addUser")){
+            roomHandler.addUser(new User( (String) command.getValue(),(Integer) command.getKey()));
+        }
+
+        listUsers();
+
+    }
+
+
+    private void listUsers(){
+        for(Room r : roomHandler.getRooms()){
+            Log.i("LISTUSER", "RoomID " + r.getId());
+            for(User u : roomHandler.getUsers(r)){
+                Log.i("LISTUSER", u.toString());
+            }
+        }
+    }
 
 }

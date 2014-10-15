@@ -15,6 +15,10 @@ public class User {
         this.name = name;
         this.id = id;
     }
+    public User(int id){
+        this.name = "";
+        this.id = id;
+    }
 
     private static int tmpID;   //TODO This is a temporary solution for test purposes.
     public User(String name) {  //TODO This is a temporary solution for test purposes.
@@ -44,7 +48,7 @@ public class User {
         User user = (User) o;
 
         if (id != user.id) return false;
-        if (name != null ? !name.equals(user.name) : user.name != null) return false;
+        //if (name != null ? !name.equals(user.name) : user.name != null) return false;
 
         return true;
     }
