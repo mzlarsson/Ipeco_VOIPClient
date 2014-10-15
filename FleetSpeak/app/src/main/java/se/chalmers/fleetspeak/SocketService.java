@@ -80,6 +80,11 @@ public class SocketService extends Service {
                                     objectInputStream = new ObjectInputStream(socket.getInputStream());
                                     Log.i(LOGNAME, "InputStream ready");
 
+                                    Log.i(LOGNAME, "trying to send getRooms");
+                                    objectOutputStream.writeObject(new Command("getRooms", id, null));
+                                    objectOutputStream.flush();
+                                    Log.i(LOGNAME, "sent getRooms");
+
                                 } catch (IOException e) {
                                     Log.i("Connector.connect", "Connection failed " + e.getMessage());
                                 }

@@ -13,6 +13,8 @@ public class CommandHandler extends Handler {
 
     private RoomHandler roomHandler;
 
+    private User user;
+
     private static CommandHandler commandHandler = new CommandHandler();
 
     private CommandHandler(){
@@ -30,7 +32,8 @@ public class CommandHandler extends Handler {
         Log.i("Commandhandler", "Got the message " + sCommand);
         //TODO
         if(sCommand.equals("setID")){
-            roomHandler.addUser(new User((Integer)command.getKey()));
+            user = new User((Integer)command.getKey());
+            roomHandler.addUser(user);
         }else if(sCommand.equals("setName")){
             User u = roomHandler.getUser((Integer) command.getKey());
             u.setName((String)command.getValue());
@@ -45,7 +48,7 @@ public class CommandHandler extends Handler {
         }else if(sCommand.equals("newUser")){
             roomHandler.addUser(new User((Integer)command.getKey()));
         }else if(sCommand.equals("addUser")){
-            roomHandler.addUser(new User( (String) command.getValue(),(Integer) command.getKey())) ;
+            roomHandler.addUser(new User( (String) command.getValue(),(Integer) command.getKey()));
         }
 
         listUsers();
