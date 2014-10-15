@@ -151,19 +151,54 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener {
 			public void publish(LogRecord record) {
 				try {
 					String msg = record.getMessage();
-					
-					SimpleAttributeSet attributes = new SimpleAttributeSet();
-					if(msg.startsWith("<b>") && msg.endsWith("</b>")){
-						StyleConstants.setBold(attributes, true);
-						msg = msg.substring(3, msg.length()-4);
-					}if(msg.startsWith("<error>") && msg.endsWith("</error>")){
-						StyleConstants.setForeground(attributes, Color.RED);
-						msg = msg.substring(7, msg.length()-8);
-					}
 					StyledDocument doc = terminal.getStyledDocument();
-					doc.insertString(doc.getLength(), msg+"\n", attributes);
+					SimpleAttributeSet attributes = new SimpleAttributeSet();
+					
+					if (msg.indexOf("<")==-1) {
+						doc.insertString(doc.getLength(), msg+"\n", null);
+					} else {
+						int tagStart = msg.indexOf("<");
+						int tagEnd = msg.indexOf(">", tagStart);
+						while (tagStart!=-1) {
+							doc.insertString(doc.getLength(), msg.substring(0, tagStart), attributes);
+							if (tagEnd!=-1) {
+								if (!setAttributes(msg.substring(tagStart+1, tagEnd), attributes)) {
+									doc.insertString(doc.getLength(), msg.substring(tagStart, tagEnd+1), attributes);
+								}
+								msg = msg.substring(tagEnd+1);
+							} else {
+								doc.insertString(doc.getLength(), "<", attributes);
+								msg = msg.substring(1);
+							}
+							tagStart = msg.indexOf("<");
+							tagEnd = msg.indexOf(">", tagStart);
+						}
+						doc.insertString(doc.getLength(), msg+"\n", null);
+					}
 				} catch (BadLocationException e) {}
 				scrollableText.getVerticalScrollBar().setValue(scrollableText.getVerticalScrollBar().getMaximum());
+			}
+			
+			// Returns true if the given string is an actual attribute.
+			private boolean setAttributes(String msg, SimpleAttributeSet attr) {
+				if (msg.startsWith("/")) {
+					if (msg.equals("/b")) {
+						StyleConstants.setBold(attr, false);
+					} else if (msg.equals("/error")) {
+						StyleConstants.setForeground(attr, Color.BLACK);
+					} else {
+						return false;
+					}
+				} else {
+					if (msg.equals("b")) {
+						StyleConstants.setBold(attr, true);
+					} else if (msg.equals("error")) {
+						StyleConstants.setForeground(attr, Color.RED);
+					} else {
+						return false;
+					}
+				}
+				return true;
 			}
 			
 			@Override
@@ -241,7 +276,7 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener {
 	public void keyReleased(KeyEvent e) {
 		if (e.getKeyCode()==KeyEvent.VK_ENTER) {
 			String cmd = cmdLine.getText();
-			log.log(Level.ALL, "<b>"+cmd+"</b>");
+			log.log(Level.ALL, "<b>> "+cmd+"</b>");
 			EventBus.getInstance().fireEvent(new EventBusEvent("CommandHandler", new Command("consoleCommand", null, cmd), this));
 
 			cmdLine.setText("");

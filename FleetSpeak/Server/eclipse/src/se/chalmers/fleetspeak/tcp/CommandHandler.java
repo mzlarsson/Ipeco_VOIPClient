@@ -44,7 +44,7 @@ public class CommandHandler implements IEventBusSubscriber {
 		} else if (cmdString.startsWith("cls")) {
 			Log.flushLog();
 		} else {
-			Log.log(("<error>ERROR: \"" + cmdString + "\" is not supported</error>"));
+			Log.log(("<error>ERROR:</error> \"<b>" + cmdString + "</b>\" <error>is not supported</error>"));
 		}
 	}
 
