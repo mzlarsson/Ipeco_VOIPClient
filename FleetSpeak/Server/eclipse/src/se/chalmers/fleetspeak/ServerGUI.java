@@ -160,7 +160,6 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener {
 						StyleConstants.setForeground(attributes, Color.RED);
 						msg = msg.substring(7, msg.length()-8);
 					}
-					
 					StyledDocument doc = terminal.getStyledDocument();
 					doc.insertString(doc.getLength(), msg+"\n", attributes);
 				} catch (BadLocationException e) {}
@@ -169,8 +168,7 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener {
 			
 			@Override
 			public void flush() {
-				// TODO Auto-generated method stub
-				
+				terminal.setText("");
 			}
 			
 			@Override
@@ -204,6 +202,7 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener {
 			}
 		} else if (e.getSource() == start) {
 			if (server == null) {
+				terminal.setText("");
 				serverThread = new Thread(new Runnable() {
 					public void run() {
 						try {
@@ -243,15 +242,7 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener {
 		if (e.getKeyCode()==KeyEvent.VK_ENTER) {
 			String cmd = cmdLine.getText();
 			log.log(Level.ALL, "<b>"+cmd+"</b>");
-			
-			if(cmd.startsWith("startRTP")){
-				String[] data = cmd.split(" ");
-				int clientID = Integer.parseInt(data[1]);
-				int clientPort = Integer.parseInt(data[2]);
-				log.log(Level.ALL, "Starting RTP with port: "+clientPort);
-				EventBusEvent event = new EventBusEvent("CommandHandler", new Command("setRtpPort", clientID, clientPort), null);
-				EventBus.getInstance().fireEvent(event);
-			}
+			EventBus.getInstance().fireEvent(new EventBusEvent("CommandHandler", new Command("consoleCommand", null, cmd), this));
 
 			cmdLine.setText("");
 		}		

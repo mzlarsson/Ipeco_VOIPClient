@@ -30,6 +30,23 @@ public class CommandHandler implements IEventBusSubscriber {
 		eventBus.removeSubscriber(this);
 		roomHandler.terminate();
 	}
+	
+	private void serverCommands(String cmdString, Object actor) {
+		// Called to initiate the rtp sound transfer.
+		if (cmdString.startsWith("setRtpPort")) {
+			String[] data = cmdString.split(" ");
+			int clientID = Integer.parseInt(data[1]);
+			int clientPort = Integer.parseInt(data[2]);
+			Log.log("Starting RTP with port: "+clientPort);
+			Client c = roomHandler.getClient((Integer) clientID);
+			c.startRTPTransfer(clientPort);
+		// Called to clear the server console window.
+		} else if (cmdString.startsWith("cls")) {
+			Log.flushLog();
+		} else {
+			Log.log(("<error>ERROR: \"" + cmdString + "\" is not supported</error>"));
+		}
+	}
 
 	@Override
 	public void eventPerformed(EventBusEvent event) {
@@ -37,7 +54,6 @@ public class CommandHandler implements IEventBusSubscriber {
 		if (event.getReciever() == "CommandHandler") {
 			Command command = event.getCommand();
 			String commandName = command.getCommand();
-			Log.log("[CommandHandler] Got a command \"" + commandName + "\" keytype: " + command.getKey().getClass());
 			// Called when a user is disconnected.
 			if (commandName.equals("disconnect")) {
 				int i = (Integer) event.getCommand().getKey();
@@ -54,18 +70,17 @@ public class CommandHandler implements IEventBusSubscriber {
 				Client c = roomHandler.getClient((Integer) command.getKey());
 				c.setName((String) command.getValue());
 				eventBus.fireEvent(new EventBusEvent("broadcast", command, null));
-			// Called to initiate the rtp sound transfer.
-			} else if (commandName.equals("setRtpPort")) {
-				Client c = roomHandler.getClient((Integer) command.getKey());
-				c.startRTPTransfer((Integer)command.getValue());
 			// Called when a client changes rooms to a new room.
 			} else if (commandName.equals("createAndMove")) {
 				roomHandler.moveClient((Integer)command.getKey(), new Room((String)command.getValue()));
 				eventBus.fireEvent(new EventBusEvent("broadcast", command, null));
-				// Called when a client changes rooms to an existing room.
+			// Called when a client changes rooms to an existing room.
 			} else if (commandName.equals("move")) {
 				roomHandler.moveClient((Integer)command.getKey(), (Integer)command.getValue());
 				eventBus.fireEvent(new EventBusEvent("broadcast", command, null));
+			// Called when commands are manually entered into the command line.
+			} else if (commandName.equals("consoleCommand")) {
+				serverCommands((String)command.getValue(), event.getActor());
 			}
 		}
 	}

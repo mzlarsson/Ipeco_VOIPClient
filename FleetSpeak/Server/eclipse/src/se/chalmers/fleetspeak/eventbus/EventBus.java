@@ -65,7 +65,11 @@ public class EventBus {
 			subscriber.eventPerformed(event);
 		}
 	}
-	public List<IEventBusSubscriber> getSubscribers(){
-		return subscribers;
+	
+	/**
+	 * Removes all subscribers, to be used during shutdown or restarts.
+	 */
+	public void emptySubscriberList() {
+		subscribers.clear();
 	}
 }

@@ -15,6 +15,12 @@ public class Log {
 		}
 	}
 	
+	public static void flushLog() {
+		if (logger!=null) {
+			logger.getHandlers()[0].flush();
+		}
+	}
+	
 	public static void setupLogger(Logger logger) {
 		if (Log.logger==null) {
 			if (instance==null) {

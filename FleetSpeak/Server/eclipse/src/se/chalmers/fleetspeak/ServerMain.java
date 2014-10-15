@@ -34,6 +34,11 @@ public class ServerMain{
     		@Override
     		public void run(){
     			commandHandler.terminate();
+    			try {
+    	    		if(serverSocket != null){
+    	    			serverSocket.close();
+    	    		}
+    			} catch (IOException e) {}
     		}
     	}));
     	
@@ -87,15 +92,13 @@ public class ServerMain{
         Log.log("A new person joined ");
     }
     
-    
-    
     public void terminate() {
     	try {
     		if(serverSocket != null){
     			serverSocket.close();
     		}
 		} catch (IOException e) {}
-    	
+    	commandHandler.terminate();
     	running = false;
     }
 }
