@@ -70,6 +70,7 @@ public class StartActivity extends ActionBarActivity {
             Log.i("SERVICECONNECTION", "Disconnected");
         }
     };
+
     private boolean isMyServiceRunning(Class<?> serviceClass) {
         ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
@@ -122,7 +123,7 @@ public class StartActivity extends ActionBarActivity {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                portText = String.valueOf(ipTextField.getText());
+                portText = String.valueOf(portField.getText());
             }
         });
 
@@ -147,9 +148,9 @@ public class StartActivity extends ActionBarActivity {
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         prefEdit = prefs.edit();
 
-        portText = prefs.getString("8867", "portNumber");
+        portText = prefs.getString( "portNumber","8867");
         userNameText = prefs.getString("username", "username");
-        ipText = prefs.getString("192.168.43.147", "ipAdress");
+        ipText = prefs.getString("ipAdress","192.168.1.4");
         ipTextField.setText(ipText);
         portField.setText(portText);
         userNameField.setText(userNameText);
