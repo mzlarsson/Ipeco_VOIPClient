@@ -42,6 +42,8 @@ public class CommandHandler extends Handler {
             //TODO
         }else if(sCommand.equals("move")){
             roomHandler.moveUser((Integer)command.getKey(),(Integer)command.getValue());
+        }else if(sCommand.equals("newUser")){
+            roomHandler.addUser(new User((Integer)command.getKey()));
         }
 
         listUsers();
