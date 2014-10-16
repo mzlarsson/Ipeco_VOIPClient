@@ -205,13 +205,19 @@ public class StartActivity extends ActionBarActivity {
     }
     @Override
     protected void onStop(){
-        unbindService(mConnection);
+        super.onStop();
+        if(this.isMyServiceRunning(ServiceConnection.class)) {
+             unbindService(mConnection);
+        }
     }
     protected void onDestroy(){
-        unbindService(mConnection);
+        super.onDestroy();
+        if(this.isMyServiceRunning(ServiceConnection.class)) {
+            unbindService(mConnection);
+        }
     }
     protected void onRestart(){
-
+        super.onRestart();
     }
     public void onConnectButtonClick(View view) {
         startConnection(ipText,Integer.parseInt(portText));
