@@ -152,7 +152,7 @@ public class StartActivity extends ActionBarActivity {
 
         portText = prefs.getString( "portNumber","8867");
         userNameText = prefs.getString("username", "username");
-        ipText = prefs.getString("ipAdress","192.168.43.147");
+        ipText = prefs.getString("ipAdress","192.168.43.23");
         ipTextField.setText(ipText);
         portField.setText(portText);
         userNameField.setText(userNameText);

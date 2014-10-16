@@ -122,11 +122,11 @@ public class SocketService extends Service {
         }
     }
 
-    private void trySend(Command c){
+    private synchronized void trySend(Command c){
+
         if(id > 0){
-            if(!commandQueue.isEmpty())
-                sendCommandQueue();
             try {
+
                 objectOutputStream.writeObject(c);
                 objectOutputStream.flush();
                 Log.i(LOGNAME, "Sent command: " + c.getCommand());
@@ -138,17 +138,21 @@ public class SocketService extends Service {
             commandQueue.add(c);
         }
     }
-    private void sendCommandQueue(){
-        for(Command c: commandQueue){
-            Command correctIDcommand= new Command(c.getCommand(),id,c.getValue());
+    private synchronized void sendCommandQueue(){
 
-            try {
-                objectOutputStream.writeObject(correctIDcommand);
-                objectOutputStream.flush();
-            } catch (IOException e) {
-                e.printStackTrace();
+            for (int i = 0; i < commandQueue.size(); i++) {
+
+                Command correctIDcommand = new Command(commandQueue.get(i).getCommand(), id, commandQueue.get(i).getValue());
+
+                try {
+                    objectOutputStream.writeObject(correctIDcommand);
+                    objectOutputStream.flush();
+                    commandQueue.remove(i);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
-        }
+
     }
 
 
@@ -160,7 +164,7 @@ public class SocketService extends Service {
     }
 
     private void lookForMessage() {
-        if(socket != null && socket.isConnected()) {
+        if(objectInputStream != null) {
             //Log.i(LOGNAME, "Looking for message form server");
             try {
                 Command c;

@@ -4,6 +4,7 @@ import se.chalmers.fleetspeak.Client;
 import se.chalmers.fleetspeak.Room;
 import se.chalmers.fleetspeak.RoomHandler;
 import se.chalmers.fleetspeak.ServerCommand;
+import se.chalmers.fleetspeak.ServerGUI;
 import se.chalmers.fleetspeak.eventbus.EventBus;
 import se.chalmers.fleetspeak.eventbus.EventBusEvent;
 import se.chalmers.fleetspeak.eventbus.IEventBusSubscriber;
@@ -50,7 +51,11 @@ public class CommandHandler implements IEventBusSubscriber {
 			int roomID = Integer.parseInt(data[2]);
 			Client c = roomHandler.getClient(clientID);
 			c.moveToRoom(roomID);
-		}else if (cmdString.startsWith(ServerCommand.HELP.getName())) {
+		} else if (cmdString.startsWith(ServerCommand.CLOSE.getName())) {
+			if (actor.getClass()==ServerGUI.class) {
+				((ServerGUI)actor).stop();
+			}
+		} else if (cmdString.startsWith(ServerCommand.HELP.getName())) {
 			if (cmdString.length()>5) {
 				ServerCommand sc = ServerCommand.getCommand(cmdString.substring(5));
 				if (sc!=null) {
