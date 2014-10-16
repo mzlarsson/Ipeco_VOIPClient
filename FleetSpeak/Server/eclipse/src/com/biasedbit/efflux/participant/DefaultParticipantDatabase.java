@@ -126,7 +126,7 @@ public class DefaultParticipantDatabase implements ParticipantDatabase {
 	            this.lock.readLock().unlock();
 	        }
         }else{
-        	System.out.println("ERROR: The receiver is not registered to the session.");
+        	System.out.println("ERROR: The receiver is not registered to the session. "+receiver.getInfo().getSsrc());
         }
     }
 
@@ -160,7 +160,7 @@ public class DefaultParticipantDatabase implements ParticipantDatabase {
                 boolean sameDestinationAddresses =
                         member.getDataDestination().equals(remoteParticipant.getDataDestination()) &&
                         member.getControlDestination().equals(remoteParticipant.getControlDestination());
-                boolean sameCname = member.getInfo().getCname().equals(remoteParticipant.getInfo().getCname());
+                boolean sameCname = (member.getInfo().getCname() != null && member.getInfo().getCname().equals(remoteParticipant.getInfo().getCname()));
                 if (sameDestinationAddresses || sameCname) {
                     // Instead of adding the newly provided participant, reuse the member
                     this.receivers.add(member);

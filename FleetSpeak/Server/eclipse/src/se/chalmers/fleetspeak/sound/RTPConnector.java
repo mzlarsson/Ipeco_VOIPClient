@@ -240,6 +240,7 @@ public class RTPConnector implements RtpSessionDataListener{
 		RTPConnector connector = findConnector(serverIP, serverPort);
 		if(connector == null){
 			connector = new RTPConnector(serverIP, serverPort, payloadType);
+			connectors.add(connector);
 		}
 		
 		return connector;

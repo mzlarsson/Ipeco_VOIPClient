@@ -69,7 +69,7 @@ public class SoundController {
         audioStream.join(audioGroup);
         Log.d("Sound", " Group joined" + audioStream.getLocalPort());
 
-        currentSoundController = new SoundController(audioGroup);
+        currentSoundController = new SoundController(audioStream, audioGroup);
         return currentSoundController;
     }
 
@@ -94,7 +94,12 @@ public class SoundController {
         Log.d("Sound", "Fetched IP: "+clientIP);
     }
 
+    public static boolean hasValue(){
+        return currentSoundController != null;
+    }
+
     public static int getPort(){
+        Log.d("Sound", "Fetching port..."+currentSoundController.audioStream.getLocalPort());
         return currentSoundController.audioStream.getLocalPort();
     }
 
