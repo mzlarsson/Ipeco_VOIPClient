@@ -61,8 +61,8 @@ public class EventBus {
 	 *            that has been performed.
 	 */
 	public void fireEvent(EventBusEvent event) {
-		for (IEventBusSubscriber subscriber : subscribers) {
-			subscriber.eventPerformed(event);
+		for (int i=0; i<subscribers.size(); i++) {
+			subscribers.get(i).eventPerformed(event);
 		}
 	}
 	

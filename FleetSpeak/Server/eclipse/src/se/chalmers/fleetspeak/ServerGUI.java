@@ -131,7 +131,7 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener {
 		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 		scrollableText = new JScrollPane(terminal);
 		terminal.setEditable(false);
-		scrollableText.setPreferredSize(new Dimension(500,500));
+		scrollableText.setPreferredSize(new Dimension(700,500));
 		center.add(scrollableText, BorderLayout.CENTER);
 		west.add(westBorder);
 		
@@ -221,47 +221,55 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener {
 		Log.setupLogger(log);
 	}
 
+	public void start() {
+		if (server == null) {
+			terminal.setText("");
+			serverThread = new Thread(new Runnable() {
+				public void run() {
+					try {
+						server = new ServerMain(Integer.parseInt(tcpText
+								.getText()),
+								Integer.parseInt(udpText.getText()));
+						server.start();
+					} catch (UnknownHostException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			});
+			serverThread.start();
+			tcpText.setEnabled(false);
+			udpText.setEnabled(false);
+			start.setEnabled(false);
+			stop.setEnabled(true);
+		}
+	}
+
+	public void stop() {
+		if (server != null) {
+			log.log(Level.ALL, "Terminating server...");
+			try {
+				server.terminate();
+				serverThread.join();
+				server = null;
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			log.log(Level.ALL, "Server stopped.");
+			tcpText.setEnabled(true);
+			udpText.setEnabled(true);
+			start.setEnabled(true);
+			stop.setEnabled(false);
+		}
+	}
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == stop) {
-			if (server != null) {
-				log.log(Level.ALL, "Terminating server...");
-				try {
-					server.terminate();
-					serverThread.join();
-					server = null;
-				} catch (InterruptedException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				log.log(Level.ALL, "Server stopped.");
-				tcpText.setEnabled(true);
-				udpText.setEnabled(true);
-				start.setEnabled(true);
-				stop.setEnabled(false);
-			}
+			stop();
 		} else if (e.getSource() == start) {
-			if (server == null) {
-				terminal.setText("");
-				serverThread = new Thread(new Runnable() {
-					public void run() {
-						try {
-							server = new ServerMain(Integer.parseInt(tcpText
-									.getText()),
-									Integer.parseInt(udpText.getText()));
-							server.start();
-						} catch (UnknownHostException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
-				});
-				serverThread.start();
-				tcpText.setEnabled(false);
-				udpText.setEnabled(false);
-				start.setEnabled(false);
-				stop.setEnabled(true);
-			}
+			start();
 		}
 	}
 	

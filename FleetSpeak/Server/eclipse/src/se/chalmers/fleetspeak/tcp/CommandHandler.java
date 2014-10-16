@@ -4,6 +4,7 @@ import se.chalmers.fleetspeak.Client;
 import se.chalmers.fleetspeak.Room;
 import se.chalmers.fleetspeak.RoomHandler;
 import se.chalmers.fleetspeak.ServerCommand;
+import se.chalmers.fleetspeak.ServerGUI;
 import se.chalmers.fleetspeak.eventbus.EventBus;
 import se.chalmers.fleetspeak.eventbus.EventBusEvent;
 import se.chalmers.fleetspeak.eventbus.IEventBusSubscriber;
@@ -39,11 +40,15 @@ public class CommandHandler implements IEventBusSubscriber {
 			int clientID = Integer.parseInt(data[1]);
 			int clientPort = Integer.parseInt(data[2]);
 			Log.log("Starting RTP with port: "+clientPort);
-			Client c = roomHandler.getClient((Integer) clientID);
+			Client c = roomHandler.getClient(clientID);
 			c.startRTPTransfer(clientPort);
 		// Called to clear the server console window.
 		} else if (cmdString.startsWith(ServerCommand.CLEAR.getName())) {
 			Log.flushLog();
+		} else if (cmdString.startsWith(ServerCommand.CLOSE.getName())) {
+			if (actor.getClass()==ServerGUI.class) {
+				((ServerGUI)actor).stop();
+			}
 		} else if (cmdString.startsWith(ServerCommand.HELP.getName())) {
 			if (cmdString.length()>5) {
 				ServerCommand sc = ServerCommand.getCommand(cmdString.substring(5));

@@ -10,6 +10,12 @@ public enum ServerCommand {
 			return "<b>cls</b> Clears the console window of all text.";
 		}
 	},
+	CLOSE("close") {
+		@Override
+		public String getInfo(){
+			return "<b>close</b> Shuts down the server.";
+		}
+	},
 	SET_RTP_PORT("setRtpPort") {
 		@Override
 		public String getInfo(){
