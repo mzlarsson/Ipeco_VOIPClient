@@ -1,8 +1,11 @@
 package se.chalmers.fleetspeak;
 
+import android.app.Activity;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+
+import java.util.ArrayList;
 
 import se.chalmers.fleetspeak.util.Command;
 
@@ -11,11 +14,10 @@ import se.chalmers.fleetspeak.util.Command;
  */
 public class CommandHandler extends Handler {
 
-    private RoomHandler roomHandler;
-
-    private User user;
-
     private static CommandHandler commandHandler = new CommandHandler();
+    private RoomHandler roomHandler;
+    private User user;
+    private ArrayList<Activity> activities = new ArrayList<Activity>();
 
     private CommandHandler(){
         super();
@@ -55,6 +57,20 @@ public class CommandHandler extends Handler {
 
     }
 
+    public void addListener(Activity a){
+        activities.add(a);
+    }
+
+    public void removeListener(Activity a){
+        activities.remove(a);
+    }
+
+    private void postUpdate(){
+        for(Activity a: activities){
+            //TODO update activity;
+        }
+    }
+
 
     private void listUsers(){
         for(Room r : roomHandler.getRooms()){
@@ -64,5 +80,8 @@ public class CommandHandler extends Handler {
             }
         }
     }
+
+
+
 
 }

@@ -3,6 +3,7 @@ package se.chalmers.fleetspeak.tcp;
 import se.chalmers.fleetspeak.Client;
 import se.chalmers.fleetspeak.Room;
 import se.chalmers.fleetspeak.RoomHandler;
+import se.chalmers.fleetspeak.ServerCommand;
 import se.chalmers.fleetspeak.eventbus.EventBus;
 import se.chalmers.fleetspeak.eventbus.EventBusEvent;
 import se.chalmers.fleetspeak.eventbus.IEventBusSubscriber;
@@ -33,7 +34,7 @@ public class CommandHandler implements IEventBusSubscriber {
 	
 	private void serverCommands(String cmdString, Object actor) {
 		// Called to initiate the rtp sound transfer.
-		if (cmdString.startsWith("setRtpPort")) {
+		if (cmdString.startsWith(ServerCommand.SET_RTP_PORT.getName())) {
 			String[] data = cmdString.split(" ");
 			int clientID = Integer.parseInt(data[1]);
 			int clientPort = Integer.parseInt(data[2]);
@@ -41,8 +42,23 @@ public class CommandHandler implements IEventBusSubscriber {
 			Client c = roomHandler.getClient((Integer) clientID);
 			c.startRTPTransfer(clientPort);
 		// Called to clear the server console window.
-		} else if (cmdString.startsWith("cls")) {
+		} else if (cmdString.startsWith(ServerCommand.CLEAR.getName())) {
 			Log.flushLog();
+		} else if (cmdString.startsWith(ServerCommand.HELP.getName())) {
+			if (cmdString.length()>5) {
+				ServerCommand sc = ServerCommand.getCommand(cmdString.substring(5));
+				if (sc!=null) {
+					Log.log(sc.getInfo());
+				} else {
+					Log.log("The command \"<b>" + cmdString.substring(5) + "</b>\" doesn't exist. Try \"<b>help</b>\" to see possible commands.");
+				}
+			} else {
+				Log.log("Possible commands are:");
+				for (ServerCommand cmd: ServerCommand.values()) {
+					Log.log("\t"+cmd.getName());
+				}
+				Log.log(ServerCommand.HELP.getInfo());
+			}
 		} else {
 			Log.log(("<error>ERROR:</error> \"<b>" + cmdString + "</b>\" <error>is not supported</error>"));
 		}

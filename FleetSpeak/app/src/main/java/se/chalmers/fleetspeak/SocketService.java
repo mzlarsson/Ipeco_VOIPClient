@@ -14,11 +14,12 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import se.chalmers.fleetspeak.sound.SoundController;
 import se.chalmers.fleetspeak.util.Command;
+import se.chalmers.fleetspeak.sound.SoundController;
 
 public class SocketService extends Service {
 
@@ -28,6 +29,7 @@ public class SocketService extends Service {
     private Timer timer = new Timer();
     private Messenger messenger;
 
+    private ArrayList<Command> commandQueue = new ArrayList<Command>();
 
     private int id = -1;
 
@@ -36,11 +38,9 @@ public class SocketService extends Service {
     public static final int DISCONNECT = 2;
     public static final int SETNAME = 3;
     public static final int SETMESSENGER = 4;
-    public static final int CREATEROOM = 5;
-    public static final int MOVEUSER = 6;
-    public static final int GETROOMS = 7;
-    public static final int GETUSERSINROOM = 8;
-    public static final int MUTEUSER = 9;
+    public static final int MOVEUSER = 5;
+    public static final int GETUSERS = 6;
+    public static final int MUTEUSER = 7;
     public static final int SENDTESTDATA = 44; // only for testing will send a string from the server when used
 
     private String LOGNAME = "SocketService";
@@ -90,80 +90,30 @@ public class SocketService extends Service {
                         break;
                     case DISCONNECT:
                         Log.i(LOGNAME, "Disconnecting");
-                        try {
-                            objectOutputStream.writeObject(new Command("disconnect", id, null));
-                            objectOutputStream.flush();
-
-                            socket.close();
-
-                            socket = null;
-
-                        } catch (IOException e) {
-                            Log.i(LOGNAME, e.getMessage());
-                        }
+                        trySend(new Command("disconnect", id, null));
                         break;
                     case SETNAME:
 
                         Log.i(LOGNAME, "Trying  to sending setName command");
+                        trySend(new Command("setName", id, msg.obj));
 
-                        try {
-                            do{
-
-
-                                if (socket != null && socket.isConnected() && id != -1) {
-                                    objectOutputStream.writeObject(new Command("setName", id, "I FUCKING HATE THIS"));
-                                    objectOutputStream.flush();
-                                    Log.i(LOGNAME, "Sent setName");
-                                }
-
-                            }while (id  == -1);
-
-                        } catch (IOException e) {
-                            Log.i(LOGNAME, e.toString());
-                        }
                         break;
                     case SETMESSENGER:
                         messenger = (Messenger) msg.obj;
                         break;
-                    case CREATEROOM:
-                        //TODO
-                        Log.i(LOGNAME, "Command not implemented");
-                        break;
                     case MOVEUSER:
-                        //TODO
-                        Log.i(LOGNAME, "Command not implemented");
+                        trySend(new Command("moveUser", id, msg.arg1));
                         break;
-                    case GETROOMS:
+                    case GETUSERS:
                         Log.i(LOGNAME, "trying to send getRooms command");
-                        try{
-                            if(socket != null && socket.isConnected()){
-                                objectOutputStream.writeObject(new Command("getRooms", id, null));
-                                objectOutputStream.flush();
-                                Log.i(LOGNAME, "sent getRooms");
-                            }
-                        }catch (IOException e){
-                            Log.e(LOGNAME,e.toString());
-                        }
-                        break;
-                    case GETUSERSINROOM:
-                        //TODO
-                        Log.i(LOGNAME, "Command not implemented");
+                        trySend(new Command("getRooms", id, null));
                         break;
                     case MUTEUSER:
                         //TODO
                         Log.i(LOGNAME, "Command not implemented");
                         break;
                     case SENDTESTDATA:
-                        try {
-                            if(socket != null && socket.isConnected()) {
-                                objectOutputStream.writeObject(new Command("data", null, null));
-                                objectOutputStream.flush();
-                            }
-
-                            //lookForMessage();
-                        } catch (IOException e) {
-                            Log.i(LOGNAME, e.toString());
-                        }
+                        trySend(new Command("data", id, null));
                         break;
                     default:
                         break;
@@ -172,21 +122,34 @@ public class SocketService extends Service {
         }
     }
 
-    private void trySend(Command command){
-        do{
-            if(socket != null && socket.isConnected()){
-                try {
-                    objectOutputStream.writeObject(command);
-                    objectOutputStream.flush();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
+    private void trySend(Command c){
+        if(id > 0){
+            if(!commandQueue.isEmpty())
+                sendCommandQueue();
+            try {
+                objectOutputStream.writeObject(c);
+                objectOutputStream.flush();
+                Log.i(LOGNAME, "Sent command: " + c.getCommand());
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        }while(id == -1);
+
+        }else{
+            commandQueue.add(c);
+        }
     }
+    private void sendCommandQueue(){
+        for(Command c: commandQueue){
+            Command correctIDcommand= new Command(c.getCommand(),id,c.getValue());
 
-
+            try {
+                objectOutputStream.writeObject(correctIDcommand);
+                objectOutputStream.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
 
     @Override
@@ -208,7 +171,8 @@ public class SocketService extends Service {
                     if(c.getCommand().equals("setID")){
                         id = (Integer) c.getKey();
                         Log.i(LOGNAME, "ID is set now");
-
+                        sendCommandQueue();
+                        
                         while(!SoundController.hasValue()){
                             try{Thread.sleep(10);}catch(InterruptedException ie){}
                         }
@@ -231,7 +195,7 @@ public class SocketService extends Service {
         }
     }
 
-    public void endSocketConnection(){
+    private void endSocketConnection(){
      try{
        socket.close();
        objectInputStream.close();
@@ -246,6 +210,7 @@ public class SocketService extends Service {
         super.onDestroy();
         if(timer != null){timer.cancel();}
         Log.i(LOGNAME, "Service Stopped.");
+        endSocketConnection();
 
     }
 
