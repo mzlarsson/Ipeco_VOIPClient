@@ -69,7 +69,11 @@ public class SoundController {
         audioStream.join(audioGroup);
         Log.d("Sound", " Group joined" + audioStream.getLocalPort());
 
+<<<<<<< Updated upstream
         currentSoundController = new SoundController(audioStream, audioGroup);
+=======
+        currentSoundController = new SoundController(audioStream,audioGroup);
+>>>>>>> Stashed changes
         return currentSoundController;
     }
 
