@@ -1,7 +1,6 @@
 package se.chalmers.fleetspeak;
 
 import android.os.Message;
-import android.view.MotionEvent;
 
 /**
  * Created by Nieo on 10/10/14.
@@ -35,27 +34,17 @@ public class ServerHandler {
     }
 
 
-    public static Message createRoom(String newRoom, int userID) {
-        return Message.obtain(null,SocketService.CREATEROOM,userID,0,newRoom);
-    }
-
-
     public static Message move(int roomID, int userID) {
-        return Message.obtain(null,SocketService.MOVEUSER,userID,0,roomID);
+        return Message.obtain(null,SocketService.MOVEUSER,roomID,0,userID);
     }
 
-
-    public static Message getRooms() {
-        return Message.obtain(null,SocketService.GETROOMS);
-    }
-
-
-    public static Message getUsers(int roomID) {
-        return Message.obtain(null, SocketService.GETUSERSINROOM, roomID,0,null);
+    public static Message getUsers() {
+        return Message.obtain(null,SocketService.GETUSERS);
     }
 
 
     public static Message muteUser(int userID) {
+        //Not implemented
         return Message.obtain(null,SocketService.MUTEUSER,userID);
     }
 }

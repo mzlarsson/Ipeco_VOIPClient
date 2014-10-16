@@ -33,6 +33,7 @@ import se.chalmers.fleetspeak.ServerHandler;
 import se.chalmers.fleetspeak.SocketService;
 import se.chalmers.fleetspeak.TruckCommunicator;
 import se.chalmers.fleetspeak.sound.SoundController;
+import se.chalmers.fleetspeak.util.Command;
 
 public class StartActivity extends ActionBarActivity {
 
@@ -88,6 +89,7 @@ public class StartActivity extends ActionBarActivity {
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         mMessenger = new Messenger(CommandHandler.getInstance());
+        CommandHandler.getInstance().addListener(this);
 
         new TruckCommunicator().execute(AutomotiveSignalId.FMS_WHEEL_BASED_SPEED, AutomotiveSignalId.FMS_SELECTED_GEAR);
 
@@ -150,7 +152,7 @@ public class StartActivity extends ActionBarActivity {
 
         portText = prefs.getString( "portNumber","8867");
         userNameText = prefs.getString("username", "username");
-        ipText = prefs.getString("ipAdress","192.168.1.4");
+        ipText = prefs.getString("ipAdress","192.168.43.147");
         ipTextField.setText(ipText);
         portField.setText(portText);
         userNameField.setText(userNameText);
@@ -175,11 +177,11 @@ public class StartActivity extends ActionBarActivity {
 
         Log.i("STARTACTIVITY", "binding service");
         startService(new Intent(this,SocketService.class));
-        boolean fuck = isMyServiceRunning(SocketService.class);
-        Log.i("STARTACTIVITY", "unfucked " + fuck);
+        boolean unfucked = isMyServiceRunning(SocketService.class);
+        Log.i("STARTACTIVITY", "unfucked? " + unfucked);
         bindService(new Intent(this, SocketService.class), mConnection, Context.BIND_AUTO_CREATE);
-        fuck = isMyServiceRunning(SocketService.class);
-        Log.i("STARTACTIVITY", "unfucked " + fuck);
+        unfucked = isMyServiceRunning(SocketService.class);
+        Log.i("STARTACTIVITY", "unfucked? " + unfucked);
 
     }
 
@@ -275,9 +277,9 @@ public class StartActivity extends ActionBarActivity {
     public void startConnection(String ip, int port){
         if (!isConnected) {
             try {
-                Message msg = Message.obtain(null, SocketService.CONNECT, port,0,ip);
-                mService.send(msg);
-                mService.send(Message.obtain(ServerHandler.getRooms()));
+                mService.send(Message.obtain(ServerHandler.connect(ip,port)));
+                mService.send(Message.obtain(ServerHandler.setName("I AM INOCENT!!!", 0)));
+                mService.send(Message.obtain(ServerHandler.getUsers()));
                 isConnected = true;
                 int rtpPort = port+1;
                 soundController = SoundController.create(this, ip, rtpPort);
