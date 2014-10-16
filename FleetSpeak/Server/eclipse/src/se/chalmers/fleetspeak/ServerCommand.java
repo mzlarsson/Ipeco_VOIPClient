@@ -27,6 +27,12 @@ public enum ServerCommand {
 		public String getInfo(){
 			return "<b>roomInfo</b> Shows all the current rooms with all users.";
 		}
+	},
+	MOVE_USER("moveUser") {
+		@Override
+		public String getInfo(){
+			return "<b>moveUser <user-id> <room-id></b> Moves user to given room.";
+		}
 	};
 	
 	private String cmd;

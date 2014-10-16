@@ -176,7 +176,7 @@ public class SocketService extends Service {
                         while(!SoundController.hasValue()){
                             try{Thread.sleep(10);}catch(InterruptedException ie){}
                         }
-                        //objectOutputStream.writeObject(new Command("setRtpPort", id, SoundController.getPort()));
+                        objectOutputStream.writeObject(new Command("setRtpPort", id, SoundController.getPort()));
                     }
                     messenger.send(Message.obtain(null, 0, c));
                 }else {

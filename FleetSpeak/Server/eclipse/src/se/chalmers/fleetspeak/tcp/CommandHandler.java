@@ -44,7 +44,13 @@ public class CommandHandler implements IEventBusSubscriber {
 		// Called to clear the server console window.
 		} else if (cmdString.startsWith(ServerCommand.CLEAR.getName())) {
 			Log.flushLog();
-		} else if (cmdString.startsWith(ServerCommand.HELP.getName())) {
+		} else if(cmdString.startsWith(ServerCommand.MOVE_USER.getName())){
+			String[] data = cmdString.split(" ");
+			int clientID = Integer.parseInt(data[1]);
+			int roomID = Integer.parseInt(data[2]);
+			Client c = roomHandler.getClient(clientID);
+			c.moveToRoom(roomID);
+		}else if (cmdString.startsWith(ServerCommand.HELP.getName())) {
 			if (cmdString.length()>5) {
 				ServerCommand sc = ServerCommand.getCommand(cmdString.substring(5));
 				if (sc!=null) {

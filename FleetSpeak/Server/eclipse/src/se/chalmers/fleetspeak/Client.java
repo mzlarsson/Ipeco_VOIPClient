@@ -42,6 +42,10 @@ public class Client{
 			Log.log("Error: Could not start RTP connection. Already started.");
 		}
 	}
+	
+	public void moveToRoom(int roomID){
+		this.rtp.switchMixer(roomID);
+	}
 
 	public void setName(String name) {
 		if(name != null){
