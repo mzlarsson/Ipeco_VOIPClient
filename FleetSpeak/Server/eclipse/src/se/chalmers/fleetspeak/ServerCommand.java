@@ -16,16 +16,22 @@ public enum ServerCommand {
 			return "<b>close</b> Shuts down the server.";
 		}
 	},
-	SET_RTP_PORT("setRtpPort") {
-		@Override
-		public String getInfo(){
-			return "<b>setRtpPort <user-id> <rtp-port></b> Sets the given RTP port for the user with the given ID.";
-		}
-	},
 	HELP("help") {
 		@Override
 		public String getInfo(){
 			return "<b>help <command></b> Gives help about the given command.";
+		}
+	},
+	MOVE_USER("moveUser") {
+		@Override
+		public String getInfo(){
+			return "<b>moveUser <user-id> <room-id></b> Moves user to given room.";
+		}
+	},
+	MOVE_USER_NEW_ROOM("moveUserToNewRoom") {
+		@Override
+		public String getInfo(){
+			return "<b>moveUser <user-id> <room-name></b> Moves user to a new room with the given name.";
 		}
 	},
 	ROOM_INFO("roomInfo") {
@@ -34,10 +40,10 @@ public enum ServerCommand {
 			return "<b>roomInfo</b> Shows all the current rooms with all users.";
 		}
 	},
-	MOVE_USER("moveUser") {
+	SET_RTP_PORT("setRtpPort") {
 		@Override
 		public String getInfo(){
-			return "<b>moveUser <user-id> <room-id></b> Moves user to given room.";
+			return "<b>setRtpPort <user-id> <rtp-port></b> Sets the given RTP port for the user with the given ID.";
 		}
 	};
 	

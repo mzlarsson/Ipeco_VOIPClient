@@ -49,8 +49,12 @@ public class CommandHandler implements IEventBusSubscriber {
 			String[] data = cmdString.split(" ");
 			int clientID = Integer.parseInt(data[1]);
 			int roomID = Integer.parseInt(data[2]);
-			Client c = roomHandler.getClient(clientID);
-			c.moveToRoom(roomID);
+			roomHandler.moveClient(clientID, roomID);
+		} else if(cmdString.startsWith(ServerCommand.MOVE_USER_NEW_ROOM.getName())){
+			String[] data = cmdString.split(" ");
+			int clientID = Integer.parseInt(data[1]);
+			String roomName = data[2];
+			roomHandler.moveClient(clientID, new Room(roomName));
 		} else if (cmdString.startsWith(ServerCommand.CLOSE.getName())) {
 			if (actor.getClass()==ServerGUI.class) {
 				((ServerGUI)actor).stop();

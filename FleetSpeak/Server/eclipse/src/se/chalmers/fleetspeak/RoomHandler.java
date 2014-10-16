@@ -22,11 +22,13 @@ public class RoomHandler {
 		if (!rooms.containsKey(r) || rooms.get(r) == null) {
             ArrayList<Client> list = new ArrayList<Client>();
             list.add(c);
+            c.moveToRoom(r.getId());
             rooms.put(r,list);
 		}else{
 			 ArrayList<Client> list = rooms.get(r);
 			 if(!list.contains(c)){
-				 list.add(c); 
+				 list.add(c);
+				 c.moveToRoom(r.getId());
 			 }
 		}   
 	}

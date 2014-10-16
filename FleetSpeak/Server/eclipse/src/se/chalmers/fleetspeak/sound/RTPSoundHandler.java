@@ -27,7 +27,7 @@ public class RTPSoundHandler extends RTPHandler implements SoundHandler{
 	 */
 	protected RTPSoundHandler(InetAddress clientIP, int serverPort, int clientPort) throws IllegalArgumentException{
 		super(clientIP, serverPort, clientPort, Constants.RTP_SOUND_PAYLOAD_TYPE);
-		switchMixer(0);
+		switchMixer(1);
 	}
 	
 	/**
