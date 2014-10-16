@@ -26,10 +26,14 @@ import java.util.Enumeration;
 public class SoundController {
 
     private AudioGroup audioGroup;
+    private AudioStream audioStream;
+
+    private static SoundController currentSoundController;
 
     private static String clientIP = "192.168.1.5";
 
-    private SoundController(AudioGroup audioGroup){
+    private SoundController(AudioStream audioStream, AudioGroup audioGroup){
+        this.audioStream = audioStream;
         this.audioGroup = audioGroup;
     }
 
@@ -43,29 +47,30 @@ public class SoundController {
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
-        
-        AudioStream inRtpStream = null;
+
+        AudioStream audioStream = null;
         try {
-            inRtpStream = new AudioStream(InetAddress.getByName(clientIP));
+            audioStream = new AudioStream(InetAddress.getByName(clientIP));
         } catch(UnknownHostException uhe){
             Log.d("Sound", "Unknown host: "+clientIP);
         }catch (SocketException e) {
             Log.d("Sound", "Socket Error");
         }
-        inRtpStream.setMode(RtpStream.MODE_NORMAL);
-        inRtpStream.setCodec(AudioCodec.PCMU);
+        audioStream.setMode(RtpStream.MODE_NORMAL);
+        audioStream.setCodec(AudioCodec.PCMU);
         try{
-            inRtpStream.associate(InetAddress.getByName(serverIP), serverPort);
+            audioStream.associate(InetAddress.getByName(serverIP), serverPort);
         } catch(UnknownHostException uhe){
             Log.d("Sound", "Unknown host: " + serverIP + ":" + serverPort);
         }
 
         AudioGroup audioGroup = new AudioGroup();
         audioGroup.setMode(AudioGroup.MODE_NORMAL);
-        inRtpStream.join(audioGroup);
-        Log.d("Sound"," Group joined"+inRtpStream.getLocalPort());
+        audioStream.join(audioGroup);
+        Log.d("Sound", " Group joined" + audioStream.getLocalPort());
 
-        return new SoundController(audioGroup);
+        currentSoundController = new SoundController(audioGroup);
+        return currentSoundController;
     }
 
     private static void fetchIP(){
@@ -87,6 +92,10 @@ public class SoundController {
             Log.i("SocketException ", ex.toString());
         }
         Log.d("Sound", "Fetched IP: "+clientIP);
+    }
+
+    public static int getPort(){
+        return currentSoundController.audioStream.getLocalPort();
     }
 
     public void close(){

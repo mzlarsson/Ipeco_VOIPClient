@@ -208,8 +208,8 @@ public class SocketService extends Service {
                     if(c.getCommand().equals("setID")){
                         id = (Integer) c.getKey();
                         Log.i(LOGNAME, "ID is set now");
-                        //TODO nano
-                        //objectOutputStream.writeObject(new Command("setRtpPort", id, SoundController.getPort()));
+
+                        objectOutputStream.writeObject(new Command("setRtpPort", id, SoundController.getPort()));
                     }
                     messenger.send(Message.obtain(null, 0, c));
                 }else {
