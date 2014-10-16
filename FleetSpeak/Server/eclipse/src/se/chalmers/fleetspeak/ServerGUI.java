@@ -10,6 +10,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -49,6 +50,9 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener {
 	private static Thread serverThread;
 	private Logger log;
 
+	private ArrayList<ServerCommand> searchCmds;
+	private int searchIndex;
+	
 	public static void main(String[] args) {
 		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
 			public void run() {
@@ -135,6 +139,7 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener {
 		JLabel cmdLineLabel = new JLabel("Command input:");
 		cmdLine = new JTextField(10);
 		cmdLine.addKeyListener(this);
+		cmdLine.setFocusTraversalKeysEnabled(false);
 		centerSouth.add(cmdLineLabel, BorderLayout.WEST);
 		centerSouth.add(cmdLine, BorderLayout.CENTER);
 		center.add(centerSouth, BorderLayout.SOUTH);
@@ -274,12 +279,23 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener {
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		if (e.getKeyCode()==KeyEvent.VK_ENTER) {
-			String cmd = cmdLine.getText();
-			log.log(Level.ALL, "<b>> "+cmd+"</b>");
-			EventBus.getInstance().fireEvent(new EventBusEvent("CommandHandler", new Command("consoleCommand", null, cmd), this));
-
-			cmdLine.setText("");
-		}		
+		if (e.getKeyCode()==KeyEvent.VK_TAB) {
+			if (searchCmds == null) {
+				searchCmds = ServerCommand.getPossibleCommands(cmdLine.getText());
+				searchIndex = 0;
+			}
+			if (!searchCmds.isEmpty()) {
+				cmdLine.setText(searchCmds.get(searchIndex).getName());
+			}
+		} else {
+			if (e.getKeyCode()==KeyEvent.VK_ENTER) {
+				String cmd = cmdLine.getText();
+				log.log(Level.ALL, "<b>> "+cmd+"</b>");
+				EventBus.getInstance().fireEvent(new EventBusEvent("CommandHandler", new Command("consoleCommand", null, cmd), this));
+	
+				cmdLine.setText("");
+			}
+			searchCmds = null;
+		}
 	}
 }

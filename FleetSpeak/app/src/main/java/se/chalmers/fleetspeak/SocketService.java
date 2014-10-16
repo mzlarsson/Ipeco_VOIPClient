@@ -30,7 +30,6 @@ public class SocketService extends Service {
 
     private ArrayList<Command> commandQueue = new ArrayList<Command>();
 
-
     private int id = -1;
 
     //Commands
