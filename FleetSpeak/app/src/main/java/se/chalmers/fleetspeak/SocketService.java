@@ -17,6 +17,7 @@ import java.net.Socket;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import se.chalmers.fleetspeak.sound.SoundController;
 import se.chalmers.fleetspeak.util.Command;
 
 public class SocketService extends Service {
@@ -28,7 +29,7 @@ public class SocketService extends Service {
     private Messenger messenger;
 
 
-    private int id;
+    private int id = -1;
 
     //Commands
     public static final int CONNECT = 1;
@@ -64,9 +65,7 @@ public class SocketService extends Service {
                     case CONNECT:
                         final String s = (String) msg.obj;
                         final int i = msg.arg1;
-                        Thread thread = new Thread(new Runnable() {
-                            @Override
-                            public void run() {
+
                                 Log.i(LOGNAME, "Trying to connect to " + s);
                                 try {
                                     socket = new Socket(s, i);
@@ -80,18 +79,12 @@ public class SocketService extends Service {
                                     objectInputStream = new ObjectInputStream(socket.getInputStream());
                                     Log.i(LOGNAME, "InputStream ready");
 
-                                    Log.i(LOGNAME, "trying to send getRooms");
-                                    objectOutputStream.writeObject(new Command("getRooms", id, null));
-                                    objectOutputStream.flush();
-                                    Log.i(LOGNAME, "sent getRooms");
+
 
                                 } catch (IOException e) {
                                     Log.i("Connector.connect", "Connection failed " + e.getMessage());
                                 }
-                            }
 
-                        });
-                        thread.start();
 
 
                         break;
@@ -103,6 +96,8 @@ public class SocketService extends Service {
 
                             socket.close();
 
+                            socket = null;
+
                         } catch (IOException e) {
                             Log.i(LOGNAME, e.getMessage());
                         }
@@ -110,12 +105,18 @@ public class SocketService extends Service {
                     case SETNAME:
 
                         Log.i(LOGNAME, "Trying  to sending setName command");
+
                         try {
-                            if(socket != null && socket.isConnected()) {
-                                objectOutputStream.writeObject(new Command("setName", id, "I FUCKING HATE THIS"));
-                                objectOutputStream.flush();
-                                Log.i(LOGNAME, "Sent setName");
-                            }
+                            do{
+
+
+                                if (socket != null && socket.isConnected() && id != -1) {
+                                    objectOutputStream.writeObject(new Command("setName", id, "I FUCKING HATE THIS"));
+                                    objectOutputStream.flush();
+                                    Log.i(LOGNAME, "Sent setName");
+                                }
+
+                            }while (id  == -1);
 
                         } catch (IOException e) {
                             Log.i(LOGNAME, e.toString());
@@ -138,6 +139,7 @@ public class SocketService extends Service {
                             if(socket != null && socket.isConnected()){
                                 objectOutputStream.writeObject(new Command("getRooms", id, null));
                                 objectOutputStream.flush();
+                                Log.i(LOGNAME, "sent getRooms");
                             }
                         }catch (IOException e){
                             Log.e(LOGNAME,e.toString());
@@ -157,12 +159,10 @@ public class SocketService extends Service {
                                 objectOutputStream.writeObject(new Command("data", null, null));
                                 objectOutputStream.flush();
                             }
-                            Thread.sleep(10L);
+
                             //lookForMessage();
                         } catch (IOException e) {
                             Log.i(LOGNAME, e.toString());
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
                         }
                         break;
                     default:
@@ -171,6 +171,21 @@ public class SocketService extends Service {
             }
         }
     }
+
+    private void trySend(Command command){
+        do{
+            if(socket != null && socket.isConnected()){
+                try {
+                    objectOutputStream.writeObject(command);
+                    objectOutputStream.flush();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }while(id == -1);
+    }
+
 
 
 
@@ -192,6 +207,9 @@ public class SocketService extends Service {
                     Log.i(LOGNAME, " Something have been found: " + c.getCommand());
                     if(c.getCommand().equals("setID")){
                         id = (Integer) c.getKey();
+                        Log.i(LOGNAME, "ID is set now");
+                        //TODO nano
+                        //objectOutputStream.writeObject(new Command("setRtpPort", id, SoundController.getPort()));
                     }
                     messenger.send(Message.obtain(null, 0, c));
                 }else {
