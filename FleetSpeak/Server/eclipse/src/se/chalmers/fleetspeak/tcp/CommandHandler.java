@@ -59,6 +59,8 @@ public class CommandHandler implements IEventBusSubscriber {
 				}
 				Log.log(ServerCommand.HELP.getInfo());
 			}
+		} else if (cmdString.startsWith(ServerCommand.ROOM_INFO.getName())) {
+			Log.log(roomHandler.getRoomInfo());
 		} else {
 			Log.log(("<error>ERROR:</error> \"<b>" + cmdString + "</b>\" <error>is not supported</error>"));
 		}

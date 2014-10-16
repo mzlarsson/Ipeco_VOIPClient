@@ -7,19 +7,25 @@ public enum ServerCommand {
 	CLEAR("cls") {
 		@Override
 		public String getInfo(){
-			return "\"cls\" Clears the console window of all text.";
+			return "<b>cls</b> Clears the console window of all text.";
 		}
 	},
 	SET_RTP_PORT("setRtpPort") {
 		@Override
 		public String getInfo(){
-			return "\"setRtpPort <user-id> <rtp-port>\" Sets the given RTP port for the user with the given ID.";
+			return "<b>setRtpPort <user-id> <rtp-port></b> Sets the given RTP port for the user with the given ID.";
 		}
 	},
 	HELP("help") {
 		@Override
 		public String getInfo(){
-			return "\"help <command>\" Gives help about the given command.";
+			return "<b>help <command></b> Gives help about the given command.";
+		}
+	},
+	ROOM_INFO("roomInfo") {
+		@Override
+		public String getInfo(){
+			return "<b>roomInfo</b> Shows all the current rooms with all users.";
 		}
 	};
 	

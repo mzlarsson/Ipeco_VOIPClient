@@ -74,4 +74,15 @@ public class Client{
 	public int getClientID() {
 		return clientID;
 	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "Client: name=" + name + ", clientID=" + clientID
+				+ ", muted=" + muted + ", ip=" + ip;
+	}
+	
+	
 }

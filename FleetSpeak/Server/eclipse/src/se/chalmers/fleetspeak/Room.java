@@ -47,8 +47,12 @@ public class Room {
         return result;
     }
 
-    @Override
-    public String toString() {
-        return name + ", " + id;
-    }
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "Room: name=" + name + ", id=" + id;
+	}
+
 }

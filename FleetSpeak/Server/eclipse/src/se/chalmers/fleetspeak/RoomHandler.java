@@ -119,6 +119,16 @@ public class RoomHandler {
 	public int getNbrOfRooms(){
 		return this.getRooms().length;
 	}
-	
+
+	public String getRoomInfo() {
+		String info = rooms.keySet().isEmpty()?"No clients connected.":"";
+		for (Room room : getRooms()) {
+			info += room.toString() + "\n";
+			for (Client client : getClients(room)) {
+				info += "\t" + client.toString() + "\n";
+			}
+		}
+		return info;
+	}
 	
 }
