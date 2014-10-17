@@ -62,7 +62,7 @@ public class TruckDataHandler implements TruckListener{
     }
 
     public boolean getTruckMode(){
-        return (this.speed == 0 && this.parkingBrake);
+        return (this.speed != 0 && !this.parkingBrake);
     }
 
     private void evaluateTruckMode(boolean oldMode){

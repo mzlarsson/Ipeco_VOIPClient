@@ -24,6 +24,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 
 
 import se.chalmers.fleetspeak.CommandHandler;
@@ -31,9 +32,12 @@ import se.chalmers.fleetspeak.R;
 import se.chalmers.fleetspeak.ServerHandler;
 import se.chalmers.fleetspeak.SocketService;
 import se.chalmers.fleetspeak.sound.SoundController;
+import se.chalmers.fleetspeak.truck.TruckDataHandler;
+import se.chalmers.fleetspeak.truck.TruckStateListener;
 
-public class StartActivity extends ActionBarActivity {
+public class StartActivity extends ActionBarActivity implements TruckStateListener {
 
+    private static TruckDataHandler truckDataHandler;
     private String ipText;
     private Context context = this;
     private String portText;
@@ -138,19 +142,21 @@ public class StartActivity extends ActionBarActivity {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                userNameText = String.valueOf(findViewById(R.id.usernameField));
+                userNameText = String.valueOf(userNameField.getText());
+                Log.i("StartActivity", "after text change " + userNameText);
             }
         });
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         prefEdit = prefs.edit();
 
-        portText = prefs.getString( "portNumber","8867");
-        userNameText = prefs.getString("username", "username");
-        ipText = prefs.getString("ipAdress","192.168.43.23");
+        portText = prefs.getString( getString(R.string.port_number_text),"8867");
+        userNameText = prefs.getString(getString(R.string.username_text), "username");
+        ipText = prefs.getString(getString(R.string.ip_adress_text),"192.168.43.23");
         ipTextField.setText(ipText);
         portField.setText(portText);
         userNameField.setText(userNameText);
+        Log.i("StartActivity", userNameText);
         final CheckBox savePrefsCheckbox = (CheckBox) findViewById(R.id.saveUserPref);
         savePrefsCheckbox.addTextChangedListener(new TextWatcher() {
             @Override
@@ -168,6 +174,9 @@ public class StartActivity extends ActionBarActivity {
                 savePreferences(savePrefsCheckbox.isChecked());
             }
         });
+        //Removes focus from the EditTextFields in the app
+        RelativeLayout l = (RelativeLayout) findViewById(R.id.relStart_layout);
+        l.requestFocus();
 
 
         Log.i("STARTACTIVITY", "binding service");
@@ -217,7 +226,7 @@ public class StartActivity extends ActionBarActivity {
         super.onRestart();
     }
     public void onConnectButtonClick(View view) {
-        startConnection(ipText,Integer.parseInt(portText));
+        startConnection(ipText,Integer.parseInt(portText), userNameText);
       //  Intent intent = new Intent(this,JoinRoomActivity.class);
       //  startActivity(intent);
     }
@@ -269,11 +278,11 @@ public class StartActivity extends ActionBarActivity {
         }
     }
 
-    public void startConnection(String ip, int port){
+    public void startConnection(String ip, int port, String userName){
         if (!isConnected) {
             try {
                 mService.send(Message.obtain(ServerHandler.connect(ip,port)));
-                mService.send(Message.obtain(ServerHandler.setName("I AM INOCENT!!!", 0)));
+                mService.send(Message.obtain(ServerHandler.setName(userName, 0)));
                 mService.send(Message.obtain(ServerHandler.getUsers()));
                 isConnected = true;
                 int rtpPort = port+1;
@@ -282,13 +291,18 @@ public class StartActivity extends ActionBarActivity {
             }
         }else{
             try {
-                Message msg = Message.obtain(null, SocketService.SETNAME,"i cant set my name");
-                isConnected = false;
+                Message msg = Message.obtain(null, SocketService.SETNAME,userName);
+
                 mService.send(msg);
             } catch (RemoteException e) {
             }
         }
 
 
+    }
+
+    @Override
+    public void truckModeChanged(boolean mode) {
+        setCarMode(!mode);
     }
 }
