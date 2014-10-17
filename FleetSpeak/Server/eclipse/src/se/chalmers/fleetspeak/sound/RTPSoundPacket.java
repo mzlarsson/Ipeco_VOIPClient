@@ -1,7 +1,14 @@
 package se.chalmers.fleetspeak.sound;
 
-import java.util.Arrays;
 import java.util.List;
+
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.DataLine;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.Mixer;
+import javax.sound.sampled.SourceDataLine;
+
+import se.chalmers.fleetspeak.util.Log;
 
 /**
  * A class for containing the most recent data in a RTP connection.
@@ -10,6 +17,8 @@ import java.util.List;
  */
 
 public class RTPSoundPacket {
+	
+	SourceDataLine sourceDataLine;
 
 	private int sequenceNumber;
 	private int sequenceOffset;
@@ -22,9 +31,23 @@ public class RTPSoundPacket {
 	 * @param sourceID The source ID (given by RTPConnector) of the client that sent this data
 	 * @param sequenceOffset The number of packets the client is behind when connecting
 	 */
-	public RTPSoundPacket(long sourceID, int sequenceOffset){
+	public RTPSoundPacket(long sourceID, int sequenceOffset, Mixer mixer){
 		this.sourceID = sourceID;
 		this.sequenceOffset = sequenceOffset;
+		
+		try {
+			DataLine.Info info = new DataLine.Info(SourceDataLine.class, Constants.AUDIOFORMAT);
+			Log.log("<info>INFO IS "+(AudioSystem.isLineSupported(info)?"VALID":"INVALID")+"</info>");
+			sourceDataLine = (SourceDataLine)mixer.getLine(info);
+			sourceDataLine.open(Constants.AUDIOFORMAT);
+			sourceDataLine.start();
+		} catch (LineUnavailableException e) {
+			Log.log("<error>Could not create RTP Sound Line</error>");
+		}
+	}
+	
+	public SourceDataLine getSourceDataLine(){
+		return this.sourceDataLine;
 	}
 	
 	/**
@@ -39,6 +62,8 @@ public class RTPSoundPacket {
 
 		this.sequenceNumber = sequenceNumber;
 		this.data = data;
+		
+		sourceDataLine.write(data, 0, Constants.RTP_PACKET_SIZE);
 	}
 	
 	/**
