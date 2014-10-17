@@ -106,7 +106,7 @@ public class SocketService extends Service {
                         break;
                     case GETUSERS:
                         Log.i(LOGNAME, "trying to send getRooms command");
-                        trySend(new Command("getRooms", id, null));
+                        trySend(new Command("getUsers", id, null));
                         break;
                     case MUTEUSER:
                         //TODO
@@ -122,7 +122,7 @@ public class SocketService extends Service {
         }
     }
 
-    private synchronized void trySend(Command c){
+    private void trySend(Command c){
 
         if(id > 0){
             try {
@@ -135,19 +135,21 @@ public class SocketService extends Service {
             }
 
         }else{
+            Log.i(LOGNAME, "Command added to commandQueue " + c.getCommand());
             commandQueue.add(c);
         }
     }
-    private synchronized void sendCommandQueue(){
+    private void sendCommandQueue(){
 
-            for (int i = 0; i < commandQueue.size(); i++) {
+            while (0 < commandQueue.size()) {
 
-                Command correctIDcommand = new Command(commandQueue.get(i).getCommand(), id, commandQueue.get(i).getValue());
+                Command correctIDcommand = new Command(commandQueue.get(0).getCommand(), id, commandQueue.get(0).getValue());
 
                 try {
                     objectOutputStream.writeObject(correctIDcommand);
                     objectOutputStream.flush();
-                    commandQueue.remove(i);
+                    Log.i(LOGNAME, "Sent command form queue: " + correctIDcommand.getCommand());
+                    commandQueue.remove(0);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

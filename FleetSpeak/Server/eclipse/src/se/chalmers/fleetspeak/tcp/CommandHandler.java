@@ -174,7 +174,7 @@ public class CommandHandler implements IEventBusSubscriber {
 			// Called when commands are manually entered into the command line.
 			} else if (commandName.equals("consoleCommand")) {
 				serverCommands((String)command.getValue(), event.getActor());
-			}else if(commandName.equals("getRooms")){
+			}else if(commandName.equals("getUsers")){
 				for(Room r: roomHandler.getRooms()){
 					for( Client c : roomHandler.getClients(r)){
 						eventBus.fireEvent(new EventBusEvent("broadcast", new Command("addUser", c.getClientID(),c.getName()), event.getActor()));
