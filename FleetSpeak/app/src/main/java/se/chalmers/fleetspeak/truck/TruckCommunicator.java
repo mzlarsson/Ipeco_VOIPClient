@@ -1,8 +1,9 @@
-package se.chalmers.fleetspeak;
+package se.chalmers.fleetspeak.truck;
 
 import android.os.AsyncTask;
 import android.swedspot.automotiveapi.AutomotiveSignal;
 import android.swedspot.automotiveapi.AutomotiveSignalId;
+import android.swedspot.scs.data.SCSBoolean;
 import android.swedspot.scs.data.SCSFloat;
 import android.util.Log;
 
@@ -13,22 +14,37 @@ import com.swedspot.vil.distraction.DriverDistractionLevel;
 import com.swedspot.vil.distraction.DriverDistractionListener;
 import com.swedspot.vil.policy.AutomotiveCertificate;
 
+import java.util.List;
+
 /**
  * Created by Matz Larsson on 2014-09-19.
  * Used for retrieving and decoding signals from the simulator.
  */
 
-public class TruckCommunicator extends AsyncTask<Integer, Object, Object> {
+class TruckCommunicator extends AsyncTask<Void, Void, Object> {
 
     public static final String TAG = "simulatorDebug";
-    public static AutomotiveManager manager;
 
-    public Object doInBackground(Integer... signalIDs){
+    private static AutomotiveManager manager;
+    private List<TruckListener> listeners;
+
+    public void addListener(TruckListener listener){
+        if(listener != null){
+            listeners.add(listener);
+        }
+    }
+
+    public void removeListener(TruckListener listener){
+        if(listener != null){
+            listeners.remove(listener);
+        }
+    }
+
+    public Void doInBackground(Void... voids){
         Log.d(TAG, "Starting background connection against simulator... Waiting...");
         manager = AutomotiveFactory.createAutomotiveManagerInstance(new AutomotiveCertificate(new byte[0]), getAutomotiveListener(), getDistractionListener());
-        for(int i = 0; i<signalIDs.length; i++){
-            manager.register(signalIDs[i]);
-        }
+        manager.register(AutomotiveSignalId.FMS_WHEEL_BASED_SPEED);
+        manager.register(AutomotiveSignalId.FMS_PARKING_BRAKE);
 
         return null;
     }
@@ -46,8 +62,10 @@ public class TruckCommunicator extends AsyncTask<Integer, Object, Object> {
                 // Incoming signal
                 switch (automotiveSignal.getSignalId()) {
                     case AutomotiveSignalId.FMS_WHEEL_BASED_SPEED:
-                        // Unsafe type cast. Could be made safe with automotiveSignal.getData().getDataType()
-                        Log.d(TAG, "FMS_WHEEL_BASED_SPEED: " + ((SCSFloat) automotiveSignal.getData()).getFloatValue() + " " + automotiveSignal.getUnit().toString());
+                        speedChanged(((SCSFloat) automotiveSignal.getData()).getFloatValue());
+                        break;
+                    case AutomotiveSignalId.FMS_PARKING_BRAKE:
+                        parkingBrakeChanged(((SCSBoolean) automotiveSignal.getData()).getBooleanValue());
                         break;
                     default: Log.d(TAG, "got signal");
                         break;
@@ -71,4 +89,16 @@ public class TruckCommunicator extends AsyncTask<Integer, Object, Object> {
         };
     }
 
+
+
+    private void speedChanged(float speed){
+        for(TruckListener listener : listeners){
+            listener.speedChanged(speed);
+        }
+    }
+    private void parkingBrakeChanged(boolean isOn){
+        for(TruckListener listener : listeners){
+            listener.parkingBrakeChanged(isOn);
+        }
+    }
 }

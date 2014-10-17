@@ -16,7 +16,6 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
-import android.swedspot.automotiveapi.AutomotiveSignalId;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -31,9 +30,7 @@ import se.chalmers.fleetspeak.CommandHandler;
 import se.chalmers.fleetspeak.R;
 import se.chalmers.fleetspeak.ServerHandler;
 import se.chalmers.fleetspeak.SocketService;
-import se.chalmers.fleetspeak.TruckCommunicator;
 import se.chalmers.fleetspeak.sound.SoundController;
-import se.chalmers.fleetspeak.util.Command;
 
 public class StartActivity extends ActionBarActivity {
 
@@ -90,8 +87,6 @@ public class StartActivity extends ActionBarActivity {
 
         mMessenger = new Messenger(CommandHandler.getInstance());
         CommandHandler.getInstance().addListener(this);
-
-        new TruckCommunicator().execute(AutomotiveSignalId.FMS_WHEEL_BASED_SPEED, AutomotiveSignalId.FMS_SELECTED_GEAR);
 
         final EditText ipTextField = (EditText) findViewById(R.id.ipField);
 
