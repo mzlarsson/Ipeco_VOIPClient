@@ -138,7 +138,8 @@ public class StartActivity extends ActionBarActivity {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                userNameText = String.valueOf(findViewById(R.id.usernameField));
+                userNameText = String.valueOf(userNameField.getText());
+                Log.i("StartActivity", "after text change " + userNameText);
             }
         });
 
@@ -147,10 +148,12 @@ public class StartActivity extends ActionBarActivity {
 
         portText = prefs.getString( "portNumber","8867");
         userNameText = prefs.getString("username", "username");
-        ipText = prefs.getString("ipAdress","192.168.43.23");
+        Log.i("StartActivity", "perfs.getString " + userNameText);
+        ipText = prefs.getString("ipAdress","192.168.43.147");
         ipTextField.setText(ipText);
         portField.setText(portText);
         userNameField.setText(userNameText);
+        Log.i("StartActivity", userNameText);
         final CheckBox savePrefsCheckbox = (CheckBox) findViewById(R.id.saveUserPref);
         savePrefsCheckbox.addTextChangedListener(new TextWatcher() {
             @Override
@@ -217,7 +220,7 @@ public class StartActivity extends ActionBarActivity {
         super.onRestart();
     }
     public void onConnectButtonClick(View view) {
-        startConnection(ipText,Integer.parseInt(portText));
+        startConnection(ipText,Integer.parseInt(portText), userNameText);
       //  Intent intent = new Intent(this,JoinRoomActivity.class);
       //  startActivity(intent);
     }
@@ -269,11 +272,11 @@ public class StartActivity extends ActionBarActivity {
         }
     }
 
-    public void startConnection(String ip, int port){
+    public void startConnection(String ip, int port, String userName){
         if (!isConnected) {
             try {
                 mService.send(Message.obtain(ServerHandler.connect(ip,port)));
-                mService.send(Message.obtain(ServerHandler.setName("I AM INOCENT!!!", 0)));
+                mService.send(Message.obtain(ServerHandler.setName(userName, 0)));
                 mService.send(Message.obtain(ServerHandler.getUsers()));
                 isConnected = true;
                 int rtpPort = port+1;
@@ -282,8 +285,8 @@ public class StartActivity extends ActionBarActivity {
             }
         }else{
             try {
-                Message msg = Message.obtain(null, SocketService.SETNAME,"i cant set my name");
-                isConnected = false;
+                Message msg = Message.obtain(null, SocketService.SETNAME,userName);
+
                 mService.send(msg);
             } catch (RemoteException e) {
             }
