@@ -131,17 +131,31 @@ public class RoomHandler {
 	}
 
 	public String getRoomInfo() {
-		String info = rooms.keySet().isEmpty()?"No clients connected.":"";
+		StringBuilder info = new StringBuilder();
+		info.append(rooms.keySet().isEmpty()?"No clients connected.":"");
 		for (Room room : getRooms()) {
-			info += room.toString() + "\n";
+			info.append(room.toString() + "\n");
 			for (Client client : getClients(room)) {
-				info += "\t" + client.toString() + "\n";
+				info.append("\t" + client.toString() + "\n");
 			}
 		}
-		return info;
+		return info.toString();
+	}
+	
+	public String getHTMLRoomInfo() {
+		StringBuilder info = new StringBuilder();
+		info.append("<html>" + (rooms.keySet().isEmpty()?"No clients connected.":""));
+		for (Room room : getRooms()) {
+			info.append(room.getName() + " (" + room.getId() + ")<br>");
+			for (Client client : getClients(room)) {
+				info.append("&nbsp;&nbsp;&nbsp;&nbsp;" + client.getName() + " (" + client.getClientID() + ")<br>");
+			}
+		}
+		info.append("</html>");
+		return info.toString();
 	}
 	
 	public void changeEvent() {
-		EventBus.getInstance().fireEvent(new EventBusEvent("ServerGUI", new Command("roomsChanged", null, getRoomInfo()), this));
+		EventBus.getInstance().fireEvent(new EventBusEvent("ServerGUI", new Command("roomsChanged", null, getHTMLRoomInfo()), this));
 	}
 }
