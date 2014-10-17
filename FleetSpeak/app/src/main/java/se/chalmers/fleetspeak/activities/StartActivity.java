@@ -152,7 +152,7 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
 
         portText = prefs.getString( getString(R.string.port_number_text),"8867");
         userNameText = prefs.getString(getString(R.string.username_text), "username");
-        ipText = prefs.getString(getString(R.string.ip_adress_text),"192.168.43.23");
+        ipText = prefs.getString(getString(R.string.ip_adress_text),"192.168.43.147");
         ipTextField.setText(ipText);
         portField.setText(portText);
         userNameField.setText(userNameText);
@@ -226,9 +226,9 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
         super.onRestart();
     }
     public void onConnectButtonClick(View view) {
-      //  startConnection(ipText,Integer.parseInt(portText), userNameText);
-        Intent intent = new Intent(this,JoinRoomActivity.class);
-        startActivity(intent);
+        startConnection(ipText,Integer.parseInt(portText), userNameText);
+      //  Intent intent = new Intent(this,JoinRoomActivity.class);
+      //  startActivity(intent);
     }
     /**
      * Show Connection error message
