@@ -189,7 +189,11 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener {
 				if (msg.startsWith("/")) {
 					if (msg.equals("/b")) {
 						StyleConstants.setBold(attr, false);
+					} else if (msg.equals("/i")) {
+							StyleConstants.setItalic(attr, false);
 					} else if (msg.equals("/error")) {
+						StyleConstants.setForeground(attr, Color.BLACK);
+					} else if (msg.equals("/info")) {
 						StyleConstants.setForeground(attr, Color.BLACK);
 					} else {
 						return false;
@@ -197,8 +201,12 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener {
 				} else {
 					if (msg.equals("b")) {
 						StyleConstants.setBold(attr, true);
+					} else if (msg.equals("i")) {
+						StyleConstants.setItalic(attr, true);
 					} else if (msg.equals("error")) {
 						StyleConstants.setForeground(attr, Color.RED);
+					} else if (msg.equals("info")) {
+						StyleConstants.setForeground(attr, Color.GREEN);
 					} else {
 						return false;
 					}
