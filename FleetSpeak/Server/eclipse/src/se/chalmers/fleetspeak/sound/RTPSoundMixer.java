@@ -1,10 +1,9 @@
 package se.chalmers.fleetspeak.sound;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Mixer;
 
 import se.chalmers.fleetspeak.util.Log;
 
@@ -29,11 +28,11 @@ public class RTPSoundMixer implements RTPListener{
 
 	public static List<RTPSoundMixer> mixers = new ArrayList<RTPSoundMixer>();
 	
-	private Mixer mixer;
-	
 	private List<RTPSoundPacket> data;
 	private RTPConnector connector;
 	private int identifier;
+	
+	private InputStream input;
 	
 	/**
 	 * Creates a new mixer with the given RTPConnector
@@ -49,15 +48,21 @@ public class RTPSoundMixer implements RTPListener{
 	}
 	
 	public void restart(){
-		if(mixer == null){
-			mixer = AudioSystem.getMixer(null);
+		if(input != null){
+			try {
+				input.close();
+			} catch (IOException e) {}
 		}
 		
+		List<InputStream> streams = new ArrayList<InputStream>();
 		for(int i = 0; i<data.size(); i++){
-			data.get(i).restartDataLine(mixer);
+			data.get(i).restart();
+			streams.add(data.get(i).getInputStream());
 		}
 		
-		Log.log("<info>Restarted mixer input</info>");
+		this.input = new MixingAudioInputStream(Constants.AUDIOFORMAT, streams);
+		
+		Log.log("<info>Restarted RTPSoundMixer</info>");
 	}
 	
 	/**
@@ -69,9 +74,10 @@ public class RTPSoundMixer implements RTPListener{
 		connector.setRTPListener(sourceID, this);
 		
 		//Adds an empty packet to be filled with data later
-		data.add(new RTPSoundPacket(sourceID, getCurrentSequenceOffset(), mixer));
-
+		data.add(new RTPSoundPacket(sourceID, getCurrentSequenceOffset()));
 		Log.log("Client with sourceID="+sourceID+" joined mixer "+this.identifier);
+		
+		restart();
 	}
 
 	/**
@@ -91,6 +97,8 @@ public class RTPSoundMixer implements RTPListener{
 
 		if(this.data.isEmpty()){
 			this.close();
+		}else{
+			restart();
 		}
 	}
 
@@ -101,24 +109,35 @@ public class RTPSoundMixer implements RTPListener{
 	 * @return A sound mix of all clients except the one that requests the data
 	 */
 	public byte[] getMixedSound(long sourceID, int minSequenceNumber){
-		System.out.println(mixer.getTargetLines().length);
-		
-		if(data.size()>0){
-			byte[] output = new byte[Constants.RTP_PACKET_SIZE];
-			byte[] tmp = null;
-			for(int i = 0; i<data.size(); i++){
-				if(data.get(i).getSourceID() != sourceID){
-					tmp = data.get(i).getData(minSequenceNumber);
-					for(int j = 0; j<tmp.length&&j<output.length; j++){
-						output[j] = (byte)((output[j]+tmp[j]));
-					}
-				}
+		if(input != null){
+			byte[] data = new byte[Constants.RTP_PACKET_SIZE];
+			try {
+				input.read(data, 0, Constants.RTP_PACKET_SIZE);
+				return data;
+			} catch (IOException e) {
+				Log.log("<error>Could not read from Mixer Input Stream</error>");
+				return new byte[0];
 			}
-
-			return output;
 		}else{
 			return new byte[0];
 		}
+		
+//		if(data.size()>0){
+//			byte[] output = new byte[Constants.RTP_PACKET_SIZE];
+//			byte[] tmp = null;
+//			for(int i = 0; i<data.size(); i++){
+//				if(data.get(i).getSourceID() != sourceID){
+//					tmp = data.get(i).getData(minSequenceNumber);
+//					for(int j = 0; j<tmp.length&&j<output.length; j++){
+//						output[j] = (byte)((output[j]+tmp[j]));
+//					}
+//				}
+//			}
+//
+//			return output;
+//		}else{
+//			return new byte[0];
+//		}
 	}
 
 	/**

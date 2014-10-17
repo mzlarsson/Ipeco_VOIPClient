@@ -1,12 +1,12 @@
 package se.chalmers.fleetspeak.sound;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.util.List;
 
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.DataLine;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.Mixer;
-import javax.sound.sampled.SourceDataLine;
+import javax.sound.sampled.AudioInputStream;
 
 import se.chalmers.fleetspeak.util.Log;
 
@@ -18,8 +18,9 @@ import se.chalmers.fleetspeak.util.Log;
 
 public class RTPSoundPacket {
 	
-	SourceDataLine dataLine;
-
+	private AudioInputStream in;
+	private PipedOutputStream out;
+	
 	private int sequenceNumber;
 	private int sequenceOffset;
 	private byte[] data;
@@ -31,31 +32,33 @@ public class RTPSoundPacket {
 	 * @param sourceID The source ID (given by RTPConnector) of the client that sent this data
 	 * @param sequenceOffset The number of packets the client is behind when connecting
 	 */
-	public RTPSoundPacket(long sourceID, int sequenceOffset, Mixer mixer){
+	public RTPSoundPacket(long sourceID, int sequenceOffset){
 		this.sourceID = sourceID;
 		this.sequenceOffset = sequenceOffset;
-		
-		restartDataLine(mixer);
 	}
 	
-	public void restartDataLine(Mixer mixer){
-		if(dataLine != null){
-			dataLine.close();
+	public void restart(){
+		if(out != null){
+			try {
+				out.close();
+			} catch (IOException e) {}
+		}
+		if(in != null){
+			try {
+				in.close();
+			} catch (IOException e) {}
 		}
 		
-		try {
-			DataLine.Info info = new DataLine.Info(SourceDataLine.class, Constants.AUDIOFORMAT);
-			Log.log("<info>INFO IS "+(AudioSystem.isLineSupported(info)?"VALID":"INVALID")+"</info>");
-			dataLine = (SourceDataLine)mixer.getLine(info);
-			dataLine.open(Constants.AUDIOFORMAT, Constants.RTP_PACKET_SIZE);
-			dataLine.start();
-		} catch (LineUnavailableException e) {
-			Log.log("<error>Could not create RTP Sound Line</error>");
+		try{
+			out = new PipedOutputStream();
+			in = new AudioInputStream(new PipedInputStream(out), Constants.AUDIOFORMAT, Constants.RTP_PACKET_SIZE);
+		}catch(IOException ioe){
+			Log.log("<error>Could not create internal RTP data stream</error>");
 		}
 	}
 	
-	public SourceDataLine getDataLine(){
-		return this.dataLine;
+	public InputStream getInputStream(){
+		return this.in;
 	}
 	
 	/**
@@ -71,7 +74,11 @@ public class RTPSoundPacket {
 		this.sequenceNumber = sequenceNumber;
 		this.data = data;
 		
-		dataLine.write(data, 0, Constants.RTP_PACKET_SIZE);
+		try {
+			out.write(data, 0, Constants.RTP_PACKET_SIZE);
+		} catch (IOException e) {
+			Log.log("<error>Could not write internal RTP data</error>");
+		}
 	}
 	
 	/**
