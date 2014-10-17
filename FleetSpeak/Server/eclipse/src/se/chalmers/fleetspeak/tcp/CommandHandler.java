@@ -33,32 +33,54 @@ public class CommandHandler implements IEventBusSubscriber {
 		roomHandler.terminate();
 	}
 	
+	private void wrongFormat(ServerCommand sc) {
+		Log.log("Wrong format:\n\t" + sc.getInfo());
+	}
+	
 	private void serverCommands(String cmdString, Object actor) {
 		// Called to initiate the rtp sound transfer.
 		if (cmdString.startsWith(ServerCommand.SET_RTP_PORT.getName())) {
 			String[] data = cmdString.split(" ");
-			int clientID = Integer.parseInt(data[1]);
-			int clientPort = Integer.parseInt(data[2]);
-			Log.log("Starting RTP with port: "+clientPort);
-			Client c = roomHandler.getClient((Integer) clientID);
-			c.startRTPTransfer(clientPort);
+			try {
+				int clientID = Integer.parseInt(data[1]);
+				int clientPort = Integer.parseInt(data[2]);
+				Log.log("Starting RTP with port: "+clientPort);
+				Client c = roomHandler.getClient((Integer) clientID);
+				c.startRTPTransfer(clientPort);
+			} catch (NumberFormatException ex) {
+				wrongFormat(ServerCommand.SET_RTP_PORT);
+			} catch (ArrayIndexOutOfBoundsException ex) {
+				wrongFormat(ServerCommand.SET_RTP_PORT);
+			}
 		// Called to clear the server console window.
 		} else if (cmdString.startsWith(ServerCommand.CLEAR.getName())) {
 			Log.flushLog();
 		// Called to move a user from a room to an existing room.
 		} else if(cmdString.startsWith(ServerCommand.MOVE_USER.getName())){
 			String[] data = cmdString.split(" ");
-			int clientID = Integer.parseInt(data[1]);
-			int roomID = Integer.parseInt(data[2]);
-			roomHandler.moveClient(clientID, roomID);
-			eventBus.fireEvent(new EventBusEvent("broadcast", new Command("move", clientID, roomID), null));
+			try {
+				int clientID = Integer.parseInt(data[1]);
+				int roomID = Integer.parseInt(data[2]);
+				roomHandler.moveClient(clientID, roomID);
+				eventBus.fireEvent(new EventBusEvent("broadcast", new Command("move", clientID, roomID), null));
+			} catch (NumberFormatException ex) {
+				wrongFormat(ServerCommand.MOVE_USER);
+			} catch (ArrayIndexOutOfBoundsException ex) {
+				wrongFormat(ServerCommand.MOVE_USER);
+			}
 		//	Called to move a user from a room to a new room.
 		} else if(cmdString.startsWith(ServerCommand.MOVE_USER_NEW_ROOM.getName())){
 			String[] data = cmdString.split(" ");
-			int clientID = Integer.parseInt(data[1]);
-			String roomName = data[2];
-			roomHandler.moveClient(clientID, new Room(roomName));
-			eventBus.fireEvent(new EventBusEvent("broadcast", new Command("createAndMove", clientID, roomName), null));
+			try {
+				int clientID = Integer.parseInt(data[1]);
+				String roomName = data[2];
+				roomHandler.moveClient(clientID, new Room(roomName));
+				eventBus.fireEvent(new EventBusEvent("broadcast", new Command("createAndMove", clientID, roomName), null));
+			} catch (NumberFormatException ex) {
+				wrongFormat(ServerCommand.MOVE_USER_NEW_ROOM);
+			} catch (ArrayIndexOutOfBoundsException ex) {
+				wrongFormat(ServerCommand.MOVE_USER_NEW_ROOM);
+			}
 		//	Called to close the server.
 		} else if (cmdString.startsWith(ServerCommand.CLOSE.getName())) {
 			if (actor.getClass()==ServerGUI.class) {
