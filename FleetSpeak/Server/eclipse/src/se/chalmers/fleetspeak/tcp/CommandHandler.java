@@ -145,7 +145,7 @@ public class CommandHandler implements IEventBusSubscriber {
 	@Override
 	public void eventPerformed(EventBusEvent event) {
 
-		if (event.getReciever() == "CommandHandler") {
+		if (event.getReciever().equals("CommandHandler")) {
 			Command command = event.getCommand();
 			String commandName = command.getCommand();
 			// Called when a user is disconnected.
