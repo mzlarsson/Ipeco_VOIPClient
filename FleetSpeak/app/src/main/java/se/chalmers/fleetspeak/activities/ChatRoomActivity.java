@@ -124,6 +124,7 @@ public class ChatRoomActivity extends ActionBarActivity {
      * @param view
      */
     public void pushToTalk(View view) {
+        Log.i("ChatroomActivity", "pushToTalkCalled");
         ImageButton button = (ImageButton) findViewById(R.id.pushToTalkButton);
         button.setImageResource(isTalkActive?getResources().getIdentifier("ic_mic.grey", "drawable", getPackageName()):getResources().getIdentifier("ic_mic.blue", "drawable", getPackageName()));
         isTalkActive = isTalkActive? false: true;
@@ -165,8 +166,6 @@ public class ChatRoomActivity extends ActionBarActivity {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.chatroommenu, menu);
         ImageButton locButton = (ImageButton) menu.findItem(R.id.volume_mic_control).getActionView();
-        if(locButton == null)
-            Log.i("ChatroomActivity" , "locButton is null");
         setUpVolumeAndMicControl(this, locButton);
         ImageButton button = (ImageButton) findViewById(R.id.pushToTalkButton);
         button.setOnClickListener(new View.OnClickListener() {
