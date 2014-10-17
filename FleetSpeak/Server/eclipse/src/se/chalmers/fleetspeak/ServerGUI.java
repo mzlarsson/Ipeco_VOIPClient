@@ -295,6 +295,7 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener {
 
 	@Override
 	public void keyReleased(KeyEvent e) {
+		// This is for using the TAB key to auto-complete
 		if (e.getKeyCode()==KeyEvent.VK_TAB) {
 			if (searchCmds == null) {
 				searchCmds = ServerCommand.getPossibleCommands(cmdLine.getText());
@@ -302,6 +303,7 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener {
 			}
 			if (!searchCmds.isEmpty()) {
 				cmdLine.setText(searchCmds.get(searchIndex).getName());
+				searchIndex = (searchIndex+1)%searchCmds.size();
 			}
 		} else {
 			if (e.getKeyCode()==KeyEvent.VK_ENTER) {

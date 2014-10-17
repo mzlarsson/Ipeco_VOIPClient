@@ -45,20 +45,26 @@ public class CommandHandler implements IEventBusSubscriber {
 		// Called to clear the server console window.
 		} else if (cmdString.startsWith(ServerCommand.CLEAR.getName())) {
 			Log.flushLog();
+		// Called to move a user from a room to an existing room.
 		} else if(cmdString.startsWith(ServerCommand.MOVE_USER.getName())){
 			String[] data = cmdString.split(" ");
 			int clientID = Integer.parseInt(data[1]);
 			int roomID = Integer.parseInt(data[2]);
 			roomHandler.moveClient(clientID, roomID);
+			eventBus.fireEvent(new EventBusEvent("broadcast", new Command("move", clientID, roomID), null));
+		//	Called to move a user from a room to a new room.
 		} else if(cmdString.startsWith(ServerCommand.MOVE_USER_NEW_ROOM.getName())){
 			String[] data = cmdString.split(" ");
 			int clientID = Integer.parseInt(data[1]);
 			String roomName = data[2];
 			roomHandler.moveClient(clientID, new Room(roomName));
+			eventBus.fireEvent(new EventBusEvent("broadcast", new Command("createAndMove", clientID, roomName), null));
+		//	Called to close the server.
 		} else if (cmdString.startsWith(ServerCommand.CLOSE.getName())) {
 			if (actor.getClass()==ServerGUI.class) {
 				((ServerGUI)actor).stop();
 			}
+		//	Called in dire situations.
 		} else if (cmdString.startsWith(ServerCommand.HELP.getName())) {
 			if (cmdString.length()>5) {
 				ServerCommand sc = ServerCommand.getCommand(cmdString.substring(5));
@@ -74,6 +80,7 @@ public class CommandHandler implements IEventBusSubscriber {
 				}
 				Log.log(ServerCommand.HELP.getInfo());
 			}
+		// Called to get all the information regarding rooms and users.
 		} else if (cmdString.startsWith(ServerCommand.ROOM_INFO.getName())) {
 			Log.log(roomHandler.getRoomInfo());
 		} else {
