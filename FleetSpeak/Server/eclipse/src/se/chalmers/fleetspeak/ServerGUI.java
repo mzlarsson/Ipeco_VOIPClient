@@ -50,8 +50,10 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener {
 	private static Thread serverThread;
 	private Logger log;
 
+	private ArrayList<String> cmdLog;
 	private ArrayList<ServerCommand> searchCmds;
-	private int searchIndex;
+	private int cmdLogIndex, searchIndex;
+	private Color FOREST_GREEN = new Color(20, 170, 0);
 	
 	public static void main(String[] args) {
 		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
@@ -140,6 +142,7 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener {
 		cmdLine = new JTextField(10);
 		cmdLine.addKeyListener(this);
 		cmdLine.setFocusTraversalKeysEnabled(false);
+		cmdLog = new ArrayList<String>();
 		centerSouth.add(cmdLineLabel, BorderLayout.WEST);
 		centerSouth.add(cmdLine, BorderLayout.CENTER);
 		center.add(centerSouth, BorderLayout.SOUTH);
@@ -195,6 +198,8 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener {
 						StyleConstants.setForeground(attr, Color.BLACK);
 					} else if (msg.equals("/info")) {
 						StyleConstants.setForeground(attr, Color.BLACK);
+					} else if (msg.equals("/debug")) {
+						StyleConstants.setForeground(attr, Color.BLACK);
 					} else {
 						return false;
 					}
@@ -206,7 +211,9 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener {
 					} else if (msg.equals("error")) {
 						StyleConstants.setForeground(attr, Color.RED);
 					} else if (msg.equals("info")) {
-						StyleConstants.setForeground(attr, Color.GREEN);
+						StyleConstants.setForeground(attr, FOREST_GREEN);
+					} else if (msg.equals("debug")) {
+						StyleConstants.setForeground(attr, Color.MAGENTA);
 					} else {
 						return false;
 					}
@@ -308,10 +315,18 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener {
 		} else {
 			if (e.getKeyCode()==KeyEvent.VK_ENTER) {
 				String cmd = cmdLine.getText();
+				cmdLog.add(cmd);
+				cmdLogIndex = -1;
 				log.log(Level.ALL, "<b>> "+cmd+"</b>");
 				EventBus.getInstance().fireEvent(new EventBusEvent("CommandHandler", new Command("consoleCommand", null, cmd), this));
 	
 				cmdLine.setText("");
+			} else if (e.getKeyCode()==KeyEvent.VK_UP) {
+				cmdLogIndex = (cmdLogIndex-1)<0 ? cmdLog.size()-1 : cmdLogIndex-1;
+				cmdLine.setText(cmdLog.get(cmdLogIndex));
+			} else if (e.getKeyCode()==KeyEvent.VK_DOWN) {
+				cmdLogIndex = (cmdLogIndex+1)%cmdLog.size();
+				cmdLine.setText(cmdLog.get(cmdLogIndex));
 			}
 			searchCmds = null;
 		}
