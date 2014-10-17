@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.Mixer;
 
 import se.chalmers.fleetspeak.util.Log;
@@ -51,12 +52,19 @@ public class RTPSoundMixer implements RTPListener{
 	public void restart(){
 		if(mixer == null){
 			mixer = AudioSystem.getMixer(null);
+			System.out.println(mixer.getClass().toString());
 		}
 		
 		for(int i = 0; i<data.size(); i++){
 			data.get(i).restartDataLine(mixer);
 		}
-		
+
+		try {
+			mixer.open();
+			Log.log(mixer.getLineInfo().toString());
+		} catch (LineUnavailableException e) {
+			Log.log("<error>Could not open the mixer</error>");
+		}
 		Log.log("<info>Restarted mixer input</info>");
 	}
 	
@@ -70,8 +78,9 @@ public class RTPSoundMixer implements RTPListener{
 		
 		//Adds an empty packet to be filled with data later
 		data.add(new RTPSoundPacket(sourceID, getCurrentSequenceOffset(), mixer));
-
 		Log.log("Client with sourceID="+sourceID+" joined mixer "+this.identifier);
+		
+		restart();
 	}
 
 	/**
@@ -91,6 +100,8 @@ public class RTPSoundMixer implements RTPListener{
 
 		if(this.data.isEmpty()){
 			this.close();
+		}else{
+			restart();
 		}
 	}
 
@@ -101,7 +112,6 @@ public class RTPSoundMixer implements RTPListener{
 	 * @return A sound mix of all clients except the one that requests the data
 	 */
 	public byte[] getMixedSound(long sourceID, int minSequenceNumber){
-		System.out.println(mixer.getTargetLines().length);
 		
 		if(data.size()>0){
 			byte[] output = new byte[Constants.RTP_PACKET_SIZE];
