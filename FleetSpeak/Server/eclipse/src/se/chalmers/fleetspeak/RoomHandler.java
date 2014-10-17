@@ -64,11 +64,11 @@ public class RoomHandler {
 	}
 	
 	public void removeClient(int clientID, boolean terminate){
-		this.removeClient(getClient(clientID), terminate);
+		this.removeClient(findClient(clientID), terminate);
 	}
 
 	public void removeClient(int clientID){
-		this.removeClient(getClient(clientID), false);
+		this.removeClient(findClient(clientID), false);
 	}
 	
 	public void moveClient(Client c, Room r){
@@ -77,11 +77,11 @@ public class RoomHandler {
 	}
 	
 	public void moveClient(int clientID, Room room){
-		this.moveClient(this.getClient(clientID), room);
+		this.moveClient(this.findClient(clientID), room);
 	}
 	
 	public void moveClient(int clientID, int roomID){
-		this.moveClient(this.getClient(clientID), this.findRoom(roomID));
+		this.moveClient(this.findClient(clientID), this.findRoom(roomID));
 	}
 	
 	public Room[] getRooms(){
@@ -92,7 +92,12 @@ public class RoomHandler {
 		return rooms.get(r).toArray(new Client[rooms.get(r).size()]);
 	}
 	
- 	public Client getClient(int clientID) throws NoSuchElementException {
+	public void setUsername(int clientID, String name) {
+		findClient(clientID).setName(name);
+		changeEvent();
+	}
+	
+ 	public Client findClient(int clientID) throws NoSuchElementException {
 		for(ArrayList<Client> clients:rooms.values()){
 			for(Client c: clients){
 				if(c.getClientID()==clientID){

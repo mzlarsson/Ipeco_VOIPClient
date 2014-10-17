@@ -52,7 +52,7 @@ public class CommandHandler implements IEventBusSubscriber {
 				clientID = Integer.parseInt(data[1]);
 				clientPort = Integer.parseInt(data[2]);
 				Log.log("Starting RTP with port: "+clientPort);
-				Client c = roomHandler.getClient((Integer) clientID);
+				Client c = roomHandler.findClient((Integer) clientID);
 				c.startRTPTransfer(clientPort);
 			} catch (NumberFormatException ex) {
 				wrongFormat(ServerCommand.SET_RTP_PORT);
@@ -161,8 +161,7 @@ public class CommandHandler implements IEventBusSubscriber {
 				t.sendData(new Command("HurrDurr", null, null));
 			// Called when a client changes name.
 			} else if (commandName.equals("setName")) {
-				Client c = roomHandler.getClient((Integer) command.getKey());
-				c.setName((String) command.getValue());
+				roomHandler.setUsername((Integer)command.getKey(), (String)command.getValue());
 				eventBus.fireEvent(new EventBusEvent("broadcast", command, null));
 			// Called when a client changes rooms to a new room.
 			} else if (commandName.equals("createAndMove")) {
@@ -182,7 +181,7 @@ public class CommandHandler implements IEventBusSubscriber {
 					}
 				}
 			}else if(commandName.equals("setRtpPort")){
-				Client c = roomHandler.getClient((Integer)command.getKey());
+				Client c = roomHandler.findClient((Integer)command.getKey());
 				c.startRTPTransfer((Integer)command.getValue());
 			}
 		}
