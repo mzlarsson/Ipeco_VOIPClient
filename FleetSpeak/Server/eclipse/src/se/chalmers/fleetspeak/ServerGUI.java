@@ -31,13 +31,15 @@ import javax.swing.text.StyledDocument;
 
 import se.chalmers.fleetspeak.eventbus.EventBus;
 import se.chalmers.fleetspeak.eventbus.EventBusEvent;
+import se.chalmers.fleetspeak.eventbus.IEventBusSubscriber;
 import se.chalmers.fleetspeak.util.Command;
 import se.chalmers.fleetspeak.util.Log;
 
-public class ServerGUI extends JFrame implements ActionListener, KeyListener {
+public class ServerGUI extends JFrame implements ActionListener, KeyListener, IEventBusSubscriber {
 
 	private static final long serialVersionUID = 1L;
 	private JLabel ip;
+	private JLabel roomStructure;
 	private JTextField tcpText;
 	private JTextField udpText;
 	private JButton stop;
@@ -75,7 +77,7 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener {
 	}
 
 	public ServerGUI() {
-		setTitle("FleetSpeek Server");
+		setTitle("FleetSpeek Server: NullpointerExeption(\"Server not found\")");
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setLayout(new BorderLayout());
 		setLocation(500, 200);
@@ -96,15 +98,17 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener {
 		}
 		// Panels containing several components for better structure.
 		JPanel west = new JPanel();
-		JPanel westBorder = new JPanel();
-		westBorder.setLayout(new BorderLayout());
+		JPanel westSide = new JPanel();
+		westSide.setLayout(new BorderLayout());
+		JPanel westButtonGroup = new JPanel();
+		westButtonGroup.setLayout(new BorderLayout());
 		JPanel center = new JPanel();
 		center.setLayout(new BorderLayout());
 		JPanel centerSouth = new JPanel();
 		centerSouth.setLayout(new BorderLayout());
 		
 		// The area for input of what ports to use.
-		westBorder.add(ip, BorderLayout.NORTH);
+		westButtonGroup.add(ip, BorderLayout.NORTH);
 		JPanel portsPanel = new JPanel();
 		portsPanel.setLayout(new GridLayout(2, 2));
 		JLabel tcpLabel = new JLabel("TCP-Port :");
@@ -115,7 +119,7 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener {
 		portsPanel.add(tcpText);
 		portsPanel.add(utpLabel);
 		portsPanel.add(udpText);
-		westBorder.add(portsPanel, BorderLayout.CENTER);
+		westButtonGroup.add(portsPanel, BorderLayout.CENTER);
 		JPanel buttons = new JPanel();
 		buttons.setLayout(new GridLayout(1, 2));
 		stop = new JButton("Stop");
@@ -125,7 +129,11 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener {
 		start.addActionListener(this);
 		buttons.add(stop);
 		buttons.add(start);
-		westBorder.add(buttons, BorderLayout.SOUTH);
+		roomStructure = new JLabel("No clients connected");
+		westButtonGroup.add(buttons, BorderLayout.SOUTH);
+		westSide.add(westButtonGroup, BorderLayout.CENTER);
+		westSide.add(roomStructure, BorderLayout.SOUTH);
+		west.add(westSide);
 		
 		// The scrollable terminal window.
 		terminal = new JTextPane();
@@ -135,7 +143,6 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener {
 		terminal.setEditable(false);
 		scrollableText.setPreferredSize(new Dimension(700,500));
 		center.add(scrollableText, BorderLayout.CENTER);
-		west.add(westBorder);
 		
 		// The command input line.
 		JLabel cmdLineLabel = new JLabel("Command input:");
@@ -253,6 +260,7 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener {
 				}
 			});
 			serverThread.start();
+			EventBus.getInstance().addSubscriber(this);
 			tcpText.setEnabled(false);
 			udpText.setEnabled(false);
 			start.setEnabled(false);
@@ -267,6 +275,7 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener {
 				server.terminate();
 				serverThread.join();
 				server = null;
+				EventBus.getInstance().removeSubscriber(this);
 			} catch (InterruptedException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -331,4 +340,15 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener {
 			searchCmds = null;
 		}
 	}
+
+	@Override
+	public void eventPerformed(EventBusEvent event) {
+		if (event.getReciever().equals("ServerGUI")) {
+			Command cmd = event.getCommand();
+			if (cmd.getCommand().equals("roomsChanged")) {
+				roomStructure.setText((String)cmd.getValue());
+			}
+		}
+	}
+	
 }

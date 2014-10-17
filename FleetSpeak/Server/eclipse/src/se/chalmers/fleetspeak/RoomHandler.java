@@ -3,6 +3,10 @@ package se.chalmers.fleetspeak;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
+
+import se.chalmers.fleetspeak.eventbus.EventBus;
+import se.chalmers.fleetspeak.eventbus.EventBusEvent;
+import se.chalmers.fleetspeak.util.Command;
 /**
  * An class for handling the rooms and client on the server side.
  * Based on the RoomHandler on the client side.
@@ -30,7 +34,8 @@ public class RoomHandler {
 				 list.add(c);
 				 c.moveToRoom(r.getId());
 			 }
-		}   
+		}
+		changeEvent();
 	}
 	
 	public void addClient(Client c, int roomID){
@@ -55,6 +60,7 @@ public class RoomHandler {
 				break;
 			}
 		}
+		changeEvent();
 	}
 	
 	public void removeClient(int clientID, boolean terminate){
@@ -112,6 +118,8 @@ public class RoomHandler {
 				c.terminate();
 			}
 		}
+		rooms.clear();
+		changeEvent();
 	}
 	
 	public int getNbrOfClients(Room r){
@@ -133,4 +141,7 @@ public class RoomHandler {
 		return info;
 	}
 	
+	public void changeEvent() {
+		EventBus.getInstance().fireEvent(new EventBusEvent("ServerGUI", new Command("roomsChanged", null, getRoomInfo()), this));
+	}
 }
