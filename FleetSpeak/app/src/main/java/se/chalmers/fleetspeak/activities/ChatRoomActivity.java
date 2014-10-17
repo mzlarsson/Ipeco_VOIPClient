@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -123,6 +124,7 @@ public class ChatRoomActivity extends ActionBarActivity {
      * @param view
      */
     public void pushToTalk(View view) {
+        Log.i("ChatroomActivity", "pushToTalkCalled");
         ImageButton button = (ImageButton) findViewById(R.id.pushToTalkButton);
         button.setImageResource(isTalkActive?getResources().getIdentifier("ic_mic.grey", "drawable", getPackageName()):getResources().getIdentifier("ic_mic.blue", "drawable", getPackageName()));
         isTalkActive = isTalkActive? false: true;
@@ -161,7 +163,10 @@ public class ChatRoomActivity extends ActionBarActivity {
     }
 
     public boolean onCreateOptionsMenu(Menu menu){
-        setUpVolumeAndMicControl(this);
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.chatroommenu, menu);
+        ImageButton locButton = (ImageButton) menu.findItem(R.id.volume_mic_control).getActionView();
+        setUpVolumeAndMicControl(this, locButton);
         ImageButton button = (ImageButton) findViewById(R.id.pushToTalkButton);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -172,7 +177,7 @@ public class ChatRoomActivity extends ActionBarActivity {
         return true;
     }
 
-    private void setUpVolumeAndMicControl(Context context){
+    private void setUpVolumeAndMicControl(Context context, ImageButton imageButton ){
         LayoutInflater inflater = LayoutInflater.from(context);
 
         View contentView = inflater.inflate(R.layout.drop_down_seek_bar, null);
@@ -185,10 +190,12 @@ public class ChatRoomActivity extends ActionBarActivity {
         micAndVolumePanel.setContentView(contentView);
         setPopupSize(micAndVolumePanel);
         final int paddigTop = getPaddingTop(micAndVolumePanel);
-        ImageButton imageButton = (ImageButton) findViewById(R.id.volume_mic_control);
+        if(imageButton == null)
+            Log.i("Chatroomactivity", "imagebutton = null");
         imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 micAndVolumePanel.showAsDropDown(view, 0 , -paddigTop);
             }
         });

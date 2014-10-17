@@ -226,9 +226,9 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
         super.onRestart();
     }
     public void onConnectButtonClick(View view) {
-        startConnection(ipText,Integer.parseInt(portText), userNameText);
-      //  Intent intent = new Intent(this,JoinRoomActivity.class);
-      //  startActivity(intent);
+      //  startConnection(ipText,Integer.parseInt(portText), userNameText);
+        Intent intent = new Intent(this,JoinRoomActivity.class);
+        startActivity(intent);
     }
     /**
      * Show Connection error message
