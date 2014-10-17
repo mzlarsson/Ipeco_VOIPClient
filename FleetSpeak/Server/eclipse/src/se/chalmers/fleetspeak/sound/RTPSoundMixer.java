@@ -3,7 +3,6 @@ package se.chalmers.fleetspeak.sound;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Mixer;
 
 import se.chalmers.fleetspeak.util.Log;
@@ -48,20 +47,13 @@ public class RTPSoundMixer implements RTPListener{
 	
 	public void restart(){
 		if(mixer != null){
-			this.mixer.close();
-		}
-		
-		Mixer newMixer = AudioSystem.getMixer(null);
-		
-		if(mixer != null){
 			for(int i = 0; i<data.size(); i++){
-				data.get(i).restartDataLine(newMixer);
+				data.get(i).restartDataLine(mixer);
 			}
 			
 		}
 		
-		this.mixer = newMixer;
-		Log.log("<info>Restarted mixer</info>");
+		Log.log("<info>Restarted mixer input</info>");
 	}
 	
 	/**
