@@ -124,14 +124,8 @@ public class ChatRoomActivity extends ActionBarActivity {
      */
     public void pushToTalk(View view) {
         ImageButton button = (ImageButton) findViewById(R.id.pushToTalkButton);
-        if(isTalkActive){
-            button.setImageResource(getResources().getIdentifier("ic_mic.grey", "drawable", getPackageName()));
-            isTalkActive = false;
-        }
-        else{
-            button.setImageResource(getResources().getIdentifier("ic_mic.blue", "drawable", getPackageName()));
-            isTalkActive = true;
-        }
+        button.setImageResource(isTalkActive?getResources().getIdentifier("ic_mic.grey", "drawable", getPackageName()):getResources().getIdentifier("ic_mic.blue", "drawable", getPackageName()));
+        isTalkActive = isTalkActive? false: true;
     }
 
     /**
@@ -160,19 +154,14 @@ public class ChatRoomActivity extends ActionBarActivity {
              */
             textView.setText(userName);
 
-            /*
-            * För att ändra icon när någon pratar måste vi uppdatera adaptern varje gång.
-            * Adapter får då kolla om någon håller på och prata och på så vis väljer den vilken
-            * icon som ska sättas.
-            * */
-            imageView.setImageResource(R.drawable.ic_inactive_status);
+            imageView.setImageResource(R.drawable.ic_user_inroom);
 
             return view;
         }
     }
 
     public boolean onCreateOptionsMenu(Menu menu){
-        getMenuInflater().inflate(R.menu.chatroommenu, menu);
+        setUpVolumeAndMicControl(this);
         ImageButton button = (ImageButton) findViewById(R.id.pushToTalkButton);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -190,14 +179,29 @@ public class ChatRoomActivity extends ActionBarActivity {
         volumeControlBar = (SeekBar) findViewById(R.id.volume_seekbar);
         micControlBar = (SeekBar) findViewById(R.id.mic_seekbar);
 
-        final PopupWindow popupWindow = new PopupWindow(context, null,
+        micAndVolumePanel = new PopupWindow(context, null,
                 android.R.attr.actionDropDownStyle);
-        popupWindow.setFocusable(true); // seems to take care of dismissing on click outside
-        popupWindow.setContentView(contentView);
-        setPopupSize(popupWindow);
-
+        micAndVolumePanel.setFocusable(true); // seems to take care of dismissing on click outside
+        micAndVolumePanel.setContentView(contentView);
+        setPopupSize(micAndVolumePanel);
+        final int paddigTop = getPaddingTop(micAndVolumePanel);
+        ImageButton imageButton = (ImageButton) findViewById(R.id.volume_mic_control);
+        imageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                micAndVolumePanel.showAsDropDown(view, 0 , -paddigTop);
+            }
+        });
     }
+    private int getPaddingTop(PopupWindow popupWindow) {
+        Drawable background = popupWindow.getBackground();
+        if (background == null)
+            return 0;
 
+        Rect padding = new Rect();
+        background.getPadding(padding);
+        return padding.top;
+    }
     private void setPopupSize(PopupWindow popupWindow) {
         View contentView = popupWindow.getContentView();
 

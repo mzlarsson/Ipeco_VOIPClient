@@ -24,6 +24,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 
 
 import se.chalmers.fleetspeak.CommandHandler;
@@ -31,9 +32,12 @@ import se.chalmers.fleetspeak.R;
 import se.chalmers.fleetspeak.ServerHandler;
 import se.chalmers.fleetspeak.SocketService;
 import se.chalmers.fleetspeak.sound.SoundController;
+import se.chalmers.fleetspeak.truck.TruckDataHandler;
+import se.chalmers.fleetspeak.truck.TruckStateListener;
 
-public class StartActivity extends ActionBarActivity {
+public class StartActivity extends ActionBarActivity implements TruckStateListener {
 
+    private static TruckDataHandler truckDataHandler;
     private String ipText;
     private Context context = this;
     private String portText;
@@ -145,9 +149,9 @@ public class StartActivity extends ActionBarActivity {
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         prefEdit = prefs.edit();
 
-        portText = prefs.getString( "portNumber","8867");
-        userNameText = prefs.getString("username", "username");
-        ipText = prefs.getString("ipAdress","192.168.43.23");
+        portText = prefs.getString( getString(R.string.port_number_text),"8867");
+        userNameText = prefs.getString(getString(R.string.username_text), "username");
+        ipText = prefs.getString(getString(R.string.ip_adress_text),"192.168.43.23");
         ipTextField.setText(ipText);
         portField.setText(portText);
         userNameField.setText(userNameText);
@@ -168,6 +172,9 @@ public class StartActivity extends ActionBarActivity {
                 savePreferences(savePrefsCheckbox.isChecked());
             }
         });
+        //Removes focus from the EditTextFields in the app
+        RelativeLayout l = (RelativeLayout) findViewById(R.id.relStart_layout);
+        l.requestFocus();
 
 
         Log.i("STARTACTIVITY", "binding service");
@@ -290,5 +297,10 @@ public class StartActivity extends ActionBarActivity {
         }
 
 
+    }
+
+    @Override
+    public void truckModeChanged(boolean mode) {
+        setCarMode(!mode);
     }
 }
