@@ -15,6 +15,30 @@ public class Log {
 		}
 	}
 	
+	public static void logError(String msg) {
+		Log.log("<error>" + msg + "</error>");
+	}
+	
+	public static void logInfo(String msg) {
+		Log.log("<info>" + msg + "</info>");
+	}
+	
+	public static void logDebug(String msg) {
+		Log.log("<debug>" + msg + "</debug>");
+	}
+
+	public static void logNullPointerException(String msg) {
+		if (msg.length()>3) {
+			String err = "<error>" + msg.substring(0, msg.length()/4) + "</error>";
+			String bla = msg.substring(msg.length()/4, msg.length()/2);
+			String inf = "<info>" + msg.substring(msg.length()/2, msg.length()*3/4) + "</info>";
+			String deb = "<debug>" + msg.substring(msg.length()*3/4) + "</debug>";
+			Log.log("<b><i>" + err + bla + inf + deb + "</b></i>");
+		} else {
+			Log.log("<error><b><i>" + msg + "</i></b></error>");
+		}
+	}
+	
 	public static void flushLog() {
 		if (logger!=null) {
 			logger.getHandlers()[0].flush();
