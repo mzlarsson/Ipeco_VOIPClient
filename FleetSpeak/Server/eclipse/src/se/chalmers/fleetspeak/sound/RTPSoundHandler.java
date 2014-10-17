@@ -27,7 +27,6 @@ public class RTPSoundHandler extends RTPHandler implements SoundHandler{
 	 */
 	protected RTPSoundHandler(InetAddress clientIP, int serverPort, int clientPort) throws IllegalArgumentException{
 		super(clientIP, serverPort, clientPort, Constants.RTP_SOUND_PAYLOAD_TYPE);
-		switchMixer(1);
 	}
 	
 	/**
@@ -51,16 +50,19 @@ public class RTPSoundHandler extends RTPHandler implements SoundHandler{
 	@Override
 	public void run() {
 		while(this.isAlive()){
-			//Sync the most updated sequence number
-			currSeqNumber = Math.max(mixer.getCurrentSequenceOffset(), currSeqNumber);
-			//Fetch the data from all other sound sources
-			byte[] data = mixer.getMixedSound(getParticipantSourceID(), currSeqNumber);
-			//Send data
-			if(getConnector().sendData(getParticipantSourceID(), data)){
-				//Increase sequence number if any data was sent (no double sending)
-				
-				currSeqNumber++;
-				
+			//Checks if connected to any room
+			if(mixer != null){
+				//Sync the most updated sequence number
+				currSeqNumber = Math.max(mixer.getCurrentSequenceOffset(), currSeqNumber);
+				//Fetch the data from all other sound sources
+				byte[] data = mixer.getMixedSound(getParticipantSourceID(), currSeqNumber);
+				//Send data
+				if(getConnector().sendData(getParticipantSourceID(), data)){
+					//Increase sequence number if any data was sent (no double sending)
+					
+					currSeqNumber++;
+					
+				}
 			}
 			
 			//Wait

@@ -21,6 +21,7 @@ public class Client{
 	
 	private InetAddress ip;
 	private int serverRtpPort;
+	private int roomID = 1;
 
 	public Client(Socket socket, int serverRtpPort) throws IOException {
 		this.clientID = IDFactory.getInstance().getID();
@@ -37,6 +38,7 @@ public class Client{
 		if(this.rtp == null){
 			this.rtp = SoundHandlerFactory.getDefaultSoundHandler(ip, serverRtpPort, clientRtpPort);
 			this.rtp.start();
+			this.rtp.switchMixer(roomID);
 			Log.log("Connection successfully started to IP="+ip.getHostAddress());
 		}else{
 			Log.log("Error: Could not start RTP connection. Already started.");
@@ -44,7 +46,11 @@ public class Client{
 	}
 	
 	public void moveToRoom(int roomID){
-		this.rtp.switchMixer(roomID);
+		if(this.rtp != null){
+			this.rtp.switchMixer(roomID);
+		}
+		
+		this.roomID = roomID;
 	}
 
 	public void setName(String name) {

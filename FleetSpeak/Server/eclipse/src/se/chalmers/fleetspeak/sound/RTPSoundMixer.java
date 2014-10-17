@@ -44,24 +44,20 @@ public class RTPSoundMixer implements RTPListener{
 		this.data = new ArrayList<RTPSoundPacket>();
 		this.connector = connector;
 		this.identifier = identifier;
+		
+		restart();
 	}
 	
 	public void restart(){
-		if(mixer != null){
-			this.mixer.close();
+		if(mixer == null){
+			mixer = AudioSystem.getMixer(null);
 		}
 		
-		Mixer newMixer = AudioSystem.getMixer(null);
-		
-		if(mixer != null){
-			for(int i = 0; i<data.size(); i++){
-				data.get(i).restartDataLine(newMixer);
-			}
-			
+		for(int i = 0; i<data.size(); i++){
+			data.get(i).restartDataLine(mixer);
 		}
 		
-		this.mixer = newMixer;
-		Log.log("<info>Restarted mixer</info>");
+		Log.log("<info>Restarted mixer input</info>");
 	}
 	
 	/**
