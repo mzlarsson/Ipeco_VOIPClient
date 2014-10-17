@@ -45,6 +45,12 @@ public enum ServerCommand {
 		public String getInfo(){
 			return "<b>setRtpPort <user-id> <rtp-port></b> Sets the given RTP port for the user with the given ID.";
 		}
+	},
+	SET_SOUND_FORMAT("setSoundFormat"){
+		@Override
+		public String getInfo(){
+			return "<b>setSoundFormat <sampleRate> <sampleSizeInBits> <channels> <frameSize> <frameRate> <bigEndian></b> Sets the sound format for all channels\n(default 8000.0F 8 1 1 8000.0F false)";
+		}
 	};
 	
 	private String cmd;

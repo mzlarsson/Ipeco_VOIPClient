@@ -18,7 +18,7 @@ import se.chalmers.fleetspeak.util.Log;
 
 public class RTPSoundPacket {
 	
-	SourceDataLine sourceDataLine;
+	SourceDataLine dataLine;
 
 	private int sequenceNumber;
 	private int sequenceOffset;
@@ -35,19 +35,27 @@ public class RTPSoundPacket {
 		this.sourceID = sourceID;
 		this.sequenceOffset = sequenceOffset;
 		
+		restartDataLine(mixer);
+	}
+	
+	public void restartDataLine(Mixer mixer){
+		if(dataLine != null){
+			dataLine.close();
+		}
+		
 		try {
 			DataLine.Info info = new DataLine.Info(SourceDataLine.class, Constants.AUDIOFORMAT);
 			Log.log("<info>INFO IS "+(AudioSystem.isLineSupported(info)?"VALID":"INVALID")+"</info>");
-			sourceDataLine = (SourceDataLine)mixer.getLine(info);
-			sourceDataLine.open(Constants.AUDIOFORMAT);
-			sourceDataLine.start();
+			dataLine = (SourceDataLine)mixer.getLine(info);
+			dataLine.open(Constants.AUDIOFORMAT, Constants.RTP_PACKET_SIZE);
+			dataLine.start();
 		} catch (LineUnavailableException e) {
 			Log.log("<error>Could not create RTP Sound Line</error>");
 		}
 	}
 	
-	public SourceDataLine getSourceDataLine(){
-		return this.sourceDataLine;
+	public SourceDataLine getDataLine(){
+		return this.dataLine;
 	}
 	
 	/**
@@ -63,7 +71,7 @@ public class RTPSoundPacket {
 		this.sequenceNumber = sequenceNumber;
 		this.data = data;
 		
-		sourceDataLine.write(data, 0, Constants.RTP_PACKET_SIZE);
+		dataLine.write(data, 0, Constants.RTP_PACKET_SIZE);
 	}
 	
 	/**

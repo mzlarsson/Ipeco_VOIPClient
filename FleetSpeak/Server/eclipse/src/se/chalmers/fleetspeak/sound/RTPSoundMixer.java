@@ -1,12 +1,9 @@
 package se.chalmers.fleetspeak.sound;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Line;
-import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.Mixer;
 
 import se.chalmers.fleetspeak.util.Log;
@@ -30,10 +27,9 @@ import se.chalmers.fleetspeak.util.Log;
 
 public class RTPSoundMixer implements RTPListener{
 
-	private static List<RTPSoundMixer> mixers = new ArrayList<RTPSoundMixer>();
+	public static List<RTPSoundMixer> mixers = new ArrayList<RTPSoundMixer>();
 	
 	private Mixer mixer;
-	private Line outLine;
 	
 	private List<RTPSoundPacket> data;
 	private RTPConnector connector;
@@ -48,17 +44,24 @@ public class RTPSoundMixer implements RTPListener{
 		this.data = new ArrayList<RTPSoundPacket>();
 		this.connector = connector;
 		this.identifier = identifier;
-		
-		Mixer.Info[] info = AudioSystem.getMixerInfo();
-		System.out.println(Arrays.toString(info));
-		mixer = AudioSystem.getMixer(null);
-		try {
-			outLine = mixer.getLine(mixer.getLineInfo());
-			System.out.println(outLine.getClass().getCanonicalName());
-		} catch (LineUnavailableException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	}
+	
+	public void restart(){
+		if(mixer != null){
+			this.mixer.close();
 		}
+		
+		Mixer newMixer = AudioSystem.getMixer(null);
+		
+		if(mixer != null){
+			for(int i = 0; i<data.size(); i++){
+				data.get(i).restartDataLine(newMixer);
+			}
+			
+		}
+		
+		this.mixer = newMixer;
+		Log.log("<info>Restarted mixer</info>");
 	}
 	
 	/**

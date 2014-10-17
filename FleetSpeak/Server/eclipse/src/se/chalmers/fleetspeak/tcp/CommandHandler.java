@@ -2,6 +2,9 @@ package se.chalmers.fleetspeak.tcp;
 
 import java.util.NoSuchElementException;
 
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioFormat.Encoding;
+
 import se.chalmers.fleetspeak.Client;
 import se.chalmers.fleetspeak.Room;
 import se.chalmers.fleetspeak.RoomHandler;
@@ -10,6 +13,7 @@ import se.chalmers.fleetspeak.ServerGUI;
 import se.chalmers.fleetspeak.eventbus.EventBus;
 import se.chalmers.fleetspeak.eventbus.EventBusEvent;
 import se.chalmers.fleetspeak.eventbus.IEventBusSubscriber;
+import se.chalmers.fleetspeak.sound.RTPSoundMixer;
 import se.chalmers.fleetspeak.util.Command;
 import se.chalmers.fleetspeak.util.Log;
 
@@ -116,6 +120,23 @@ public class CommandHandler implements IEventBusSubscriber {
 		// Called to get all the information regarding rooms and users.
 		} else if (cmdString.startsWith(ServerCommand.ROOM_INFO.getName())) {
 			Log.log(roomHandler.getRoomInfo());
+		} else if (cmdString.startsWith(ServerCommand.SET_SOUND_FORMAT.getName())) {
+			String[] data = cmdString.split(" ");
+			try{
+				 float sampleRate = Float.parseFloat(data[1]);
+				 int sampleSizeInBits = Integer.parseInt(data[2]);
+				 int channels = Integer.parseInt(data[3]);
+				 int frameSize = Integer.parseInt(data[4]);
+				 float frameRate = Float.parseFloat(data[5]);
+				 boolean bigEndian = Boolean.parseBoolean(data[6]);
+				 se.chalmers.fleetspeak.sound.Constants.AUDIOFORMAT = new AudioFormat(Encoding.PCM_UNSIGNED, sampleRate, sampleSizeInBits, channels, frameSize, frameRate, bigEndian);
+				 for(int i = 0; i<RTPSoundMixer.mixers.size(); i++){
+					 RTPSoundMixer.mixers.get(i).restart();
+				 }
+				 Log.log("<info>AudioFormat set to "+se.chalmers.fleetspeak.sound.Constants.AUDIOFORMAT.toString()+"</info>");
+			}catch(NumberFormatException nfe){
+				Log.log("<error><b>Failed to parse command</b></error>");
+			}
 		} else {
 			Log.log(("<error>ERROR:</error> \"<b>" + cmdString + "</b>\" <error>is not supported</error>"));
 		}
