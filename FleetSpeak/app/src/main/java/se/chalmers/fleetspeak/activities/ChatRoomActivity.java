@@ -5,9 +5,11 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.media.Image;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -109,14 +111,11 @@ public class ChatRoomActivity extends ActionBarActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
         switch (item.getItemId()){
-            case R.id.volume_mic_control:
-                micAndVolumePanel.showAsDropDown(findViewById(android.R.id.home));
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
                 return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+    }
+        return true;
     }
 
     /**
@@ -126,7 +125,7 @@ public class ChatRoomActivity extends ActionBarActivity {
     public void pushToTalk(View view) {
         Log.i("ChatroomActivity", "pushToTalkCalled");
         ImageButton button = (ImageButton) findViewById(R.id.pushToTalkButton);
-        button.setImageResource(isTalkActive?getResources().getIdentifier("ic_mic.grey", "drawable", getPackageName()):getResources().getIdentifier("ic_mic.blue", "drawable", getPackageName()));
+        button.setBackgroundResource(isTalkActive?R.drawable.ic_mic_grey:R.drawable.ic_mic_blue);
         isTalkActive = isTalkActive? false: true;
     }
 
@@ -196,9 +195,11 @@ public class ChatRoomActivity extends ActionBarActivity {
             @Override
             public void onClick(View view) {
 
-                micAndVolumePanel.showAsDropDown(view, 0 , -paddigTop);
+                micAndVolumePanel.showAsDropDown(view, 0, -paddigTop);
             }
         });
+        imageButton.setBackgroundResource(R.drawable.ic_control_mic_volume);
+
     }
     private int getPaddingTop(PopupWindow popupWindow) {
         Drawable background = popupWindow.getBackground();
@@ -222,8 +223,10 @@ public class ChatRoomActivity extends ActionBarActivity {
         if (background != null) {
             Rect rect = new Rect();
             background.getPadding(rect);
-            width += rect.left + rect.right;
-            height += rect.top + rect.bottom;
+            DisplayMetrics displaymetrics = new DisplayMetrics();
+            getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+            width   = displaymetrics.widthPixels;
+            height += rect.top + rect.bottom + 30;
         }
 
         popupWindow.setWidth(width);
