@@ -23,6 +23,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 
@@ -125,6 +126,7 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
             @Override
             public void afterTextChanged(Editable editable) {
                 portText = String.valueOf(portField.getText());
+
             }
         });
 
@@ -158,20 +160,12 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
         userNameField.setText(userNameText);
         Log.i("StartActivity", userNameText);
         final CheckBox savePrefsCheckbox = (CheckBox) findViewById(R.id.saveUserPref);
-        savePrefsCheckbox.addTextChangedListener(new TextWatcher() {
+        savePrefsCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                savePreferences(savePrefsCheckbox.isChecked());
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if(savePrefsCheckbox.isChecked()){
+                    savePreferences();
+                }
             }
         });
         //Removes focus from the EditTextFields in the app
@@ -270,12 +264,11 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
     /**
      * Saves the preferences of the User
      */
-    public void savePreferences(boolean b){
-        if(b) {
+    public void savePreferences(){
             prefEdit.putString(getString(R.string.username_text), userNameText);
             prefEdit.putString(getString(R.string.ip_adress_text), ipText);
             prefEdit.putString(getString(R.string.port_number_text), portText);
-        }
+            prefEdit.commit();
     }
 
     public void startConnection(String ip, int port, String userName){
