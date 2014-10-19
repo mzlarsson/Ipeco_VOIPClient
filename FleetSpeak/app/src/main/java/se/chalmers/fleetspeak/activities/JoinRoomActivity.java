@@ -4,8 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -21,15 +23,18 @@ import se.chalmers.fleetspeak.R;
 import se.chalmers.fleetspeak.Room;
 import se.chalmers.fleetspeak.RoomHandler;
 import se.chalmers.fleetspeak.User;
+import se.chalmers.fleetspeak.truck.TruckDataHandler;
+import se.chalmers.fleetspeak.truck.TruckStateListener;
 
 /**
  * Created by TwiZ on 2014-10-09.
  */
-public class JoinRoomActivity extends ActionBarActivity {
+public class JoinRoomActivity extends ActionBarActivity implements TruckStateListener {
 
     ListView roomView;
     ArrayAdapter<Room> adapter;
     Room[] rooms;
+    private static TruckDataHandler truckDataHandler;
 
     public RoomHandler handler;
 
@@ -42,7 +47,6 @@ public class JoinRoomActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_join_room);
-        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         roomView = (ListView)findViewById(R.id.roomView);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -75,6 +79,8 @@ public class JoinRoomActivity extends ActionBarActivity {
 
             }
         });
+
+
     }
 
     private void updateRoomList() {
@@ -100,6 +106,22 @@ public class JoinRoomActivity extends ActionBarActivity {
         //TODO:
     //    Intent intent = new Intent(this,ChatRoomActivity.class);
     //    startActivity(intent);
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()){
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+
+        }
+
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void truckModeChanged(boolean mode) {
     }
 
 

@@ -58,6 +58,15 @@
             android:id="@+id/saveUserPref"
             android:layout_weight="0.5" />
 
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Car mode"
+            android:onClick="CarTrue"
+            android:id="@+id/button3"
+            android:layout_weight="0.1" />
+
     </LinearLayout>
 
     <Button

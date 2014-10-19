@@ -301,6 +301,9 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
 
     }
 
+    public void CarTrue(View view){
+        setCarMode(true);
+    }
     @Override
     public void truckModeChanged(boolean mode) {
         setCarMode(!mode);

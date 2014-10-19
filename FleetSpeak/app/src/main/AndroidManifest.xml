@@ -35,11 +35,14 @@
             android:theme="@style/AppTheme"/>
 
         <activity android:name=".activities.ChatRoomActivity"
-            android:label="ChatRoom">
+            android:label="ChatRoom"
+            android:parentActivityName=".activities.JoinRoomActivity">
+
 
         </activity>
         <activity android:name=".activities.JoinRoomActivity"
-            android:label="JoinRoom">
+            android:label="JoinRoom"
+            android:parentActivityName=".activities.StartActivity">
 
         </activity>
 

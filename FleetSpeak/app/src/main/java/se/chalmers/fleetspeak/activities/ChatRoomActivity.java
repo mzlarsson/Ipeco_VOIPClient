@@ -33,16 +33,19 @@ import se.chalmers.fleetspeak.R;
 import se.chalmers.fleetspeak.Room;
 import se.chalmers.fleetspeak.RoomHandler;
 import se.chalmers.fleetspeak.User;
+import se.chalmers.fleetspeak.truck.TruckDataHandler;
+import se.chalmers.fleetspeak.truck.TruckStateListener;
 
 /**
  * Created by TwiZ on 2014-10-06.
  */
-public class ChatRoomActivity extends ActionBarActivity {
+public class ChatRoomActivity extends ActionBarActivity implements TruckStateListener {
 
     ListView userListView;
     private SeekBar volumeControlBar;
     private SeekBar micControlBar;
     private PopupWindow micAndVolumePanel;
+    private static TruckDataHandler truckDataHandler;
 
     User[] users;
     private RoomHandler handler; //TODO: For test purposes
@@ -66,6 +69,7 @@ public class ChatRoomActivity extends ActionBarActivity {
         userListView = (ListView) findViewById(R.id.userList);
         adapter = new ChatRoomListAdapter(this, users);
         userListView.setAdapter(adapter);
+
 
         /*
         * Vad som ska hända när man klicka på en user
@@ -114,8 +118,8 @@ public class ChatRoomActivity extends ActionBarActivity {
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
                 return true;
-    }
-        return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     /**
@@ -127,6 +131,11 @@ public class ChatRoomActivity extends ActionBarActivity {
         ImageButton button = (ImageButton) findViewById(R.id.pushToTalkButton);
         button.setBackgroundResource(isTalkActive?R.drawable.ic_mic_grey:R.drawable.ic_mic_blue);
         isTalkActive = isTalkActive? false: true;
+    }
+
+    @Override
+    public void truckModeChanged(boolean mode) {
+
     }
 
     /**
