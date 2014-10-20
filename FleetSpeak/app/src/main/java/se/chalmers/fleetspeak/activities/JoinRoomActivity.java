@@ -1,9 +1,13 @@
 package se.chalmers.fleetspeak.activities;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
@@ -12,7 +16,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,13 +37,14 @@ import se.chalmers.fleetspeak.truck.TruckStateListener;
  * Created by TwiZ on 2014-10-09.
  */
 public class JoinRoomActivity extends ActionBarActivity implements TruckStateListener {
-
-    ListView roomView;
-    ArrayAdapter<Room> adapter;
-    Room[] rooms;
+    SharedPreferences prefs;
+    private ListView roomView;
+    private ArrayAdapter<Room> adapter;
+    private Room[] rooms;
     private static TruckDataHandler truckDataHandler;
 
-    public RoomHandler handler;
+    private RoomHandler handler;
+    private boolean isDriving = true;
 
     private Room room1;
     private Room room2;
@@ -88,7 +95,6 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
         createSimulatedHandler(); //TODO: For test purposes. Simulerar en handler
         //TODO: get the rooms from the real handler handler
         rooms = handler.getRooms();
-
     }
 
     private void createSimulatedHandler() { //TODO: Simulerar en handler
@@ -100,10 +106,47 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
         user2 = new User("User2",2);
         handler.addUser(user1, room1);
         handler.addUser(user2, room2);
+
     }
 
     public void create_new_room_onClick(View view) {
-        Toast.makeText(JoinRoomActivity.this, "Creating a room", Toast.LENGTH_SHORT).show();
+      //  Toast.makeText(JoinRoomActivity.this, "TODO: Join created room", Toast.LENGTH_SHORT).show();
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+        alertDialog.setTitle("Name of room");
+        final EditText input = new EditText(this);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+
+        input.setHint(prefs.getString("Username", "username"));
+
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+        input.setLayoutParams(lp);
+        alertDialog.setView(input);
+
+        alertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String newRoomName;
+                if(input.getText().length() == 0){
+                    newRoomName = input.getHint().toString();
+                    Toast.makeText(JoinRoomActivity.this, newRoomName, Toast.LENGTH_SHORT).show();
+                } else {
+                    newRoomName = input.getText().toString();
+                    Toast.makeText(JoinRoomActivity.this, newRoomName, Toast.LENGTH_SHORT).show();
+                }
+                //TODO Skapa ett rum med givet namn i input
+            }
+        });
+        alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        alertDialog.show();
         //TODO:
     //    Intent intent = new Intent(this,ChatRoomActivity.class);
     //    startActivity(intent);
@@ -116,20 +159,19 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
                 return true;
 
         }
-
-
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void truckModeChanged(boolean mode) {
         // Makes the users text list Gone or Visible depending on Car Mode
-        for(int i = 0; i < adapter.getCount(); i++) {
+        isDriving = mode;
+/*        for(int i = 0; i < adapter.getCount(); i++) {
             int id = adapter.getItem(i).getId();
             View view = findViewById(id).findViewById(R.id.list_item_users);
             view.setVisibility(mode?View.GONE:View.VISIBLE);
-
-        }
+        }*/
+        adapter.notifyDataSetChanged();
     }
 
 
@@ -146,15 +188,24 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
         public View getView(int position, View convertView, ViewGroup parent) {
             LayoutInflater inflater = LayoutInflater.from(getContext());
 
-            View view = inflater.inflate(R.layout.list_item_rooms, parent, false);
+            View view = inflater.inflate(isDriving?R.layout.list_item_rooms_while_driving:
+                                                   R.layout.list_item_rooms, parent, false);
 
-            TextView textView = (TextView) view.findViewById(R.id.roomName);
+            TextView roomView = (TextView) view.findViewById(R.id.roomName);
             ImageView imageView = (ImageView) view.findViewById(R.id.roomIcon);
+            TextView userView = (TextView) view.findViewById(R.id.list_item_users);
 
             String whatRoom = getItem(position).getName();
 
-            textView.setText(whatRoom);
+            roomView.setText(whatRoom);
             imageView.setImageResource(R.drawable.ic_room);
+
+            String userText = isDriving?
+                    ("TODO: GET AMOUNT OF USERS FROM HANDLER" + "Users"):
+                    //("10 Users"):
+                    ("TODO: GET A LIST OF USERS");
+            userView.setText(userText);
+
 
             return view;
         }
