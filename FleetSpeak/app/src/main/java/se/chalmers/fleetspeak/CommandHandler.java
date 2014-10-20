@@ -11,13 +11,16 @@ import se.chalmers.fleetspeak.util.Command;
 
 /**
  * Created by Nieo on 08/10/14.
+ * For handling commands coming from the server.
+ * Need to be added as Messenger to socketService to work.
+ * Owns the RoomHandler
  */
 public class CommandHandler extends Handler {
 
     private static CommandHandler commandHandler = new CommandHandler();
-    private RoomHandler roomHandler;
+    private static RoomHandler roomHandler;
     private User user;
-    private ArrayList<Commandable> activities = new ArrayList<Commandable>();
+    private static ArrayList<Commandable> activities = new ArrayList<Commandable>();
 
     private CommandHandler(){
         super();
@@ -64,11 +67,11 @@ public class CommandHandler extends Handler {
 
     }
 
-    public void addListener(Commandable a){
+    public static void addListener(Commandable a){
         activities.add(a);
     }
 
-    public void removeListener(Commandable a){
+    public static void removeListener(Commandable a){
         activities.remove(a);
     }
 
@@ -78,11 +81,11 @@ public class CommandHandler extends Handler {
         }
     }
 
-    public User getUsers(int roomID){
+    public static User getUsers(int roomID){
         return roomHandler.getUser(roomID);
     }
 
-     public Room[] getRooms(){
+    public static Room[] getRooms(){
          return roomHandler.getRooms();
     }
 
