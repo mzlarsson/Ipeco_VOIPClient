@@ -63,6 +63,7 @@ public class SocketService extends Service {
 
                 switch (msg.what) {
                     case CONNECT:
+                        commandQueue.clear();
                         final String s = (String) msg.obj;
                         final int i = msg.arg1;
 
@@ -83,6 +84,11 @@ public class SocketService extends Service {
 
                                 } catch (IOException e) {
                                     Log.i("Connector.connect", "Connection failed " + e.getMessage());
+                                    try {
+                                        messenger.send(Message.obtain(null, 0,"connection failed"));
+                                    } catch (RemoteException e1) {
+                                        e1.printStackTrace();
+                                    }
                                 }
 
 
@@ -131,7 +137,7 @@ public class SocketService extends Service {
                 objectOutputStream.flush();
                 Log.i(LOGNAME, "Sent command: " + c.getCommand());
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.e(LOGNAME, e.toString());
             }
 
         }else{
