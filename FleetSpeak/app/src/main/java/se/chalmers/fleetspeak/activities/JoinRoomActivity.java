@@ -51,7 +51,7 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
     private static TruckDataHandler truckDataHandler;
 
     private RoomHandler handler;
-    private boolean isDriving = true;
+    private boolean isDriving = false;
 
     private Room room1;
     private Room room2;
@@ -125,59 +125,63 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
         rooms = handler.getRooms();
     }
 
-    private void createSimulatedHandler() { //TODO: Simulerar en handler
+    private void createSimulatedHandler() { //TODO: Simulerar en handler for test purposes
         handler = new RoomHandler();
-        room1 = new Room("Rum1", 11);
-        room2 = new Room("Rum2", 22);
-        user0 = new User("User0", 0);
-        user1 = new User("User1", 1);
-        user2 = new User("User2",2);
+        room1 = new Room("Simulated room 1", 11);
+        room2 = new Room("Simulated room 2", 22);
+        user0 = new User("Simulated User0", 0);
+        user1 = new User("Simulated User1", 1);
+        user2 = new User("Simulated User2",2);
         handler.addUser(user1, room1);
         handler.addUser(user2, room2);
 
     }
 
     public void create_new_room_onClick(View view) {
-      //  Toast.makeText(JoinRoomActivity.this, "TODO: Join created room", Toast.LENGTH_SHORT).show();
+        Toast.makeText(JoinRoomActivity.this, "TODO: Join created room", Toast.LENGTH_SHORT).show();
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-        alertDialog.setTitle("Name of room");
+        alertDialog.setTitle("Choose a name for your room");
         final EditText input = new EditText(this);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-
-
         input.setHint(prefs.getString("Username", "username"));
+        if(!isDriving){
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.MATCH_PARENT);
+            input.setLayoutParams(lp);
+            alertDialog.setView(input);
 
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT);
-        input.setLayoutParams(lp);
-        alertDialog.setView(input);
-
-        alertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String newRoomName;
-                if(input.getText().length() == 0){
-                    newRoomName = input.getHint().toString();
-                    Toast.makeText(JoinRoomActivity.this, newRoomName, Toast.LENGTH_SHORT).show();
-                } else {
-                    newRoomName = input.getText().toString();
-                    Toast.makeText(JoinRoomActivity.this, newRoomName, Toast.LENGTH_SHORT).show();
+            alertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    String newRoomName;
+                    if(input.getText().length() == 0){
+                        newRoomName = input.getHint().toString() + "'s room";
+                        Toast.makeText(JoinRoomActivity.this, "Create a room with name: "+ newRoomName, Toast.LENGTH_SHORT).show();
+                    } else {
+                        newRoomName = input.getText().toString();
+                        Toast.makeText(JoinRoomActivity.this, "Create a room with name: "+ newRoomName, Toast.LENGTH_SHORT).show();
+                    }
+                    //TODO Skapa och joina ett rum med namnet "newRoomName"
                 }
-                //TODO Skapa ett rum med givet namn i input
-            }
-        });
-        alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
+            });
+            alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                    Toast.makeText(JoinRoomActivity.this, "You didn't create a room", Toast.LENGTH_SHORT).show(); //TODO Remove this line when finished
+                }
+            });
 
-        alertDialog.show();
-        //TODO:
-    //    Intent intent = new Intent(this,ChatRoomActivity.class);
-    //    startActivity(intent);
+            alertDialog.show();
+
+        } else{ //When the car is driving and the user have selected "Create room" the user won't be
+                //allowed to pick a name since it will take to much time.
+            String newRoomName = (prefs.getString("Username", "username") + "'s room");
+            Toast.makeText(JoinRoomActivity.this, "Create a room with name: "+ newRoomName, Toast.LENGTH_SHORT).show();
+            //TODO: Skapa och joina ett rum med namnet newRoomname
+        }
+
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {

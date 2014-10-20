@@ -78,6 +78,16 @@
             android:layout_gravity="clip_horizontal"
             />
 
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Demo"
+            android:onClick="startDemo"
+            android:id="@+id/demoButton"
+            android:layout_below="@+id/progressBar2"
+            android:layout_toRightOf="@+id/progressBar2"
+            android:layout_toEndOf="@+id/progressBar2" />
+
 
     </LinearLayout>
 
@@ -108,8 +118,12 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:indeterminate="true"
-            android:id="@+id/progressBar2" />
+            android:id="@+id/progressBar2" /><![CDATA[
+
+
 
         />
+
+    ]]>
     </RelativeLayout>
 </RelativeLayout>
