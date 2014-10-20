@@ -1,11 +1,16 @@
 package se.chalmers.fleetspeak.activities;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.os.Messenger;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,9 +25,11 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import se.chalmers.fleetspeak.CommandHandler;
 import se.chalmers.fleetspeak.R;
 import se.chalmers.fleetspeak.Room;
 import se.chalmers.fleetspeak.RoomHandler;
+import se.chalmers.fleetspeak.SocketService;
 import se.chalmers.fleetspeak.User;
 import se.chalmers.fleetspeak.truck.TruckDataHandler;
 import se.chalmers.fleetspeak.truck.TruckStateListener;
@@ -45,9 +52,30 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
     private User user2;
     private User user0;
 
+    private Messenger messenger;
+
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder service) {
+            messenger = new Messenger(service);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            messenger = null;
+            Log.i("SERVICECONNECTION", "Disconnected");
+        }
+    };
+
+
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_join_room);
+
+        bindService(new Intent(this, SocketService.class),serviceConnection,Context.BIND_AUTO_CREATE);
+        
+
 
         roomView = (ListView)findViewById(R.id.roomView);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

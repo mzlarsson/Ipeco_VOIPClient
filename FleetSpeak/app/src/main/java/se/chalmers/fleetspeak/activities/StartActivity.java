@@ -71,7 +71,6 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
         public void onServiceDisconnected(ComponentName className) {
             // This is called when the connection with the service has been unexpectedly disconnected - process crashed.
             mService = null;
-            soundController.close();
             Log.i("SERVICECONNECTION", "Disconnected");
         }
     };
@@ -156,7 +155,7 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
 
         portText = prefs.getString( getString(R.string.port_number_text),"8867");
         userNameText = prefs.getString(getString(R.string.username_text), "username");
-        ipText = prefs.getString(getString(R.string.ip_adress_text),"192.168.43.147");
+        ipText = prefs.getString(getString(R.string.ip_adress_text),"46.239.103.195");
         ipTextField.setText(ipText);
         portField.setText(portText);
         userNameField.setText(userNameText);
@@ -217,12 +216,15 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
         if(this.isMyServiceRunning(ServiceConnection.class)) {
             unbindService(mConnection);
         }
+        soundController.close();
     }
     protected void onRestart(){
         super.onRestart();
     }
+
     public void onConnectButtonClick(View view) {
        startConnection(ipText,Integer.parseInt(portText), userNameText);
+
 
     }
     /**
@@ -268,7 +270,7 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
     }
 
     public void startConnection(String ip, int port, String userName){
-        if (!isConnected) {
+        connecting(true);
             try {
                 mService.send(Message.obtain(ServerHandler.connect(ip,port)));
                 mService.send(Message.obtain(ServerHandler.setName(userName, 0)));
@@ -277,14 +279,7 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
                 int rtpPort = port+1;
                 soundController = SoundController.create(this, ip, rtpPort);
             } catch (RemoteException e) {
-            }
-        }else{
-            try {
-                Message msg = Message.obtain(null, SocketService.SETNAME,userName);
 
-                mService.send(msg);
-            } catch (RemoteException e) {
-            }
         }
 
 
@@ -312,11 +307,19 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
     }
 
     @Override
-    public void update() {
-        //TODO
-        //Change view
+    public void update(String command) {
+        connecting(false);
         Log.i("STARTACTIVITY", "Im Commandhadlers bitch");
-        Intent intent = new Intent(this,JoinRoomActivity.class);
-        startActivity(intent);
+        if(command.equals("connected")){
+            unbindService(mConnection);
+            Intent intent = new Intent(this,JoinRoomActivity.class);
+            startActivity(intent);
+        }else if(command.equals("connection failed")){
+            soundController.close();
+            Log.i("STARTACTIVITY", " try again");
+            showConnectionErrorMessage();
+        }
+
+
     }
 }
