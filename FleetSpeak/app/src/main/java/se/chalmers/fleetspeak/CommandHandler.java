@@ -11,13 +11,16 @@ import se.chalmers.fleetspeak.util.Command;
 
 /**
  * Created by Nieo on 08/10/14.
+ * For handling commands coming from the server.
+ * Need to be added as Messenger to socketService to work.
+ * Owns the RoomHandler
  */
 public class CommandHandler extends Handler {
 
     private static CommandHandler commandHandler = new CommandHandler();
-    private RoomHandler roomHandler;
+    private static RoomHandler roomHandler;
     private User user;
-    private ArrayList<Activity> activities = new ArrayList<Activity>();
+    private static ArrayList<Commandable> activities = new ArrayList<Commandable>();
 
     private CommandHandler(){
         super();
@@ -33,9 +36,13 @@ public class CommandHandler extends Handler {
         String sCommand = command.getCommand();
         Log.i("Commandhandler", "Got the message " + sCommand);
         //TODO
+
+        String aCommand = "";
+
         if(sCommand.equals("setID")){
             user = new User((Integer)command.getKey());
             roomHandler.addUser(user);
+            aCommand = "connected";
         }else if(sCommand.equals("setName")){
             User u = roomHandler.getUser((Integer) command.getKey());
             u.setName((String)command.getValue());
@@ -51,24 +58,35 @@ public class CommandHandler extends Handler {
             roomHandler.addUser(new User((Integer)command.getKey()));
         }else if(sCommand.equals("addUser")){
             roomHandler.addUser(new User( (String) command.getValue(),(Integer) command.getKey()));
+        }else if(sCommand.equals("connection failed")){
+            aCommand = "connection failed";
         }
 
         listUsers();
+        postUpdate(aCommand);
 
     }
 
-    public void addListener(Activity a){
+    public static void addListener(Commandable a){
         activities.add(a);
     }
 
-    public void removeListener(Activity a){
+    public static void removeListener(Commandable a){
         activities.remove(a);
     }
 
-    private void postUpdate(){
-        for(Activity a: activities){
-            //TODO update activity;
+    private void postUpdate(String command){
+        for(Commandable a: activities){
+            a.update(command);
         }
+    }
+
+    public static User getUsers(int roomID){
+        return roomHandler.getUser(roomID);
+    }
+
+    public static Room[] getRooms(){
+         return roomHandler.getRooms();
     }
 
 
