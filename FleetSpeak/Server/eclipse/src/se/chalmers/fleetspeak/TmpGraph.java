@@ -73,8 +73,8 @@ public class TmpGraph extends JFrame implements Runnable{
         StringBuffer b = new StringBuffer();
         Scanner sc = null, sc2 = null;
         try {
-			sc = new Scanner(new BufferedReader(new FileReader("sound_signed_1.mzl")));
-			sc2 = new Scanner(new BufferedReader(new FileReader("sound_signed_2.mzl")));
+			sc = new Scanner(new BufferedReader(new FileReader("1763395950.log")));
+			sc2 = new Scanner(new BufferedReader(new FileReader("2002917557.log")));
 		} catch (FileNotFoundException e1) {e1.printStackTrace();}
         int resets = 0;
 		while(resets<5){
@@ -115,13 +115,15 @@ public class TmpGraph extends JFrame implements Runnable{
 						
 						if(choice==2){
 							b.append((int)data[i]).append(" ");
-							counter++;
+							counter+=3;
 						}
 							
 						lastX = counter;
 						lastY = h;
 					}
 				}
+				
+				//try{Thread.sleep(100);}catch(InterruptedException ioe){}
 				
 				if(counter>=imageWidth){
 					counter = 0;
@@ -134,7 +136,7 @@ public class TmpGraph extends JFrame implements Runnable{
 		}
 		
 		try {
-			BufferedWriter out = new BufferedWriter(new FileWriter("sound_signed_mix.mzl"));
+			BufferedWriter out = new BufferedWriter(new FileWriter("random_mix.mzl"));
 			out.write(b.toString());
 			out.flush();
 			out.close();

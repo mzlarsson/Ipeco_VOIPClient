@@ -5,6 +5,10 @@ public class TmpGraphMixer {
 
 	public static double byteRatio(byte b, boolean signed){
 		double d = (double)b;
+		if(signed && d>=0){
+			d = 127.0-d;
+		}
+		
 		if(signed){
 			return d/(d<0?128:127);
 		}else{
@@ -24,7 +28,7 @@ public class TmpGraphMixer {
 			sum /= 2;		//Lower all volume. IMPORTANT! This value effects MUCH!
 			if(signed){
 				sum = Math.max(-1.0d, Math.min(1.0d, sum));
-				mix[i] = (byte)(sum<0?sum*128.0d:sum*127.0d);
+				mix[i] = (byte)(sum<0?sum*128.0d:127.0d-sum*127.0d);
 			}else{
 				sum = Math.max(0.0d, Math.min(1.0d, sum));
 				mix[i] = (byte)(sum*255.0d-128.0d);
