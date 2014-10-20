@@ -57,7 +57,7 @@ public class SoundController {
             Log.d("Sound", "Socket Error");
         }
         audioStream.setMode(RtpStream.MODE_NORMAL);
-        audioStream.setCodec(AudioCodec.PCMU);
+        audioStream.setCodec(AudioCodec.PCMA);
         try{
             audioStream.associate(InetAddress.getByName(serverIP), serverPort);
         } catch(UnknownHostException uhe){

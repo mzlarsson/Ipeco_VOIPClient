@@ -3,9 +3,7 @@ package se.chalmers.fleetspeak.sound;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.Mixer;
+import javax.sound.sampled.AudioFormat;
 
 import se.chalmers.fleetspeak.util.Log;
 
@@ -30,8 +28,6 @@ public class RTPSoundMixer implements RTPListener{
 
 	public static List<RTPSoundMixer> mixers = new ArrayList<RTPSoundMixer>();
 	
-	private Mixer mixer;
-	
 	private List<RTPSoundPacket> data;
 	private RTPConnector connector;
 	private int identifier;
@@ -45,27 +41,10 @@ public class RTPSoundMixer implements RTPListener{
 		this.data = new ArrayList<RTPSoundPacket>();
 		this.connector = connector;
 		this.identifier = identifier;
-		
-		restart();
 	}
 	
 	public void restart(){
-		if(mixer == null){
-			mixer = AudioSystem.getMixer(null);
-			System.out.println(mixer.getClass().toString());
-		}
-		
-		for(int i = 0; i<data.size(); i++){
-			data.get(i).restartDataLine(mixer);
-		}
-
-		try {
-			mixer.open();
-			Log.log(mixer.getLineInfo().toString());
-		} catch (LineUnavailableException e) {
-			Log.log("<error>Could not open the mixer</error>");
-		}
-		Log.log("<info>Restarted mixer input</info>");
+		Log.log("<info>Restart not available for current implementation</info>");
 	}
 	
 	/**
@@ -77,10 +56,8 @@ public class RTPSoundMixer implements RTPListener{
 		connector.setRTPListener(sourceID, this);
 		
 		//Adds an empty packet to be filled with data later
-		data.add(new RTPSoundPacket(sourceID, getCurrentSequenceOffset(), mixer));
+		data.add(new RTPSoundPacket(sourceID, getCurrentSequenceOffset()));
 		Log.log("Client with sourceID="+sourceID+" joined mixer "+this.identifier);
-		
-		restart();
 	}
 
 	/**
@@ -100,8 +77,6 @@ public class RTPSoundMixer implements RTPListener{
 
 		if(this.data.isEmpty()){
 			this.close();
-		}else{
-			restart();
 		}
 	}
 
@@ -110,24 +85,52 @@ public class RTPSoundMixer implements RTPListener{
 	 * @param sourceID The source ID of the client requesting the mix (this client's sound data will not be mixed)
 	 * @param minSequenceNumber The minimum (relative) sequence number that is acceptable
 	 * @return A sound mix of all clients except the one that requests the data
-	 */
+	 */	
 	public byte[] getMixedSound(long sourceID, int minSequenceNumber){
-		
 		if(data.size()>0){
-			byte[] output = new byte[Constants.RTP_PACKET_SIZE];
-			byte[] tmp = null;
+			byte[] mix = new byte[Constants.RTP_PACKET_SIZE];
+			double sum = 0;
+			boolean signed = Constants.AUDIOFORMAT.getEncoding()==AudioFormat.Encoding.PCM_SIGNED;
+			
+			List<byte[]> bytedata = new ArrayList<byte[]>();
 			for(int i = 0; i<data.size(); i++){
-				if(data.get(i).getSourceID() != sourceID){
-					tmp = data.get(i).getData(minSequenceNumber);
-					for(int j = 0; j<tmp.length&&j<output.length; j++){
-						output[j] = (byte)((output[j]+tmp[j]));
-					}
+				bytedata.add(data.get(i).getData(minSequenceNumber));
+			}
+			
+			for(int i = 0; i<mix.length; i++){
+				sum = 0;
+				for(int j = 0; j<bytedata.size(); j++){
+					sum += byteRatio(bytedata.get(j)[i], signed);
+				}
+				
+				sum /= 2;		//Lower all volume. IMPORTANT! This value effects MUCH!
+				if(signed){
+					sum = Math.max(-1.0d, Math.min(1.0d, sum));
+					mix[i] = (byte)(sum<0?sum*128.0d:sum*127.0d);
+				}else{
+					sum = Math.max(0.0d, Math.min(1.0d, sum));
+					mix[i] = (byte)(sum*255.0d-128.0d);
 				}
 			}
-
-			return output;
+			
+			return mix;
 		}else{
 			return new byte[0];
+		}
+	}
+
+	/**
+	 * Determines the sound ratio of a byte
+	 * @param b The byte
+	 * @param signed If it is encoded signed or not
+	 * @return The sound ratio of the given byte
+	 */
+	private double byteRatio(byte b, boolean signed){
+		double d = (double)b;
+		if(signed){
+			return d/(d<0?128:127);
+		}else{
+			return (d+128.0d)/255.0d;
 		}
 	}
 
