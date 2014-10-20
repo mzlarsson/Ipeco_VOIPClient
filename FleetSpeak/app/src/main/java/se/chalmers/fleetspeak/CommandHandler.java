@@ -17,7 +17,7 @@ public class CommandHandler extends Handler {
     private static CommandHandler commandHandler = new CommandHandler();
     private RoomHandler roomHandler;
     private User user;
-    private ArrayList<Activity> activities = new ArrayList<Activity>();
+    private ArrayList<Commandable> activities = new ArrayList<Commandable>();
 
     private CommandHandler(){
         super();
@@ -36,6 +36,7 @@ public class CommandHandler extends Handler {
         if(sCommand.equals("setID")){
             user = new User((Integer)command.getKey());
             roomHandler.addUser(user);
+            postUpdate();
         }else if(sCommand.equals("setName")){
             User u = roomHandler.getUser((Integer) command.getKey());
             u.setName((String)command.getValue());
@@ -55,19 +56,20 @@ public class CommandHandler extends Handler {
 
         listUsers();
 
+
     }
 
-    public void addListener(Activity a){
+    public void addListener(Commandable a){
         activities.add(a);
     }
 
-    public void removeListener(Activity a){
+    public void removeListener(Commandable a){
         activities.remove(a);
     }
 
     private void postUpdate(){
-        for(Activity a: activities){
-            //TODO update activity;
+        for(Commandable a: activities){
+            a.update();
         }
     }
 

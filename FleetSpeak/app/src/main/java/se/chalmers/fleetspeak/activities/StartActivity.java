@@ -29,6 +29,7 @@ import android.widget.RelativeLayout;
 
 
 import se.chalmers.fleetspeak.CommandHandler;
+import se.chalmers.fleetspeak.Commandable;
 import se.chalmers.fleetspeak.R;
 import se.chalmers.fleetspeak.ServerHandler;
 import se.chalmers.fleetspeak.SocketService;
@@ -36,7 +37,7 @@ import se.chalmers.fleetspeak.sound.SoundController;
 import se.chalmers.fleetspeak.truck.TruckDataHandler;
 import se.chalmers.fleetspeak.truck.TruckStateListener;
 
-public class StartActivity extends ActionBarActivity implements TruckStateListener {
+public class StartActivity extends ActionBarActivity implements TruckStateListener, Commandable {
 
     private static TruckDataHandler truckDataHandler;
     private String ipText;
@@ -163,7 +164,7 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
         savePrefsCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if(savePrefsCheckbox.isChecked()){
+                if (savePrefsCheckbox.isChecked()) {
                     savePreferences();
                 }
             }
@@ -220,9 +221,8 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
         super.onRestart();
     }
     public void onConnectButtonClick(View view) {
-       // startConnection(ipText,Integer.parseInt(portText), userNameText);
-       Intent intent = new Intent(this,JoinRoomActivity.class);
-       startActivity(intent);
+       startConnection(ipText,Integer.parseInt(portText), userNameText);
+
     }
     /**
      * Show Connection error message
@@ -307,5 +307,14 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
 
             connecting(!(view1.getVisibility() == View.VISIBLE));
 
+    }
+
+    @Override
+    public void update() {
+        //TODO
+        //Change view
+        Log.i("STARTACTIVITY", "Im Commandhadlers bitch");
+        Intent intent = new Intent(this,JoinRoomActivity.class);
+        startActivity(intent);
     }
 }
