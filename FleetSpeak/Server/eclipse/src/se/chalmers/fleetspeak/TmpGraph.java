@@ -115,13 +115,15 @@ public class TmpGraph extends JFrame implements Runnable{
 						
 						if(choice==2){
 							b.append((int)data[i]).append(" ");
-							counter++;
+							counter+=3;
 						}
 							
 						lastX = counter;
 						lastY = h;
 					}
 				}
+				
+				//try{Thread.sleep(100);}catch(InterruptedException ioe){}
 				
 				if(counter>=imageWidth){
 					counter = 0;
