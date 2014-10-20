@@ -58,7 +58,7 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chatroom);
-        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        //Shows the up button
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         Intent intent = getIntent();
         currentRoomID = intent.getIntExtra("roomID", 0);
@@ -185,6 +185,11 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
         return true;
     }
 
+    /**
+     * Creates a dropdown panel with a volume and mic seekbars, which is activated by a imagebutton
+     * @param context
+     * @param imageButton
+     */
     private void setUpVolumeAndMicControl(Context context, ImageButton imageButton ){
         LayoutInflater inflater = LayoutInflater.from(context);
 
@@ -193,32 +198,25 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
         micControlBar = (SeekBar) findViewById(R.id.mic_seekbar);
 
         micAndVolumePanel = new PopupWindow(context, null,
-                android.R.attr.actionDropDownStyle);
-        micAndVolumePanel.setFocusable(true); // seems to take care of dismissing on click outside
+        android.R.attr.actionDropDownStyle);
+        micAndVolumePanel.setFocusable(true);
         micAndVolumePanel.setContentView(contentView);
         setPopupSize(micAndVolumePanel);
-        final int paddigTop = getPaddingTop(micAndVolumePanel);
-        if(imageButton == null)
-            Log.i("Chatroomactivity", "imagebutton = null");
         imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                micAndVolumePanel.showAsDropDown(view, 0, -paddigTop);
+                micAndVolumePanel.showAsDropDown(view, 0, 0);
             }
         });
         imageButton.setBackgroundResource(R.drawable.ic_control_mic_volume);
 
     }
-    private int getPaddingTop(PopupWindow popupWindow) {
-        Drawable background = popupWindow.getBackground();
-        if (background == null)
-            return 0;
 
-        Rect padding = new Rect();
-        background.getPadding(padding);
-        return padding.top;
-    }
+    /**
+     * Set the size of the popupWindow
+     * @param popupWindow
+     */
     private void setPopupSize(PopupWindow popupWindow) {
         View contentView = popupWindow.getContentView();
 
@@ -237,7 +235,6 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
             width   = displaymetrics.widthPixels;
             height += rect.top + rect.bottom + 30;
         }
-
         popupWindow.setWidth(width);
         popupWindow.setHeight(height);
     }

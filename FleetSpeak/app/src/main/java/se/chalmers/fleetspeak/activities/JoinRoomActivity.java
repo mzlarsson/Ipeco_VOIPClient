@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import se.chalmers.fleetspeak.R;
 import se.chalmers.fleetspeak.Room;
@@ -122,14 +123,23 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
 
     @Override
     public void truckModeChanged(boolean mode) {
+        // Makes the users text list Gone or Visible depending on Car Mode
+        for(int i = 0; i < adapter.getCount(); i++) {
+            int id = adapter.getItem(i).getId();
+            View view = findViewById(id).findViewById(R.id.list_item_users);
+            view.setVisibility(mode?View.GONE:View.VISIBLE);
+
+        }
     }
 
 
     //Inner Class, The adapter for Bookmarks ListView
     public class JoinRoomAdapter extends ArrayAdapter<Room> {
+        private Room[] rooms;
 
         public JoinRoomAdapter(Context context, Room[] values) {
             super(context, R.layout.list_item_rooms, values);
+            rooms = values;
         }
 
         @Override
@@ -148,6 +158,8 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
 
             return view;
         }
+
+
     }
 }
 

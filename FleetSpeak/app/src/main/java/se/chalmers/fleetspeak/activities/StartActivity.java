@@ -255,12 +255,7 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
         AlertDialog carRunning = builder.create();
         carRunning.show();
     }
-    public void setCarMode(Boolean b){
-        if(b){
-            showCarRunningErrorMessage();
-        }
-        setContentView(b? R.layout.activity_car_start: R.layout.activity_start);
-    }
+
     /**
      * Saves the preferences of the User
      */
@@ -295,10 +290,22 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
     }
 
     public void CarTrue(View view){
-        setCarMode(true);
+        truckModeChanged(true);
+    }
+    public void connecting(boolean b){
+        findViewById(R.id.loadingPanel).setVisibility(b ? View.VISIBLE : View.INVISIBLE);
     }
     @Override
     public void truckModeChanged(boolean mode) {
-        setCarMode(!mode);
+        if(mode)
+            showCarRunningErrorMessage();
+        setContentView(mode? R.layout.activity_car_start: R.layout.activity_start);
+    }
+
+    public void showConnect(View view) {
+        View view1 = findViewById(R.id.loadingPanel);
+
+            connecting(!(view1.getVisibility() == View.VISIBLE));
+
     }
 }
