@@ -33,10 +33,13 @@ public class CommandHandler extends Handler {
         String sCommand = command.getCommand();
         Log.i("Commandhandler", "Got the message " + sCommand);
         //TODO
+
+        String aCommand = "";
+
         if(sCommand.equals("setID")){
             user = new User((Integer)command.getKey());
             roomHandler.addUser(user);
-            postUpdate();
+            aCommand = "connected";
         }else if(sCommand.equals("setName")){
             User u = roomHandler.getUser((Integer) command.getKey());
             u.setName((String)command.getValue());
@@ -52,10 +55,12 @@ public class CommandHandler extends Handler {
             roomHandler.addUser(new User((Integer)command.getKey()));
         }else if(sCommand.equals("addUser")){
             roomHandler.addUser(new User( (String) command.getValue(),(Integer) command.getKey()));
+        }else if(sCommand.equals("connection failed")){
+            aCommand = "connection failed";
         }
 
         listUsers();
-
+        postUpdate(aCommand);
 
     }
 
@@ -67,9 +72,9 @@ public class CommandHandler extends Handler {
         activities.remove(a);
     }
 
-    private void postUpdate(){
+    private void postUpdate(String command){
         for(Commandable a: activities){
-            a.update();
+            a.update(command);
         }
     }
 

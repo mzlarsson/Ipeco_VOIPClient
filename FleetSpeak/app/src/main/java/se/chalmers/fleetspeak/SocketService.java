@@ -85,7 +85,7 @@ public class SocketService extends Service {
                                 } catch (IOException e) {
                                     Log.i("Connector.connect", "Connection failed " + e.getMessage());
                                     try {
-                                        messenger.send(Message.obtain(null, 0,"connection failed"));
+                                        messenger.send(Message.obtain(null, 0,new Command("connection failed", null, null)));
                                     } catch (RemoteException e1) {
                                         e1.printStackTrace();
                                     }

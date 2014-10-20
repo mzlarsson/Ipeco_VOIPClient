@@ -105,6 +105,7 @@ public class SoundController {
 
     public void close(){
         this.audioGroup.clear();
+        this.audioGroup.clear();
         Log.d("Sound", "Group left...");
     }
 }
