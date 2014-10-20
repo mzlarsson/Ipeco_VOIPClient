@@ -4,6 +4,7 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
 >
+<<<<<<< HEAD
 <TextView
             android:layout_width="wrap_content"
             android:textSize="38sp"
@@ -38,6 +39,36 @@
        android:layout_alignParentBottom="true"
        android:layout_centerHorizontal="true"
         />
+=======
+
+    <Button
+        android:text="@string/connect_text"
+        android:onClick="onConnectButtonClick"
+        android:textColor="#FFFFFF"
+        android:textSize="30sp"
+        android:layout_width="280dp"
+        android:layout_height="100dp"
+        android:background="@drawable/button_2_shape"
+        android:shadowColor="#A8A8A8"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="5"
+        android:layout_gravity="center"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Connecting"
+        android:onClick="showConnect"
+        android:id="@+id/demoButton"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="100dp"/>
+
+    />
+>>>>>>> 30cec7df661263b863cc62a622dd6057bde8fef8
     <RelativeLayout
         android:id="@+id/loadingPanel"
         android:layout_width="match_parent"
