@@ -26,6 +26,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 
 import se.chalmers.fleetspeak.CommandHandler;
@@ -297,14 +298,15 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
     }
     @Override
     public void truckModeChanged(boolean mode) {
-        if(mode)
-            showCarRunningErrorMessage();
         setContentView(mode? R.layout.activity_car_start: R.layout.activity_start);
+        if(mode){
+            ((TextView)findViewById(R.id.IpAdress)).setText(ipText);
+            ((TextView)findViewById(R.id.userName)).setText(userNameText);
+        }
     }
 
     public void showConnect(View view) {
         View view1 = findViewById(R.id.loadingPanel);
-
             connecting(!(view1.getVisibility() == View.VISIBLE));
 
     }
