@@ -22,6 +22,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -305,7 +307,12 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
             connecting(!(view1.getVisibility() == View.VISIBLE));
 
     }
-
+    public void setNoFocus(View view){
+        RelativeLayout view1 = (RelativeLayout)findViewById(R.id.relStart_layout);
+        view.requestFocus();
+        ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
+                .hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+    }
     @Override
     public void update(String command) {
         connecting(false);
