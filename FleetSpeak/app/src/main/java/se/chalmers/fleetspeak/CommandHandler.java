@@ -71,6 +71,14 @@ public class CommandHandler extends Handler {
         }
     }
 
+    public User getUsers(int roomID){
+        return roomHandler.getUser(roomID);
+    }
+
+     public Room[] getRooms(){
+         return roomHandler.getRooms();
+    }
+
 
     private void listUsers(){
         for(Room r : roomHandler.getRooms()){

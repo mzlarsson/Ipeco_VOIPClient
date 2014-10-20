@@ -63,6 +63,7 @@ public class SocketService extends Service {
 
                 switch (msg.what) {
                     case CONNECT:
+                        commandQueue.clear();
                         final String s = (String) msg.obj;
                         final int i = msg.arg1;
 
@@ -131,7 +132,7 @@ public class SocketService extends Service {
                 objectOutputStream.flush();
                 Log.i(LOGNAME, "Sent command: " + c.getCommand());
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.e(LOGNAME, e.toString());
             }
 
         }else{
