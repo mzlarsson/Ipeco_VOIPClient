@@ -4,11 +4,8 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.Scanner;
 
 import javax.sound.sampled.AudioSystem;
@@ -20,7 +17,6 @@ import javax.sound.sampled.TargetDataLine;
 import javax.swing.JFrame;
 
 import se.chalmers.fleetspeak.sound.Constants;
-import se.chalmers.fleetspeak.sound.RTPSoundPacket;
 
 public class TmpGraph extends JFrame implements Runnable{
 	
@@ -33,8 +29,6 @@ public class TmpGraph extends JFrame implements Runnable{
 	private static final int WIDTH = 1500;
 	private static final int HEIGHT = 800;
 	private static final int BORDER = 100;
-	
-	RTPSoundPacket d1 = null, d2 = null;
 	
 	private int imageWidth = 100*WIDTH;
 
@@ -51,16 +45,6 @@ public class TmpGraph extends JFrame implements Runnable{
 		bufferImage = this.createImage(imageWidth, HEIGHT);
 		bufferGraphics = bufferImage.getGraphics();
 		drawImageBackground();
-	}
-	
-	public void setTestData(RTPSoundPacket p){
-		if(d1 == null){
-			d1 = p;
-		}else if(d2 == null){
-			d2 = p;
-		}else{
-			System.out.println("Too many");
-		}
 	}
 	
 	@Override
@@ -86,35 +70,35 @@ public class TmpGraph extends JFrame implements Runnable{
         StringBuffer b = new StringBuffer();
         Scanner sc = null, sc2 = null;
         try {
-			sc = new Scanner(new BufferedReader(new FileReader("savedata/mixer1/1763395950.log")));
-			sc2 = new Scanner(new BufferedReader(new FileReader("savedata/mixer1/2002917557.log")));
+			sc = new Scanner(new BufferedReader(new FileReader("savedata/mixer1/3189596781.log")));
+			sc2 = new Scanner(new BufferedReader(new FileReader("savedata/mixer1/235971083.log")));
 		} catch (FileNotFoundException e1) {e1.printStackTrace();}
         int resets = 0;
-		while(resets<5){
+		while(true){
 			if(this.bufferGraphics != null){
-//				byte[] data = new byte[160];
-//				byte[] data2 = new byte[160];
+				byte[] data = new byte[160];
+				byte[] data2 = new byte[160];
 //				byte[] data3 = new byte[160];
 //				line.read(data3, 0, data.length);
-//				for(int i = 0; i<data.length; i++){
-//					data[i] = (byte)sc.nextInt();
-//					data2[i] = (byte)sc2.nextInt();
-//				}
+				for(int i = 0; i<data.length; i++){
+					data[i] = (byte)sc.nextInt();
+					data2[i] = (byte)sc2.nextInt();
+				}
 				
 //				byte[] mixData = new byte[160];
 //				mixData = TmpGraphMixer.mixSounds(false, data, data2, data3);
 				
-//				sourceLine.write(mixData, 0, 160);
+//				sourceLine.write(data, 0, 160);
 				
 				int h = 0;
 				double r = 0;
 				byte[] bytedata = null;
-				for(int choice = 0; choice<4; choice++){
+				for(int choice = 0; choice<1; choice++){
 					switch(choice){
-						case 0:	bufferGraphics.setColor(Color.yellow);
-								bytedata = d1.getData(0);break;
-						case 1: bufferGraphics.setColor(Color.gray);
-								bytedata = d2.getData(0);break;
+						case 0:	bufferGraphics.setColor(Color.red);
+								bytedata = data;break;
+//						case 1: bufferGraphics.setColor(Color.black);
+//								bytedata = data2;break;
 //						case 2: bufferGraphics.setColor(Color.orange);
 //								bytedata = data3;break;
 //						case 3: bufferGraphics.setColor(Color.red);
@@ -126,7 +110,7 @@ public class TmpGraph extends JFrame implements Runnable{
 						h = (centerHeight+(int)(r*maxHeight));
 						bufferGraphics.drawLine(lastX, lastY, counter+1, h);
 						
-						if(choice==2){
+						if(choice==0){
 							b.append((int)bytedata[i]).append(" ");
 							counter+=3;
 						}
@@ -136,7 +120,7 @@ public class TmpGraph extends JFrame implements Runnable{
 					}
 				}
 				
-				//try{Thread.sleep(100);}catch(InterruptedException ioe){}
+//				try{Thread.sleep(100);}catch(InterruptedException ioe){}
 				
 				if(counter>=imageWidth){
 					counter = 0;
@@ -148,14 +132,14 @@ public class TmpGraph extends JFrame implements Runnable{
 			}
 		}
 		
-		try {
-			BufferedWriter out = new BufferedWriter(new FileWriter("savedata/mixer1/mixed.log"));
-			out.write(b.toString());
-			out.flush();
-			out.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+//		try {
+//			BufferedWriter out = new BufferedWriter(new FileWriter("savedata/mixer1/mixed.log"));
+//			out.write(b.toString());
+//			out.flush();
+//			out.close();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 	}
 	
 	public void drawImageBackground(){

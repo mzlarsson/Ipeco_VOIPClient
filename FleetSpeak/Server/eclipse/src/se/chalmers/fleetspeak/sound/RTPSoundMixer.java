@@ -98,31 +98,31 @@ public class RTPSoundMixer implements RTPListener{
 	 */	
 	public byte[] getMixedSound(long sourceID, int minSequenceNumber){
 		if(data.size()>0){			
-			List<byte[]> bytedata = new ArrayList<byte[]>();
-			for(int i = 0; i<data.size(); i++){
+			byte[][] bytedata = new byte[data.size()][Constants.RTP_PACKET_SIZE];
+			for(int i = 0; i<bytedata.length; i++){
 //				if(data.get(i).getSourceID() != sourceID){
-					bytedata.add(data.get(i).getData(minSequenceNumber));
+					bytedata[i] = data.get(i).getData(minSequenceNumber);
 //				}
 			}
 			
 //			System.out.println("Merging sound from "+bytedata.size()+" people");
 
 			byte[] mix = new byte[Constants.RTP_PACKET_SIZE];
-			double sum = 0;
+			short sum = 0;
 			for(int i = 0; i<mix.length; i++){
 				sum = 0;
-				for(int j = 0; j<bytedata.size(); j++){
-					if(bytedata.get(j).length>i){
-						sum += byteRatio(bytedata.get(j)[i]);
+				for(int j = 0; j<bytedata.length; j++){
+					if(bytedata[j].length>i){
+						sum += byteToShort(bytedata[j][i]);
 					}else{
 						System.out.println("Did not find data");
 					}
 				}
 				
-				sum /= bytedata.size();		//Lower all volume. IMPORTANT! This value effects MUCH!
+//				sum /= bytedata.length;		//Lower all volume. IMPORTANT! This value effects MUCH!
 
-				sum = Math.max(-1.0d, Math.min(1.0d, sum));
-				mix[i] = (byte)(sum<0?sum*128.0d:sum*127.0d);
+//				mix[i] = shortToByte(sum>127||sum<-128?0:sum);
+				mix[i] = shortToByte((short)Math.max(-128, Math.min(127, sum)));
 			}
 			
 			return mix;
@@ -136,8 +136,12 @@ public class RTPSoundMixer implements RTPListener{
 	 * @param b The byte
 	 * @return The sound ratio of the given byte
 	 */
-	private double byteRatio(byte b){
-		return b/(b<0?128.0d:127.0d);
+	private short byteToShort(byte b){
+		return (short)b;
+	}
+
+	private byte shortToByte(short s){
+		return (byte)s;
 	}
 
 	/**
