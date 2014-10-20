@@ -11,11 +11,13 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme"
+        >
 
         <activity
             android:name=".activities.StartActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -36,13 +38,15 @@
 
         <activity android:name=".activities.ChatRoomActivity"
             android:label="ChatRoom"
-            android:parentActivityName=".activities.JoinRoomActivity">
+            android:parentActivityName=".activities.JoinRoomActivity"
+            android:screenOrientation="portrait">
 
 
         </activity>
         <activity android:name=".activities.JoinRoomActivity"
             android:label="JoinRoom"
-            android:parentActivityName=".activities.StartActivity">
+            android:parentActivityName=".activities.StartActivity"
+            android:screenOrientation="portrait">
 
         </activity>
 
