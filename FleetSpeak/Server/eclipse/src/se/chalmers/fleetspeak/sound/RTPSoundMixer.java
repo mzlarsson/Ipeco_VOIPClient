@@ -1,9 +1,8 @@
 package se.chalmers.fleetspeak.sound;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.sound.sampled.AudioFormat;
 
 import se.chalmers.fleetspeak.util.Log;
 
@@ -66,7 +65,9 @@ public class RTPSoundMixer implements RTPListener{
 	 */
 	public void removeClientFromMixer(long sourceID){
 		//Stop listen for messages via RTP
-		connector.removeRTPListener(sourceID);
+		if(connector != null){
+			connector.removeRTPListener(sourceID);
+		}
 		
 		//Remove the collected data from the client (if found)
 		RTPSoundPacket packet = RTPSoundPacket.getPacket(this.data, sourceID);
@@ -79,6 +80,15 @@ public class RTPSoundMixer implements RTPListener{
 			this.close();
 		}
 	}
+	
+	public void saveLogs(){
+		String folder = "savedata/mixer"+identifier+"/";
+		new File(folder).mkdirs();
+		
+		for(int i = 0; i<data.size(); i++){
+			data.get(i).saveLog(folder);
+		}
+	}
 
 	/**
 	 * Retrieves a byte array describing the mixed sound of all clients except the given one
@@ -87,20 +97,27 @@ public class RTPSoundMixer implements RTPListener{
 	 * @return A sound mix of all clients except the one that requests the data
 	 */	
 	public byte[] getMixedSound(long sourceID, int minSequenceNumber){
-		if(data.size()>0){
-			byte[] mix = new byte[Constants.RTP_PACKET_SIZE];
-			double sum = 0;
-			boolean signed = Constants.AUDIOFORMAT.getEncoding()==AudioFormat.Encoding.PCM_SIGNED;
-			
+		if(data.size()>0){			
 			List<byte[]> bytedata = new ArrayList<byte[]>();
 			for(int i = 0; i<data.size(); i++){
-				bytedata.add(data.get(i).getData(minSequenceNumber));
+				if(data.get(i).getSourceID() != sourceID){
+					bytedata.add(data.get(i).getData(minSequenceNumber));
+				}
 			}
 			
+//			System.out.println("Merging sound from "+bytedata.size()+" people");
+
+			byte[] mix = new byte[Constants.RTP_PACKET_SIZE];
+			double sum = 0;
+			boolean signed = true;
 			for(int i = 0; i<mix.length; i++){
 				sum = 0;
 				for(int j = 0; j<bytedata.size(); j++){
-					sum += byteRatio(bytedata.get(j)[i], signed);
+					if(bytedata.get(j).length>i){
+						sum += byteRatio(bytedata.get(j)[i], signed);
+					}else{
+						System.out.println("Did not find data");
+					}
 				}
 				
 				sum /= 2;		//Lower all volume. IMPORTANT! This value effects MUCH!

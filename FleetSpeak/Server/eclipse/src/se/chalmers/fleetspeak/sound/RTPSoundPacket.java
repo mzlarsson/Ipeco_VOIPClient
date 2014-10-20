@@ -1,5 +1,8 @@
 package se.chalmers.fleetspeak.sound;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -13,6 +16,8 @@ public class RTPSoundPacket {
 	private int sequenceNumber;
 	private int sequenceOffset;
 	private byte[] data;
+	
+	StringBuffer log = new StringBuffer();
 	
 	private long sourceID;
 	
@@ -38,6 +43,23 @@ public class RTPSoundPacket {
 
 		this.sequenceNumber = sequenceNumber;
 		this.data = data;
+		
+		for(int i = 0; i<data.length; i++){
+			System.out.println(Integer.toBinaryString((int)data[i])+" --> "+((int)data[i]));
+			log.append((int)data[i]).append(" ");
+		}
+	}
+	
+	public void saveLog(String folder){
+		String filename = folder+this.sourceID+".log";
+		try{
+			BufferedWriter out = new BufferedWriter(new FileWriter(filename));
+			out.write(log.toString());
+			out.flush();
+			out.close();
+		}catch(IOException ioe){
+			System.out.println("Could not write to file: "+filename);
+		}
 	}
 	
 	/**
