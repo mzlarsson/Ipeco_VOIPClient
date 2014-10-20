@@ -22,8 +22,6 @@
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:singleLine="true"/>
-
-
    <Button
        android:text="@string/connect_text"
        android:id="@+id/connectionButton"
@@ -54,9 +52,6 @@
             android:indeterminate="true"
             android:id="@+id/progressBar2" />
 
-        />
     </RelativeLayout>
-
-
 
 </RelativeLayout>

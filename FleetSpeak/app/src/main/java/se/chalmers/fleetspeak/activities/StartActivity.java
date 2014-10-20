@@ -329,4 +329,9 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
 
 
     }
+
+    public void startDemo(View view) {
+        Intent intent = new Intent(this,JoinRoomActivity.class);
+        startActivity(intent);
+    }
 }
