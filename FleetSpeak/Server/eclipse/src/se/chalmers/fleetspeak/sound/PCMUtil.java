@@ -9,7 +9,12 @@ public class PCMUtil {
 	public static final short MYLAW_MAX = 0x1FFF;
 	public static final short MYLAW_BIAS = 33;
 	
-	public short decodePCM(byte encodedPackage){
+	/**
+	 * Decodes a PCM signal byte
+	 * @param encodedPackage
+	 * @return the decoded PCMU signal
+	 */
+	public static short decodePCM(byte encodedPackage){
 		byte sign = 0, position = 0;
 		short decoded = 0;
 		encodedPackage = (byte) ~encodedPackage;
@@ -22,9 +27,13 @@ public class PCMUtil {
 		decoded = (short) (((1<<position)|((encodedPackage & 0x0f) << (position -4))|(1 << (position - 5))) - MYLAW_BIAS);
 		return (short) ((sign == 0) ? (decoded) : (-(decoded)));
 	}
-	
-	
-	public byte encodePCM(short decodedPackage){
+
+	/**
+	 * Encodes a short signal accordingly to U-law PCM encoding
+	 * @param decodedPackage
+	 * @return the encoded PCMU signal
+	 */
+	public static byte encodePCM(short decodedPackage){
 		
 		short mask = 0x1000;
 		byte sign = 0;
