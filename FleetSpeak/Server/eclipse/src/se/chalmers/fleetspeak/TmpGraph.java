@@ -20,6 +20,7 @@ import javax.sound.sampled.TargetDataLine;
 import javax.swing.JFrame;
 
 import se.chalmers.fleetspeak.sound.Constants;
+import se.chalmers.fleetspeak.sound.RTPSoundPacket;
 
 public class TmpGraph extends JFrame implements Runnable{
 	
@@ -32,6 +33,8 @@ public class TmpGraph extends JFrame implements Runnable{
 	private static final int WIDTH = 1500;
 	private static final int HEIGHT = 800;
 	private static final int BORDER = 100;
+	
+	RTPSoundPacket d1 = null, d2 = null;
 	
 	private int imageWidth = 100*WIDTH;
 
@@ -48,6 +51,16 @@ public class TmpGraph extends JFrame implements Runnable{
 		bufferImage = this.createImage(imageWidth, HEIGHT);
 		bufferGraphics = bufferImage.getGraphics();
 		drawImageBackground();
+	}
+	
+	public void setTestData(RTPSoundPacket p){
+		if(d1 == null){
+			d1 = p;
+		}else if(d2 == null){
+			d2 = p;
+		}else{
+			System.out.println("Too many");
+		}
 	}
 	
 	@Override
@@ -79,19 +92,19 @@ public class TmpGraph extends JFrame implements Runnable{
         int resets = 0;
 		while(resets<5){
 			if(this.bufferGraphics != null){
-				byte[] data = new byte[160];
-				byte[] data2 = new byte[160];
-				byte[] data3 = new byte[160];
-				line.read(data3, 0, data.length);
-				for(int i = 0; i<data.length; i++){
-					data[i] = (byte)sc.nextInt();
-					data2[i] = (byte)sc2.nextInt();
-				}
+//				byte[] data = new byte[160];
+//				byte[] data2 = new byte[160];
+//				byte[] data3 = new byte[160];
+//				line.read(data3, 0, data.length);
+//				for(int i = 0; i<data.length; i++){
+//					data[i] = (byte)sc.nextInt();
+//					data2[i] = (byte)sc2.nextInt();
+//				}
 				
-				byte[] mixData = new byte[160];
-				mixData = TmpGraphMixer.mixSounds(false, data, data2, data3);
+//				byte[] mixData = new byte[160];
+//				mixData = TmpGraphMixer.mixSounds(false, data, data2, data3);
 				
-				sourceLine.write(mixData, 0, 160);
+//				sourceLine.write(mixData, 0, 160);
 				
 				int h = 0;
 				double r = 0;
@@ -99,22 +112,22 @@ public class TmpGraph extends JFrame implements Runnable{
 				for(int choice = 0; choice<4; choice++){
 					switch(choice){
 						case 0:	bufferGraphics.setColor(Color.yellow);
-								bytedata = data;break;
+								bytedata = d1.getData(0);break;
 						case 1: bufferGraphics.setColor(Color.gray);
-								bytedata = data2;break;
-						case 2: bufferGraphics.setColor(Color.orange);
-								bytedata = data3;break;
-						case 3: bufferGraphics.setColor(Color.red);
-								bytedata = mixData;break;
+								bytedata = d2.getData(0);break;
+//						case 2: bufferGraphics.setColor(Color.orange);
+//								bytedata = data3;break;
+//						case 3: bufferGraphics.setColor(Color.red);
+//								bytedata = mixData;break;
 					}
 					for(int i = 0; i<bytedata.length; i++){
-						r = TmpGraphMixer.byteRatio(data[i], signed);
+						r = TmpGraphMixer.byteRatio(bytedata[i], signed);
 	
 						h = (centerHeight+(int)(r*maxHeight));
 						bufferGraphics.drawLine(lastX, lastY, counter+1, h);
 						
 						if(choice==2){
-							b.append((int)data[i]).append(" ");
+							b.append((int)bytedata[i]).append(" ");
 							counter+=3;
 						}
 							

@@ -45,7 +45,6 @@ public class RTPSoundPacket {
 		this.data = data;
 		
 		for(int i = 0; i<data.length; i++){
-			System.out.println(Integer.toBinaryString((int)data[i])+" --> "+((int)data[i]));
 			log.append((int)data[i]).append(" ");
 		}
 	}

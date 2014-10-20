@@ -33,15 +33,14 @@ public class PCMUtil {
 	 * @param decodedPackage
 	 * @return the encoded PCMU signal
 	 */
-	public static byte encodePCM(short decodedPackage){
-		
+	public static byte encodePCM(short decodedPackage){		
 		short mask = 0x1000;
 		byte sign = 0;
 		byte position = 12;
 		byte lsb = 0;
 		
-		if(decodedPackage > 0){
-			decodedPackage-=decodedPackage;
+		if(decodedPackage < 0){
+			decodedPackage = (short)-decodedPackage;
 			sign = (byte) 0x80;
 		}
 		decodedPackage+=MYLAW_BIAS;
@@ -49,8 +48,9 @@ public class PCMUtil {
 			decodedPackage = MYLAW_MAX;
 		}
 		
-		for(;((decodedPackage & mask)!=mask && position >= 5);mask >>=1,position--)
-			;
+		for(;((decodedPackage & mask)!=mask && position >= 5);mask >>=1,position--){
+			System.out.print("["+decodedPackage+"] ");
+		}
 		lsb = (byte) (decodedPackage >> (position-4) & 0x0f);
 		return (byte) (~(sign|(position-5) << 4)|lsb);
 	}

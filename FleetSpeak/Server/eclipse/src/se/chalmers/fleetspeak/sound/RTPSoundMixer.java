@@ -100,34 +100,29 @@ public class RTPSoundMixer implements RTPListener{
 		if(data.size()>0){			
 			List<byte[]> bytedata = new ArrayList<byte[]>();
 			for(int i = 0; i<data.size(); i++){
-				if(data.get(i).getSourceID() != sourceID){
+//				if(data.get(i).getSourceID() != sourceID){
 					bytedata.add(data.get(i).getData(minSequenceNumber));
-				}
+//				}
 			}
 			
 //			System.out.println("Merging sound from "+bytedata.size()+" people");
 
 			byte[] mix = new byte[Constants.RTP_PACKET_SIZE];
 			double sum = 0;
-			boolean signed = true;
 			for(int i = 0; i<mix.length; i++){
 				sum = 0;
 				for(int j = 0; j<bytedata.size(); j++){
 					if(bytedata.get(j).length>i){
-						sum += byteRatio((PCMUtil.decodePCM(bytedata.get(j)[i])), signed);
+						sum += byteRatio(bytedata.get(j)[i]);
 					}else{
 						System.out.println("Did not find data");
 					}
 				}
 				
-				sum /= 2;		//Lower all volume. IMPORTANT! This value effects MUCH!
-				if(signed){
-					sum = Math.max(-1.0d, Math.min(1.0d, sum));
-					mix[i] = PCMUtil.encodePCM((short)(sum<0?sum*32768.0d:sum*32767.0d));
-				}else{
-					sum = Math.max(0.0d, Math.min(1.0d, sum));
-					mix[i] = (byte)(sum*255.0d-128.0d);
-				}
+				sum /= bytedata.size();		//Lower all volume. IMPORTANT! This value effects MUCH!
+
+				sum = Math.max(-1.0d, Math.min(1.0d, sum));
+				mix[i] = (byte)(sum<0?sum*128.0d:sum*127.0d);
 			}
 			
 			return mix;
@@ -139,16 +134,10 @@ public class RTPSoundMixer implements RTPListener{
 	/**
 	 * Determines the sound ratio of a byte
 	 * @param b The byte
-	 * @param signed If it is encoded signed or not
 	 * @return The sound ratio of the given byte
 	 */
-	private double byteRatio(short b, boolean signed){
-		double d = (double)b;
-		if(signed){
-			return d/(d<0?32768:32767);
-		}else{
-			return (d+128.0d)/65536.0d;
-		}
+	private double byteRatio(byte b){
+		return b/(b<0?128.0d:127.0d);
 	}
 
 	/**
