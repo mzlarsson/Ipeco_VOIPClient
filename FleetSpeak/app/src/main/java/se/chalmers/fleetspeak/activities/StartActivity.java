@@ -92,7 +92,7 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
 
         mMessenger = new Messenger(CommandHandler.getInstance());
         CommandHandler.getInstance().addListener(this);
-
+        truckDataHandler.addListener(this);
         final EditText ipTextField = (EditText) findViewById(R.id.ipField);
 
         ipTextField.addTextChangedListener(new TextWatcher() {

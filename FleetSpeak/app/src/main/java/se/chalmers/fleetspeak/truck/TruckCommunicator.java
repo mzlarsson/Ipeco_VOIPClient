@@ -14,6 +14,7 @@ import com.swedspot.vil.distraction.DriverDistractionLevel;
 import com.swedspot.vil.distraction.DriverDistractionListener;
 import com.swedspot.vil.policy.AutomotiveCertificate;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,11 +23,23 @@ import java.util.List;
  */
 
 class TruckCommunicator extends AsyncTask<Void, Void, Object> {
-
+    private static TruckCommunicator instance;
     public static final String TAG = "simulatorDebug";
 
     private static AutomotiveManager manager;
     private List<TruckListener> listeners;
+
+    private TruckCommunicator(){
+        listeners = new ArrayList<TruckListener>();
+    }
+
+    public static TruckCommunicator getInstance(){
+        if(instance == null){
+            instance = new TruckCommunicator();
+            instance.execute();
+        }
+        return instance;
+    }
 
     public void addListener(TruckListener listener){
         if(listener != null){

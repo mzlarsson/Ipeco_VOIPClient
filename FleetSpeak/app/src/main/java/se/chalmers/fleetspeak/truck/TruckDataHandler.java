@@ -1,5 +1,8 @@
 package se.chalmers.fleetspeak.truck;
 
+import android.util.Log;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,13 +20,13 @@ public class TruckDataHandler implements TruckListener{
 
     private TruckDataHandler(TruckCommunicator tc){
         this.tc = tc;
+        this.listeners = new ArrayList<TruckStateListener>();
     }
 
     public static void start(){
-        if(instance != null){
-            instance = new TruckDataHandler(new TruckCommunicator());
+        if(instance == null){
+            instance = new TruckDataHandler(TruckCommunicator.getInstance());
             instance.tc.addListener(instance);
-            instance.tc.execute();
         }
     }
 
@@ -37,7 +40,7 @@ public class TruckDataHandler implements TruckListener{
 
     public static void addListener(TruckStateListener listener){
         TruckDataHandler handler = getInstance();
-        if(listener != null){
+        if(listener != null && handler!= null && handler.listeners != null){
             handler.listeners.add(listener);
         }
     }
