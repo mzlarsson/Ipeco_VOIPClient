@@ -96,7 +96,7 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
                 Room room = (Room)object;
                 int roomID = room.getId();
 
-                //TODO: Tell the server user want to join selected roomID
+                //TODO: TELL SERVER user want to join selected room with id: "roomID"
 
                 //Join the choosen room
                 Intent intent = new Intent(JoinRoomActivity.this, ChatRoomActivity.class);
@@ -136,7 +136,7 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
                         newRoomName = input.getText().toString();
                         Toast.makeText(JoinRoomActivity.this, "Create a room with name: "+ newRoomName, Toast.LENGTH_SHORT).show();
                     }
-                    //TODO Skapa och joina ett rum med namnet "newRoomName"
+                    //TODO TELL SERVER Skapa och joina ett rum med namn variabeln "newRoomName"
                 }
             });
             alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -153,7 +153,7 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
                 //allowed to pick a name since it will take to much time.
             String newRoomName = (prefs.getString("Username", "username") + "'s room");
             Toast.makeText(JoinRoomActivity.this, "Create a room with name: "+ newRoomName, Toast.LENGTH_SHORT).show(); //TODO: Remove this
-            //TODO: Skapa och joina ett rum med namnet newRoomname
+            //TODO: TELL SERVER Skapa och joina ett rum med namnet newRoomname
         }
 
     }
