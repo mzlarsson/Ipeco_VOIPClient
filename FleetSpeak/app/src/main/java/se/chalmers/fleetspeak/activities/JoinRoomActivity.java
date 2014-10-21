@@ -52,13 +52,7 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
     private static TruckDataHandler truckDataHandler;
 
    // private RoomHandler handler;
-    private boolean isDriving = true;
-
-    private Room room1;
-    private Room room2;
-    private User user1;
-    private User user2;
-    private User user0;
+    private boolean isDriving = false;
 
     private Messenger messenger = null;
 
@@ -88,8 +82,7 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
         roomView = (ListView)findViewById(R.id.roomView);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        initRoomList(); //Init roomList
-
+        rooms = CommandHandler.getRooms(); //Init roomslist
 
         adapter = new JoinRoomAdapter(this, rooms);
         roomView.setAdapter(adapter);
@@ -116,34 +109,10 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
 
             }
         });
-
-
     }
-    private void updateRoomList(){
-        rooms = CommandHandler.getRooms();
-        adapter.notifyDataSetChanged();
-    }
-
-    private void initRoomList() {
-        //TODO: For test purposes. Simulerar en handler
-        //TODO: get the rooms from the real handler handler
-        rooms = CommandHandler.getRooms();
-
-    }
-
-  /*  private void createSimulatedHandler() { //TODO: Simulerar en handler for test purposes
-        handler = new RoomHandler();
-        room1 = new Room("Simulated room 1", 11);
-        room2 = new Room("Simulated room 2", 22);
-        user0 = new User("Simulated User0", 0);
-        user1 = new User("Simulated User1", 1);
-        user2 = new User("Simulated User2",2);
-        handler.addUser(user1, room1);
-        handler.addUser(user2, room2);
-    }*/
 
     public void create_new_room_onClick(View view) {
-        Toast.makeText(JoinRoomActivity.this, "TODO: Join created room", Toast.LENGTH_SHORT).show();
+        Toast.makeText(JoinRoomActivity.this, "TODO: Join created room", Toast.LENGTH_SHORT).show(); //TODO: Remove this
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
         alertDialog.setTitle("Choose a name for your room");
         final EditText input = new EditText(this);
@@ -183,7 +152,7 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
         } else{ //When the car is driving and the user have selected "Create room" the user won't be
                 //allowed to pick a name since it will take to much time.
             String newRoomName = (prefs.getString("Username", "username") + "'s room");
-            Toast.makeText(JoinRoomActivity.this, "Create a room with name: "+ newRoomName, Toast.LENGTH_SHORT).show();
+            Toast.makeText(JoinRoomActivity.this, "Create a room with name: "+ newRoomName, Toast.LENGTH_SHORT).show(); //TODO: Remove this
             //TODO: Skapa och joina ett rum med namnet newRoomname
         }
 
@@ -223,8 +192,19 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
     public void onDataUpdate(String command) {
         if(command.equals("dataUpdate")){
             updateRoomList();
+            updateUserList();
             //TODO update user list
         }
+    }
+
+    private void updateRoomList(){
+        rooms = CommandHandler.getRooms();
+        adapter.notifyDataSetChanged();
+    }
+
+    private void updateUserList() {
+        //The adapter grabs the new userlist
+        adapter.notifyDataSetChanged();
     }
 
 
@@ -253,12 +233,17 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
             roomView.setText(whatRoom);
             imageView.setImageResource(R.drawable.ic_room);
 
-            String userText = isDriving?
-                    ("TODO: GET AMOUNT OF USERS FROM HANDLER" + "Users"):
-                    //("10 Users"):
-                    ("TODO: GET A LIST OF USERS");
+            User[] users =  CommandHandler.getUsers(getItem(position).getId());
+            String userText = "";
+            if(isDriving) {                             //When driving, Show how many users are in each room.
+                userText = ("(" + users.length + ")");
+            } else {                                    //When vehicle is not moving, Show each users name in each room.
+                for(int i = 0; i < users.length; i++){
+                    if(i == 0) userText = users[i].getName();
+                       else userText = userText + (", " + users[i].getName());
+                }
+            }
             userView.setText(userText);
-
 
             return view;
         }

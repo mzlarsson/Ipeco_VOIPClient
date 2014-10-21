@@ -84,13 +84,13 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
      * @return List of Users from the room with current room id.
      */
     private void initUserList(){
-        users = CommandHandler.getUsers(0);
+        users = CommandHandler.getUsers(currentRoomID);
     }
 
 
     private void updateUserList() {
         //TODO: When a user joins this room(currentRoomID) call this method
-        //users = TODO: Grab the new changes or load the new list.
+        users = CommandHandler.getUsers(currentRoomID);
         adapter.notifyDataSetChanged(); //Pokes the adapter to view the new changes
     }
 
