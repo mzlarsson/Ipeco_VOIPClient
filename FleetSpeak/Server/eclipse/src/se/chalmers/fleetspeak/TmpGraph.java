@@ -9,6 +9,7 @@ import java.io.FileReader;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
+import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
@@ -17,11 +18,10 @@ import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.TargetDataLine;
 import javax.swing.JFrame;
 
-import se.chalmers.fleetspeak.sound.Constants;
-
 public class TmpGraph extends JFrame implements Runnable{
 	
 	private static final long serialVersionUID = 1L;
+	public static AudioFormat AUDIOFORMAT = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, 8000.0F, 8, 1, 1, 8000.0F, false);
 	
 	private Graphics bufferGraphics = null;
 	private Image bufferImage = null;
@@ -54,10 +54,10 @@ public class TmpGraph extends JFrame implements Runnable{
         Mixer mixer = AudioSystem.getMixer(null);
 		SourceDataLine sourceLine = null;
         try{
-        	line = AudioSystem.getTargetDataLine(Constants.AUDIOFORMAT);
+        	line = AudioSystem.getTargetDataLine(AUDIOFORMAT);
         	line.open();
         	line.start();
-			sourceLine = (SourceDataLine)mixer.getLine(new DataLine.Info(SourceDataLine.class, Constants.AUDIOFORMAT));
+			sourceLine = (SourceDataLine)mixer.getLine(new DataLine.Info(SourceDataLine.class, AUDIOFORMAT));
 			sourceLine.open();
 			sourceLine.start();
         }catch(LineUnavailableException lue){
