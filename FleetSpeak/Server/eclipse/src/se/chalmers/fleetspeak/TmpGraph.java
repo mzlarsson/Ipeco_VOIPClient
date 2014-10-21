@@ -70,19 +70,18 @@ public class TmpGraph extends JFrame implements Runnable{
         StringBuffer b = new StringBuffer();
         Scanner sc = null, sc2 = null;
         try {
-			sc = new Scanner(new BufferedReader(new FileReader("savedata/mixer1/3189596781.log")));
-			sc2 = new Scanner(new BufferedReader(new FileReader("savedata/mixer1/235971083.log")));
+			sc = new Scanner(new BufferedReader(new FileReader("savedata/mixer1/mixer.log")));
+//			sc2 = new Scanner(new BufferedReader(new FileReader("savedata/mixer1/235971083.log")));
 		} catch (FileNotFoundException e1) {e1.printStackTrace();}
-        int resets = 0;
 		while(true){
 			if(this.bufferGraphics != null){
 				byte[] data = new byte[160];
-				byte[] data2 = new byte[160];
+//				byte[] data2 = new byte[160];
 //				byte[] data3 = new byte[160];
 //				line.read(data3, 0, data.length);
 				for(int i = 0; i<data.length; i++){
 					data[i] = (byte)sc.nextInt();
-					data2[i] = (byte)sc2.nextInt();
+//					data2[i] = (byte)sc2.nextInt();
 				}
 				
 //				byte[] mixData = new byte[160];
@@ -92,40 +91,22 @@ public class TmpGraph extends JFrame implements Runnable{
 				
 				int h = 0;
 				double r = 0;
-				byte[] bytedata = null;
-				for(int choice = 0; choice<1; choice++){
-					switch(choice){
-						case 0:	bufferGraphics.setColor(Color.red);
-								bytedata = data;break;
-//						case 1: bufferGraphics.setColor(Color.black);
-//								bytedata = data2;break;
-//						case 2: bufferGraphics.setColor(Color.orange);
-//								bytedata = data3;break;
-//						case 3: bufferGraphics.setColor(Color.red);
-//								bytedata = mixData;break;
-					}
-					for(int i = 0; i<bytedata.length; i++){
-						r = TmpGraphMixer.byteRatio(bytedata[i], signed);
-	
-						h = (centerHeight+(int)(r*maxHeight));
-						bufferGraphics.drawLine(lastX, lastY, counter+1, h);
+				for(int i = 0; i<data.length; i++){
+					r = TmpGraphMixer.byteRatio(data[i], signed);
+					h = (centerHeight+(int)(r*maxHeight));
+					bufferGraphics.drawLine(lastX, lastY, counter+1, h);
+					
+					counter++;
 						
-						if(choice==0){
-							b.append((int)bytedata[i]).append(" ");
-							counter+=3;
-						}
-							
-						lastX = counter;
-						lastY = h;
-					}
+					lastX = counter;
+					lastY = h;
 				}
 				
-//				try{Thread.sleep(100);}catch(InterruptedException ioe){}
+//				try{Thread.sleep(30);}catch(InterruptedException ioe){}
 				
 				if(counter>=imageWidth){
 					counter = 0;
 					drawImageBackground();
-					resets++;
 				}
 				
 				repaint();

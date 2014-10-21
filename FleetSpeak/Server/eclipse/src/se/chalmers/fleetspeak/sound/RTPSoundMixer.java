@@ -104,12 +104,10 @@ public class RTPSoundMixer implements RTPListener{
 					bytedata[i] = data.get(i).getData(minSequenceNumber);
 //				}
 			}
-			
-//			System.out.println("Merging sound from "+bytedata.size()+" people");
 
 			byte[] mix = new byte[Constants.RTP_PACKET_SIZE];
 			short sum = 0;
-			for(int i = 0; i<mix.length; i++){
+			for(int i = 0; i<Constants.RTP_PACKET_SIZE; i++) {
 				sum = 0;
 				for(int j = 0; j<bytedata.length; j++){
 					if(bytedata[j].length>i){
@@ -119,9 +117,8 @@ public class RTPSoundMixer implements RTPListener{
 					}
 				}
 				
-//				sum /= bytedata.length;		//Lower all volume. IMPORTANT! This value effects MUCH!
+				sum /= bytedata.length;		//Lower all volume. IMPORTANT! This value effects MUCH!
 
-//				mix[i] = shortToByte(sum>127||sum<-128?0:sum);
 				mix[i] = shortToByte((short)Math.max(-128, Math.min(127, sum)));
 			}
 			
@@ -137,11 +134,11 @@ public class RTPSoundMixer implements RTPListener{
 	 * @return The sound ratio of the given byte
 	 */
 	private short byteToShort(byte b){
-		return (short)b;
+		return PCMUtil.decode(b);
 	}
 
 	private byte shortToByte(short s){
-		return (byte)s;
+		return PCMUtil.encode(s);
 	}
 
 	/**
