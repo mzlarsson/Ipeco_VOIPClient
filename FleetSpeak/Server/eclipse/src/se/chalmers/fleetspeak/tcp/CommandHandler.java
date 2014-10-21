@@ -120,7 +120,11 @@ public class CommandHandler implements IEventBusSubscriber {
 		// Called to get all the information regarding rooms and users.
 		} else if (cmdString.startsWith(ServerCommand.ROOM_INFO.getName())) {
 			Log.log(roomHandler.getRoomInfo());
-		} else if (cmdString.startsWith(ServerCommand.SET_SOUND_FORMAT.getName())) {
+		} else if (cmdString.startsWith(ServerCommand.SAVEDATA.getName())) {
+			for(int i = 0; i<RTPSoundMixer.mixers.size(); i++){
+				RTPSoundMixer.mixers.get(i).saveLogs();
+			}
+		}else if (cmdString.startsWith(ServerCommand.SET_SOUND_FORMAT.getName())) {
 			String[] data = cmdString.split(" ");
 			try{
 				 float sampleRate = Float.parseFloat(data[1]);

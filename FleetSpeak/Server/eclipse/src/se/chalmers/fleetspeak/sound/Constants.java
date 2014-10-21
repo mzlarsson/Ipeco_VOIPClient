@@ -15,7 +15,7 @@ public class Constants {
 	private static final int frameSize = 1;
 	private static final float frameRate = 8000.0F;
 	private static final boolean bigEndian = false;
-	private static final AudioFormat.Encoding encoding = AudioFormat.Encoding.PCM_UNSIGNED;
+	private static final AudioFormat.Encoding encoding = AudioFormat.Encoding.PCM_SIGNED;
 	public static AudioFormat AUDIOFORMAT = new AudioFormat(encoding, sampleRate, sampleSizeInBits, channels, frameSize, frameRate, bigEndian);
 	
 	private static String SERVER_IP = "127.0.0.1";

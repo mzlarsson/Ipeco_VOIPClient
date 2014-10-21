@@ -2,6 +2,7 @@ package se.chalmers.fleetspeak.sound;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,8 +33,6 @@ public class RTPSoundMixer implements RTPListener{
 	private RTPConnector connector;
 	private int identifier;
 	
-	private InputStream input;
-	
 	/**
 	 * Creates a new mixer with the given RTPConnector
 	 * @param connector The connector to bind to this mixer.
@@ -48,21 +47,7 @@ public class RTPSoundMixer implements RTPListener{
 	}
 	
 	public void restart(){
-		if(input != null){
-			try {
-				input.close();
-			} catch (IOException e) {}
-		}
-		
-		List<InputStream> streams = new ArrayList<InputStream>();
-		for(int i = 0; i<data.size(); i++){
-			data.get(i).restart();
-			streams.add(data.get(i).getInputStream());
-		}
-		
-		this.input = new MixingAudioInputStream(Constants.AUDIOFORMAT, streams);
-		
-		Log.log("<info>Restarted RTPSoundMixer</info>");
+		Log.log("<info>Restart not available for current implementation</info>");
 	}
 	
 	/**
@@ -76,8 +61,6 @@ public class RTPSoundMixer implements RTPListener{
 		//Adds an empty packet to be filled with data later
 		data.add(new RTPSoundPacket(sourceID, getCurrentSequenceOffset()));
 		Log.log("Client with sourceID="+sourceID+" joined mixer "+this.identifier);
-		
-		restart();
 	}
 
 	/**
@@ -86,7 +69,9 @@ public class RTPSoundMixer implements RTPListener{
 	 */
 	public void removeClientFromMixer(long sourceID){
 		//Stop listen for messages via RTP
-		connector.removeRTPListener(sourceID);
+		if(connector != null){
+			connector.removeRTPListener(sourceID);
+		}
 		
 		//Remove the collected data from the client (if found)
 		RTPSoundPacket packet = RTPSoundPacket.getPacket(this.data, sourceID);
@@ -97,8 +82,15 @@ public class RTPSoundMixer implements RTPListener{
 
 		if(this.data.isEmpty()){
 			this.close();
-		}else{
-			restart();
+		}
+	}
+	
+	public void saveLogs(){
+		String folder = "savedata/mixer"+identifier+"/";
+		new File(folder).mkdirs();
+		
+		for(int i = 0; i<data.size(); i++){
+			data.get(i).saveLog(folder);
 		}
 	}
 
@@ -107,37 +99,50 @@ public class RTPSoundMixer implements RTPListener{
 	 * @param sourceID The source ID of the client requesting the mix (this client's sound data will not be mixed)
 	 * @param minSequenceNumber The minimum (relative) sequence number that is acceptable
 	 * @return A sound mix of all clients except the one that requests the data
-	 */
+	 */	
 	public byte[] getMixedSound(long sourceID, int minSequenceNumber){
-		if(input != null){
-			byte[] data = new byte[Constants.RTP_PACKET_SIZE];
-			try {
-				input.read(data, 0, Constants.RTP_PACKET_SIZE);
-				return data;
-			} catch (IOException e) {
-				Log.log("<error>Could not read from Mixer Input Stream</error>");
-				return new byte[0];
+		if(data.size()>0){			
+			byte[][] bytedata = new byte[data.size()][Constants.RTP_PACKET_SIZE];
+			for(int i = 0; i<bytedata.length; i++){
+//				if(data.get(i).getSourceID() != sourceID){
+					bytedata[i] = data.get(i).getData(minSequenceNumber);
+//				}
 			}
+
+			byte[] mix = new byte[Constants.RTP_PACKET_SIZE];
+			short sum = 0;
+			for(int i = 0; i<Constants.RTP_PACKET_SIZE; i++) {
+				sum = 0;
+				for(int j = 0; j<bytedata.length; j++){
+					if(bytedata[j].length>i){
+						sum += byteToShort(bytedata[j][i]);
+					}else{
+						System.out.println("Did not find data");
+					}
+				}
+				
+				sum /= bytedata.length;		//Lower all volume. IMPORTANT! This value effects MUCH!
+
+				mix[i] = shortToByte((short)Math.max(-128, Math.min(127, sum)));
+			}
+			
+			return mix;
 		}else{
 			return new byte[0];
 		}
-		
-//		if(data.size()>0){
-//			byte[] output = new byte[Constants.RTP_PACKET_SIZE];
-//			byte[] tmp = null;
-//			for(int i = 0; i<data.size(); i++){
-//				if(data.get(i).getSourceID() != sourceID){
-//					tmp = data.get(i).getData(minSequenceNumber);
-//					for(int j = 0; j<tmp.length&&j<output.length; j++){
-//						output[j] = (byte)((output[j]+tmp[j]));
-//					}
-//				}
-//			}
-//
-//			return output;
-//		}else{
-//			return new byte[0];
-//		}
+	}
+
+	/**
+	 * Determines the sound ratio of a byte
+	 * @param b The byte
+	 * @return The sound ratio of the given byte
+	 */
+	private short byteToShort(byte b){
+		return PCMUtil.decode(b);
+	}
+
+	private byte shortToByte(short s){
+		return PCMUtil.encode(s);
 	}
 
 	/**

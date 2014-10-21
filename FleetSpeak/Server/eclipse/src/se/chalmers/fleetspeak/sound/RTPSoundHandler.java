@@ -59,16 +59,14 @@ public class RTPSoundHandler extends RTPHandler implements SoundHandler{
 				//Send data
 				if(getConnector().sendData(getParticipantSourceID(), data)){
 					//Increase sequence number if any data was sent (no double sending)
-					
 					currSeqNumber++;
-					
 				}
 			}
 			
 			//Wait
-			try {
-				Thread.sleep(Constants.RTP_UPDATE_INTERVAL);
-			} catch (InterruptedException e) {}
+//			try {
+//				Thread.sleep(Constants.RTP_UPDATE_INTERVAL);
+//			} catch (InterruptedException e) {}
 		}
 	}
 	

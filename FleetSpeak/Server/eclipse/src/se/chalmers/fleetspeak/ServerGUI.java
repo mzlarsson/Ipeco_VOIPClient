@@ -72,7 +72,7 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener, IE
 				}
 			}
 		}));
-
+		
 		new ServerGUI();
 	}
 
