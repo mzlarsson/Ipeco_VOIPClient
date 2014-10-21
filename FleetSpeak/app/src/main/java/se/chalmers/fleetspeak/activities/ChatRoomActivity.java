@@ -23,6 +23,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import se.chalmers.fleetspeak.CommandHandler;
+import se.chalmers.fleetspeak.Commandable;
 import se.chalmers.fleetspeak.R;
 import se.chalmers.fleetspeak.RoomHandler;
 import se.chalmers.fleetspeak.User;
@@ -32,7 +33,7 @@ import se.chalmers.fleetspeak.truck.TruckStateListener;
 /**
  * Created by TwiZ on 2014-10-06.
  */
-public class ChatRoomActivity extends ActionBarActivity implements TruckStateListener, CommandHandler {
+public class ChatRoomActivity extends ActionBarActivity implements TruckStateListener, Commandable {
 
     ListView userListView;
     private SeekBar volumeControlBar;
@@ -117,6 +118,11 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
     @Override
     public void truckModeChanged(boolean mode) {
 
+    }
+
+    @Override
+    public void onDataUpdate(String command) {
+        
     }
 
     /**
