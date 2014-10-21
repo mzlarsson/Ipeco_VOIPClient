@@ -74,11 +74,11 @@ public class RTPSoundPacket {
 		this.sequenceNumber = sequenceNumber;
 		this.data = data;
 		
-		try {
+		/*try {
 			out.write(data, 0, Constants.RTP_PACKET_SIZE);
 		} catch (IOException e) {
 			Log.log("<error>Could not write internal RTP data</error>");
-		}
+		}*/
 	}
 	
 	/**

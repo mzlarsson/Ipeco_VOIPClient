@@ -68,7 +68,8 @@ public class CommandHandler extends Handler {
     }
 
     public static void addListener(Commandable a){
-        activities.add(a);
+        if(!activities.contains(a))
+            activities.add(a);
     }
 
     public static void removeListener(Commandable a){
@@ -81,8 +82,8 @@ public class CommandHandler extends Handler {
         }
     }
 
-    public static User getUsers(int roomID){
-        return roomHandler.getUser(roomID);
+    public static User[] getUsers(int roomID){
+        return roomHandler.getUsers(roomID);
     }
 
     public static Room[] getRooms(){

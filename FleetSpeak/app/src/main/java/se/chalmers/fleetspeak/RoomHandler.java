@@ -1,5 +1,7 @@
 package se.chalmers.fleetspeak;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
@@ -45,8 +47,10 @@ public class RoomHandler implements IUserHandler{
             ArrayList<User> userList = rooms.get(room);
             if (userList.contains(user)) {
                 userList.remove(user);
+                Log.i(this.getClass().toString(), "user removed");
                 if (userList.isEmpty()) {
                     rooms.remove(room);
+
                 }
                 break;
             }

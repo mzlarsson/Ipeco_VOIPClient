@@ -1,6 +1,6 @@
 package se.chalmers.fleetspeak.activities;
 
-
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
@@ -12,10 +12,12 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 
 import android.content.ServiceConnection;
-
+import android.content.pm.ActivityInfo;
+import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Message;
 import android.os.Messenger;
-
+import android.os.RemoteException;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -32,9 +34,15 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import se.chalmers.fleetspeak.CommandHandler;
+import se.chalmers.fleetspeak.Commandable;
 import se.chalmers.fleetspeak.R;
 import se.chalmers.fleetspeak.Room;
 import se.chalmers.fleetspeak.RoomHandler;
+import se.chalmers.fleetspeak.ServerHandler;
 import se.chalmers.fleetspeak.SocketService;
 import se.chalmers.fleetspeak.User;
 import se.chalmers.fleetspeak.truck.TruckDataHandler;
@@ -43,7 +51,7 @@ import se.chalmers.fleetspeak.truck.TruckStateListener;
 /**
  * Created by TwiZ on 2014-10-09.
  */
-public class JoinRoomActivity extends ActionBarActivity implements TruckStateListener {
+public class JoinRoomActivity extends ActionBarActivity implements TruckStateListener, Commandable {
     SharedPreferences prefs;
     private ListView roomView;
     private ArrayAdapter<Room> adapter;
@@ -59,7 +67,7 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
     private User user2;
     private User user0;
 
-    private Messenger messenger;
+    private Messenger messenger = null;
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
@@ -81,7 +89,6 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
         setContentView(R.layout.activity_join_room);
 
         bindService(new Intent(this, SocketService.class),serviceConnection,Context.BIND_AUTO_CREATE);
-        
 
 
         roomView = (ListView)findViewById(R.id.roomView);
@@ -134,7 +141,6 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
         user2 = new User("Simulated User2",2);
         handler.addUser(user1, room1);
         handler.addUser(user2, room2);
-
     }
 
     public void create_new_room_onClick(View view) {
@@ -187,7 +193,15 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()){
             case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
+                //NavUtils.navigateUpFromSameTask(this);
+                Intent intent = new Intent(this,StartActivity.class);
+                startActivity(intent);
+                try {
+                    messenger.send(Message.obtain(ServerHandler.disconnect()));
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+                unbindService(serviceConnection);
                 return true;
 
         }
@@ -204,6 +218,11 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
             view.setVisibility(mode?View.GONE:View.VISIBLE);
         }*/
         adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void update(String command) {
+
     }
 
 
@@ -243,6 +262,54 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
         }
 
 
+    }
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    protected void onPause(){
+        Log.i(this.getClass().toString(), "called onPause unbinding");
+        super.onPause();
+        if(this.isMyServiceRunning(ServiceConnection.class)) {
+            unbindService(serviceConnection);
+        }
+    }
+    @Override
+    protected void onStop(){
+        Log.i(this.getClass().toString(), "called onStop unbinding");
+        super.onStop();
+        if(this.isMyServiceRunning(ServiceConnection.class)) {
+            unbindService(serviceConnection);
+        }
+    }
+    @Override
+    protected void onDestroy(){
+        Log.i(this.getClass().toString(), "called onDestroy unbinding" );
+        super.onDestroy();
+        if(this.isMyServiceRunning(ServiceConnection.class)) {
+            unbindService(serviceConnection);
+        }
+
+    }
+    @Override
+    protected void onResume(){
+        Log.i(this.getClass().toString(), "called onResume binding");
+        bindService(new Intent(this, SocketService.class), serviceConnection, Context.BIND_AUTO_CREATE);
+        super.onResume();
+
+    }
+    @Override
+    protected void onRestart(){
+        Log.i(this.getClass().toString(), "called onRestart binding");
+        super.onRestart();
+        bindService(new Intent(this, SocketService.class), serviceConnection, Context.BIND_AUTO_CREATE);
     }
 }
 

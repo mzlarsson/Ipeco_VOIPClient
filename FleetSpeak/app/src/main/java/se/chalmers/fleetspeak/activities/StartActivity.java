@@ -56,18 +56,12 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
     private SoundController soundController;
 
     static Messenger mService = null;
-    Messenger mMessenger;
+
 
     private ServiceConnection mConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className, IBinder service) {
             Log.i("SERVICECONNECTION", "service started");
             mService = new Messenger(service);
-            try {
-                Message msg = Message.obtain(null, SocketService.SETMESSENGER, mMessenger);
-                mService.send(msg);
-            }catch (RemoteException e){
-
-            }
         }
 
         public void onServiceDisconnected(ComponentName className) {
@@ -93,7 +87,7 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
         setContentView(R.layout.activity_start);
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        mMessenger = new Messenger(CommandHandler.getInstance());
+
         CommandHandler.getInstance().addListener(this);
         truckDataHandler.addListener(this);
         final EditText ipTextField = (EditText) findViewById(R.id.ipField);
@@ -176,11 +170,17 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
         l.requestFocus();
 
 
+
+
+            Intent i =  new Intent(this, SocketService.class);
+
+            startService(new Intent(i));
+            Log.i("STARTACTIVITY", "started service");
+
         Log.i("STARTACTIVITY", "binding service");
-        startService(new Intent(this,SocketService.class));
         boolean unfucked = isMyServiceRunning(SocketService.class);
         Log.i("STARTACTIVITY", "unfucked? " + unfucked);
-        bindService(new Intent(this, SocketService.class), mConnection, Context.BIND_AUTO_CREATE);
+        bindService(i, mConnection, Context.BIND_AUTO_CREATE);
         unfucked = isMyServiceRunning(SocketService.class);
         Log.i("STARTACTIVITY", "unfucked? " + unfucked);
 
@@ -207,21 +207,48 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
         startActivity(getBookmarkIntent);
     }
     @Override
+    protected void onPause(){
+        Log.i("STARTACTIVITY", "called onPause unbinding");
+        super.onPause();
+        CommandHandler.removeListener(this);
+        if(this.isMyServiceRunning(ServiceConnection.class)) {
+            unbindService(mConnection);
+        }
+    }
+    @Override
     protected void onStop(){
+        CommandHandler.removeListener(this);
+        Log.i("STARTACTIVITY", "called onStop unbinding");
         super.onStop();
         if(this.isMyServiceRunning(ServiceConnection.class)) {
              unbindService(mConnection);
         }
     }
+    @Override
     protected void onDestroy(){
+        CommandHandler.removeListener(this);
+        Log.i("STARTACTIVITY", "called onDestroy unbinding" );
         super.onDestroy();
         if(this.isMyServiceRunning(ServiceConnection.class)) {
             unbindService(mConnection);
         }
         soundController.close();
+        stopService(new Intent(this, SocketService.class));
     }
+    @Override
+    protected void onResume(){
+        CommandHandler.addListener(this);
+        Log.i("STARTACTIVITY", "called onResume binding");
+        bindService(new Intent(this, SocketService.class), mConnection, Context.BIND_AUTO_CREATE);
+        super.onResume();
+
+    }
+    @Override
     protected void onRestart(){
+        CommandHandler.addListener(this);
+        Log.i("STARTACTIVITY", "called onRestart binding");
         super.onRestart();
+        bindService(new Intent(this, SocketService.class), mConnection, Context.BIND_AUTO_CREATE);
     }
 
     public void onConnectButtonClick(View view) {
@@ -275,7 +302,7 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
         connecting(true);
             try {
                 mService.send(Message.obtain(ServerHandler.connect(ip,port)));
-                mService.send(Message.obtain(ServerHandler.setName(userName, 0)));
+                mService.send(Message.obtain(ServerHandler.setName(userName)));
                 mService.send(Message.obtain(ServerHandler.getUsers()));
                 isConnected = true;
                 int rtpPort = port+1;
@@ -318,7 +345,10 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
         connecting(false);
         Log.i("STARTACTIVITY", "Im Commandhadlers bitch");
         if(command.equals("connected")){
-            unbindService(mConnection);
+            //Without binding the server it will crash on reconnect not sure why it works
+            if(isMyServiceRunning(SocketService.class))
+                bindService(new Intent(this, SocketService.class), mConnection, Context.BIND_AUTO_CREATE);
+              unbindService(mConnection);
             Intent intent = new Intent(this,JoinRoomActivity.class);
             startActivity(intent);
         }else if(command.equals("connection failed")){
