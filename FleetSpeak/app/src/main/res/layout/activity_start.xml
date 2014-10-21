@@ -2,13 +2,12 @@
     android:layout_width="match_parent"
     android:id="@+id/relStart_layout"
     android:layout_height="match_parent"
-
     android:gravity="left|top"
     android:orientation="vertical"
     android:weightSum="1"
     android:clickable="true"
+    android:onClick="setNoFocus"
     android:focusable="true"
-    android:descendantFocusability="beforeDescendants"
     android:focusableInTouchMode="true"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <LinearLayout
@@ -78,6 +77,16 @@
             android:layout_gravity="clip_horizontal"
             />
 
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Demo"
+            android:onClick="startDemo"
+            android:id="@+id/demoButton"
+            android:layout_below="@+id/progressBar2"
+            android:layout_toRightOf="@+id/progressBar2"
+            android:layout_toEndOf="@+id/progressBar2" />
+
 
     </LinearLayout>
 
@@ -88,7 +97,7 @@
         android:textColor="#FFFFFF"
         android:textSize="30sp"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="80dp"
         android:background="@drawable/button_shape"
         android:shadowColor="#A8A8A8"
         android:shadowDx="0"
@@ -108,8 +117,12 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:indeterminate="true"
-            android:id="@+id/progressBar2" />
+            android:id="@+id/progressBar2" /><![CDATA[
+
+
 
         />
+
+    ]]>
     </RelativeLayout>
 </RelativeLayout>

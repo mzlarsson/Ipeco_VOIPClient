@@ -1,5 +1,7 @@
 package se.chalmers.fleetspeak;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
@@ -39,14 +41,21 @@ public class RoomHandler implements IUserHandler{
         addUser(user,defaultRoom);
     }
 
+    public void addToNewRoom(User user, String name){
+        Room r = new Room(name);
+        addUser(user, r);
+    }
+
 
     public void removeUser(User user) {
         for (Room room : rooms.keySet()) {
             ArrayList<User> userList = rooms.get(room);
             if (userList.contains(user)) {
                 userList.remove(user);
+                Log.i(this.getClass().toString(), "user removed");
                 if (userList.isEmpty()) {
                     rooms.remove(room);
+
                 }
                 break;
             }
@@ -109,7 +118,7 @@ public class RoomHandler implements IUserHandler{
                 return room;
             }
         }
-        throw new NoSuchElementException("A user with ID: \"" + id + "\" doesn't exit.");
+        throw new NoSuchElementException("A room with ID: \"" + id + "\" doesn't exit.");
     }
 
     @Override

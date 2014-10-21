@@ -5,6 +5,6 @@ package se.chalmers.fleetspeak;
  */
 public interface Commandable {
 
-    public void update();
+    public void onDataUpdate(String command);
 
 }

@@ -1,28 +1,42 @@
 package se.chalmers.fleetspeak.activities;
 
+import android.app.ActivityManager;
+import android.app.AlertDialog;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
+import android.content.SharedPreferences;
+
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
+import android.preference.PreferenceManager;
+
+import android.content.ServiceConnection;
+import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import se.chalmers.fleetspeak.CommandHandler;
+import se.chalmers.fleetspeak.Commandable;
 import se.chalmers.fleetspeak.R;
 import se.chalmers.fleetspeak.Room;
-import se.chalmers.fleetspeak.RoomHandler;
+import se.chalmers.fleetspeak.ServerHandler;
+import se.chalmers.fleetspeak.SocketService;
 import se.chalmers.fleetspeak.User;
 import se.chalmers.fleetspeak.truck.TruckDataHandler;
 import se.chalmers.fleetspeak.truck.TruckStateListener;
@@ -30,14 +44,15 @@ import se.chalmers.fleetspeak.truck.TruckStateListener;
 /**
  * Created by TwiZ on 2014-10-09.
  */
-public class JoinRoomActivity extends ActionBarActivity implements TruckStateListener {
-
-    ListView roomView;
-    ArrayAdapter<Room> adapter;
-    Room[] rooms;
+public class JoinRoomActivity extends ActionBarActivity implements TruckStateListener, Commandable {
+    SharedPreferences prefs;
+    private ListView roomView;
+    private ArrayAdapter<Room> adapter;
+    private Room[] rooms;
     private static TruckDataHandler truckDataHandler;
 
-    public RoomHandler handler;
+   // private RoomHandler handler;
+    private boolean isDriving = true;
 
     private Room room1;
     private Room room2;
@@ -45,14 +60,35 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
     private User user2;
     private User user0;
 
+    private Messenger messenger = null;
+
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder service) {
+            messenger = new Messenger(service);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            messenger = null;
+            Log.i("SERVICECONNECTION", "Disconnected");
+        }
+    };
+
+
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_join_room);
 
+        bindService(new Intent(this, SocketService.class),serviceConnection,Context.BIND_AUTO_CREATE);
+
+        CommandHandler.addListener(this);
+
         roomView = (ListView)findViewById(R.id.roomView);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        updateRoomList(); //Init roomList
+        initRoomList(); //Init roomList
 
 
         adapter = new JoinRoomAdapter(this, rooms);
@@ -83,52 +119,111 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
 
 
     }
+    private void updateRoomList(){
+        rooms = CommandHandler.getRooms();
+        adapter.notifyDataSetChanged();
+    }
 
-    private void updateRoomList() {
-        createSimulatedHandler(); //TODO: For test purposes. Simulerar en handler
+    private void initRoomList() {
+        //TODO: For test purposes. Simulerar en handler
         //TODO: get the rooms from the real handler handler
-        rooms = handler.getRooms();
+        rooms = CommandHandler.getRooms();
 
     }
 
-    private void createSimulatedHandler() { //TODO: Simulerar en handler
+  /*  private void createSimulatedHandler() { //TODO: Simulerar en handler for test purposes
         handler = new RoomHandler();
-        room1 = new Room("Rum1", 11);
-        room2 = new Room("Rum2", 22);
-        user0 = new User("User0", 0);
-        user1 = new User("User1", 1);
-        user2 = new User("User2",2);
+        room1 = new Room("Simulated room 1", 11);
+        room2 = new Room("Simulated room 2", 22);
+        user0 = new User("Simulated User0", 0);
+        user1 = new User("Simulated User1", 1);
+        user2 = new User("Simulated User2",2);
         handler.addUser(user1, room1);
         handler.addUser(user2, room2);
-    }
+    }*/
 
     public void create_new_room_onClick(View view) {
-        Toast.makeText(JoinRoomActivity.this, "Creating a room", Toast.LENGTH_SHORT).show();
-        //TODO:
-    //    Intent intent = new Intent(this,ChatRoomActivity.class);
-    //    startActivity(intent);
+        Toast.makeText(JoinRoomActivity.this, "TODO: Join created room", Toast.LENGTH_SHORT).show();
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+        alertDialog.setTitle("Choose a name for your room");
+        final EditText input = new EditText(this);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        input.setHint(prefs.getString("Username", "username"));
+        if(!isDriving){
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.MATCH_PARENT);
+            input.setLayoutParams(lp);
+            alertDialog.setView(input);
+
+            alertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    String newRoomName;
+                    if(input.getText().length() == 0){
+                        newRoomName = input.getHint().toString() + "'s room";
+                        Toast.makeText(JoinRoomActivity.this, "Create a room with name: "+ newRoomName, Toast.LENGTH_SHORT).show();
+                    } else {
+                        newRoomName = input.getText().toString();
+                        Toast.makeText(JoinRoomActivity.this, "Create a room with name: "+ newRoomName, Toast.LENGTH_SHORT).show();
+                    }
+                    //TODO Skapa och joina ett rum med namnet "newRoomName"
+                }
+            });
+            alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                    Toast.makeText(JoinRoomActivity.this, "You didn't create a room", Toast.LENGTH_SHORT).show(); //TODO Remove this line when finished
+                }
+            });
+
+            alertDialog.show();
+
+        } else{ //When the car is driving and the user have selected "Create room" the user won't be
+                //allowed to pick a name since it will take to much time.
+            String newRoomName = (prefs.getString("Username", "username") + "'s room");
+            Toast.makeText(JoinRoomActivity.this, "Create a room with name: "+ newRoomName, Toast.LENGTH_SHORT).show();
+            //TODO: Skapa och joina ett rum med namnet newRoomname
+        }
+
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()){
             case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
+                //NavUtils.navigateUpFromSameTask(this);
+                Intent intent = new Intent(this,StartActivity.class);
+                startActivity(intent);
+                try {
+                    messenger.send(Message.obtain(ServerHandler.disconnect()));
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+                unbindService(serviceConnection);
                 return true;
 
         }
-
-
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void truckModeChanged(boolean mode) {
         // Makes the users text list Gone or Visible depending on Car Mode
-        for(int i = 0; i < adapter.getCount(); i++) {
+        isDriving = mode;
+/*        for(int i = 0; i < adapter.getCount(); i++) {
             int id = adapter.getItem(i).getId();
             View view = findViewById(id).findViewById(R.id.list_item_users);
             view.setVisibility(mode?View.GONE:View.VISIBLE);
+        }*/
+        adapter.notifyDataSetChanged();
+    }
 
+    @Override
+    public void onDataUpdate(String command) {
+        if(command.equals("dataUpdate")){
+            updateRoomList();
+            //TODO update user list
         }
     }
 
@@ -146,20 +241,77 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
         public View getView(int position, View convertView, ViewGroup parent) {
             LayoutInflater inflater = LayoutInflater.from(getContext());
 
-            View view = inflater.inflate(R.layout.list_item_rooms, parent, false);
+            View view = inflater.inflate(isDriving?R.layout.list_item_rooms_while_driving:
+                                                   R.layout.list_item_rooms, parent, false);
 
-            TextView textView = (TextView) view.findViewById(R.id.roomName);
+            TextView roomView = (TextView) view.findViewById(R.id.roomName);
             ImageView imageView = (ImageView) view.findViewById(R.id.roomIcon);
+            TextView userView = (TextView) view.findViewById(R.id.list_item_users);
 
             String whatRoom = getItem(position).getName();
 
-            textView.setText(whatRoom);
+            roomView.setText(whatRoom);
             imageView.setImageResource(R.drawable.ic_room);
+
+            String userText = isDriving?
+                    ("TODO: GET AMOUNT OF USERS FROM HANDLER" + "Users"):
+                    //("10 Users"):
+                    ("TODO: GET A LIST OF USERS");
+            userView.setText(userText);
+
 
             return view;
         }
 
 
+    }
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    protected void onPause(){
+        Log.i(this.getClass().toString(), "called onPause unbinding");
+        super.onPause();
+        if(this.isMyServiceRunning(ServiceConnection.class)) {
+            unbindService(serviceConnection);
+        }
+    }
+    @Override
+    protected void onStop(){
+        Log.i(this.getClass().toString(), "called onStop unbinding");
+        super.onStop();
+        if(this.isMyServiceRunning(ServiceConnection.class)) {
+            unbindService(serviceConnection);
+        }
+    }
+    @Override
+    protected void onDestroy(){
+        Log.i(this.getClass().toString(), "called onDestroy unbinding" );
+        super.onDestroy();
+        if(this.isMyServiceRunning(ServiceConnection.class)) {
+            unbindService(serviceConnection);
+        }
+
+    }
+    @Override
+    protected void onResume(){
+        Log.i(this.getClass().toString(), "called onResume binding");
+        bindService(new Intent(this, SocketService.class), serviceConnection, Context.BIND_AUTO_CREATE);
+        super.onResume();
+
+    }
+    @Override
+    protected void onRestart(){
+        Log.i(this.getClass().toString(), "called onRestart binding");
+        super.onRestart();
+        bindService(new Intent(this, SocketService.class), serviceConnection, Context.BIND_AUTO_CREATE);
     }
 }
 

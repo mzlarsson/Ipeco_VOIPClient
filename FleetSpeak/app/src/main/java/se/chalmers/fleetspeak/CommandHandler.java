@@ -1,6 +1,5 @@
 package se.chalmers.fleetspeak;
 
-import android.app.Activity;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -11,17 +10,36 @@ import se.chalmers.fleetspeak.util.Command;
 
 /**
  * Created by Nieo on 08/10/14.
+ * For handling commands coming from the server.
+ * Need to be added as Messenger to socketService to work.
+ * Owns the RoomHandler
  */
 public class CommandHandler extends Handler {
 
     private static CommandHandler commandHandler = new CommandHandler();
-    private RoomHandler roomHandler;
-    private User user;
-    private ArrayList<Commandable> activities = new ArrayList<Commandable>();
+    private static RoomHandler roomHandler;
+    private static User user;
+    private static ArrayList<Commandable> activities = new ArrayList<Commandable>();
 
     private CommandHandler(){
         super();
         roomHandler = new RoomHandler();
+        tester();
+    }
+
+    /**
+     * For testing without having a server connection
+     */
+    private void tester(){
+        roomHandler.addUser(new User("Simulated User55", 55));
+        roomHandler.addToNewRoom(new User("Simulated User56", 56),"Joan Rivers memory room");
+        roomHandler.addToNewRoom(new User("Simulated User57", 57), "Ryska ubåtar");
+        roomHandler.addUser(new User("Simulated User58", 58));
+        roomHandler.addUser(new User("Simulated User59", 59));
+        roomHandler.addUser(new User("Simulated User60", 60));
+
+
+
     }
 
     public static CommandHandler getInstance(){
@@ -33,10 +51,15 @@ public class CommandHandler extends Handler {
         String sCommand = command.getCommand();
         Log.i("Commandhandler", "Got the message " + sCommand);
         //TODO
+
+        String aCommand = "dataUpdate";
+
         if(sCommand.equals("setID")){
             user = new User((Integer)command.getKey());
             roomHandler.addUser(user);
-            postUpdate();
+            aCommand = "connected";
+        }else if(sCommand.equals("connection failed")){
+            aCommand = "connection failed";
         }else if(sCommand.equals("setName")){
             User u = roomHandler.getUser((Integer) command.getKey());
             u.setName((String)command.getValue());
@@ -52,33 +75,43 @@ public class CommandHandler extends Handler {
             roomHandler.addUser(new User((Integer)command.getKey()));
         }else if(sCommand.equals("addUser")){
             roomHandler.addUser(new User( (String) command.getValue(),(Integer) command.getKey()));
+        }else if(sCommand.equals("createAndMove")){
+            String[] s = ((String) command.getValue()).split(",");
+            roomHandler.addUser(roomHandler.getUser((Integer)command.getKey()), new Room(s[0],Integer.parseInt(s[1])));
+        }else{
+            aCommand = "unknown command";
         }
 
         listUsers();
-
+        postUpdate(aCommand);
 
     }
 
-    public void addListener(Commandable a){
-        activities.add(a);
+    public static void addListener(Commandable a){
+        if(!activities.contains(a))
+            activities.add(a);
     }
 
-    public void removeListener(Commandable a){
+    public static void removeListener(Commandable a){
         activities.remove(a);
     }
 
-    private void postUpdate(){
+    private void postUpdate(String command){
         for(Commandable a: activities){
-            a.update();
+            a.onDataUpdate(command);
         }
     }
 
-    public User getUsers(int roomID){
-        return roomHandler.getUser(roomID);
+    public static User[] getUsers(int roomID){
+        return roomHandler.getUsers(roomID);
     }
 
-     public Room[] getRooms(){
+    public static Room[] getRooms(){
          return roomHandler.getRooms();
+    }
+
+    public static User getUser(){
+        return user;
     }
 
 

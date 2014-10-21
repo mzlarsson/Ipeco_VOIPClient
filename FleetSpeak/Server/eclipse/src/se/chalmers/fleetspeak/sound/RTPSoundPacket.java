@@ -3,19 +3,7 @@ package se.chalmers.fleetspeak.sound;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
 import java.util.List;
-
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.DataLine;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.Mixer;
-import javax.sound.sampled.SourceDataLine;
-
-import se.chalmers.fleetspeak.util.Log;
 
 /**
  * A class for containing the most recent data in a RTP connection.
@@ -25,8 +13,6 @@ import se.chalmers.fleetspeak.util.Log;
 
 public class RTPSoundPacket {
 	
-	SourceDataLine dataLine;
-
 	private int sequenceNumber;
 	private int sequenceOffset;
 	private byte[] data;

@@ -25,7 +25,7 @@ import java.util.Enumeration;
  */
 public class SoundController {
 
-    private AudioGroup audioGroup;
+    private static AudioGroup audioGroup;
     private AudioStream audioStream;
 
     private static SoundController currentSoundController;
@@ -103,8 +103,8 @@ public class SoundController {
         return currentSoundController.audioStream.getLocalPort();
     }
 
-    public void close(){
-        this.audioGroup.clear();
+    public static void close(){
+         audioGroup.clear();
         Log.d("Sound", "Group left...");
     }
 }

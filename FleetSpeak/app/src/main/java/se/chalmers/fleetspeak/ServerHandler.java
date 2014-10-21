@@ -6,8 +6,7 @@ import android.os.Message;
  * Created by Nieo on 10/10/14.
  * Help class for messages
  * try {
- *  Message msg = Message.obtain(SERVERHANDLER.[command]());
- *  mService.send(msg);
+ *      mService.send(Message.obtain(SERVERHANDLER.[command]()));
  *  } catch (RemoteException e) {
  *  }
 
@@ -24,18 +23,18 @@ public class ServerHandler {
     }
 
 
-    public static Message disconnect(int userID) {
-        return Message.obtain(null,SocketService.DISCONNECT,userID);
+    public static Message disconnect() {
+        return Message.obtain(null,SocketService.DISCONNECT,null);
     }
 
 
-    public static Message setName(String name, int userID) {
-        return  Message.obtain(null, SocketService.SETNAME, userID,0,name);
+    public static Message setName(String name) {
+        return  Message.obtain(null, SocketService.SETNAME, 0,0,name);
     }
 
 
-    public static Message move(int roomID, int userID) {
-        return Message.obtain(null,SocketService.MOVEUSER,roomID,0,userID);
+    public static Message move(int roomID) {
+        return Message.obtain(null,SocketService.MOVEUSER,roomID);
     }
 
     public static Message getUsers() {

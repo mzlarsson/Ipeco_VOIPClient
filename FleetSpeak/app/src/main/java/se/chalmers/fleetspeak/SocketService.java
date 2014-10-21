@@ -12,32 +12,38 @@ import android.util.Log;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import se.chalmers.fleetspeak.util.Command;
 import se.chalmers.fleetspeak.sound.SoundController;
+import se.chalmers.fleetspeak.util.Command;
 
+/**
+ * Service for handling tcp connection to server
+ * Use messages and ServerHandler to send commands to the server
+ * Sends all incoming commands to CommandHandler
+ */
 public class SocketService extends Service {
 
     private Socket socket;
     private ObjectInputStream objectInputStream;
     private ObjectOutputStream objectOutputStream;
     private Timer timer = new Timer();
-    private Messenger messenger;
+    private Messenger messenger = new Messenger(CommandHandler.getInstance());
 
     private ArrayList<Command> commandQueue = new ArrayList<Command>();
 
+
+    // This should probably not be here but it was so much easier to save in here
     private int id = -1;
 
     //Commands
     public static final int CONNECT = 1;
     public static final int DISCONNECT = 2;
     public static final int SETNAME = 3;
-    public static final int SETMESSENGER = 4;
+
     public static final int MOVEUSER = 5;
     public static final int GETUSERS = 6;
     public static final int MUTEUSER = 7;
@@ -52,9 +58,22 @@ public class SocketService extends Service {
         Log.i(LOGNAME, "I have been bound");
         return mMessenger.getBinder();
     }
+    @Override
+    public boolean onUnbind(Intent intent) {
+        // All clients have unbound with unbindService()
+        return false;
+    }
 
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        // We want this service to continue running until it is explicitly
+        // stopped, so return sticky.
+        return START_STICKY;
+    }
 
-
+    /**
+     * Handles all incoming commands
+     */
     class IncomingHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
@@ -64,6 +83,8 @@ public class SocketService extends Service {
                 switch (msg.what) {
                     case CONNECT:
                         commandQueue.clear();
+                        if(socket != null)
+                            endSocketConnection();
                         final String s = (String) msg.obj;
                         final int i = msg.arg1;
 
@@ -85,7 +106,7 @@ public class SocketService extends Service {
                                 } catch (IOException e) {
                                     Log.i("Connector.connect", "Connection failed " + e.getMessage());
                                     try {
-                                        messenger.send(Message.obtain(null, 0,"connection failed"));
+                                        messenger.send(Message.obtain(null, 0,new Command("connection failed", null, null)));
                                     } catch (RemoteException e1) {
                                         e1.printStackTrace();
                                     }
@@ -97,6 +118,8 @@ public class SocketService extends Service {
                     case DISCONNECT:
                         Log.i(LOGNAME, "Disconnecting");
                         trySend(new Command("disconnect", id, null));
+                        endSocketConnection();
+                        SoundController.close();
                         break;
                     case SETNAME:
 
@@ -104,11 +127,8 @@ public class SocketService extends Service {
                         trySend(new Command("setName", id, msg.obj));
 
                         break;
-                    case SETMESSENGER:
-                        messenger = (Messenger) msg.obj;
-                        break;
                     case MOVEUSER:
-                        trySend(new Command("moveUser", id, msg.arg1));
+                        trySend(new Command("moveUser", id, msg.obj));
                         break;
                     case GETUSERS:
                         Log.i(LOGNAME, "trying to send getRooms command");
@@ -171,6 +191,11 @@ public class SocketService extends Service {
          timer.scheduleAtFixedRate(new TimerTask(){ public void run() {lookForMessage();}}, 0, 100L);
     }
 
+    /**
+     * Checks if there is something on the input stream
+     * Pass on everything found to CommandHandler
+     */
+
     private void lookForMessage() {
         if(objectInputStream != null) {
             //Log.i(LOGNAME, "Looking for message form server");
@@ -212,6 +237,7 @@ public class SocketService extends Service {
        socket.close();
        objectInputStream.close();
        objectOutputStream.close();
+       id = -1;
      }catch(IOException e){
         Log.i(LOGNAME,"Connection ended unexeptedly");
      }

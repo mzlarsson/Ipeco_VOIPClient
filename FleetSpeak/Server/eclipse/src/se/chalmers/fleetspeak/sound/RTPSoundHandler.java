@@ -64,9 +64,9 @@ public class RTPSoundHandler extends RTPHandler implements SoundHandler{
 			}
 			
 			//Wait
-//			try {
-//				Thread.sleep(Constants.RTP_UPDATE_INTERVAL);
-//			} catch (InterruptedException e) {}
+			try {
+				Thread.sleep(Constants.RTP_UPDATE_INTERVAL);
+			} catch (InterruptedException e) {}
 		}
 	}
 	

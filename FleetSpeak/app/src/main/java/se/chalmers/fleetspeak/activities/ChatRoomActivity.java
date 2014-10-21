@@ -2,10 +2,8 @@ package se.chalmers.fleetspeak.activities;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.media.Image;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
@@ -16,7 +14,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -24,13 +21,10 @@ import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.util.ArrayList;
-
-import se.chalmers.fleetspeak.IUserHandler;
+import se.chalmers.fleetspeak.CommandHandler;
+import se.chalmers.fleetspeak.Commandable;
 import se.chalmers.fleetspeak.R;
-import se.chalmers.fleetspeak.Room;
 import se.chalmers.fleetspeak.RoomHandler;
 import se.chalmers.fleetspeak.User;
 import se.chalmers.fleetspeak.truck.TruckDataHandler;
@@ -39,7 +33,7 @@ import se.chalmers.fleetspeak.truck.TruckStateListener;
 /**
  * Created by TwiZ on 2014-10-06.
  */
-public class ChatRoomActivity extends ActionBarActivity implements TruckStateListener {
+public class ChatRoomActivity extends ActionBarActivity implements TruckStateListener, Commandable {
 
     ListView userListView;
     private SeekBar volumeControlBar;
@@ -63,8 +57,7 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
         Intent intent = getIntent();
         currentRoomID = intent.getIntExtra("roomID", 0);
 
-        createSimulatedHandler(); //TODO: For Test purposes
-        users = getUserList(); //init userList
+       initUserList(); //init userList
 
         userListView = (ListView) findViewById(R.id.userList);
         adapter = new ChatRoomListAdapter(this, users);
@@ -85,24 +78,13 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
         */
     }
 
-    private void createSimulatedHandler() { //TODO: For test purposes. Simulerar en handler
-        handler = new RoomHandler();
-        Room room1 = new Room("Rum1", 11);
-        Room room2 = new Room("Rum2", 22);
-        User user0 = new User("User0", 0);
-        User user1 = new User("User1", 1);
-        User user2 = new User("User2",2);
-        handler.addUser(user1, room1);
-        handler.addUser(user2, room2);
-    }
 
     /**
      * Gets the user list from the handler.
      * @return List of Users from the room with current room id.
      */
-    private User[] getUserList(){
-        //TODO: Get users from the real handler.
-        return handler.getUsers(currentRoomID);
+    private void initUserList(){
+        users = CommandHandler.getUsers(0);
     }
 
 
@@ -136,6 +118,11 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
     @Override
     public void truckModeChanged(boolean mode) {
 
+    }
+
+    @Override
+    public void onDataUpdate(String command) {
+        
     }
 
     /**

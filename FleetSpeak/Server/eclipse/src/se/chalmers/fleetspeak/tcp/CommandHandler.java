@@ -169,8 +169,9 @@ public class CommandHandler implements IEventBusSubscriber {
 				eventBus.fireEvent(new EventBusEvent("broadcast", command, null));
 			// Called when a client changes rooms to a new room.
 			} else if (commandName.equals("createAndMove")) {
-				roomHandler.moveClient((Integer)command.getKey(), new Room((String)command.getValue()));
-				eventBus.fireEvent(new EventBusEvent("broadcast", command, null));
+				Room newRoom = new Room((String)command.getValue());
+				roomHandler.moveClient((Integer)command.getKey(), newRoom);
+				eventBus.fireEvent(new EventBusEvent("broadcast", new Command("createAndMove", command.getKey(), newRoom.getName() + "," + newRoom.getId()), null));
 			// Called when a client changes rooms to an existing room.
 			} else if (commandName.equals("move")) {
 				roomHandler.moveClient((Integer)command.getKey(), (Integer)command.getValue());

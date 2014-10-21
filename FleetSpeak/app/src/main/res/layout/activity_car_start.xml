@@ -5,34 +5,41 @@
     android:layout_height="match_parent"
 >
 
-    <Button
-        android:text="@string/connect_text"
-        android:onClick="onConnectButtonClick"
-        android:textColor="#FFFFFF"
-        android:textSize="30sp"
-        android:layout_width="280dp"
-        android:layout_height="100dp"
-        android:background="@drawable/button_2_shape"
-        android:shadowColor="#A8A8A8"
-        android:shadowDx="0"
-        android:shadowDy="0"
-        android:shadowRadius="5"
-        android:layout_gravity="center"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
-    <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Connecting"
-        android:onClick="showConnect"
-        android:id="@+id/button"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="100dp"/>
-
-    />
-    <RelativeLayout
+<TextView
+            android:layout_width="wrap_content"
+            android:textSize="38sp"
+            android:id="@+id/userName"
+            android:layout_marginTop="60dp"
+            android:layout_centerHorizontal="true"
+            android:layout_height="wrap_content"
+            android:singleLine="true"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_below="@+id/userName"
+            android:textSize="38sp"
+            android:id="@+id/IpAdress"
+            android:layout_marginTop="60dp"
+            android:layout_centerHorizontal="true"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:singleLine="true"/>
+   <Button
+       android:text="@string/connect_text"
+       android:id="@+id/connectionButton"
+       android:onClick="onConnectButtonClick"
+       android:textColor="#FFFFFF"
+       android:textSize="30sp"
+       android:layout_width="match_parent"
+       android:layout_height="80dp"
+       android:background="@drawable/button_shape"
+       android:shadowColor="#A8A8A8"
+       android:shadowDx="0"
+       android:shadowDy="0"
+       android:shadowRadius="5"
+       android:layout_alignParentBottom="true"
+       android:layout_centerHorizontal="true"
+        />
+=    <RelativeLayout
         android:id="@+id/loadingPanel"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

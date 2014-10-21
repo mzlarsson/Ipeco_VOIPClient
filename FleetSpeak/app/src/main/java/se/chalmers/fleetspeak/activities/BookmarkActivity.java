@@ -24,7 +24,7 @@ import se.chalmers.fleetspeak.R;
 
 /**
  * Created by TwiZ on 2014-09-26.
- * TODO: Make it possible to add/remove servers and update the list.
+ * TODO: Make it possible to add/remove servers and onDataUpdate the list.
  */
 
 public class BookmarkActivity extends ActionBarActivity {
