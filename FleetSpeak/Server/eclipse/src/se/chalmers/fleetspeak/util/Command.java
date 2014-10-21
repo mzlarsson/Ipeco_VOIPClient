@@ -10,7 +10,10 @@ import java.io.Serializable;
  * 
  */
 public class Command implements Serializable{
-    private String command;
+	
+	private static final long serialVersionUID = 1L;
+	
+	private String command;
     private Object key;
     private Object value;
 

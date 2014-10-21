@@ -1,7 +1,6 @@
 package se.chalmers.fleetspeak;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
@@ -20,7 +19,6 @@ import com.biasedbit.efflux.session.RtpSessionDataListener;
 public class TmpConnector{
 
     private Socket socket;
-    private InputStream input;
     private PrintWriter output;
     private final String ip;
     private final int port;
@@ -89,10 +87,15 @@ public class TmpConnector{
                     String s = "";
                     while(true){
                     	s = in.nextLine();
+                    	if(s.equals("close")){
+                    		break;
+                    	}
+                    	
                     	output.println(s);
                 		session.sendData(s.getBytes(), 123456789, true);
                     }
-
+                    
+                    in.close();
                 }catch(IOException e){
                     System.out.println("Connection failed " + e.getMessage() );
                 }
