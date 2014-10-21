@@ -12,13 +12,10 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 
 import android.content.ServiceConnection;
-import android.content.pm.ActivityInfo;
-import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -34,14 +31,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import se.chalmers.fleetspeak.CommandHandler;
 import se.chalmers.fleetspeak.Commandable;
 import se.chalmers.fleetspeak.R;
 import se.chalmers.fleetspeak.Room;
-import se.chalmers.fleetspeak.RoomHandler;
 import se.chalmers.fleetspeak.ServerHandler;
 import se.chalmers.fleetspeak.SocketService;
 import se.chalmers.fleetspeak.User;
@@ -58,8 +51,8 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
     private Room[] rooms;
     private static TruckDataHandler truckDataHandler;
 
-    private RoomHandler handler;
-    private boolean isDriving = false;
+   // private RoomHandler handler;
+    private boolean isDriving = true;
 
     private Room room1;
     private Room room2;
@@ -90,11 +83,12 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
 
         bindService(new Intent(this, SocketService.class),serviceConnection,Context.BIND_AUTO_CREATE);
 
+        CommandHandler.addListener(this);
 
         roomView = (ListView)findViewById(R.id.roomView);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        updateRoomList(); //Init roomList
+        initRoomList(); //Init roomList
 
 
         adapter = new JoinRoomAdapter(this, rooms);
@@ -125,14 +119,19 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
 
 
     }
-
-    private void updateRoomList() {
-        createSimulatedHandler(); //TODO: For test purposes. Simulerar en handler
-        //TODO: get the rooms from the real handler handler
-        rooms = handler.getRooms();
+    private void updateRoomList(){
+        rooms = CommandHandler.getRooms();
+        adapter.notifyDataSetChanged();
     }
 
-    private void createSimulatedHandler() { //TODO: Simulerar en handler for test purposes
+    private void initRoomList() {
+        //TODO: For test purposes. Simulerar en handler
+        //TODO: get the rooms from the real handler handler
+        rooms = CommandHandler.getRooms();
+
+    }
+
+  /*  private void createSimulatedHandler() { //TODO: Simulerar en handler for test purposes
         handler = new RoomHandler();
         room1 = new Room("Simulated room 1", 11);
         room2 = new Room("Simulated room 2", 22);
@@ -141,7 +140,7 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
         user2 = new User("Simulated User2",2);
         handler.addUser(user1, room1);
         handler.addUser(user2, room2);
-    }
+    }*/
 
     public void create_new_room_onClick(View view) {
         Toast.makeText(JoinRoomActivity.this, "TODO: Join created room", Toast.LENGTH_SHORT).show();
@@ -221,8 +220,11 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
     }
 
     @Override
-    public void update(String command) {
-
+    public void onDataUpdate(String command) {
+        if(command.equals("dataUpdate")){
+            updateRoomList();
+            //TODO update user list
+        }
     }
 
 

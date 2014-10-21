@@ -41,6 +41,11 @@ public class RoomHandler implements IUserHandler{
         addUser(user,defaultRoom);
     }
 
+    public void addToNewRoom(User user, String name){
+        Room r = new Room(name);
+        addUser(user, r);
+    }
+
 
     public void removeUser(User user) {
         for (Room room : rooms.keySet()) {
@@ -113,7 +118,7 @@ public class RoomHandler implements IUserHandler{
                 return room;
             }
         }
-        throw new NoSuchElementException("A user with ID: \"" + id + "\" doesn't exit.");
+        throw new NoSuchElementException("A room with ID: \"" + id + "\" doesn't exit.");
     }
 
     @Override

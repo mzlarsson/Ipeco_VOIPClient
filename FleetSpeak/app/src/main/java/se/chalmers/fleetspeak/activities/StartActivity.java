@@ -341,7 +341,7 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
                 .hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
     }
     @Override
-    public void update(String command) {
+    public void onDataUpdate(String command) {
         connecting(false);
         Log.i("STARTACTIVITY", "Im Commandhadlers bitch");
         if(command.equals("connected")){
