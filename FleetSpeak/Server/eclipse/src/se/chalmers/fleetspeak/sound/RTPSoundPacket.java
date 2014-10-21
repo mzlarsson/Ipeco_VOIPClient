@@ -1,9 +1,14 @@
 package se.chalmers.fleetspeak.sound;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.util.List;
+
+import javax.sound.sampled.AudioInputStream;
+
+import se.chalmers.fleetspeak.util.Log;
 
 /**
  * A class for containing the most recent data in a RTP connection.
@@ -13,11 +18,12 @@ import java.util.List;
 
 public class RTPSoundPacket {
 	
+	private AudioInputStream in;
+	private PipedOutputStream out;
+	
 	private int sequenceNumber;
 	private int sequenceOffset;
 	private byte[] data;
-	
-	StringBuffer log = new StringBuffer();
 	
 	private long sourceID;
 	
@@ -29,6 +35,30 @@ public class RTPSoundPacket {
 	public RTPSoundPacket(long sourceID, int sequenceOffset){
 		this.sourceID = sourceID;
 		this.sequenceOffset = sequenceOffset;
+	}
+	
+	public void restart(){
+		if(out != null){
+			try {
+				out.close();
+			} catch (IOException e) {}
+		}
+		if(in != null){
+			try {
+				in.close();
+			} catch (IOException e) {}
+		}
+		
+		try{
+			out = new PipedOutputStream();
+			in = new AudioInputStream(new PipedInputStream(out), Constants.AUDIOFORMAT, Constants.RTP_PACKET_SIZE);
+		}catch(IOException ioe){
+			Log.log("<error>Could not create internal RTP data stream</error>");
+		}
+	}
+	
+	public InputStream getInputStream(){
+		return this.in;
 	}
 	
 	/**
@@ -44,21 +74,11 @@ public class RTPSoundPacket {
 		this.sequenceNumber = sequenceNumber;
 		this.data = data;
 		
-		for(int i = 0; i<data.length; i++){
-			log.append((int)data[i]).append(" ");
-		}
-	}
-	
-	public void saveLog(String folder){
-		String filename = folder+this.sourceID+".log";
-		try{
-			BufferedWriter out = new BufferedWriter(new FileWriter(filename));
-			out.write(log.toString());
-			out.flush();
-			out.close();
-		}catch(IOException ioe){
-			System.out.println("Could not write to file: "+filename);
-		}
+		/*try {
+			out.write(data, 0, Constants.RTP_PACKET_SIZE);
+		} catch (IOException e) {
+			Log.log("<error>Could not write internal RTP data</error>");
+		}*/
 	}
 	
 	/**

@@ -19,6 +19,7 @@ import android.os.RemoteException;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,6 +41,7 @@ import se.chalmers.fleetspeak.SocketService;
 import se.chalmers.fleetspeak.User;
 import se.chalmers.fleetspeak.truck.TruckDataHandler;
 import se.chalmers.fleetspeak.truck.TruckStateListener;
+import se.chalmers.fleetspeak.util.ThemeUtils;
 
 /**
  * Created by TwiZ on 2014-10-09.
@@ -53,7 +55,6 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
 
    // private RoomHandler handler;
     private boolean isDriving = false;
-
     private Messenger messenger = null;
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
@@ -69,9 +70,8 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
         }
     };
 
-
-
     protected void onCreate(Bundle savedInstanceState) {
+        ThemeUtils.onCreateActivityCreateTheme(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_join_room);
 
@@ -158,8 +158,18 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.day_night_menu, menu);
+
+        return true;
+    }
+
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()){
+            case R.id.day_night_toggle:
+                ThemeUtils.changeTheme(this);
+                return true;
             case android.R.id.home:
                 //NavUtils.navigateUpFromSameTask(this);
                 Intent intent = new Intent(this,StartActivity.class);

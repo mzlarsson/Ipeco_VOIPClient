@@ -1,0 +1,37 @@
+package se.chalmers.fleetspeak.util;
+
+import android.app.Activity;
+import android.content.Intent;
+
+import se.chalmers.fleetspeak.R;
+import se.chalmers.fleetspeak.activities.StartActivity;
+
+/**
+ * Created by david_000 on 21/10/2014.
+ */
+public class ThemeUtils {
+    private static int appTheme;
+    private static final int DARK = R.style.Theme_Fleetspeak_dark;
+    private static final int LIGHT = R.style.Theme_Fleetspeak_light;
+    public static void setTheme(int i){
+        if(i == DARK || i == LIGHT) {
+            appTheme = i;
+        }
+    }
+    public static void changeTheme(Activity activity){
+        if(appTheme == DARK){
+            appTheme = LIGHT;
+        }else{
+            appTheme = DARK;
+        }
+        activity.finish();
+        activity.startActivity(new Intent(activity, activity.getClass()));
+    }
+    public static void onCreateActivityCreateTheme(Activity activity) {
+    activity.setTheme(appTheme);
+    }
+
+    public static int getThemeID() {
+        return  appTheme;
+    }
+}

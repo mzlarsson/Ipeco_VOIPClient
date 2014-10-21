@@ -9,6 +9,9 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Message;
@@ -39,6 +42,7 @@ import se.chalmers.fleetspeak.SocketService;
 import se.chalmers.fleetspeak.sound.SoundController;
 import se.chalmers.fleetspeak.truck.TruckDataHandler;
 import se.chalmers.fleetspeak.truck.TruckStateListener;
+import se.chalmers.fleetspeak.util.ThemeUtils;
 
 public class StartActivity extends ActionBarActivity implements TruckStateListener, Commandable {
 
@@ -49,12 +53,8 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
     private String userNameText;
     private SharedPreferences prefs;
     private SharedPreferences.Editor prefEdit;
-    private boolean savePrefs;
-
-    private boolean isConnected;
-
     private SoundController soundController;
-
+    private boolean isConnected = false;
     static Messenger mService = null;
 
 
@@ -62,6 +62,7 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
         public void onServiceConnected(ComponentName className, IBinder service) {
             Log.i("SERVICECONNECTION", "service started");
             mService = new Messenger(service);
+
         }
 
         public void onServiceDisconnected(ComponentName className) {
@@ -83,11 +84,15 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        prefEdit = prefs.edit();
+        int prefTheme = prefs.getInt("Theme", R.style.Theme_Fleetspeak_dark);
+        ThemeUtils.setTheme(prefTheme);
+        ThemeUtils.onCreateActivityCreateTheme(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
-
         CommandHandler.getInstance().addListener(this);
         truckDataHandler.addListener(this);
         final EditText ipTextField = (EditText) findViewById(R.id.ipField);
@@ -142,12 +147,8 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
             @Override
             public void afterTextChanged(Editable editable) {
                 userNameText = String.valueOf(userNameField.getText());
-                Log.i("StartActivity", "after text change " + userNameText);
             }
         });
-
-        prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        prefEdit = prefs.edit();
 
         portText = prefs.getString( getString(R.string.port_number_text),"8867");
         userNameText = prefs.getString(getString(R.string.username_text), "username");
@@ -155,7 +156,6 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
         ipTextField.setText(ipText);
         portField.setText(portText);
         userNameField.setText(userNameText);
-        Log.i("StartActivity", userNameText);
         final CheckBox savePrefsCheckbox = (CheckBox) findViewById(R.id.saveUserPref);
         savePrefsCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -178,6 +178,7 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
             Log.i("STARTACTIVITY", "started service");
 
         Log.i("STARTACTIVITY", "binding service");
+        startService(new Intent(this,SocketService.class));
         boolean unfucked = isMyServiceRunning(SocketService.class);
         Log.i("STARTACTIVITY", "unfucked? " + unfucked);
         bindService(i, mConnection, Context.BIND_AUTO_CREATE);
@@ -188,7 +189,7 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.start, menu);
+        getMenuInflater().inflate(R.menu.day_night_menu, menu);
 
         return true;
     }
@@ -196,15 +197,11 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
+        if (id == R.id.day_night_toggle) {
+            // ThemeUtils.changeTheme(this);
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    public void goToBookmarks(View view) {
-        Intent getBookmarkIntent = new Intent(this, BookmarkActivity.class);
-        startActivity(getBookmarkIntent);
     }
     @Override
     protected void onPause(){
@@ -233,26 +230,13 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
             unbindService(mConnection);
         }
         soundController.close();
-        stopService(new Intent(this, SocketService.class));
     }
-    @Override
-    protected void onResume(){
-        CommandHandler.addListener(this);
-        Log.i("STARTACTIVITY", "called onResume binding");
-        bindService(new Intent(this, SocketService.class), mConnection, Context.BIND_AUTO_CREATE);
-        super.onResume();
-
-    }
-    @Override
     protected void onRestart(){
-        CommandHandler.addListener(this);
-        Log.i("STARTACTIVITY", "called onRestart binding");
         super.onRestart();
-        bindService(new Intent(this, SocketService.class), mConnection, Context.BIND_AUTO_CREATE);
     }
 
     public void onConnectButtonClick(View view) {
-       startConnection(ipText,Integer.parseInt(portText), userNameText);
+       startConnection(ipText, Integer.parseInt(portText), userNameText);
 
 
     }
@@ -295,6 +279,7 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
             prefEdit.putString(getString(R.string.username_text), userNameText);
             prefEdit.putString(getString(R.string.ip_adress_text), ipText);
             prefEdit.putString(getString(R.string.port_number_text), portText);
+            prefEdit.putInt("Theme",ThemeUtils.getThemeID());
             prefEdit.commit();
     }
 
@@ -359,7 +344,6 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
 
 
     }
-
     public void startDemo(View view) {
         Intent intent = new Intent(this,JoinRoomActivity.class);
         startActivity(intent);

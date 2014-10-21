@@ -29,6 +29,7 @@ import se.chalmers.fleetspeak.RoomHandler;
 import se.chalmers.fleetspeak.User;
 import se.chalmers.fleetspeak.truck.TruckDataHandler;
 import se.chalmers.fleetspeak.truck.TruckStateListener;
+import se.chalmers.fleetspeak.util.ThemeUtils;
 
 /**
  * Created by TwiZ on 2014-10-06.
@@ -50,6 +51,7 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        ThemeUtils.onCreateActivityCreateTheme(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chatroom);
         //Shows the up button
@@ -97,6 +99,8 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
         switch (item.getItemId()){
+            case R.id.day_night_toggle:
+                ThemeUtils.changeTheme(this);
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
                 return true;
@@ -151,7 +155,7 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
              */
             textView.setText(userName);
 
-            imageView.setImageResource(R.drawable.ic_user_inroom);
+            imageView.setImageResource(R.drawable.ic_user);
 
             return view;
         }
