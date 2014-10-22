@@ -223,6 +223,7 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
     }
 
     private void joinRoom(int roomID) {
+        bindService(new Intent(this, SocketService.class),serviceConnection, Context.BIND_AUTO_CREATE);
         unbindService(serviceConnection);
         Intent intent = new Intent(JoinRoomActivity.this, ChatRoomActivity.class);
         intent.putExtra("roomID",roomID);
