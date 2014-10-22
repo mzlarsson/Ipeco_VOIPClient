@@ -27,6 +27,17 @@ public class Log {
 		Log.log("<debug>" + msg + "</debug>");
 	}
 
+	public static void logException(Exception ex) {
+		String errorMsg = ex.toString()+"\n";
+		StackTraceElement[] elements = ex.getStackTrace();
+		StackTraceElement el = null;
+		for(int i = elements.length-1; i>=0; i--){
+			el = elements[i];
+			errorMsg += "\t<i>"+el.getClassName()+"."+el.getMethodName()+"</i> line <b>"+el.getLineNumber()+"</b>\n";
+		}
+		Log.log(errorMsg);
+	}
+	
 	public static void logNullPointerException(String msg) {
 		if (msg.length()>3) {
 			String err = "<error>" + msg.substring(0, msg.length()/4) + "</error>";

@@ -1,19 +1,13 @@
 package se.chalmers.fleetspeak.tests;
 
-import static org.junit.Assert.*;
-
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.ObjectOutputStream;
 
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import se.chalmers.fleetspeak.tcp.Commands;
 
 public class TestCommandHandler {
 	BufferedReader br;

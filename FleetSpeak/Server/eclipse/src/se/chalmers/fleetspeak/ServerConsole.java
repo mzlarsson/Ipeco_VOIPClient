@@ -123,7 +123,7 @@ public class ServerConsole {
 				try {
 					Runtime.getRuntime().exec("cls");
 				} catch (IOException e) {
-					e.printStackTrace();
+					Log.log("Could not empty log");
 				}
 			}
 			

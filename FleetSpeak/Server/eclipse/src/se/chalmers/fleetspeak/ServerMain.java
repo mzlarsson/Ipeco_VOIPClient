@@ -11,9 +11,6 @@ import se.chalmers.fleetspeak.tcp.CommandHandler;
 import se.chalmers.fleetspeak.util.Log;
 
 public class ServerMain{
-	
-    private static int DEFAULT_PORT_TCP = 8867;
-    private static int DEFAULT_PORT_RTP = 8868;
     
     private int tcpPort;
     private int rtpPort;
@@ -23,28 +20,6 @@ public class ServerMain{
     private static ServerSocket serverSocket = null;
     
     private volatile boolean running;
-    
-    public static void main(String[] args) throws IOException{
-    	//Setup info about connection
-        
-    	int tcpPort = (args!=null&&args.length>0?Integer.parseInt(args[0]):DEFAULT_PORT_TCP);
-        int rtpPort = (args!=null&&args.length>1?Integer.parseInt(args[1]):DEFAULT_PORT_RTP);
-    
-    	Runtime.getRuntime().addShutdownHook(new Thread(new Runnable(){
-    		@Override
-    		public void run(){
-    			commandHandler.terminate();
-    			try {
-    	    		if(serverSocket != null){
-    	    			serverSocket.close();
-    	    		}
-    			} catch (IOException e) {}
-    		}
-    	}));
-    	
-    	new ServerMain(tcpPort, rtpPort).start();;
-      
-    }
     
     public ServerMain(int tcpPort, int rtpPort) throws UnknownHostException{
     	Log.log("Starting server @LAN-IP "+InetAddress.getLocalHost().getHostAddress()+
