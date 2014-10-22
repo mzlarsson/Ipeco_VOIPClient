@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.WindowEvent;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -34,8 +36,9 @@ import se.chalmers.fleetspeak.eventbus.EventBusEvent;
 import se.chalmers.fleetspeak.eventbus.IEventBusSubscriber;
 import se.chalmers.fleetspeak.util.Command;
 import se.chalmers.fleetspeak.util.Log;
+import sun.awt.WindowClosingListener;
 
-public class ServerGUI extends JFrame implements ActionListener, KeyListener, IEventBusSubscriber {
+public class ServerGUI extends JFrame implements ActionListener, KeyListener, IEventBusSubscriber, WindowClosingListener {
 
 	private static final long serialVersionUID = 1L;
 	private JLabel ip;
@@ -58,27 +61,29 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener, IE
 	private Color FOREST_GREEN = new Color(20, 170, 0);
 	
 	public static void main(String[] args) {
-		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-			public void run() {
-				if (server != null) {
-					try {
-						server.terminate();
-						serverThread.join();
-						server = null;
-					} catch (InterruptedException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-				}
-			}
-		}));
-		
 		new ServerGUI();
 	}
 
 	public ServerGUI() {
-		setTitle("FleetSpeek Server: NullpointerExeption(\"Server not found\")");
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		
+		setTitle("FleetSpeek Server");
+		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+		addWindowListener(new java.awt.event.WindowAdapter() {
+		    @Override
+		    public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+		    	if (server!=null) {
+			        if (JOptionPane.showConfirmDialog(windowEvent.getComponent(), 
+				            "The server is still running, exit anyway?", "Close server?", 
+				            JOptionPane.YES_NO_OPTION,
+				            JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION){
+		        		stop();
+		        		System.exit(0);
+			        }
+		    	} else {
+		    		System.exit(0);
+		    	}
+		    }
+		});
 		setLayout(new BorderLayout());
 		setLocation(500, 200);
 		setupLogger();
@@ -86,6 +91,7 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener, IE
 
 		pack();
 		setVisible(true);
+		
 		start();
 	}
 
@@ -357,6 +363,18 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener, IE
 				roomStructure.setText((String)cmd.getValue());
 			}
 		}
+	}
+
+	@Override
+	public RuntimeException windowClosingDelivered(WindowEvent arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public RuntimeException windowClosingNotify(WindowEvent arg0) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }
