@@ -202,6 +202,22 @@ public class RTPSoundMixer implements RTPListener{
 		
 		return mixer;
 	}
+	/**
+	 * A method that compress Short data linearly. When the sound data is over a certain threshold  the method compress it.
+	 * @param s The short value to be compressed
+	 * @param t The threshold 
+	 * @return
+	 */
+	public static short dynamicRangeCompression(short s, short t){
+		int range = Short.MAX_VALUE;
+		if(Math.abs(s)>t && s!=0){
+		short tmp = (short) ((s/Math.abs(s))*((float)((float)(range-t)/((float)(2*range)-t)*(Math.abs(s)-t))+t));
+		return tmp;
+		}else{
+			return s;
+		}
+	}
+	
 	
 	/**
 	 * Searches for a SoundMixer with the given attributes. Returns null if none was found.
