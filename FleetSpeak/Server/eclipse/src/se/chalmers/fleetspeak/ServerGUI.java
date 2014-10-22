@@ -115,7 +115,7 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener, IE
 		JLabel tcpLabel = new JLabel("TCP-Port :");
 		tcpText = new JTextField("8867", 4);
 		JLabel utpLabel = new JLabel("UDP-Port :");
-		udpText = new JTextField("8868", 4);
+		udpText = new JTextField("8867", 4);
 		portsPanel.add(tcpLabel);
 		portsPanel.add(tcpText);
 		portsPanel.add(utpLabel);
