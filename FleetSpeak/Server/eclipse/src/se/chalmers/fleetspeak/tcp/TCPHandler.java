@@ -1,5 +1,6 @@
 package se.chalmers.fleetspeak.tcp;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -25,14 +26,11 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 		this.clientID = clientID;
 		this.clientSocket = clientSocket;
 		try {
-			Log.log("Trying to get streams");
-			objectOutputStream = new ObjectOutputStream(
-					clientSocket.getOutputStream());
-			objectInputStream = new ObjectInputStream(
-					clientSocket.getInputStream());
-			Log.log("Got streams");
+			objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
+			objectInputStream = new ObjectInputStream(clientSocket.getInputStream());
+			Log.log("Command connection established");
 		} catch (IOException e) {
-			e.printStackTrace();
+			Log.logException(e);
 		}
 		eventBus = EventBus.getInstance();
 		eventBus.addSubscriber(this);
@@ -57,19 +55,19 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 		try {
 			while (isRunning) {
 				Object o = objectInputStream.readObject();
-				Log.log(o.getClass().toString());
-				Command c = (Command) o ;//objectInputStream.readObject();
+				Command c = (Command) o ;
 				Log.log("[TCPHandler] Got command " + c.getCommand());
 				eventBus.fireEvent(new EventBusEvent("CommandHandler", c, this));
 				Thread.sleep(500);
 			}
+		} catch(EOFException eofe){
+			eventBus.fireEvent(new EventBusEvent("CommandHandler", new Command("disconnect", clientID, null), this));
 		} catch (IOException e) {
 			Log.logException(e);
 		} catch (ClassNotFoundException e) {
 			Log.logException(e);
 		} catch (InterruptedException e) {
-			eventBus.fireEvent(new EventBusEvent("CommandHandler",
-					new Command("disconnect", clientID, null), this));
+			eventBus.fireEvent(new EventBusEvent("CommandHandler", new Command("disconnect", clientID, null), this));
 		}
 	}
 
@@ -85,9 +83,8 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 	
 	public void sendData(Command command){
 		try{
-			Log.log("[TCPHandler]Trying to send " + command.getCommand());
 			objectOutputStream.writeObject(command);
-			Log.log("[TCPHandler]Command sent");
+			Log.log("[TCPHandler]Command sent: "+command.getCommand());
 		}catch(IOException e){
 			e.printStackTrace();
 		}

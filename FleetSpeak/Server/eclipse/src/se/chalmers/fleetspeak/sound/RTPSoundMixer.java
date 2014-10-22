@@ -41,10 +41,6 @@ public class RTPSoundMixer implements RTPListener{
 		this.identifier = identifier;
 	}
 	
-	public void restart(){
-		Log.log("<info>Restart not available for current implementation</info>");
-	}
-	
 	/**
 	 * Adds a client with the given source ID (provided by RTPConnector) to this mixer
 	 * @param sourceID The source ID of the client (provided by RTPConnector)
@@ -55,7 +51,6 @@ public class RTPSoundMixer implements RTPListener{
 		
 		//Adds an empty packet to be filled with data later
 		data.add(new RTPSoundPacket(sourceID, getCurrentSequenceOffset()));
-		Log.log("Client with sourceID="+sourceID+" joined mixer "+this.identifier);
 	}
 
 	/**
@@ -73,7 +68,6 @@ public class RTPSoundMixer implements RTPListener{
 		if(packet != null){
 			this.data.remove(packet);
 		}
-		Log.log("Client with sourceID="+sourceID+" disconnected from mixer "+this.identifier);
 
 		if(this.data.isEmpty()){
 			this.close();
@@ -90,9 +84,11 @@ public class RTPSoundMixer implements RTPListener{
 		if(data.size()>0){
 			byte[][] bytedata = new byte[data.size()][Constants.RTP_PACKET_SIZE];
 			for(int i = 0; i<bytedata.length; i++){
-//				if(data.get(i).getSourceID() != sourceID){
-					bytedata[i] = data.get(i).getData(minSequenceNumber);
-//				}
+				if(data.get(i) != null){
+	//				if(data.get(i).getSourceID() != sourceID){
+						bytedata[i] = data.get(i).getData(minSequenceNumber);
+	//				}
+				}
 			}
 			
 			if(bytedata.length==1){

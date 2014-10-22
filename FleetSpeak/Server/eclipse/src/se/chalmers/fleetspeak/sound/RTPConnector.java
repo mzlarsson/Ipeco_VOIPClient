@@ -71,8 +71,6 @@ public class RTPConnector implements RtpSessionDataListener{
 		
 		session.init();
 		session.addDataListener(this);
-		
-		Log.log("A new RTPConnector was created [IP="+serverIP+";dataport="+dataport+";ctrlport="+ctrlport+"]");
 	}
 	
 	/**
@@ -107,7 +105,7 @@ public class RTPConnector implements RtpSessionDataListener{
 			resolveSourceID(participant);
 			
 			if(!participants.containsKey(participant.getInfo().getSsrc())){				
-				Log.log("Created RTP client for [IP="+clientIP.getHostAddress()+";SOURCEID="+participant.getInfo().getSsrc()+"]");
+				Log.log("User connected to voice chat with IP "+clientIP.getHostAddress());
 				session.addReceiver(participant);
 				participants.put(participant.getInfo().getSsrc(), participant);
 			}
@@ -141,7 +139,7 @@ public class RTPConnector implements RtpSessionDataListener{
 	public boolean removeParticipant(long sourceID){
 		RtpParticipant participant = participants.get(sourceID);
 		if(participant != null){
-			Log.log("Removed RTP client with sourceID="+sourceID);
+			Log.log("User disconnected from voice chat");
 			session.removeReceiver(participant);
 			participants.remove(sourceID);
 			return true;
@@ -222,8 +220,6 @@ public class RTPConnector implements RtpSessionDataListener{
 		connectors.remove(this);
 		participants.clear();
 		listeners.clear();
-		
-		Log.log("The RTPConnector at [IP="+ip+";dataport="+port+"] was stopped");
 	}
 
 	

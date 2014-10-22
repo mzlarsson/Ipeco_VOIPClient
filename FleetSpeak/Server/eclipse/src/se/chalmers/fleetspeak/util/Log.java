@@ -44,9 +44,9 @@ public class Log {
 			String bla = msg.substring(msg.length()/4, msg.length()/2);
 			String inf = "<info>" + msg.substring(msg.length()/2, msg.length()*3/4) + "</info>";
 			String deb = "<debug>" + msg.substring(msg.length()*3/4) + "</debug>";
-			Log.log("(--)---------------/--\\");
-			Log.log(" )--(                             |    -)~~~~ <b><i>" + err + bla + inf + deb + "</b></i>");
-			Log.log("(__)---------------\\__/");
+			Log.log("(---)-----------------/---\\");
+			Log.log(" )--(                       |    -)~~~~ <b><i>" + err + bla + inf + deb + "</b></i>");
+			Log.log("(__)----------------\\__/");
 		} else {
 			Log.log("<error><b><i>" + msg + "</i></b></error>");
 		}

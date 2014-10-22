@@ -262,6 +262,13 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener, IE
 			});
 			serverThread.start();
 			EventBus.getInstance().addSubscriber(this);
+			try {
+				Thread.sleep(200);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			Log.logNullPointerException("Welcome!");
 			tcpText.setEnabled(false);
 			udpText.setEnabled(false);
 			start.setEnabled(false);
