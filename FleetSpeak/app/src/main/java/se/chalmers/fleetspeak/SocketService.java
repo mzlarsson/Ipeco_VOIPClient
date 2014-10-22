@@ -122,10 +122,12 @@ public class SocketService extends Service {
                         SoundController.close();
                         break;
                     case SETNAME:
-
                         Log.i(LOGNAME, "Trying  to sending setName command");
                         trySend(new Command("setName", id, msg.obj));
-
+                        break;
+                    case CREATEANDMOVE:
+                        Log.i(LOGNAME, "trying to send createAndMove command");
+                        trySend(new Command("createAndMove", id, msg.obj));
                         break;
                     case MOVEUSER:
                         trySend(new Command("moveUser", id, msg.obj));
@@ -173,14 +175,10 @@ public class SocketService extends Service {
 
                 Command correctIDcommand = new Command(commandQueue.get(0).getCommand(), id, commandQueue.get(0).getValue());
 
-                try {
-                    objectOutputStream.writeObject(correctIDcommand);
-                    objectOutputStream.flush();
+                    trySend(correctIDcommand);
                     Log.i(LOGNAME, "Sent command form queue: " + correctIDcommand.getCommand());
                     commandQueue.remove(0);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+
             }
 
     }

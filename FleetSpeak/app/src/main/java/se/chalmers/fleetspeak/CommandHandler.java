@@ -24,7 +24,7 @@ public class CommandHandler extends Handler {
     private CommandHandler(){
         super();
         roomHandler = new RoomHandler();
-        tester();
+        //tester();
     }
 
     /**
@@ -78,6 +78,7 @@ public class CommandHandler extends Handler {
         }else if(sCommand.equals("createAndMove")){
             String[] s = ((String) command.getValue()).split(",");
             roomHandler.addUser(roomHandler.getUser((Integer)command.getKey()), new Room(s[0],Integer.parseInt(s[1])));
+            aCommand = "roomCreated," + s[1];
         }else{
             aCommand = "unknown command";
         }
