@@ -46,4 +46,8 @@ public class ServerHandler {
         //Not implemented
         return Message.obtain(null,SocketService.MUTEUSER,userID);
     }
+
+    public static Message createAndMove(String name){
+        return Message.obtain(null,SocketService.CREATEANDMOVE,name);
+    }
 }

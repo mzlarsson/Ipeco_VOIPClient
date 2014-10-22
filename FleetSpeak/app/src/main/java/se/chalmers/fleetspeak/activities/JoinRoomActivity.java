@@ -96,8 +96,13 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
                 Room room = (Room)object;
                 int roomID = room.getId();
 
-                //TODO: TELL SERVER user want to join selected room with id: "roomID"
 
+                try {
+                    messenger.send(Message.obtain(ServerHandler.move(roomID)));
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+                unbindService(serviceConnection);
                 //Join the choosen room
                 Intent intent = new Intent(JoinRoomActivity.this, ChatRoomActivity.class);
                 intent.putExtra("roomID",roomID);
@@ -112,7 +117,7 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
     }
 
     public void create_new_room_onClick(View view) {
-        Toast.makeText(JoinRoomActivity.this, "TODO: Join created room", Toast.LENGTH_SHORT).show(); //TODO: Remove this
+       // Toast.makeText(JoinRoomActivity.this, "TODO: Join created room", Toast.LENGTH_SHORT).show(); //TODO: Remove this
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
         alertDialog.setTitle("Choose a name for your room");
         final EditText input = new EditText(this);
@@ -136,14 +141,18 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
                         newRoomName = input.getText().toString();
                         Toast.makeText(JoinRoomActivity.this, "Create a room with name: "+ newRoomName, Toast.LENGTH_SHORT).show();
                     }
-                    //TODO TELL SERVER Skapa och joina ett rum med namn variabeln "newRoomName"
+                    try {
+                        messenger.send(ServerHandler.createAndMove(newRoomName));
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
                 }
             });
             alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.cancel();
-                    Toast.makeText(JoinRoomActivity.this, "You didn't create a room", Toast.LENGTH_SHORT).show(); //TODO Remove this line when finished
+                  //  Toast.makeText(JoinRoomActivity.this, "You didn't create a room", Toast.LENGTH_SHORT).show(); //TODO Remove this line when finished
                 }
             });
 
@@ -152,8 +161,11 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
         } else{ //When the car is driving and the user have selected "Create room" the user won't be
                 //allowed to pick a name since it will take to much time.
             String newRoomName = (prefs.getString("Username", "username") + "'s room");
-            Toast.makeText(JoinRoomActivity.this, "Create a room with name: "+ newRoomName, Toast.LENGTH_SHORT).show(); //TODO: Remove this
-            //TODO: TELL SERVER Skapa och joina ett rum med namnet newRoomname
+            try {
+                messenger.send(ServerHandler.createAndMove(newRoomName));
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
         }
 
     }
@@ -203,7 +215,6 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
         if(command.equals("dataUpdate")){
             updateRoomList();
             updateUserList();
-            //TODO update user list
         }
     }
 

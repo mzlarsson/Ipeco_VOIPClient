@@ -27,9 +27,12 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 		this.clientID = clientID;
 		this.clientSocket = clientSocket;
 		try {
-			objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
-			objectInputStream = new ObjectInputStream(clientSocket.getInputStream());
-			Log.log("Command connection established");
+			Log.log("[TCPHandler]Trying to get streams");
+			objectOutputStream = new ObjectOutputStream(
+					clientSocket.getOutputStream());
+			objectInputStream = new ObjectInputStream(
+					clientSocket.getInputStream());
+			Log.log("[TCPHandler]Got streams");
 		} catch (IOException e) {
 			Log.logException(e);
 		}
@@ -42,9 +45,11 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 		isRunning = true;
 		try {
 			while (isRunning) {
+				Log.log("[TCPHandler] trying to read");
 				Object o = objectInputStream.readObject();
-				Command c = (Command) o ;
-				Log.log("[TCPHandler] <i>Got command " + c.getCommand()+"</i>");
+				Log.log("[TCPHandler] Found: " + o.getClass().toString());
+				Command c = (Command) o ;//objectInputStream.readObject();
+				Log.log("[TCPHandler] Got command " + c.getCommand());
 				eventBus.fireEvent(new EventBusEvent("CommandHandler", c, this));
 				Thread.sleep(500);
 			}
@@ -58,7 +63,7 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 		}catch (IOException e) {
 			Log.logException(e);
 		} catch (ClassNotFoundException e) {
-			Log.logException(e);
+			Log.log("[TCPHandler]" + e.getMessage());
 		} catch (InterruptedException e) {
 			eventBus.fireEvent(new EventBusEvent("CommandHandler", new Command("disconnect", clientID, null), this));
 		}
@@ -76,9 +81,11 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 	
 	public void sendData(Command command){
 		try{
+			Log.log("[TCPHandler]Trying to send " + command.getCommand());
 			objectOutputStream.writeObject(command);
 			Log.log("[TCPHandler] <i>Command sent: "+command.getCommand()+"</i>");
 		}catch(IOException e){
+			Log.logError(e.getMessage());
 			e.printStackTrace();
 		}
 	}

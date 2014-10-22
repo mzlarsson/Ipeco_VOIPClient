@@ -43,7 +43,7 @@ public class SocketService extends Service {
     public static final int CONNECT = 1;
     public static final int DISCONNECT = 2;
     public static final int SETNAME = 3;
-
+    public static final int CREATEANDMOVE = 4;
     public static final int MOVEUSER = 5;
     public static final int GETUSERS = 6;
     public static final int MUTEUSER = 7;
