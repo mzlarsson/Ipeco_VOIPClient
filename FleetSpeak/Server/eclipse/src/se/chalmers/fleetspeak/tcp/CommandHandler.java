@@ -61,7 +61,7 @@ public class CommandHandler implements IEventBusSubscriber {
 		} else if (cmdString.startsWith(ServerCommand.CLEAR.getName())) {
 			Log.flushLog();
 		// Called to move a user from a room to an existing room.
-		} else if(cmdString.startsWith(ServerCommand.MOVE_USER.getName())){
+		} else if(cmdString.startsWith(ServerCommand.MOVE_USER.getName()+" ")){
 			String[] data = cmdString.split(" ");
 			int clientID = -1, roomID = -1;
 			try {

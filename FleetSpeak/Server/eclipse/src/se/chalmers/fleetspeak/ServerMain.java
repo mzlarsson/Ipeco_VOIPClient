@@ -44,10 +44,8 @@ public class ServerMain{
             while(running){
             	//Create connection
                 clientSocket = serverSocket.accept();
-                //Create client
-                Client client = new Client(clientSocket, rtpPort);
                 //Add to client list
-                addClient(client);
+                addClient(clientSocket);
             }
             
             if(serverSocket != null){
@@ -59,12 +57,13 @@ public class ServerMain{
         }
     }
     
-    public static void addClient(Client client){
-        //give the client to the commandHandler
-        commandHandler.addClient(client);
-        
+    public void addClient(Socket clientSocket) throws IOException{
         //Print info in server console
-        Log.log("A new person joined ");
+        Log.log("A new person joined");
+        
+        //Create and forward client
+        Client client = new Client(clientSocket, rtpPort);
+        commandHandler.addClient(client);
     }
     
     public void terminate() {

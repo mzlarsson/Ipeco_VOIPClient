@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.net.SocketException;
 
 import se.chalmers.fleetspeak.eventbus.EventBus;
 import se.chalmers.fleetspeak.eventbus.EventBusEvent;
@@ -37,32 +38,24 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 
 	}
 
-	public boolean terminate() {
-		isRunning = false;
-		eventBus.removeSubscriber(this);
-		try {
-			if (clientSocket != null) {
-				clientSocket.close();
-			}
-			return true;
-		} catch (IOException e) {
-			return false;
-		}
-	}
-
 	public void run() {
 		isRunning = true;
 		try {
 			while (isRunning) {
 				Object o = objectInputStream.readObject();
 				Command c = (Command) o ;
-				Log.log("[TCPHandler] Got command " + c.getCommand());
+				Log.log("[TCPHandler] <i>Got command " + c.getCommand()+"</i>");
 				eventBus.fireEvent(new EventBusEvent("CommandHandler", c, this));
 				Thread.sleep(500);
 			}
 		} catch(EOFException eofe){
 			eventBus.fireEvent(new EventBusEvent("CommandHandler", new Command("disconnect", clientID, null), this));
-		} catch (IOException e) {
+		} catch(SocketException e){
+			//Only log if the handler is not terminated
+			if(isRunning){
+				Log.logException(e);
+			}
+		}catch (IOException e) {
 			Log.logException(e);
 		} catch (ClassNotFoundException e) {
 			Log.logException(e);
@@ -84,9 +77,22 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 	public void sendData(Command command){
 		try{
 			objectOutputStream.writeObject(command);
-			Log.log("[TCPHandler]Command sent: "+command.getCommand());
+			Log.log("[TCPHandler] <i>Command sent: "+command.getCommand()+"</i>");
 		}catch(IOException e){
 			e.printStackTrace();
+		}
+	}
+
+	public boolean terminate() {
+		isRunning = false;
+		eventBus.removeSubscriber(this);
+		try {
+			if (clientSocket != null) {
+				clientSocket.close();
+			}
+			return true;
+		} catch (IOException e) {
+			return false;
 		}
 	}
 }

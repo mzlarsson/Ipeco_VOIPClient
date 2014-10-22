@@ -3,8 +3,6 @@ package se.chalmers.fleetspeak.sound;
 import java.util.ArrayList;
 import java.util.List;
 
-import se.chalmers.fleetspeak.util.Log;
-
 /**
  * Class for mixing sound based on RTP packages.
  * 
@@ -82,36 +80,38 @@ public class RTPSoundMixer implements RTPListener{
 	 */	
 	public byte[] getMixedSound(long sourceID, int minSequenceNumber){
 		if(data.size()>0){
-			byte[][] bytedata = new byte[data.size()][Constants.RTP_PACKET_SIZE];
+			byte[][] bytedata = new byte[data.size()-1][Constants.RTP_PACKET_SIZE];
 			for(int i = 0; i<bytedata.length; i++){
 				if(data.get(i) != null){
-	//				if(data.get(i).getSourceID() != sourceID){
+					if(data.get(i).getSourceID() != sourceID){
 						bytedata[i] = data.get(i).getData(minSequenceNumber);
-	//				}
+					}
 				}
 			}
 			
-			if(bytedata.length==1){
-				return bytedata[0];
-			}else{
-				byte[] mix = new byte[Constants.RTP_PACKET_SIZE];
-				short sum = 0;
-				for(int i = 0; i<Constants.RTP_PACKET_SIZE; i++) {
-					sum = 0;
-					for(int j = 0; j<bytedata.length; j++){
-						if(bytedata[j].length>i){
-							sum += byteToShort(bytedata[j][i]);
-						}else{
-							System.out.println("Did not find data");
+			if(bytedata.length>0){
+				if(bytedata.length==1){
+					return bytedata[0];
+				}else{
+					byte[] mix = new byte[Constants.RTP_PACKET_SIZE];
+					short sum = 0;
+					for(int i = 0; i<Constants.RTP_PACKET_SIZE; i++) {
+						sum = 0;
+						for(int j = 0; j<bytedata.length; j++){
+							if(bytedata[j].length>i){
+								sum += byteToShort(bytedata[j][i]);
+							}
 						}
+						
+	//					sum /= bytedata.length;		//Lower all volume. IMPORTANT! This value effects MUCH!
+		
+						mix[i] = shortToByte((short)Math.max(-128, Math.min(127, sum)));
 					}
 					
-					sum /= bytedata.length;		//Lower all volume. IMPORTANT! This value effects MUCH!
-	
-					mix[i] = shortToByte((short)Math.max(-128, Math.min(127, sum)));
+					return mix;
 				}
-				
-				return mix;
+			}else{
+				return new byte[0];
 			}
 		}else{
 			return new byte[0];

@@ -31,7 +31,7 @@ public enum ServerCommand {
 	MOVE_USER_NEW_ROOM("moveUserToNewRoom") {
 		@Override
 		public String getInfo(){
-			return "<b>moveUser <user-id> <room-name></b> Moves user to a new room with the given name.";
+			return "<b>moveUserToNewRoom <user-id> <room-name></b> Moves user to a new room with the given name.";
 		}
 	},
 	ROOM_INFO("roomInfo") {
