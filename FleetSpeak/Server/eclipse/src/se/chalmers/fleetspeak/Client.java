@@ -16,7 +16,6 @@ public class Client{
 	private String name;
 	private SoundHandler rtp;
 	private TCPHandler tcp;
-	private boolean muted = false;
 	private int clientID;
 	
 	private InetAddress ip;
@@ -60,9 +59,17 @@ public class Client{
 	public String getName() {
 		return name;
 	}
+	
+	public void setMuted(Client client, boolean muted){
+		if(this.rtp != null){
+			this.rtp.setMuted(client.rtp, muted);
+		}else{
+			Log.log("<error>Could not "+(muted?"mute":"unmute")+" since sound transfer is not started</error>");
+		}
+	}
 
-	public boolean isMuted() {
-		return muted;
+	public boolean isMuted(Client client) {
+		return (this.rtp==null || this.rtp.isMuted(client.rtp));
 	}
 
 	public void terminate() {
@@ -88,8 +95,7 @@ public class Client{
 	 */
 	@Override
 	public String toString() {
-		return "Client: name=" + name + ", clientID=" + clientID
-				+ ", muted=" + muted + ", ip=" + ip;
+		return "Client: name=" + name + ", clientID=" + clientID + ", ip=" + ip;
 	}
 	
 	
