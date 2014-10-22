@@ -40,12 +40,6 @@ public enum ServerCommand {
 			return "<b>roomInfo</b> Shows all the current rooms with all users.";
 		}
 	},
-	SAVEDATA("saveData") {
-		@Override
-		public String getInfo(){
-			return "<b>saveData</b> Save the sound logs for all rooms.";
-		}
-	},
 	SET_RTP_PORT("setRtpPort") {
 		@Override
 		public String getInfo(){

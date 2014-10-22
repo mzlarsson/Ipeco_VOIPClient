@@ -1,14 +1,6 @@
 package se.chalmers.fleetspeak.sound;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
 import java.util.List;
-
-import javax.sound.sampled.AudioInputStream;
-
-import se.chalmers.fleetspeak.util.Log;
 
 /**
  * A class for containing the most recent data in a RTP connection.
@@ -17,9 +9,6 @@ import se.chalmers.fleetspeak.util.Log;
  */
 
 public class RTPSoundPacket {
-	
-	private AudioInputStream in;
-	private PipedOutputStream out;
 	
 	private int sequenceNumber;
 	private int sequenceOffset;
@@ -37,30 +26,6 @@ public class RTPSoundPacket {
 		this.sequenceOffset = sequenceOffset;
 	}
 	
-	public void restart(){
-		if(out != null){
-			try {
-				out.close();
-			} catch (IOException e) {}
-		}
-		if(in != null){
-			try {
-				in.close();
-			} catch (IOException e) {}
-		}
-		
-		try{
-			out = new PipedOutputStream();
-			in = new AudioInputStream(new PipedInputStream(out), Constants.AUDIOFORMAT, Constants.RTP_PACKET_SIZE);
-		}catch(IOException ioe){
-			Log.log("<error>Could not create internal RTP data stream</error>");
-		}
-	}
-	
-	public InputStream getInputStream(){
-		return this.in;
-	}
-	
 	/**
 	 * Updates the current data that is stored
 	 * @param sequenceNumber The sequenceNumber of the packet that was received
@@ -73,12 +38,6 @@ public class RTPSoundPacket {
 
 		this.sequenceNumber = sequenceNumber;
 		this.data = data;
-		
-		/*try {
-			out.write(data, 0, Constants.RTP_PACKET_SIZE);
-		} catch (IOException e) {
-			Log.log("<error>Could not write internal RTP data</error>");
-		}*/
 	}
 	
 	/**

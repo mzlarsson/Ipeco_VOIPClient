@@ -1,6 +1,5 @@
 package se.chalmers.fleetspeak.sound;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,8 +39,6 @@ public class RTPSoundMixer implements RTPListener{
 		this.data = new ArrayList<RTPSoundPacket>();
 		this.connector = connector;
 		this.identifier = identifier;
-		
-		restart();
 	}
 	
 	public void restart(){
@@ -80,15 +77,6 @@ public class RTPSoundMixer implements RTPListener{
 
 		if(this.data.isEmpty()){
 			this.close();
-		}
-	}
-	
-	public void saveLogs(){
-		String folder = "savedata/mixer"+identifier+"/";
-		new File(folder).mkdirs();
-		
-		for(int i = 0; i<data.size(); i++){
-			data.get(i).saveLog(folder);
 		}
 	}
 

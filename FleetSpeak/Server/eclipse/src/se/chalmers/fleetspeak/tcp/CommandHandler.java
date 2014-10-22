@@ -10,7 +10,6 @@ import se.chalmers.fleetspeak.ServerGUI;
 import se.chalmers.fleetspeak.eventbus.EventBus;
 import se.chalmers.fleetspeak.eventbus.EventBusEvent;
 import se.chalmers.fleetspeak.eventbus.IEventBusSubscriber;
-import se.chalmers.fleetspeak.sound.RTPSoundMixer;
 import se.chalmers.fleetspeak.util.Command;
 import se.chalmers.fleetspeak.util.Log;
 
@@ -117,10 +116,6 @@ public class CommandHandler implements IEventBusSubscriber {
 		// Called to get all the information regarding rooms and users.
 		} else if (cmdString.startsWith(ServerCommand.ROOM_INFO.getName())) {
 			Log.log(roomHandler.getRoomInfo());
-		} else if (cmdString.startsWith(ServerCommand.SAVEDATA.getName())) {
-			for(int i = 0; i<RTPSoundMixer.mixers.size(); i++){
-				RTPSoundMixer.mixers.get(i).saveLogs();
-			}
 		} else {
 			Log.log(("<error>ERROR:</error> \"<b>" + cmdString + "</b>\" <error>is not supported</error>"));
 		}
