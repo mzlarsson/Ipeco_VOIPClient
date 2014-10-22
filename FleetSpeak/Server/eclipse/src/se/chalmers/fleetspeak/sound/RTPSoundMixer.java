@@ -79,25 +79,27 @@ public class RTPSoundMixer implements RTPListener{
 	 * @return A sound mix of all clients except the one that requests the data
 	 */	
 	public byte[] getMixedSound(long sourceID, int minSequenceNumber){
-		if(data.size()>0){
+		if(data.size()>1){
 			byte[][] bytedata = new byte[data.size()-1][Constants.RTP_PACKET_SIZE];
-			for(int i = 0; i<bytedata.length; i++){
+			int foundUsers = 0;
+			for(int i = 0; i<data.size(); i++){
 				if(data.get(i) != null){
 					if(data.get(i).getSourceID() != sourceID){
-						bytedata[i] = data.get(i).getData(minSequenceNumber);
+						bytedata[foundUsers] = data.get(i).getData(minSequenceNumber);
+						foundUsers++;
 					}
 				}
 			}
 			
-			if(bytedata.length>0){
-				if(bytedata.length==1){
+			if(foundUsers>0){
+				if(foundUsers==1){
 					return bytedata[0];
 				}else{
 					byte[] mix = new byte[Constants.RTP_PACKET_SIZE];
 					short sum = 0;
 					for(int i = 0; i<Constants.RTP_PACKET_SIZE; i++) {
 						sum = 0;
-						for(int j = 0; j<bytedata.length; j++){
+						for(int j = 0; j<foundUsers; j++){
 							if(bytedata[j].length>i){
 								sum += byteToShort(bytedata[j][i]);
 							}
