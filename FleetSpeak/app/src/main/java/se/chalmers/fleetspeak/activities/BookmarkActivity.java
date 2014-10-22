@@ -24,6 +24,7 @@ import se.chalmers.fleetspeak.R;
 
 /**
  * Created by TwiZ on 2014-09-26.
+ * This activity is currently not in use
  * TODO: Make it possible to add/remove servers and onDataUpdate the list.
  */
 

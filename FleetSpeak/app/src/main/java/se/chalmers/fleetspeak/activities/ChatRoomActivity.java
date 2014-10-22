@@ -101,6 +101,7 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
         switch (item.getItemId()){
             case R.id.day_night_toggle:
                 ThemeUtils.changeTheme(this);
+                return true;
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
                 return true;
