@@ -19,7 +19,7 @@ public class RoomHandler {
 	private Room defaultRoom;
 	public RoomHandler(){
 		rooms = new HashMap<Room,ArrayList<Client>>();
-		defaultRoom = new Room("Default");
+		defaultRoom = new Room("Default", 0);
 	}
 	
 	public void addClient(Client c, Room r){

@@ -157,7 +157,7 @@ public class CommandHandler implements IEventBusSubscriber {
 			}else if(commandName.equals("getUsers")){
 				for(Room r: roomHandler.getRooms()){
 					for( Client c : roomHandler.getClients(r)){
-						eventBus.fireEvent(new EventBusEvent("broadcast", new Command("addUser", c.getClientID(),c.getName()), event.getActor()));
+						eventBus.fireEvent(new EventBusEvent("broadcast", new Command("addUser", c.getName()+ "," +c.getClientID(), r.getName() +"," + r.getId()), event.getActor()));
 					}
 				}
 			}else if(commandName.equals("setRtpPort")){
