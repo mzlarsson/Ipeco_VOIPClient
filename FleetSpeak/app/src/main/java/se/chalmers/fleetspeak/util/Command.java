@@ -7,6 +7,9 @@ import java.io.Serializable;
  * Created by Patrik on 2014-10-10.
  */
 public class Command implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     private String command;
     private Object key;
     private Object value;

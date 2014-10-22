@@ -151,6 +151,7 @@ public class SocketService extends Service {
     private void trySend(Command c){
 
         if(id > 0){
+            Log.d("Volt", "Trying to send: "+c.getCommand()+", "+c.getKey()+","+c.getValue());
             try {
 
                 objectOutputStream.writeObject(c);
@@ -168,6 +169,7 @@ public class SocketService extends Service {
     private void sendCommandQueue(){
 
             while (0 < commandQueue.size()) {
+                Log.d("Volt", "Sending in commandQueue: "+commandQueue.get(0).getCommand()+", "+id+","+commandQueue.get(0).getValue());
 
                 Command correctIDcommand = new Command(commandQueue.get(0).getCommand(), id, commandQueue.get(0).getValue());
 
