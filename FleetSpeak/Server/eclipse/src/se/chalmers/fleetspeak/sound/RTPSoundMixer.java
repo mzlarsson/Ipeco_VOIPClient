@@ -122,6 +122,8 @@ public class RTPSoundMixer implements RTPListener{
 				}
 			}
 			
+			
+			
 			if(foundUsers>0){
 				if(foundUsers==1){
 					return bytedata[0];
@@ -133,6 +135,8 @@ public class RTPSoundMixer implements RTPListener{
 						for(int j = 0; j<foundUsers; j++){
 							if(bytedata[j].length>i){
 								sum += byteToShort(bytedata[j][i]);
+								sum = dynamicRangeCompression(cutNoise(sum),(short)4000);
+								System.out.println(sum);
 							}
 						}
 						
@@ -253,6 +257,22 @@ public class RTPSoundMixer implements RTPListener{
 		return tmp;
 		}else{
 			return s;
+		}
+	}
+	/**
+	 * Cuts low amplitude noise 
+	 * @param s The sound data
+	 * @return The modified sound data
+	 */
+	public static short cutNoise(short s){
+		if(Math.abs(s)<500){
+			return 0;
+		}else{
+			if(s<0){
+				return (short) (s-4000);
+			}else{
+				return (short) (s+4000);
+			}
 		}
 	}
 	
