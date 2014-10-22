@@ -147,11 +147,13 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
             @Override
             public void afterTextChanged(Editable editable) {
                 userNameText = String.valueOf(userNameField.getText());
+                ThemeUtils.setUsername(String.valueOf(userNameField.getText()));
             }
         });
 
         portText = prefs.getString( getString(R.string.port_number_text),"8867");
         userNameText = prefs.getString(getString(R.string.username_text), "username");
+        ThemeUtils.setUsername(userNameText);
         ipText = prefs.getString(getString(R.string.ip_adress_text),"46.239.103.195");
         ipTextField.setText(ipText);
         portField.setText(portText);

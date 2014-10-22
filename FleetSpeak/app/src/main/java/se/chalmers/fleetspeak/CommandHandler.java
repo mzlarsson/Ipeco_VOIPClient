@@ -24,7 +24,7 @@ public class CommandHandler extends Handler {
     private CommandHandler(){
         super();
         roomHandler = new RoomHandler();
-        tester();
+        //tester();
     }
 
     /**
@@ -49,7 +49,7 @@ public class CommandHandler extends Handler {
     public void handleMessage(Message msg) {
         Command command = (Command) msg.obj;
         String sCommand = command.getCommand();
-        Log.i("Commandhandler", "Got the message " + sCommand);
+        Log.i("Commandhandler", "Got the command " + sCommand);
         //TODO
 
         String aCommand = "dataUpdate";
@@ -67,8 +67,6 @@ public class CommandHandler extends Handler {
             roomHandler.removeUser((Integer)command.getKey());
         }else if(sCommand.equals("setRtpPort")){
             //TODO
-        }else if(sCommand.equals("createAndMove")){
-            //TODO
         }else if(sCommand.equals("move")){
             roomHandler.moveUser((Integer)command.getKey(),(Integer)command.getValue());
         }else if(sCommand.equals("newUser")){
@@ -76,8 +74,10 @@ public class CommandHandler extends Handler {
         }else if(sCommand.equals("addUser")){
             roomHandler.addUser(new User( (String) command.getValue(),(Integer) command.getKey()));
         }else if(sCommand.equals("createAndMove")){
+            Log.i(this.getClass().toString(), "Crate and mååv ");
             String[] s = ((String) command.getValue()).split(",");
             roomHandler.addUser(roomHandler.getUser((Integer)command.getKey()), new Room(s[0],Integer.parseInt(s[1])));
+            aCommand = "roomCreated," + s[1];
         }else{
             aCommand = "unknown command";
         }

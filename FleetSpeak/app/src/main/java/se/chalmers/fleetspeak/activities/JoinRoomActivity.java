@@ -104,9 +104,7 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
                 }
                 unbindService(serviceConnection);
                 //Join the choosen room
-                Intent intent = new Intent(JoinRoomActivity.this, ChatRoomActivity.class);
-                intent.putExtra("roomID",roomID);
-                startActivity(intent);
+                joinRoom(roomID);
 
                 //String example = room.getName();
                 //String example = String.valueOf(adapterView.getItemAtPosition(position));
@@ -122,7 +120,8 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
         alertDialog.setTitle("Choose a name for your room");
         final EditText input = new EditText(this);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        input.setHint(prefs.getString("Username", "username"));
+        //input.setHint(prefs.getString("Username", "username"));
+        input.setHint(ThemeUtils.getUsername() + "'s room");
         if(!isDriving){
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
@@ -135,11 +134,12 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
                 public void onClick(DialogInterface dialog, int which) {
                     String newRoomName;
                     if(input.getText().length() == 0){
-                        newRoomName = input.getHint().toString() + "'s room";
+                        newRoomName = input.getHint().toString();
                         Toast.makeText(JoinRoomActivity.this, "Create a room with name: "+ newRoomName, Toast.LENGTH_SHORT).show();
                     } else {
                         newRoomName = input.getText().toString();
                         Toast.makeText(JoinRoomActivity.this, "Create a room with name: "+ newRoomName, Toast.LENGTH_SHORT).show();
+
                     }
                     try {
                         messenger.send(ServerHandler.createAndMove(newRoomName));
@@ -215,7 +215,18 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
         if(command.equals("dataUpdate")){
             updateRoomList();
             updateUserList();
+        } else if(command.startsWith("roomCreated")) {
+            String[] s = command.split(",");
+            int roomID = Integer.parseInt(s[1]);
+            joinRoom(roomID);
         }
+    }
+
+    private void joinRoom(int roomID) {
+        unbindService(serviceConnection);
+        Intent intent = new Intent(JoinRoomActivity.this, ChatRoomActivity.class);
+        intent.putExtra("roomID",roomID);
+        startActivity(intent);
     }
 
     private void updateRoomList(){

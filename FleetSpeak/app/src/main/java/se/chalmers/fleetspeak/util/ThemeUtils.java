@@ -13,11 +13,21 @@ public class ThemeUtils {
     private static int appTheme;
     private static final int DARK = R.style.Theme_Fleetspeak_dark;
     private static final int LIGHT = R.style.Theme_Fleetspeak_light;
+    private static String currentUsername = "";
     public static void setTheme(int i){
         if(i == DARK || i == LIGHT) {
             appTheme = i;
         }
     }
+
+    public static void setUsername(String username) {
+        currentUsername = username;
+    }
+
+    public static String getUsername() {
+        return currentUsername;
+    }
+
     public static void changeTheme(Activity activity){
         if(appTheme == DARK){
             appTheme = LIGHT;
