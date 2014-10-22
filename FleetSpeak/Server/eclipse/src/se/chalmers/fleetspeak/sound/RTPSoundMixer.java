@@ -87,32 +87,36 @@ public class RTPSoundMixer implements RTPListener{
 	 * @return A sound mix of all clients except the one that requests the data
 	 */	
 	public byte[] getMixedSound(long sourceID, int minSequenceNumber){
-		if(data.size()>0){			
-			byte[][] bytedata = new byte[data.size()][Constants.RTP_PACKET_SIZE];
-			for(int i = 0; i<bytedata.length; i++){
-//				if(data.get(i).getSourceID() != sourceID){
-					bytedata[i] = data.get(i).getData(minSequenceNumber);
-//				}
-			}
-
-			byte[] mix = new byte[Constants.RTP_PACKET_SIZE];
-			short sum = 0;
-			for(int i = 0; i<Constants.RTP_PACKET_SIZE; i++) {
-				sum = 0;
-				for(int j = 0; j<bytedata.length; j++){
-					if(bytedata[j].length>i){
-						sum += byteToShort(bytedata[j][i]);
-					}else{
-						System.out.println("Did not find data");
+		if(data.size()>0){
+			if(data.size()==1){
+				return data.get(0).getData(minSequenceNumber);
+			}else{
+				byte[][] bytedata = new byte[data.size()][Constants.RTP_PACKET_SIZE];
+				for(int i = 0; i<bytedata.length; i++){
+	//				if(data.get(i).getSourceID() != sourceID){
+						bytedata[i] = data.get(i).getData(minSequenceNumber);
+	//				}
+				}
+	
+				byte[] mix = new byte[Constants.RTP_PACKET_SIZE];
+				short sum = 0;
+				for(int i = 0; i<Constants.RTP_PACKET_SIZE; i++) {
+					sum = 0;
+					for(int j = 0; j<bytedata.length; j++){
+						if(bytedata[j].length>i){
+							sum += byteToShort(bytedata[j][i]);
+						}else{
+							System.out.println("Did not find data");
+						}
 					}
+					
+					sum /= bytedata.length;		//Lower all volume. IMPORTANT! This value effects MUCH!
+	
+					mix[i] = shortToByte((short)Math.max(-128, Math.min(127, sum)));
 				}
 				
-				sum /= bytedata.length;		//Lower all volume. IMPORTANT! This value effects MUCH!
-
-				mix[i] = shortToByte((short)Math.max(-128, Math.min(127, sum)));
+				return mix;
 			}
-			
-			return mix;
 		}else{
 			return new byte[0];
 		}
