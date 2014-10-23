@@ -225,7 +225,6 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
             mService.send(Message.obtain(ServerHandler.setName(userName)));
             mService.send(Message.obtain(ServerHandler.getUsers()));
             isConnected = true;
-				
             SoundController.create(this, ip, port);
         } catch (RemoteException e) {}
     }

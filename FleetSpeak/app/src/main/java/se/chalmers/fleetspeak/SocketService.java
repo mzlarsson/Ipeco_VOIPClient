@@ -213,7 +213,7 @@ public class SocketService extends Service {
                         id = (Integer) c.getKey();
                         Log.i(LOGNAME, "ID is set now");
                         sendCommandQueue();
-                        
+
                         while(!SoundController.hasValue()){
                             try{Thread.sleep(10);}catch(InterruptedException ie){}
                         }

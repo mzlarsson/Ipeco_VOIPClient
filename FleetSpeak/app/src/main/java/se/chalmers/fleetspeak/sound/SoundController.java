@@ -65,23 +65,11 @@ public class SoundController {
     }
 
     public static void mute(){
-        if(hasValue()) {
-            if (audioStream.isBusy()) {
-                audioStream.join(null);
-            }
-            audioStream.setMode(RtpStream.MODE_RECEIVE_ONLY);
-            audioStream.join(audioGroup);
-        }
+     //
     }
 
     public static void unmute(){
-        if(hasValue()) {
-            if (audioStream.isBusy()) {
-                audioStream.join(null);
-            }
-            audioStream.setMode(RtpStream.MODE_NORMAL);
-            audioStream.join(audioGroup);
-        }
+      //
     }
 
     private static void fetchIP(){

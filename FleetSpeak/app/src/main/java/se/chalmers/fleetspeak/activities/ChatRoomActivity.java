@@ -124,6 +124,7 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
             }
         });
         truckModeChanged(truckDataHandler.getInstance().getTruckMode());
+        Log.i("Chat", SoundController.hasValue() + "");
     }
 
 
@@ -217,7 +218,7 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
         super.onDestroy();
         Log.i("CHATROOMACTIVITY", "called onDestroy unbinding");
         CommandHandler.removeListener(this);
-        ServiceUtil.close(this);
+
     }
 
     /**

@@ -123,6 +123,8 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
 
             }
         });
+
+        Log.i("join", SoundController.hasValue() + "");
     }
 
     public void create_new_room_onClick(View view) {
@@ -323,7 +325,7 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
         super.onDestroy();
         Log.i("JOINROOMACTIVITY", "called onDestroy unbinding");
         CommandHandler.removeListener(this);
-        ServiceUtil.close(this);
+
     }
     @Override
     protected void onResume(){
