@@ -29,6 +29,8 @@ import android.widget.PopupWindow;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 import se.chalmers.fleetspeak.CommandHandler;
 import se.chalmers.fleetspeak.Commandable;
 import se.chalmers.fleetspeak.R;
@@ -52,6 +54,7 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
     private PopupWindow micAndVolumePanel;
     private static TruckDataHandler truckDataHandler;
     User[] users;
+    ArrayList<User> arrayUsers = new ArrayList<User>();
     private RoomHandler handler; //TODO: For test purposes
     private Messenger mService = null;
     ArrayAdapter<User> adapter;
@@ -91,8 +94,10 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
         currentRoomID = intent.getIntExtra("roomID", 0);
         initUserList(); //init userList
 
+        initUserList(); //init userList
+
         userListView = (ListView) findViewById(R.id.userList);
-        adapter = new ChatRoomListAdapter(this, users);
+        adapter = new ChatRoomListAdapter(this, arrayUsers);
         userListView.setAdapter(adapter);
         userListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -127,12 +132,20 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
      */
     private void initUserList(){
         users = CommandHandler.getUsers(currentRoomID);
+        for(int i = 0; i < users.length; i++){
+            arrayUsers.add(users[i]);
+        }
+
     }
 
 
     private void updateUserList() {
-        //TODO: When a user joins this room(currentRoomID) call this method
+        //TODO SERVER: When a user joins this room(currentRoomID) call this method
         users = CommandHandler.getUsers(currentRoomID);
+        arrayUsers.clear();
+        for(int i = 0; i < users.length; i++){
+            arrayUsers.add(users[i]);
+        }
         adapter.notifyDataSetChanged(); //Pokes the adapter to view the new changes
     }
 
@@ -182,7 +195,7 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
      */
     public class ChatRoomListAdapter extends ArrayAdapter<User> {
 
-        public ChatRoomListAdapter(Context context, User[] values) {
+        public ChatRoomListAdapter(Context context, ArrayList<User> values) {
             super(context, R.layout.list_item_users, values);
         }
 
