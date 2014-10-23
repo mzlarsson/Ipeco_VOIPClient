@@ -54,7 +54,7 @@ public class RoomHandler {
 				if (terminate) {
 					c.terminate();
 				}
-				if(clientList.isEmpty()){
+				if(clientList.isEmpty() && r.getId() != 0){
 					rooms.remove(r);
 				}
 				break;

@@ -214,11 +214,11 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
     public void onDataUpdate(String command) {
         if(command.equals("dataUpdate")){
             updateRoomList();
-            updateUserList();
         } else if(command.startsWith("roomCreated")) {
             String[] s = command.split(",");
             int roomID = Integer.parseInt(s[1]);
             joinRoom(roomID);
+            updateRoomList();
         }
     }
 
@@ -231,8 +231,10 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
     }
 
     private void updateRoomList(){
+        Log.i("JoinRoomActivity", "updateing room list");
         rooms = CommandHandler.getRooms();
         adapter.notifyDataSetChanged();
+        getWindow().getDecorView().findViewById(android.R.id.content).getRootView().invalidate();
     }
 
     private void updateUserList() {
@@ -267,12 +269,14 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
 
             User[] users =  CommandHandler.getUsers(getItem(position).getId());
             String userText = "";
-            if(isDriving) {                             //When driving, Show how many users are in each room.
-                userText = ("(" + users.length + ")");
-            } else {                                    //When vehicle is not moving, Show each users name in each room.
-                for(int i = 0; i < users.length; i++){
-                    if(i == 0) userText = users[i].getName();
-                       else userText = userText + (", " + users[i].getName());
+            if(users != null) {
+                if (isDriving) {                             //When driving, Show how many users are in each room.
+                    userText = ("(" + users.length + ")");
+                } else {                                    //When vehicle is not moving, Show each users name in each room.
+                    for (int i = 0; i < users.length; i++) {
+                        if (i == 0) userText = users[i].getName();
+                        else userText = userText + (", " + users[i].getName());
+                    }
                 }
             }
             userView.setText(userText);

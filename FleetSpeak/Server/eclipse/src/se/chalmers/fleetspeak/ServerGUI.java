@@ -274,7 +274,6 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener, IE
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			Log.logNullPointerException("Welcome!");
 			tcpText.setEnabled(false);
 			udpText.setEnabled(false);
 			start.setEnabled(false);

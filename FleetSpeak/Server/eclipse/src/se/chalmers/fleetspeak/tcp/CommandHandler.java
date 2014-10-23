@@ -148,7 +148,7 @@ public class CommandHandler implements IEventBusSubscriber {
 				roomHandler.moveClient((Integer)command.getKey(), newRoom);
 				eventBus.fireEvent(new EventBusEvent("broadcast", new Command("createAndMove", command.getKey(), newRoom.getName() + "," + newRoom.getId()), null));
 			// Called when a client changes rooms to an existing room.
-			} else if (commandName.equals("move")) {
+			} else if (commandName.equals("moveUser")) {
 				roomHandler.moveClient((Integer)command.getKey(), (Integer)command.getValue());
 				eventBus.fireEvent(new EventBusEvent("broadcast", command, null));
 			// Called when commands are manually entered into the command line.
@@ -173,6 +173,8 @@ public class CommandHandler implements IEventBusSubscriber {
 			}else if(commandName.equals("setRtpPort")){
 				Client c = roomHandler.findClient((Integer)command.getKey());
 				c.startRTPTransfer((Integer)command.getValue());
+			}else{
+				Log.logError("Got unrecognized command: <i>"+command.getCommand()+"</i>");
 			}
 		}
 	}

@@ -73,6 +73,14 @@ public class SoundController {
         return currentSoundController;
     }
 
+    public static void mute(){
+        currentSoundController.audioStream.setMode(RtpStream.MODE_RECEIVE_ONLY);
+    }
+
+    public static void unmute(){
+        currentSoundController.audioStream.setMode(RtpStream.MODE_NORMAL);
+    }
+
     private static void fetchIP(){
         try {
             NetworkInterface network = null;
