@@ -28,10 +28,8 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 		this.clientSocket = clientSocket;
 		try {
 			Log.log("[TCPHandler]Trying to get streams");
-			objectOutputStream = new ObjectOutputStream(
-					clientSocket.getOutputStream());
-			objectInputStream = new ObjectInputStream(
-					clientSocket.getInputStream());
+			objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
+			objectInputStream = new ObjectInputStream(clientSocket.getInputStream());
 			Log.log("[TCPHandler]Got streams");
 		} catch (IOException e) {
 			Log.logException(e);
@@ -44,14 +42,13 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 	public void run() {
 		isRunning = true;
 		try {
-			while (isRunning) {
+			while (isRunning && objectInputStream != null) {
 				Log.log("[TCPHandler] trying to read");
 				Object o = objectInputStream.readObject();
 				Log.log("[TCPHandler] Found: " + o.getClass().toString());
 				Command c = (Command) o ;//objectInputStream.readObject();
 				Log.log("[TCPHandler] Got command " + c.getCommand());
 				eventBus.fireEvent(new EventBusEvent("CommandHandler", c, this));
-				Thread.sleep(500);
 			}
 		} catch(EOFException eofe){
 			eventBus.fireEvent(new EventBusEvent("CommandHandler", new Command("disconnect", clientID, null), this));
@@ -64,8 +61,6 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 			Log.logException(e);
 		} catch (ClassNotFoundException e) {
 			Log.log("[TCPHandler]" + e.getMessage());
-		} catch (InterruptedException e) {
-			eventBus.fireEvent(new EventBusEvent("CommandHandler", new Command("disconnect", clientID, null), this));
 		}
 	}
 
@@ -84,9 +79,10 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 			Log.log("[TCPHandler]Trying to send " + command.getCommand());
 			objectOutputStream.writeObject(command);
 			Log.log("[TCPHandler] <i>Command sent: "+command.getCommand()+"</i>");
-		}catch(IOException e){
-			Log.logError(e.getMessage());
-			e.printStackTrace();
+		} catch(SocketException e){
+			eventBus.fireEvent(new EventBusEvent("CommandHandler", new Command("disconnect", clientID, null), this));
+		} catch(IOException e){
+			Log.logException(e);
 		}
 	}
 

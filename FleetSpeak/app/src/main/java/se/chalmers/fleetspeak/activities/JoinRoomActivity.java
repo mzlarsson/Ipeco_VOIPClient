@@ -41,8 +41,10 @@ import se.chalmers.fleetspeak.Room;
 import se.chalmers.fleetspeak.ServerHandler;
 import se.chalmers.fleetspeak.SocketService;
 import se.chalmers.fleetspeak.User;
+import se.chalmers.fleetspeak.sound.SoundController;
 import se.chalmers.fleetspeak.truck.TruckDataHandler;
 import se.chalmers.fleetspeak.truck.TruckStateListener;
+import se.chalmers.fleetspeak.util.ServiceUtil;
 import se.chalmers.fleetspeak.util.ThemeUtils;
 
 /**
@@ -79,7 +81,9 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_join_room);
 
-        bindService(new Intent(this, SocketService.class),serviceConnection,Context.BIND_AUTO_CREATE);
+        if(!ServiceUtil.isMyServiceRunning(this, ServiceConnection.class)) {
+            bindService(new Intent(this, SocketService.class), serviceConnection, Context.BIND_AUTO_CREATE);
+        }
 
         CommandHandler.addListener(this);
 
@@ -179,7 +183,8 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.day_night_menu, menu);
-
+        MenuItem item = menu.findItem(R.id.day_night_toggle);
+        item.setVisible(!TruckDataHandler.getInstance().getTruckMode());
         return true;
     }
 
@@ -206,7 +211,7 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
 
     @Override
     public void truckModeChanged(boolean mode) {
-        findViewById(R.id.day_night_toggle).setVisibility(mode ? View.INVISIBLE: View.VISIBLE);
+        //findViewById(R.id.day_night_toggle).setVisibility(mode ? View.INVISIBLE: View.VISIBLE);
         // Makes the users text list Gone or Visible depending on Car Mode
         isDriving = mode;
 /*        for(int i = 0; i < adapter.getCount(); i++) {
@@ -248,23 +253,10 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
         getWindow().getDecorView().findViewById(android.R.id.content).getRootView().invalidate();
     }
 
-    private void updateUserList() {
-        //The adapter grabs the new userlist
-        adapter.notifyDataSetChanged();
-    }
-
-    public void updateList(View view) {
-        rooms = CommandHandler.getRooms();
-        ArrayRooms.clear();
-        for(int i = 0; i < rooms.length; i++){ //TODO Changed
-            ArrayRooms.add(rooms[i]);
-        }
-        adapter.notifyDataSetChanged();
-
-    }
-
-
-    //Inner Class, The adapter for Bookmarks ListView
+    /**
+     * Inner class, Adapter for the Room's ListView
+     * The adapter handles all the items in the ListView
+     */
     public class JoinRoomAdapter extends ArrayAdapter<Room> {
 
 
@@ -311,51 +303,40 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
 
 
     }
-    private boolean isMyServiceRunning(Class<?> serviceClass) {
-        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (serviceClass.getName().equals(service.service.getClassName())) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     @Override
     protected void onPause(){
-        Log.i(this.getClass().toString(), "called onPause unbinding");
+        Log.i("JOINROOMACTIVITY", "called onPause unbinding");
         super.onPause();
-        if(this.isMyServiceRunning(ServiceConnection.class)) {
+        if(ServiceUtil.isMyServiceRunning(this, ServiceConnection.class)) {
             unbindService(serviceConnection);
         }
     }
     @Override
     protected void onStop(){
-        Log.i(this.getClass().toString(), "called onStop unbinding");
+        Log.i("JOINROOMACTIVITY", "called onStop unbinding");
         super.onStop();
-        if(this.isMyServiceRunning(ServiceConnection.class)) {
+        if(ServiceUtil.isMyServiceRunning(this, ServiceConnection.class)) {
             unbindService(serviceConnection);
         }
     }
     @Override
     protected void onDestroy(){
-        Log.i(this.getClass().toString(), "called onDestroy unbinding" );
         super.onDestroy();
-        if(this.isMyServiceRunning(ServiceConnection.class)) {
-            unbindService(serviceConnection);
-        }
-
+        Log.i("JOINROOMACTIVITY", "called onDestroy unbinding");
+        CommandHandler.removeListener(this);
+        ServiceUtil.close(this);
     }
     @Override
     protected void onResume(){
-        Log.i(this.getClass().toString(), "called onResume binding");
+        Log.i("JOINROOMACTIVITY", "called onResume binding");
         bindService(new Intent(this, SocketService.class), serviceConnection, Context.BIND_AUTO_CREATE);
         super.onResume();
 
     }
     @Override
     protected void onRestart(){
-        Log.i(this.getClass().toString(), "called onRestart binding");
+        Log.i("JOINROOMACTIVITY", "called onRestart binding");
         super.onRestart();
         bindService(new Intent(this, SocketService.class), serviceConnection, Context.BIND_AUTO_CREATE);
     }

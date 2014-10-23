@@ -41,6 +41,7 @@ import se.chalmers.fleetspeak.User;
 import se.chalmers.fleetspeak.sound.SoundController;
 import se.chalmers.fleetspeak.truck.TruckDataHandler;
 import se.chalmers.fleetspeak.truck.TruckStateListener;
+import se.chalmers.fleetspeak.util.ServiceUtil;
 import se.chalmers.fleetspeak.util.ThemeUtils;
 
 /**
@@ -51,6 +52,7 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
     ListView userListView;
     private SeekBar volumeControlBar;
     private SeekBar micControlBar;
+    private Menu menu;
     private PopupWindow micAndVolumePanel;
     private static TruckDataHandler truckDataHandler;
     User[] users;
@@ -94,16 +96,14 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
         currentRoomID = intent.getIntExtra("roomID", 0);
         initUserList(); //init userList
 
-        initUserList(); //init userList
-
         userListView = (ListView) findViewById(R.id.userList);
         adapter = new ChatRoomListAdapter(this, arrayUsers);
         userListView.setAdapter(adapter);
         userListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int pos , long l) {
-               User user = adapter.getItem(pos);
-                if(user.getMuted()){
+            public void onItemClick(AdapterView<?> adapterView, View view, int pos, long l) {
+                User user = adapter.getItem(pos);
+                if (user.getMuted()) {
                     try {
                         mService.send(ServerHandler.unMuteUser(user.getId()));
                     } catch (RemoteException e) {
@@ -111,7 +111,7 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
                     }
                     user.setMuted(false);
                     adapter.notifyDataSetChanged();
-                }else{
+                } else {
                     try {
                         mService.send(ServerHandler.muteUser(user.getId()));
                     } catch (RemoteException e) {
@@ -123,24 +123,26 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
 
             }
         });
-        truckModeChanged(TruckDataHandler.getInstance().getTruckMode());
 
     }
 
 
     /**
      * Gets the user list from the handler.
-     * @return List of Users from the room with current room id.
+     * Moves the users to an arraylist which will be used by the adapter.
      */
     private void initUserList(){
         users = CommandHandler.getUsers(currentRoomID);
+        Log.i("Users size from server", String.valueOf(users.length));
         for(int i = 0; i < users.length; i++){
             arrayUsers.add(users[i]);
         }
 
     }
 
-
+    /**
+     * Updates the userlist when for example a another user leaves or join a room.
+     */
     private void updateUserList() {
         //TODO SERVER: When a user joins this room(currentRoomID) call this method
         users = CommandHandler.getUsers(currentRoomID);
@@ -177,13 +179,15 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
         }else{
             SoundController.mute();
         }
-}
+    }
 
     @Override
     public void truckModeChanged(boolean mode) {
-        findViewById(R.id.volume_mic_control).setVisibility(mode ? View.INVISIBLE: View.VISIBLE);
+        if (menu != null) {
+            MenuItem item = menu.findItem(R.id.volume_mic_control);
+            item.setVisible(!mode);
+        }
     }
-
     @Override
     public void onDataUpdate(String command) {
         if(command.equals("dataUpdate")){
@@ -191,13 +195,23 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
         }
     }
 
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        Log.i("CHATROOMACTIVITY", "called onDestroy unbinding");
+        CommandHandler.removeListener(this);
+        ServiceUtil.close(this);
+    }
+
     /**
      * Inner class, Adapter for the ChatRoom ListView
+     * The adapter handles all the items in the listView
      */
     public class ChatRoomListAdapter extends ArrayAdapter<User> {
 
         public ChatRoomListAdapter(Context context, ArrayList<User> values) {
             super(context, R.layout.list_item_users, values);
+            Log.i("ChatRoom Userlist size: ", String.valueOf(values.size()));
         }
 
         @Override
@@ -225,6 +239,7 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
     }
 
     public boolean onCreateOptionsMenu(Menu menu){
+        this.menu = menu;
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.chatroommenu, menu);
         ImageButton locButton = (ImageButton) menu.findItem(R.id.volume_mic_control).getActionView();

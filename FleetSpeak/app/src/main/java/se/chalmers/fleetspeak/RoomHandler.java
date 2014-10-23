@@ -18,7 +18,7 @@ public class RoomHandler implements IUserHandler{
 
     public RoomHandler() {
         rooms = new HashMap<Room,ArrayList<User>>();
-        defaultRoom = new Room("Default",0);
+        defaultRoom = new Room("Lobby",0);
     }
 
     public void addUser(User user, Room room) {
