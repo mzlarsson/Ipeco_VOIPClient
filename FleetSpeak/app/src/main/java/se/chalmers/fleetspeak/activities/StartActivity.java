@@ -53,7 +53,6 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
     private String userNameText;
     private SharedPreferences prefs;
     private SharedPreferences.Editor prefEdit;
-    private SoundController soundController;
     private boolean isConnected = false;
     static Messenger mService = null;
 
@@ -231,7 +230,7 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
         if(this.isMyServiceRunning(ServiceConnection.class)) {
             unbindService(mConnection);
         }
-        soundController.close();
+        SoundController.close();
     }
     protected void onRestart(){
         super.onRestart();
@@ -293,7 +292,7 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
                 mService.send(Message.obtain(ServerHandler.getUsers()));
                 isConnected = true;
 				
-                soundController = SoundController.create(this, ip, port);
+                SoundController.create(this, ip, port);
             } catch (RemoteException e) {
 
         }
@@ -340,7 +339,7 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
             Intent intent = new Intent(this,JoinRoomActivity.class);
             startActivity(intent);
         }else if(command.equals("connection failed")){
-            soundController.close();
+            SoundController.close();
             Log.i("STARTACTIVITY", " try again");
             showConnectionErrorMessage();
         }
