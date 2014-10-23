@@ -107,6 +107,7 @@ public class SocketService extends Service {
                                 } catch (IOException e) {
                                     Log.i("Connector.connect", "Connection failed " + e.getMessage());
                                     try {
+                                        endSocketConnection();
                                         messenger.send(Message.obtain(null, 0,new Command("connection failed", null, null)));
                                     } catch (RemoteException e1) {
                                         e1.printStackTrace();
@@ -239,10 +240,13 @@ public class SocketService extends Service {
 
     private void endSocketConnection(){
      try{
-       socket.close();
-       objectInputStream.close();
-       objectOutputStream.close();
-       id = -1;
+         if(objectInputStream != null)
+            objectInputStream.close();
+         if(objectOutputStream != null)
+            objectOutputStream.close();
+         if(socket != null)
+            socket.close();
+         id = -1;
      }catch(IOException e){
         Log.i(LOGNAME,"Connection ended unexeptedly");
      }

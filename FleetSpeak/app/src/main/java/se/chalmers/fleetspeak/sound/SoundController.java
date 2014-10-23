@@ -65,11 +65,9 @@ public class SoundController {
     }
 
     public static void mute(){
-        Log.d("DEBUG_GG", "Before: "+audioStream.getLocalPort());
         audioStream.join(null);
         audioStream.setMode(RtpStream.MODE_RECEIVE_ONLY);
         audioStream.join(audioGroup);
-        Log.d("DEBUG_GG", "After: "+audioStream.getLocalPort());
     }
 
     public static void unmute(){

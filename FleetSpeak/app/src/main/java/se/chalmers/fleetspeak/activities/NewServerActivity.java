@@ -14,4 +14,5 @@ public class NewServerActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_server);
     }
+
 }

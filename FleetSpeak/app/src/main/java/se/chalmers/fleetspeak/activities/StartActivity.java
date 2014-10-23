@@ -1,6 +1,5 @@
 package se.chalmers.fleetspeak.activities;
 
-import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
@@ -9,9 +8,6 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Message;
@@ -25,7 +21,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -42,6 +37,7 @@ import se.chalmers.fleetspeak.SocketService;
 import se.chalmers.fleetspeak.sound.SoundController;
 import se.chalmers.fleetspeak.truck.TruckDataHandler;
 import se.chalmers.fleetspeak.truck.TruckStateListener;
+import se.chalmers.fleetspeak.util.ServiceUtil;
 import se.chalmers.fleetspeak.util.ThemeUtils;
 
 public class StartActivity extends ActionBarActivity implements TruckStateListener, Commandable {
@@ -71,15 +67,6 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
         }
     };
 
-    private boolean isMyServiceRunning(Class<?> serviceClass) {
-        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (serviceClass.getName().equals(service.service.getClassName())) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -173,19 +160,19 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
 
 
 
-            Intent i =  new Intent(this, SocketService.class);
 
-            startService(new Intent(i));
-            Log.i("STARTACTIVITY", "started service");
+        Log.i("STARTACTIVITY", "started service");
 
+        Intent i = new Intent(this,SocketService.class);
+        startService(i);
         Log.i("STARTACTIVITY", "binding service");
-        startService(new Intent(this,SocketService.class));
-        boolean unfucked = isMyServiceRunning(SocketService.class);
-        Log.i("STARTACTIVITY", "unfucked? " + unfucked);
         bindService(i, mConnection, Context.BIND_AUTO_CREATE);
-        unfucked = isMyServiceRunning(SocketService.class);
-        Log.i("STARTACTIVITY", "unfucked? " + unfucked);
 
+    }
+
+    @Override
+    public void onBackPressed(){
+        super.onBackPressed();
     }
 
     @Override
@@ -209,7 +196,7 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
         Log.i("STARTACTIVITY", "called onPause unbinding");
         super.onPause();
         CommandHandler.removeListener(this);
-        if(this.isMyServiceRunning(ServiceConnection.class)) {
+        if(ServiceUtil.isMyServiceRunning(this, ServiceConnection.class)) {
             unbindService(mConnection);
         }
     }
@@ -218,19 +205,19 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
         CommandHandler.removeListener(this);
         Log.i("STARTACTIVITY", "called onStop unbinding");
         super.onStop();
-        if(this.isMyServiceRunning(ServiceConnection.class)) {
-             unbindService(mConnection);
-        }
-    }
-    @Override
-    protected void onDestroy(){
-        CommandHandler.removeListener(this);
-        Log.i("STARTACTIVITY", "called onDestroy unbinding" );
-        super.onDestroy();
-        if(this.isMyServiceRunning(ServiceConnection.class)) {
+        if(ServiceUtil.isMyServiceRunning(this, ServiceConnection.class)) {
             unbindService(mConnection);
         }
-        SoundController.close();
+    }
+
+    @Override
+    protected void onDestroy() {
+        Log.i("STARTACTIVITY", "called onDestroy unbinding");
+        CommandHandler.removeListener(this);
+        ServiceUtil.close(this);
+        super.onDestroy();
+
+
     }
     protected void onRestart(){
         super.onRestart();
@@ -238,8 +225,6 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
 
     public void onConnectButtonClick(View view) {
        startConnection(ipText, Integer.parseInt(portText), userNameText);
-
-
     }
     /**
      * Show Connection error message
@@ -286,18 +271,15 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
 
     public void startConnection(String ip, int port, String userName){
         connecting(true);
-            try {
-                mService.send(Message.obtain(ServerHandler.connect(ip,port)));
-                mService.send(Message.obtain(ServerHandler.setName(userName)));
-                mService.send(Message.obtain(ServerHandler.getUsers()));
-                isConnected = true;
+
+        try {
+            mService.send(Message.obtain(ServerHandler.connect(ip,port)));
+            mService.send(Message.obtain(ServerHandler.setName(userName)));
+            mService.send(Message.obtain(ServerHandler.getUsers()));
+            isConnected = true;
 				
-                SoundController.create(this, ip, port);
-            } catch (RemoteException e) {
-
-        }
-
-
+            SoundController.create(this, ip, port);
+        } catch (RemoteException e) {}
     }
 
     public void CarTrue(View view){
@@ -333,9 +315,11 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
 
         if(command.equals("connected")){
             //Without binding the server it will crash on reconnect not sure why it works
-            if(isMyServiceRunning(SocketService.class))
+            if(ServiceUtil.isMyServiceRunning(this, SocketService.class)) {
                 bindService(new Intent(this, SocketService.class), mConnection, Context.BIND_AUTO_CREATE);
-              unbindService(mConnection);
+            }
+
+            unbindService(mConnection);
             Intent intent = new Intent(this,JoinRoomActivity.class);
             startActivity(intent);
         }else if(command.equals("connection failed")){

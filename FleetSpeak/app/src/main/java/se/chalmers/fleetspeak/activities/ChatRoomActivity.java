@@ -39,6 +39,7 @@ import se.chalmers.fleetspeak.User;
 import se.chalmers.fleetspeak.sound.SoundController;
 import se.chalmers.fleetspeak.truck.TruckDataHandler;
 import se.chalmers.fleetspeak.truck.TruckStateListener;
+import se.chalmers.fleetspeak.util.ServiceUtil;
 import se.chalmers.fleetspeak.util.ThemeUtils;
 
 /**
@@ -165,7 +166,7 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
         }else{
             SoundController.mute();
         }
-}
+    }
 
     @Override
     public void truckModeChanged(boolean mode) {
@@ -175,6 +176,14 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
     @Override
     public void onDataUpdate(String command) {
         
+    }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        Log.i("CHATROOMACTIVITY", "called onDestroy unbinding");
+        CommandHandler.removeListener(this);
+        ServiceUtil.close(this);
     }
 
     /**
