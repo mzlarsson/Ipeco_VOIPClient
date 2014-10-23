@@ -123,7 +123,7 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
 
             }
         });
-
+        truckModeChanged(truckDataHandler.getInstance().getTruckMode());
     }
 
 

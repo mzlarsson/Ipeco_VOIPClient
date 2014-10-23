@@ -42,7 +42,6 @@ import se.chalmers.fleetspeak.util.ThemeUtils;
 
 public class StartActivity extends ActionBarActivity implements TruckStateListener, Commandable {
 
-    private static TruckDataHandler truckDataHandler;
     private String ipText;
     private Context context = this;
     private String portText;
@@ -51,6 +50,7 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
     private SharedPreferences.Editor prefEdit;
     private boolean isConnected = false;
     static Messenger mService = null;
+    private Menu menu;
 
 
     private ServiceConnection mConnection = new ServiceConnection() {
@@ -80,36 +80,34 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
         setContentView(R.layout.activity_start);
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         CommandHandler.getInstance().addListener(this);
-        truckDataHandler.addListener(this);
-
-        EditText ipTextField = (EditText) findViewById(R.id.ipField);
-        EditText portField = (EditText) findViewById(R.id.portField);
-        EditText userNameField = (EditText) findViewById(R.id.usernameField);
-
-
-        portText = prefs.getString( getString(R.string.port_number_text),"8867");
-        userNameText = prefs.getString(getString(R.string.username_text), "username");
-        ThemeUtils.setUsername(userNameText);
-        ipText = prefs.getString(getString(R.string.ip_adress_text),"46.239.103.195");
-        ipTextField.setText(ipText);
-        portField.setText(portText);
-        userNameField.setText(userNameText);
-        //Removes focus from the EditTextFields in the app
-        RelativeLayout l = (RelativeLayout) findViewById(R.id.relStart_layout);
-        l.requestFocus();
+        TruckDataHandler.addListener(this);
+        truckModeChanged(TruckDataHandler.getInstance().getTruckMode());
+        if (!TruckDataHandler.getInstance().getTruckMode()) {
+            EditText ipTextField = (EditText) findViewById(R.id.ipField);
+            EditText portField = (EditText) findViewById(R.id.portField);
+            EditText userNameField = (EditText) findViewById(R.id.usernameField);
 
 
+            portText = prefs.getString(getString(R.string.port_number_text), "8867");
+            userNameText = prefs.getString(getString(R.string.username_text), "username");
+            ThemeUtils.setUsername(userNameText);
+            ipText = prefs.getString(getString(R.string.ip_adress_text), "46.239.103.195");
+            ipTextField.setText(ipText);
+            portField.setText(portText);
+            userNameField.setText(userNameText);
+            //Removes focus from the EditTextFields in the app
+            RelativeLayout l = (RelativeLayout) findViewById(R.id.relStart_layout);
+            l.requestFocus();
 
 
+            Log.i("STARTACTIVITY", "started service");
 
-        Log.i("STARTACTIVITY", "started service");
-
-        Intent i = new Intent(this,SocketService.class);
-        startService(i);
-        Log.i("STARTACTIVITY", "binding service");
+            Intent i = new Intent(this, SocketService.class);
+            startService(i);
+            Log.i("STARTACTIVITY", "binding service");
             bindService(i, mConnection, Context.BIND_AUTO_CREATE);
+        }
     }
-
     @Override
     public void onBackPressed(){
         super.onBackPressed();
@@ -117,9 +115,8 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        this.menu = menu;
         getMenuInflater().inflate(R.menu.day_night_menu, menu);
-        MenuItem item = menu.findItem(R.id.day_night_toggle);
-        item.setVisible(!TruckDataHandler.getInstance().getTruckMode());
         return true;
     }
 
@@ -244,7 +241,10 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
         EditText edittext = (EditText) findViewById(R.id.ipField);
         EditText edittext2 = (EditText) findViewById(R.id.usernameField);
         setContentView(mode? R.layout.activity_car_start: R.layout.activity_start);
-
+        if(menu!=null){
+            MenuItem item = menu.findItem(R.id.day_night_toggle);
+            item.setVisible(!mode);
+        }
         if(mode){
             ((TextView)findViewById(R.id.IpAdress)).setText(String.valueOf(edittext.getText()));
             ((TextView)findViewById(R.id.userName)).setText(String.valueOf(edittext2.getText()));

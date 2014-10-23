@@ -52,6 +52,7 @@ import se.chalmers.fleetspeak.util.ThemeUtils;
  */
 public class JoinRoomActivity extends ActionBarActivity implements TruckStateListener, Commandable {
     SharedPreferences prefs;
+    private Menu menu;
     private ListView roomView;
     private ArrayAdapter<Room> adapter;
     protected Room[] rooms;
@@ -81,7 +82,7 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_join_room);
 
-        if(!ServiceUtil.isMyServiceRunning(this, ServiceConnection.class)) {
+        if(ServiceUtil.isMyServiceRunning(this, ServiceConnection.class)) {
             bindService(new Intent(this, SocketService.class), serviceConnection, Context.BIND_AUTO_CREATE);
         }
 
@@ -182,9 +183,8 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        this.menu = menu;
         getMenuInflater().inflate(R.menu.day_night_menu, menu);
-        MenuItem item = menu.findItem(R.id.day_night_toggle);
-        item.setVisible(!TruckDataHandler.getInstance().getTruckMode());
         return true;
     }
 
@@ -211,15 +211,13 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
 
     @Override
     public void truckModeChanged(boolean mode) {
-        //findViewById(R.id.day_night_toggle).setVisibility(mode ? View.INVISIBLE: View.VISIBLE);
         // Makes the users text list Gone or Visible depending on Car Mode
         isDriving = mode;
-/*        for(int i = 0; i < adapter.getCount(); i++) {
-            int id = adapter.getItem(i).getId();
-            View view = findViewById(id).findViewById(R.id.list_item_users);
-            view.setVisibility(mode?View.GONE:View.VISIBLE);
-        }*/
         adapter.notifyDataSetChanged();
+        if(menu!=null){
+            MenuItem item = menu.findItem(R.id.day_night_toggle);
+            item.setVisible(!mode);
+        }
     }
 
     @Override
