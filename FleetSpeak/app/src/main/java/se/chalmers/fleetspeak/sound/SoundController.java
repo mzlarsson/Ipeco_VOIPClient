@@ -107,7 +107,8 @@ public class SoundController {
     }
 
     public static void close(){
-        audioGroup.clear();
+        if(hasValue())
+            audioGroup.clear();
         audioGroup = null;
         audioStream = null;
         loaded = false;

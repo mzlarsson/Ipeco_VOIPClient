@@ -40,12 +40,24 @@ public enum ServerCommand {
 			return "<b>roomInfo</b> Shows all the current rooms with all users.";
 		}
 	},
+	SET_ROOM_NAME("setRoomName") {
+		@Override
+		public String getInfo(){
+			return "<b>setRoomName <room-id> <room-name></b> Sets the name of the room with the given ID.";
+		}
+	},
 	SET_RTP_PORT("setRtpPort") {
 		@Override
 		public String getInfo(){
 			return "<b>setRtpPort <user-id> <rtp-port></b> Sets the given RTP port for the user with the given ID.";
 		}
-	};
+	},
+	SET_USER_NAME("setUsername") {
+		@Override
+		public String getInfo(){
+			return "<b>setUsername <user-id> <user-name></b> Sets the name of the user with the given ID.";
+		}
+	},;
 	
 	private String cmd;
 	

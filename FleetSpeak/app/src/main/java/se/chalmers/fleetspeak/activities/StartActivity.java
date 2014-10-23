@@ -73,7 +73,7 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         prefEdit = prefs.edit();
-        int prefTheme = prefs.getInt("Theme", R.style.Theme_Fleetspeak_dark);
+        int prefTheme = prefs.getInt("Theme", 1);
         ThemeUtils.setTheme(prefTheme);
         ThemeUtils.onCreateActivityCreateTheme(this);
         super.onCreate(savedInstanceState);
@@ -82,7 +82,7 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
         CommandHandler.getInstance().addListener(this);
         truckDataHandler.addListener(this);
         final EditText ipTextField = (EditText) findViewById(R.id.ipField);
-
+        truckModeChanged(TruckDataHandler.getInstance().getTruckMode());
         ipTextField.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
@@ -144,15 +144,6 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
         ipTextField.setText(ipText);
         portField.setText(portText);
         userNameField.setText(userNameText);
-        final CheckBox savePrefsCheckbox = (CheckBox) findViewById(R.id.saveUserPref);
-        savePrefsCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (savePrefsCheckbox.isChecked()) {
-                    savePreferences();
-                }
-            }
-        });
         //Removes focus from the EditTextFields in the app
         RelativeLayout l = (RelativeLayout) findViewById(R.id.relStart_layout);
         l.requestFocus();
@@ -186,7 +177,7 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.day_night_toggle) {
-            // ThemeUtils.changeTheme(this);
+             ThemeUtils.changeTheme(this);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -270,6 +261,9 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
     }
 
     public void startConnection(String ip, int port, String userName){
+        CheckBox checkBox = (CheckBox) findViewById(R.id.saveUserPref);
+        if(checkBox.isChecked())
+            savePreferences();
         connecting(true);
 
         try {
@@ -291,6 +285,7 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
     @Override
     public void truckModeChanged(boolean mode) {
         setContentView(mode? R.layout.activity_car_start: R.layout.activity_start);
+        findViewById(R.id.day_night_toggle).setVisibility(mode? View.INVISIBLE: View.VISIBLE);
         if(mode){
             ((TextView)findViewById(R.id.IpAdress)).setText(ipText);
             ((TextView)findViewById(R.id.userName)).setText(userNameText);
@@ -308,11 +303,11 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
         ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
                 .hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
     }
+
     @Override
     public void onDataUpdate(String command) {
         Log.i("STARTACTIVITY", "Im Commandhadlers bitch");
         connecting(false);
-
         if(command.equals("connected")){
             //Without binding the server it will crash on reconnect not sure why it works
             if(ServiceUtil.isMyServiceRunning(this, SocketService.class)) {

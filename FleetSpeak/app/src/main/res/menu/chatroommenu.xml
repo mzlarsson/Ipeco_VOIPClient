@@ -4,12 +4,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".BookmarkScreen" >
-    <item android:id="@+id/day_night_toggle"
-        android:title="day and night toggle"
-        app:showAsAction="ifRoom"
-        android:icon="@drawable/ic_day_night_mode"
-
-        />
 
     <item android:id="@+id/volume_mic_control"
         android:title="@string/volume_mic_control"

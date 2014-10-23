@@ -32,6 +32,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
 import se.chalmers.fleetspeak.CommandHandler;
 import se.chalmers.fleetspeak.Commandable;
 import se.chalmers.fleetspeak.R;
@@ -52,7 +54,9 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
     SharedPreferences prefs;
     private ListView roomView;
     private ArrayAdapter<Room> adapter;
-    private Room[] rooms;
+    protected Room[] rooms;
+    private ArrayList ArrayRooms = new ArrayList<Room>();
+    public Room[] demoRoom = {new Room("Rum1",1)};
     private static TruckDataHandler truckDataHandler;
 
    // private RoomHandler handler;
@@ -87,10 +91,12 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         rooms = CommandHandler.getRooms(); //Init roomslist
-
-        adapter = new JoinRoomAdapter(this, rooms);
+        for(int i = 0; i < rooms.length; i++) {
+            ArrayRooms.add(rooms[i]);
+        }
+        adapter = new JoinRoomAdapter(this, ArrayRooms); //TODO Test Change rooms > ArrayRooms
         roomView.setAdapter(adapter);
-
+        truckModeChanged(TruckDataHandler.getInstance().getTruckMode());
         roomView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
@@ -204,6 +210,7 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
 
     @Override
     public void truckModeChanged(boolean mode) {
+        findViewById(R.id.day_night_toggle).setVisibility(mode ? View.INVISIBLE: View.VISIBLE);
         // Makes the users text list Gone or Visible depending on Car Mode
         isDriving = mode;
 /*        for(int i = 0; i < adapter.getCount(); i++) {
@@ -237,6 +244,10 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
     private void updateRoomList(){
         Log.i("JoinRoomActivity", "updateing room list");
         rooms = CommandHandler.getRooms();
+        ArrayRooms.clear();
+        for(int i = 0; i < rooms.length; i++){ //TODO Changed
+            ArrayRooms.add(rooms[i]);
+        }
         adapter.notifyDataSetChanged();
         getWindow().getDecorView().findViewById(android.R.id.content).getRootView().invalidate();
     }
@@ -246,17 +257,31 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
         adapter.notifyDataSetChanged();
     }
 
+    public void updateList(View view) {
+        rooms = CommandHandler.getRooms();
+        ArrayRooms.clear();
+        for(int i = 0; i < rooms.length; i++){ //TODO Changed
+            ArrayRooms.add(rooms[i]);
+        }
+        adapter.notifyDataSetChanged();
+
+    }
+
 
     //Inner Class, The adapter for Bookmarks ListView
     public class JoinRoomAdapter extends ArrayAdapter<Room> {
-        private Room[] rooms;
-        public JoinRoomAdapter(Context context, Room[] values) {
+
+
+        public JoinRoomAdapter(Context context, ArrayList<Room> values) {
+
             super(context, R.layout.list_item_rooms, values);
-            rooms = values;
+            //rooms = values;
+
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
+
             LayoutInflater inflater = LayoutInflater.from(getContext());
 
             View view = inflater.inflate(isDriving?R.layout.list_item_rooms_while_driving:

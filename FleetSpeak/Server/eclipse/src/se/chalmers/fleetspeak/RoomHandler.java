@@ -97,7 +97,12 @@ public class RoomHandler {
 		changeEvent();
 	}
 	
- 	public Client findClient(int clientID) throws NoSuchElementException {
+	public void setRoomName(int roomID, String name) {
+		findRoom(roomID).setName(name);
+		changeEvent();
+	}
+
+	public Client findClient(int clientID) throws NoSuchElementException {
 		for(ArrayList<Client> clients:rooms.values()){
 			for(Client c: clients){
 				if(c.getClientID()==clientID){
