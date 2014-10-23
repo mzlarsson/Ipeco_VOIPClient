@@ -194,7 +194,24 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
             updateUserList();
         }
     }
-
+    @Override
+    protected void onPause(){
+        Log.i("ChatroomActivity", "called onPause unbinding");
+        super.onPause();
+        CommandHandler.removeListener(this);
+        if(ServiceUtil.isMyServiceRunning(this, ServiceConnection.class)) {
+            unbindService(mConnection);
+        }
+    }
+    @Override
+    protected void onStop(){
+        CommandHandler.removeListener(this);
+        Log.i("ChatroomActivity", "called onStop unbinding");
+        super.onStop();
+        if(ServiceUtil.isMyServiceRunning(this, ServiceConnection.class)) {
+            unbindService(mConnection);
+        }
+    }
     @Override
     public void onDestroy(){
         super.onDestroy();

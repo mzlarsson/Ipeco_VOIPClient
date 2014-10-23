@@ -41,7 +41,7 @@ public class Room {
         Room room = (Room) o;
 
         if (id != room.id) return false;
-        
+
 
         return true;
     }
