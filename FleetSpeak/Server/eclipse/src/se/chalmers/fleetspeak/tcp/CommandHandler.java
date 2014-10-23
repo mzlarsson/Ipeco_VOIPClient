@@ -77,8 +77,9 @@ public class CommandHandler implements IEventBusSubscriber {
 			try {
 				clientID = Integer.parseInt(data[1]);
 				String roomName = data[2];
-				roomHandler.moveClient(clientID, new Room(roomName));
-				eventBus.fireEvent(new EventBusEvent("broadcast", new Command("createAndMove", clientID, roomName), null));
+				Room r = new Room(roomName);
+				roomHandler.moveClient(clientID, r);
+				eventBus.fireEvent(new EventBusEvent("broadcast", new Command("createAndMove", clientID, r.getName()+","+r.getId()), null));
 			} catch (NumberFormatException ex) {
 				wrongFormat(ServerCommand.MOVE_USER_NEW_ROOM);
 			} catch (ArrayIndexOutOfBoundsException ex) {
