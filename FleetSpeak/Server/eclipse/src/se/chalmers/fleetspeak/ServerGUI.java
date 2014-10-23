@@ -2,6 +2,8 @@ package se.chalmers.fleetspeak;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -12,6 +14,9 @@ import java.awt.event.WindowEvent;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -59,6 +64,7 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener, IE
 	private ArrayList<ServerCommand> searchCmds;
 	private int cmdLogIndex, searchIndex;
 	private Color FOREST_GREEN = new Color(20, 170, 0);
+	private Color DEFAULT_BACKGROUND;
 	
 	public static void main(String[] args) {
 		new ServerGUI();
@@ -84,6 +90,7 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener, IE
 		    	}
 		    }
 		});
+		DEFAULT_BACKGROUND = getBackground();
 		setLayout(new BorderLayout());
 		setLocation(500, 200);
 		setupLogger();
@@ -250,6 +257,48 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener, IE
 		Log.setupLogger(log);
 	}
 
+	private void startTheParty() {
+		System.out.println("Patry initialized");
+		final JFrame frame = this;
+		new Timer().scheduleAtFixedRate(new TimerTask() {
+			
+			Random rand = new Random();
+			private long startTime = -1;
+
+			@Override
+			public void run() {
+				if(startTime<0){
+					startTime = System.currentTimeMillis();
+				}
+
+				if(System.currentTimeMillis()-startTime<5000){
+					Color col = new Color(rand.nextInt(256),rand.nextInt(256),rand.nextInt(256));
+					colorComponent(frame, col);
+					frame.repaint();
+				}else{
+					cancel();
+				}
+			}
+			
+			private void colorComponent(Component comp, Color col) {
+				if (comp instanceof Container) {
+					for (Component child : ((Container)comp).getComponents() ) {
+						colorComponent(child, col);
+					}
+				}
+				if (!(comp.getClass().equals(JButton.class)||comp.getClass().equals(JTextPane.class)||comp.getClass().equals(JTextField.class))) {
+					comp.setBackground(col);
+				}
+			}
+			
+			@Override
+			public boolean cancel() {
+				colorComponent(frame, DEFAULT_BACKGROUND);
+				return super.cancel();
+			}
+		},0 , 100);
+	}
+	
 	public void start() {
 		if (server == null) {
 			terminal.setText("");
@@ -340,8 +389,12 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener, IE
 				cmdLog.add(cmd);
 				cmdLogIndex = -1;
 				log.log(Level.ALL, "<b>> "+cmd+"</b>");
-				EventBus.getInstance().fireEvent(new EventBusEvent("CommandHandler", new Command("consoleCommand", null, cmd), this));
-	
+				if (cmd.equals("party")) {
+					startTheParty();
+				} else {
+					EventBus.getInstance().fireEvent(new EventBusEvent("CommandHandler", new Command("consoleCommand", null, cmd), this));
+				}
+				
 				cmdLine.setText("");
 			} else if (e.getKeyCode()==KeyEvent.VK_UP) {
 				cmdLogIndex = (cmdLogIndex-1)<0 ? cmdLog.size()-1 : cmdLogIndex-1;
