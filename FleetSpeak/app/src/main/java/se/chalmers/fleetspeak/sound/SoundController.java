@@ -26,18 +26,12 @@ import java.util.Enumeration;
 public class SoundController {
 
     private static AudioGroup audioGroup;
-    private AudioStream audioStream;
-
-    private static SoundController currentSoundController;
+    private static AudioStream audioStream;
+    private static boolean loaded = false;
 
     private static String clientIP = "192.168.1.5";
 
-    private SoundController(AudioStream audioStream, AudioGroup audioGroup){
-        this.audioStream = audioStream;
-        this.audioGroup = audioGroup;
-    }
-
-    public static SoundController create(Context context, String serverIP, int serverPort){
+    public static void create(Context context, String serverIP, int serverPort){
         fetchIP();
 
         AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
@@ -48,7 +42,6 @@ public class SoundController {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
-        AudioStream audioStream = null;
         try {
             audioStream = new AudioStream(InetAddress.getByName(clientIP));
         } catch(UnknownHostException uhe){
@@ -64,21 +57,25 @@ public class SoundController {
             Log.d("Sound", "Unknown host: " + serverIP + ":" + serverPort);
         }
 
-        AudioGroup audioGroup = new AudioGroup();
+        audioGroup = new AudioGroup();
         audioGroup.setMode(AudioGroup.MODE_NORMAL);
         audioStream.join(audioGroup);
-        Log.d("Sound", " Group joined" + audioStream.getLocalPort());
 
-        currentSoundController = new SoundController(audioStream, audioGroup);
-        return currentSoundController;
+        loaded = true;
     }
 
     public static void mute(){
-        currentSoundController.audioStream.setMode(RtpStream.MODE_RECEIVE_ONLY);
+        Log.d("DEBUG_GG", "Before: "+audioStream.getLocalPort());
+        audioStream.join(null);
+        audioStream.setMode(RtpStream.MODE_RECEIVE_ONLY);
+        audioStream.join(audioGroup);
+        Log.d("DEBUG_GG", "After: "+audioStream.getLocalPort());
     }
 
     public static void unmute(){
-        currentSoundController.audioStream.setMode(RtpStream.MODE_NORMAL);
+        audioStream.join(null);
+        audioStream.setMode(RtpStream.MODE_NORMAL);
+        audioStream.join(audioGroup);
     }
 
     private static void fetchIP(){
@@ -103,16 +100,19 @@ public class SoundController {
     }
 
     public static boolean hasValue(){
-        return currentSoundController != null;
+        return (loaded && audioGroup!=null && audioStream!=null);
     }
 
     public static int getPort(){
-        Log.d("Sound", "Fetching port..."+currentSoundController.audioStream.getLocalPort());
-        return currentSoundController.audioStream.getLocalPort();
+        Log.d("Sound", "Fetching port..."+audioStream.getLocalPort());
+        return audioStream.getLocalPort();
     }
 
     public static void close(){
-         audioGroup.clear();
+        audioGroup.clear();
+        audioGroup = null;
+        audioStream = null;
+        loaded = false;
         Log.d("Sound", "Group left...");
     }
 }
