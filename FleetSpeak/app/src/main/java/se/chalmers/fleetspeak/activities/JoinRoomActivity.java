@@ -258,9 +258,6 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
         for(int i = 0; i < rooms.length; i++){ //TODO Changed
             ArrayRooms.add(rooms[i]);
         }
-        String debug = String.valueOf(rooms.length);
-        Log.i("updateList", debug);
-
         adapter.notifyDataSetChanged();
 
     }
@@ -285,7 +282,6 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
             View view = inflater.inflate(isDriving?R.layout.list_item_rooms_while_driving:
                                                    R.layout.list_item_rooms, parent, false);
 
-            Log.i("Adapter", "Adapter updates");
             TextView roomView = (TextView) view.findViewById(R.id.roomName);
             ImageView imageView = (ImageView) view.findViewById(R.id.roomIcon);
             TextView userView = (TextView) view.findViewById(R.id.list_item_users);
