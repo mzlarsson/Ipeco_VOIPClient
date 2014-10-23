@@ -1,6 +1,8 @@
 package se.chalmers.fleetspeak.sound;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A class for containing the most recent data in a RTP connection.
@@ -16,6 +18,8 @@ public class RTPSoundPacket {
 	
 	private long sourceID;
 	
+	private Map<Long, Boolean> muted;
+	
 	/**
 	 * Creates a new instance that is assigned with basic attributes
 	 * @param sourceID The source ID (given by RTPConnector) of the client that sent this data
@@ -24,6 +28,8 @@ public class RTPSoundPacket {
 	public RTPSoundPacket(long sourceID, int sequenceOffset){
 		this.sourceID = sourceID;
 		this.sequenceOffset = sequenceOffset;
+		
+		muted = new HashMap<Long, Boolean>();
 	}
 	
 	/**
@@ -38,6 +44,25 @@ public class RTPSoundPacket {
 
 		this.sequenceNumber = sequenceNumber;
 		this.data = data;
+	}
+	
+	/**
+	 * Sets the client with given sourceID to muted/unmuted
+	 * @param muteID The sourceID of the client to mute/unmute
+	 * @param mute If the client should be muted or unmuted
+	 */
+	public void setMuted(long muteID, boolean mute){
+		muted.put(muteID, mute);
+	}
+	
+	/**
+	 * Checks whether the client with given sourceID is muted
+	 * @param muteID The sourceID of the client to check
+	 * @return If the given client is muted
+	 */
+	public boolean isMuted(long muteID){
+		Boolean mute = muted.get(muteID);
+		return (mute != null && mute.booleanValue());
 	}
 	
 	/**

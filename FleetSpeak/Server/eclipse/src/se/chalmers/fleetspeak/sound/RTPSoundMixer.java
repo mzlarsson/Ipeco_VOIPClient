@@ -71,6 +71,36 @@ public class RTPSoundMixer implements RTPListener{
 			this.close();
 		}
 	}
+	
+	/**
+	 * Mutes/Unmutes a client for another client
+	 * @param sourceID The client that requests the mute/unmute
+	 * @param muteID The client to mute/unmute
+	 * @param muted If the client should be muted or unmuted
+	 */
+	public void setMuted(long sourceID, long muteID, boolean muted){
+		RTPSoundPacket packet = RTPSoundPacket.getPacket(this.data, sourceID);
+		if(packet != null){
+			packet.setMuted(muteID, muted);
+		}
+	}
+	
+	/**
+	 * Checks whether a client is muted for a certain client
+	 * @param sourceID The client that is affected by the mute
+	 * @param muteID The client that is muted/unmuted
+	 * @return If the client with muteID as ID is muted for the client with sourceID as ID
+	 */
+	public boolean isMuted(long sourceID, long muteID){
+		RTPSoundPacket packet = RTPSoundPacket.getPacket(this.data, sourceID);
+		if(packet != null){
+			return packet.isMuted(muteID);
+		}else{
+			return false;
+		}
+	}
+	
+	
 
 	/**
 	 * Retrieves a byte array describing the mixed sound of all clients except the given one
@@ -80,16 +110,19 @@ public class RTPSoundMixer implements RTPListener{
 	 */	
 	public byte[] getMixedSound(long sourceID, int minSequenceNumber){
 		if(data.size()>1){
+			RTPSoundPacket requester = RTPSoundPacket.getPacket(this.data, sourceID);
 			byte[][] bytedata = new byte[data.size()-1][Constants.RTP_PACKET_SIZE];
 			int foundUsers = 0;
 			for(int i = 0; i<data.size(); i++){
 				if(data.get(i) != null){
-					if(data.get(i).getSourceID() != sourceID){
+					if(data.get(i).getSourceID() != sourceID && !requester.isMuted(data.get(i).getSourceID())){
 						bytedata[foundUsers] = data.get(i).getData(minSequenceNumber);
 						foundUsers++;
 					}
 				}
 			}
+			
+			
 			
 			if(foundUsers>0){
 				if(foundUsers==1){
@@ -102,6 +135,8 @@ public class RTPSoundMixer implements RTPListener{
 						for(int j = 0; j<foundUsers; j++){
 							if(bytedata[j].length>i){
 								sum += byteToShort(bytedata[j][i]);
+								sum = dynamicRangeCompression(cutNoise(sum),(short)4000);
+								System.out.println(sum);
 							}
 						}
 						
@@ -121,14 +156,19 @@ public class RTPSoundMixer implements RTPListener{
 	}
 
 	/**
-	 * Determines the sound ratio of a byte
-	 * @param b The byte
-	 * @return The sound ratio of the given byte
+	 * Decodes a PCM byte to a short
+	 * @param b The byte to decode
+	 * @return The decoded byte
 	 */
 	private short byteToShort(byte b){
 		return PCMUtil.decode(b);
 	}
 
+	/**
+	 * Encodes a PCM short to a byte
+	 * @param s The short to encode
+	 * @return The encoded short
+	 */
 	private byte shortToByte(short s){
 		return PCMUtil.encode(s);
 	}
@@ -217,6 +257,22 @@ public class RTPSoundMixer implements RTPListener{
 		return tmp;
 		}else{
 			return s;
+		}
+	}
+	/**
+	 * Cuts low amplitude noise 
+	 * @param s The sound data
+	 * @return The modified sound data
+	 */
+	public static short cutNoise(short s){
+		if(Math.abs(s)<500){
+			return 0;
+		}else{
+			if(s<0){
+				return (short) (s-4000);
+			}else{
+				return (short) (s+4000);
+			}
 		}
 	}
 	

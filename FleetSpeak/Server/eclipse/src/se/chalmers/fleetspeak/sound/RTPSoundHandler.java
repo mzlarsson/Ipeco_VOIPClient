@@ -42,6 +42,32 @@ public class RTPSoundHandler extends RTPHandler implements SoundHandler{
 		mixer = RTPSoundMixer.getSoundMixer(getConnector(), mixerID);
 		mixer.addClientToMixer(getParticipantSourceID());
 	}
+	
+	/**
+	 * Sets the mute/unmute mode for a specific SoundHandler
+	 * @param handler The handler to mute/unmute
+	 * @param muted If the handler should be muted or unmuted
+	 */
+	@Override
+	public void setMuted(SoundHandler handler, boolean muted){
+		if(handler instanceof RTPSoundHandler){
+			mixer.setMuted(getParticipantSourceID(), ((RTPSoundHandler)handler).getParticipantSourceID(), muted);
+		}
+	}
+
+	/**
+	 * Checks whether the client with the given SoundHandler is muted for this user
+	 * @param handler The handler to check
+	 * @return If the given handler is muted for this user
+	 */
+	@Override
+	public boolean isMuted(SoundHandler handler){
+		if(handler instanceof RTPSoundHandler){
+			return mixer.isMuted(getParticipantSourceID(), ((RTPSoundHandler)handler).getParticipantSourceID());
+		}else{
+			return false;
+		}
+	}
 
 	/**
 	 * Runs the actual functionality of this handler. Sends a mix of all known sound source
