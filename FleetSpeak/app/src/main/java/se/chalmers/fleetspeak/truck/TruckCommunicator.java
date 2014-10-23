@@ -5,6 +5,7 @@ import android.swedspot.automotiveapi.AutomotiveSignal;
 import android.swedspot.automotiveapi.AutomotiveSignalId;
 import android.swedspot.scs.data.SCSBoolean;
 import android.swedspot.scs.data.SCSFloat;
+import android.swedspot.scs.data.Uint8;
 import android.util.Log;
 
 import com.swedspot.automotiveapi.AutomotiveFactory;
@@ -78,7 +79,8 @@ class TruckCommunicator extends AsyncTask<Void, Void, Object> {
                         speedChanged(((SCSFloat) automotiveSignal.getData()).getFloatValue());
                         break;
                     case AutomotiveSignalId.FMS_PARKING_BRAKE:
-                        parkingBrakeChanged(((SCSBoolean) automotiveSignal.getData()).getBooleanValue());
+                        Log.d("TRUCKS", ((Uint8) automotiveSignal.getData()).getIntValue() + "");
+                        parkingBrakeChanged(((Uint8) automotiveSignal.getData()).getIntValue()==0);
                         break;
                     default: Log.d(TAG, "got signal");
                         break;

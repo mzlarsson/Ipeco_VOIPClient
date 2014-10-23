@@ -1,9 +1,13 @@
 package se.chalmers.fleetspeak.truck;
 
+import android.app.Activity;
+import android.content.Context;
 import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import se.chalmers.fleetspeak.activities.StartActivity;
 
 /**
  * Created by Matz on 2014-10-17.
@@ -69,10 +73,20 @@ public class TruckDataHandler implements TruckListener{
     }
 
     private void evaluateTruckMode(boolean oldMode){
-        boolean mode = getTruckMode();
+
+        final boolean mode = getTruckMode();
         if(oldMode != mode) {
             for (int i = 0; i < listeners.size(); i++) {
-                listeners.get(i).truckModeChanged(mode);
+                final Activity c = (Activity) listeners.get(i);
+                final TruckStateListener l = listeners.get(i);
+
+                c.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        l.truckModeChanged(mode);
+                    }
+                });
+
             }
         }
     }
