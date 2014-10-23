@@ -329,8 +329,9 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
     }
     @Override
     public void onDataUpdate(String command) {
-        connecting(false);
         Log.i("STARTACTIVITY", "Im Commandhadlers bitch");
+        connecting(false);
+
         if(command.equals("connected")){
             //Without binding the server it will crash on reconnect not sure why it works
             if(isMyServiceRunning(SocketService.class))

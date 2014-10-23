@@ -18,7 +18,7 @@ public class RoomHandler implements IUserHandler{
 
     public RoomHandler() {
         rooms = new HashMap<Room,ArrayList<User>>();
-        defaultRoom = new Room("Default");
+        defaultRoom = new Room("Default",0);
     }
 
     public void addUser(User user, Room room) {
@@ -54,7 +54,8 @@ public class RoomHandler implements IUserHandler{
                 userList.remove(user);
                 Log.i(this.getClass().toString(), "user removed");
                 if (userList.isEmpty()) {
-                    rooms.remove(room);
+                    if(room.getId() != 0)
+                        rooms.remove(room);
 
                 }
                 break;
@@ -80,7 +81,9 @@ public class RoomHandler implements IUserHandler{
     }
 
     public User[] getUsers(Room room) {
-        return rooms.get(room).toArray(new User[rooms.get(room).size()]);
+        if(rooms.get(room) != null)
+            return rooms.get(room).toArray(new User[rooms.get(room).size()]);
+        return null;
     }
 
     /**
@@ -112,13 +115,14 @@ public class RoomHandler implements IUserHandler{
      * @param id The ID of the room.
      * @return The Room if found.
      */
-    private Room findRoom(int id) throws NoSuchElementException {
+    private Room findRoom(int id)  {
         for (Room room : rooms.keySet()) {
             if (room.getId()==id) {
                 return room;
             }
         }
-        throw new NoSuchElementException("A room with ID: \"" + id + "\" doesn't exit.");
+        //throw new NoSuchElementException("A room with ID: \"" + id + "\" doesn't exit.");
+        return null;
     }
 
     @Override

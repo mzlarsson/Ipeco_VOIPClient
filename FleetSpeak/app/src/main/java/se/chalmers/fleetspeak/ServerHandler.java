@@ -5,8 +5,9 @@ import android.os.Message;
 /**
  * Created by Nieo on 10/10/14.
  * Help class for messages
+ * How to use
  * try {
- *      mService.send(Message.obtain(SERVERHANDLER.[command]()));
+ *      serviceConnection.send(Message.obtain(SERVERHANDLER.[command]()));
  *  } catch (RemoteException e) {
  *  }
 

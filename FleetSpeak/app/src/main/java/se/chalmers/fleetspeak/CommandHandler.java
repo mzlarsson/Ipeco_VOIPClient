@@ -56,6 +56,7 @@ public class CommandHandler extends Handler {
 
         if(sCommand.equals("setID")){
             user = new User((Integer)command.getKey());
+            roomHandler = new RoomHandler();
             roomHandler.addUser(user);
             aCommand = "connected";
         }else if(sCommand.equals("connection failed")){
@@ -67,7 +68,7 @@ public class CommandHandler extends Handler {
             roomHandler.removeUser((Integer)command.getKey());
         }else if(sCommand.equals("setRtpPort")){
             //Not used atm
-        }else if(sCommand.equals("move")){
+        }else if(sCommand.equals("moveUser")){
             roomHandler.moveUser((Integer)command.getKey(),(Integer)command.getValue());
         }else if(sCommand.equals("newUser")){
             roomHandler.addUser(new User((Integer) command.getKey()));
@@ -78,8 +79,9 @@ public class CommandHandler extends Handler {
         }else if(sCommand.equals("createAndMove")){
             Log.i(this.getClass().toString(), "Crate and mååv ");
             String[] s = ((String) command.getValue()).split(",");
-            roomHandler.moveUser(roomHandler.getUser((Integer)command.getKey()), new Room(s[0],Integer.parseInt(s[1])));
-            aCommand = "roomCreated," + s[1];
+            roomHandler.moveUser(roomHandler.getUser((Integer) command.getKey()), new Room(s[0], Integer.parseInt(s[1])));
+            if((Integer)command.getKey() == user.getId())
+                aCommand = "roomCreated," + s[1];
         }else{
             aCommand = "unknown command";
         }
