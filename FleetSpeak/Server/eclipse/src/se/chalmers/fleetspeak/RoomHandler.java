@@ -19,7 +19,7 @@ public class RoomHandler {
 	private Room defaultRoom;
 	public RoomHandler(){
 		rooms = new HashMap<Room,ArrayList<Client>>();
-		defaultRoom = new Room("Default", 0);
+		defaultRoom = new Room("Lobby", 0);
 	}
 	
 	public void addClient(Client c, Room r){
@@ -47,20 +47,22 @@ public class RoomHandler {
 	}
 
 	public void removeClient(Client c, boolean terminate){
-		for(Room r : rooms.keySet()){
-			ArrayList<Client> clientList = rooms.get(r);
-			if(clientList.contains(c)){
-				clientList.remove(c);
-				if (terminate) {
-					c.terminate();
+		if(c != null){
+			for(Room r : rooms.keySet()){
+				ArrayList<Client> clientList = rooms.get(r);
+				if(clientList.contains(c)){
+					clientList.remove(c);
+					if (terminate) {
+						c.terminate();
+					}
+					if(clientList.isEmpty() && r.getId() != 0){
+						rooms.remove(r);
+					}
+					break;
 				}
-				if(clientList.isEmpty() && r.getId() != 0){
-					rooms.remove(r);
-				}
-				break;
 			}
+			changeEvent();
 		}
-		changeEvent();
 	}
 	
 	public void removeClient(int clientID, boolean terminate){
@@ -105,7 +107,8 @@ public class RoomHandler {
 				}
 			}
 		}
-		throw new NoSuchElementException("A client with ID: \"" + clientID + "\" doesn't exit.");
+		
+		return null;
 	}
 
 	private Room findRoom(int roomID) throws NoSuchElementException {
