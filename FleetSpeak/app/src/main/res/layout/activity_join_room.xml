@@ -28,15 +28,6 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_above="@+id/updateListButton" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="UpdateList"
-        android:id="@+id/updateListButton"
-        android:onClick="updateList"
-        android:layout_above="@+id/buttonCreateRoom"
-        android:layout_centerHorizontal="true" />
+        android:layout_above="@+id/buttonCreateRoom" />
 
 </RelativeLayout>
