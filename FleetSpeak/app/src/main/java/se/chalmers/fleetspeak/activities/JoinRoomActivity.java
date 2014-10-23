@@ -248,23 +248,10 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
         getWindow().getDecorView().findViewById(android.R.id.content).getRootView().invalidate();
     }
 
-    private void updateUserList() {
-        //The adapter grabs the new userlist
-        adapter.notifyDataSetChanged();
-    }
-
-    public void updateList(View view) {
-        rooms = CommandHandler.getRooms();
-        ArrayRooms.clear();
-        for(int i = 0; i < rooms.length; i++){ //TODO Changed
-            ArrayRooms.add(rooms[i]);
-        }
-        adapter.notifyDataSetChanged();
-
-    }
-
-
-    //Inner Class, The adapter for Bookmarks ListView
+    /**
+     * Inner class, Adapter for the Room's ListView
+     * The adapter handles all the items in the ListView
+     */
     public class JoinRoomAdapter extends ArrayAdapter<Room> {
 
 

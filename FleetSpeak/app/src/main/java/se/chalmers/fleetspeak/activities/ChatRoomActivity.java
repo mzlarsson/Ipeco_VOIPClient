@@ -94,8 +94,6 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
         currentRoomID = intent.getIntExtra("roomID", 0);
         initUserList(); //init userList
 
-        initUserList(); //init userList
-
         userListView = (ListView) findViewById(R.id.userList);
         adapter = new ChatRoomListAdapter(this, arrayUsers);
         userListView.setAdapter(adapter);
@@ -130,17 +128,20 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
 
     /**
      * Gets the user list from the handler.
-     * @return List of Users from the room with current room id.
+     * Moves the users to an arraylist which will be used by the adapter.
      */
     private void initUserList(){
         users = CommandHandler.getUsers(currentRoomID);
+        Log.i("Users size from server", String.valueOf(users.length));
         for(int i = 0; i < users.length; i++){
             arrayUsers.add(users[i]);
         }
 
     }
 
-
+    /**
+     * Updates the userlist when for example a another user leaves or join a room.
+     */
     private void updateUserList() {
         //TODO SERVER: When a user joins this room(currentRoomID) call this method
         users = CommandHandler.getUsers(currentRoomID);
@@ -193,11 +194,13 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
 
     /**
      * Inner class, Adapter for the ChatRoom ListView
+     * The adapter handles all the items in the listView
      */
     public class ChatRoomListAdapter extends ArrayAdapter<User> {
 
         public ChatRoomListAdapter(Context context, ArrayList<User> values) {
             super(context, R.layout.list_item_users, values);
+            Log.i("ChatRoom Userlist size: ", String.valueOf(values.size()));
         }
 
         @Override
