@@ -29,6 +29,8 @@ import android.widget.PopupWindow;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 import se.chalmers.fleetspeak.CommandHandler;
 import se.chalmers.fleetspeak.Commandable;
 import se.chalmers.fleetspeak.R;
@@ -52,6 +54,7 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
     private PopupWindow micAndVolumePanel;
     private static TruckDataHandler truckDataHandler;
     User[] users;
+    ArrayList<User> arrayUsers = new ArrayList<User>();
     private RoomHandler handler; //TODO: For test purposes
     private Messenger mService = null;
     ArrayAdapter<User> adapter;
@@ -92,7 +95,7 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
         initUserList(); //init userList
 
         userListView = (ListView) findViewById(R.id.userList);
-        adapter = new ChatRoomListAdapter(this, users);
+        adapter = new ChatRoomListAdapter(this, arrayUsers);
         userListView.setAdapter(adapter);
         userListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -118,30 +121,40 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
 
             }
         });
+        truckModeChanged(TruckDataHandler.getInstance().getTruckMode());
+
     }
 
 
     /**
      * Gets the user list from the handler.
-     * @return List of Users from the room with current room id.
+     * Moves the users to an arraylist which will be used by the adapter.
      */
     private void initUserList(){
         users = CommandHandler.getUsers(currentRoomID);
+        Log.i("Users size from server", String.valueOf(users.length));
+        for(int i = 0; i < users.length; i++){
+            arrayUsers.add(users[i]);
+        }
+
     }
 
-
+    /**
+     * Updates the userlist when for example a another user leaves or join a room.
+     */
     private void updateUserList() {
-        //TODO: When a user joins this room(currentRoomID) call this method
+        //TODO SERVER: When a user joins this room(currentRoomID) call this method
         users = CommandHandler.getUsers(currentRoomID);
+        arrayUsers.clear();
+        for(int i = 0; i < users.length; i++){
+            arrayUsers.add(users[i]);
+        }
         adapter.notifyDataSetChanged(); //Pokes the adapter to view the new changes
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
         switch (item.getItemId()){
-            case R.id.day_night_toggle:
-                ThemeUtils.changeTheme(this);
-                return true;
             case android.R.id.home:
                 unbindService(mConnection);
                 NavUtils.navigateUpFromSameTask(this);
@@ -169,21 +182,25 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
 
     @Override
     public void truckModeChanged(boolean mode) {
-
+        findViewById(R.id.volume_mic_control).setVisibility(mode ? View.INVISIBLE: View.VISIBLE);
     }
 
     @Override
     public void onDataUpdate(String command) {
-        
+        if(command.equals("dataUpdate")){
+            updateUserList();
+        }
     }
 
     /**
      * Inner class, Adapter for the ChatRoom ListView
+     * The adapter handles all the items in the listView
      */
     public class ChatRoomListAdapter extends ArrayAdapter<User> {
 
-        public ChatRoomListAdapter(Context context, User[] values) {
+        public ChatRoomListAdapter(Context context, ArrayList<User> values) {
             super(context, R.layout.list_item_users, values);
+            Log.i("ChatRoom Userlist size: ", String.valueOf(values.size()));
         }
 
         @Override

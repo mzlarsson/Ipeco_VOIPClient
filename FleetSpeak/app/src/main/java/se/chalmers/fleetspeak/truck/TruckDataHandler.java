@@ -30,7 +30,7 @@ public class TruckDataHandler implements TruckListener{
         }
     }
 
-    private static TruckDataHandler getInstance(){
+    public static TruckDataHandler getInstance(){
         if(instance == null){
             start();
         }

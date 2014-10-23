@@ -191,8 +191,6 @@ public class SocketService extends Service {
 
     @Override
     public void onCreate(){
-        Log.i("FUUUUUUUUUCK" , "DIE MOTHERFUCKER DIE");
-
          timer.scheduleAtFixedRate(new TimerTask(){ public void run() {lookForMessage();}}, 0, 100L);
     }
 
