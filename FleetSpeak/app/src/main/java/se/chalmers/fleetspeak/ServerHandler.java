@@ -46,7 +46,9 @@ public class ServerHandler {
         //Not implemented
         return Message.obtain(null,SocketService.MUTEUSER,userID);
     }
-
+    public static Message unMuteUser(int userID){
+        return  Message.obtain(null, SocketService.UNMUTEUSER, userID);
+    }
     public static Message createAndMove(String name){
         return Message.obtain(null,SocketService.CREATEANDMOVE,name);
     }

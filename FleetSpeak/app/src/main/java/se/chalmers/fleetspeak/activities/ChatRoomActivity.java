@@ -1,10 +1,16 @@
 package se.chalmers.fleetspeak.activities;
 
+import android.content.ClipData;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.util.DisplayMetrics;
@@ -14,6 +20,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -26,6 +33,8 @@ import se.chalmers.fleetspeak.CommandHandler;
 import se.chalmers.fleetspeak.Commandable;
 import se.chalmers.fleetspeak.R;
 import se.chalmers.fleetspeak.RoomHandler;
+import se.chalmers.fleetspeak.ServerHandler;
+import se.chalmers.fleetspeak.SocketService;
 import se.chalmers.fleetspeak.User;
 import se.chalmers.fleetspeak.truck.TruckDataHandler;
 import se.chalmers.fleetspeak.truck.TruckStateListener;
@@ -41,29 +50,73 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
     private SeekBar micControlBar;
     private PopupWindow micAndVolumePanel;
     private static TruckDataHandler truckDataHandler;
-
     User[] users;
     private RoomHandler handler; //TODO: For test purposes
-
+    private Messenger mService = null;
     ArrayAdapter<User> adapter;
     private boolean isTalkActive = false;
     private int currentRoomID;
+
+     private ServiceConnection mConnection = new ServiceConnection() {
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            Log.i("SERVICECONNECTION", "service started");
+            mService = new Messenger(service);
+
+        }
+
+            public void onServiceDisconnected(ComponentName className) {
+            // This is called when the connection with the service has been unexpectedly disconnected - process crashed.
+            mService = null;
+            Log.i("SERVICECONNECTION", "Disconnected");
+        }
+    };
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         ThemeUtils.onCreateActivityCreateTheme(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chatroom);
+
+        CommandHandler.getInstance().addListener(this);
+        bindService(new Intent(this,SocketService.class), mConnection, Context.BIND_AUTO_CREATE);
+
+
         //Shows the up button
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         Intent intent = getIntent();
         currentRoomID = intent.getIntExtra("roomID", 0);
-
-       initUserList(); //init userList
+        initUserList(); //init userList
 
         userListView = (ListView) findViewById(R.id.userList);
         adapter = new ChatRoomListAdapter(this, users);
         userListView.setAdapter(adapter);
+        userListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int pos , long l) {
+               User user = adapter.getItem(pos);
+                if(user.getMuted()){
+                    try {
+                        mService.send(ServerHandler.unMuteUser(user.getId()));
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                    user.setMuted(false);
+                    adapter.notifyDataSetChanged();
+                }else{
+                    try {
+                        mService.send(ServerHandler.muteUser(user.getId()));
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                    user.setMuted(true);
+                    adapter.notifyDataSetChanged();
+                }
+
+            }
+        });
 
 
         /*
@@ -103,6 +156,7 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
                 ThemeUtils.changeTheme(this);
                 return true;
             case android.R.id.home:
+                unbindService(mConnection);
                 NavUtils.navigateUpFromSameTask(this);
                 return true;
         }
@@ -151,12 +205,13 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
             TextView textView = (TextView) view.findViewById(R.id.userName);
             ImageView imageView = (ImageView) view.findViewById(R.id.userTalkImage);
 
+
             /*
              * Sätter namnet i listan
              */
             textView.setText(userName);
 
-            imageView.setImageResource(R.drawable.ic_user);
+            imageView.setImageResource(user.getMuted()?R.drawable.ic_mute:R.drawable.ic_user);
 
             return view;
         }

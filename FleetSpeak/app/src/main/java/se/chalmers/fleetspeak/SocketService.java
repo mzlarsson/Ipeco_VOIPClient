@@ -47,6 +47,7 @@ public class SocketService extends Service {
     public static final int MOVEUSER = 5;
     public static final int GETUSERS = 6;
     public static final int MUTEUSER = 7;
+    public static final int UNMUTEUSER = 8;
     public static final int SENDTESTDATA = 44; // only for testing will send a string from the server when used
 
     private String LOGNAME = "SocketService";

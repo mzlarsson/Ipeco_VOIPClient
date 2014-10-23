@@ -8,7 +8,7 @@ public class User {
     private String name;
 
 
-
+    private boolean muted;
     private int id;
 
     public User(String name, int id) {
@@ -39,7 +39,12 @@ public class User {
 
     public void setId(int id) {this.id = id;}
 
-
+    public void setMuted(boolean b){
+        muted = b;
+    }
+    public boolean getMuted(){
+     return  muted;
+    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

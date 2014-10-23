@@ -244,7 +244,6 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
     //Inner Class, The adapter for Bookmarks ListView
     public class JoinRoomAdapter extends ArrayAdapter<Room> {
         private Room[] rooms;
-
         public JoinRoomAdapter(Context context, Room[] values) {
             super(context, R.layout.list_item_rooms, values);
             rooms = values;
