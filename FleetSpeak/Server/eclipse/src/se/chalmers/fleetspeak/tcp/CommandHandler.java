@@ -173,6 +173,8 @@ public class CommandHandler implements IEventBusSubscriber {
 			}else if(commandName.equals("setRtpPort")){
 				Client c = roomHandler.findClient((Integer)command.getKey());
 				c.startRTPTransfer((Integer)command.getValue());
+			}else{
+				Log.logError("Got unrecognized command: <i>"+command.getCommand()+"</i>");
 			}
 		}
 	}

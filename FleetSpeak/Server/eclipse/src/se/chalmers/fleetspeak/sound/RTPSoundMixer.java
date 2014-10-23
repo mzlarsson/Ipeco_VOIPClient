@@ -115,14 +115,12 @@ public class RTPSoundMixer implements RTPListener{
 			int foundUsers = 0;
 			for(int i = 0; i<data.size(); i++){
 				if(data.get(i) != null){
-					if(data.get(i).getSourceID() != sourceID && !requester.isMuted(data.get(i).getSourceID())){
+					if(data.get(i).getSourceID() != sourceID && requester != null && !requester.isMuted(data.get(i).getSourceID())){
 						bytedata[foundUsers] = data.get(i).getData(minSequenceNumber);
 						foundUsers++;
 					}
 				}
 			}
-			
-			
 			
 			if(foundUsers>0){
 				if(foundUsers==1){
@@ -136,7 +134,6 @@ public class RTPSoundMixer implements RTPListener{
 							if(bytedata[j].length>i){
 								sum += byteToShort(bytedata[j][i]);
 								sum = dynamicRangeCompression(cutNoise(sum),(short)4000);
-								System.out.println(sum);
 							}
 						}
 						

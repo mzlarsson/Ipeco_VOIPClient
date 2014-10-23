@@ -8,14 +8,6 @@ public class Log {
 	private static Log instance;
 	
 	public static void log(String msg) {
-//		if (logger!=null) {
-//			logger.log(Level.ALL, msg);
-//		} else {
-//			System.out.println(msg);
-//		}
-		Log.logNullPointerException(msg);
-	}
-	private static void theRealLogger(String msg){
 		if (logger!=null) {
 			logger.log(Level.ALL, msg);
 		} else {
@@ -44,20 +36,6 @@ public class Log {
 			errorMsg += "\t<i>"+el.getClassName()+"."+el.getMethodName()+"</i> line <b>"+el.getLineNumber()+"</b>\n";
 		}
 		Log.log(errorMsg);
-	}
-	
-	public static void logNullPointerException(String msg) {
-		if (msg.length()>3) {
-			String err = "<error>" + msg.substring(0, msg.length()/4) + "</error>";
-			String bla = msg.substring(msg.length()/4, msg.length()/2);
-			String inf = "<info>" + msg.substring(msg.length()/2, msg.length()*3/4) + "</info>";
-			String deb = "<debug>" + msg.substring(msg.length()*3/4) + "</debug>";
-			Log.theRealLogger("(---)-----------------/---\\");
-			Log.theRealLogger(" )--(                       |    -)~~~~ <b><i>" + err + bla + inf + deb + "</b></i>");
-			Log.theRealLogger("(__)----------------\\__/");
-		} else {
-			Log.theRealLogger("<error><b><i>" + msg + "</i></b></error>");
-		}
 	}
 	
 	public static void flushLog() {

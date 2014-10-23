@@ -76,16 +76,18 @@ public class RTPSoundHandler extends RTPHandler implements SoundHandler{
 	@Override
 	public void run() {
 		while(this.isAlive()){
-//			//Checks if connected to any room
+			//Checks if connected to any room
 			if(mixer != null){
 				//Sync the most updated sequence number
 				currSeqNumber = Math.max(mixer.getCurrentSequenceOffset(), currSeqNumber);
 				//Fetch the data from all other sound sources
 				byte[] data = mixer.getMixedSound(getParticipantSourceID(), currSeqNumber);
 				//Send data
-				if(getConnector().sendData(getParticipantSourceID(), data)){
-					//Increase sequence number if any data was sent (no double sending)
-					currSeqNumber++;
+				if(data != null && data.length>0){
+					if(getConnector().sendData(getParticipantSourceID(), data)){
+						//Increase sequence number if any data was sent (no double sending)
+						currSeqNumber++;
+					}
 				}
 			}
 			
