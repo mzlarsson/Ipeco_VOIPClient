@@ -92,7 +92,7 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
         }
         adapter = new JoinRoomAdapter(this, ArrayRooms); //TODO Test Change rooms > ArrayRooms
         roomView.setAdapter(adapter);
-
+        truckModeChanged(TruckDataHandler.getInstance().getTruckMode());
         roomView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
@@ -206,6 +206,7 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
 
     @Override
     public void truckModeChanged(boolean mode) {
+        findViewById(R.id.day_night_toggle).setVisibility(mode ? View.INVISIBLE: View.VISIBLE);
         // Makes the users text list Gone or Visible depending on Car Mode
         isDriving = mode;
 /*        for(int i = 0; i < adapter.getCount(); i++) {

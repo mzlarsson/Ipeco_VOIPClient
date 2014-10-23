@@ -123,6 +123,8 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
 
             }
         });
+        truckModeChanged(TruckDataHandler.getInstance().getTruckMode());
+
     }
 
 
@@ -152,9 +154,6 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
         switch (item.getItemId()){
-            case R.id.day_night_toggle:
-                ThemeUtils.changeTheme(this);
-                return true;
             case android.R.id.home:
                 unbindService(mConnection);
                 NavUtils.navigateUpFromSameTask(this);
@@ -182,12 +181,14 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
 
     @Override
     public void truckModeChanged(boolean mode) {
-
+        findViewById(R.id.volume_mic_control).setVisibility(mode ? View.INVISIBLE: View.VISIBLE);
     }
 
     @Override
     public void onDataUpdate(String command) {
-        
+        if(command.equals("dataUpdate")){
+            updateUserList();
+        }
     }
 
     /**
