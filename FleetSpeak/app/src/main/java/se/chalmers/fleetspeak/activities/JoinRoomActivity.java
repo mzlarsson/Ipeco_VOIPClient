@@ -183,7 +183,8 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.day_night_menu, menu);
-
+        MenuItem item = menu.findItem(R.id.day_night_toggle);
+        item.setVisible(!TruckDataHandler.getInstance().getTruckMode());
         return true;
     }
 
@@ -210,7 +211,7 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
 
     @Override
     public void truckModeChanged(boolean mode) {
-        findViewById(R.id.day_night_toggle).setVisibility(mode ? View.INVISIBLE: View.VISIBLE);
+        //findViewById(R.id.day_night_toggle).setVisibility(mode ? View.INVISIBLE: View.VISIBLE);
         // Makes the users text list Gone or Visible depending on Car Mode
         isDriving = mode;
 /*        for(int i = 0; i < adapter.getCount(); i++) {

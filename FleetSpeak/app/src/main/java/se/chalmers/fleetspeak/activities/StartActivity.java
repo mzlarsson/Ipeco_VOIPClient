@@ -81,61 +81,11 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         CommandHandler.getInstance().addListener(this);
         truckDataHandler.addListener(this);
-        final EditText ipTextField = (EditText) findViewById(R.id.ipField);
-        truckModeChanged(TruckDataHandler.getInstance().getTruckMode());
-        ipTextField.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
 
-            }
+        EditText ipTextField = (EditText) findViewById(R.id.ipField);
+        EditText portField = (EditText) findViewById(R.id.portField);
+        EditText userNameField = (EditText) findViewById(R.id.usernameField);
 
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                ipText = String.valueOf(ipTextField.getText());
-            }
-        });
-        final EditText portField = (EditText) findViewById(R.id.portField);
-        portField.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                portText = String.valueOf(portField.getText());
-
-            }
-        });
-
-        final EditText userNameField = (EditText) findViewById(R.id.usernameField);
-        userNameField.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                userNameText = String.valueOf(userNameField.getText());
-                ThemeUtils.setUsername(String.valueOf(userNameField.getText()));
-            }
-        });
 
         portText = prefs.getString( getString(R.string.port_number_text),"8867");
         userNameText = prefs.getString(getString(R.string.username_text), "username");
@@ -157,8 +107,7 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
         Intent i = new Intent(this,SocketService.class);
         startService(i);
         Log.i("STARTACTIVITY", "binding service");
-        bindService(i, mConnection, Context.BIND_AUTO_CREATE);
-
+            bindService(i, mConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
@@ -169,7 +118,8 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.day_night_menu, menu);
-
+        MenuItem item = menu.findItem(R.id.day_night_toggle);
+        item.setVisible(!TruckDataHandler.getInstance().getTruckMode());
         return true;
     }
 
@@ -215,7 +165,11 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
     }
 
     public void onConnectButtonClick(View view) {
-       startConnection(ipText, Integer.parseInt(portText), userNameText);
+        String ipText = String.valueOf(((EditText) findViewById(R.id.ipField)).getText());
+        String portText = String.valueOf(((EditText) findViewById(R.id.portField)).getText());
+        String userNameText = String.valueOf(((EditText) findViewById(R.id.usernameField)).getText());
+
+        startConnection(ipText, Integer.parseInt(portText), userNameText);
     }
     /**
      * Show Connection error message
@@ -253,9 +207,12 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
      * Saves the preferences of the User
      */
     public void savePreferences(){
-            prefEdit.putString(getString(R.string.username_text), userNameText);
-            prefEdit.putString(getString(R.string.ip_adress_text), ipText);
-            prefEdit.putString(getString(R.string.port_number_text), portText);
+        EditText et =(EditText) findViewById(R.id.ipField);
+        EditText et2 = (EditText) findViewById(R.id.portField);
+        EditText et3 = (EditText) findViewById(R.id.usernameField);
+        prefEdit.putString(getString(R.string.username_text), String.valueOf(et3.getText()));
+            prefEdit.putString(getString(R.string.ip_adress_text), String.valueOf(et.getText()));
+            prefEdit.putString(getString(R.string.port_number_text), String.valueOf(et2.getText()));
             prefEdit.putInt("Theme",ThemeUtils.getThemeID());
             prefEdit.commit();
     }
@@ -284,11 +241,13 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
     }
     @Override
     public void truckModeChanged(boolean mode) {
+        EditText edittext = (EditText) findViewById(R.id.ipField);
+        EditText edittext2 = (EditText) findViewById(R.id.usernameField);
         setContentView(mode? R.layout.activity_car_start: R.layout.activity_start);
-        findViewById(R.id.day_night_toggle).setVisibility(mode? View.INVISIBLE: View.VISIBLE);
+
         if(mode){
-            ((TextView)findViewById(R.id.IpAdress)).setText(ipText);
-            ((TextView)findViewById(R.id.userName)).setText(userNameText);
+            ((TextView)findViewById(R.id.IpAdress)).setText(String.valueOf(edittext.getText()));
+            ((TextView)findViewById(R.id.userName)).setText(String.valueOf(edittext2.getText()));
         }
     }
 

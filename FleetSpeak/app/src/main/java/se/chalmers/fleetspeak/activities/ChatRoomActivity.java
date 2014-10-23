@@ -52,6 +52,7 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
     ListView userListView;
     private SeekBar volumeControlBar;
     private SeekBar micControlBar;
+    private Menu menu;
     private PopupWindow micAndVolumePanel;
     private static TruckDataHandler truckDataHandler;
     User[] users;
@@ -100,9 +101,9 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
         userListView.setAdapter(adapter);
         userListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int pos , long l) {
-               User user = adapter.getItem(pos);
-                if(user.getMuted()){
+            public void onItemClick(AdapterView<?> adapterView, View view, int pos, long l) {
+                User user = adapter.getItem(pos);
+                if (user.getMuted()) {
                     try {
                         mService.send(ServerHandler.unMuteUser(user.getId()));
                     } catch (RemoteException e) {
@@ -110,7 +111,7 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
                     }
                     user.setMuted(false);
                     adapter.notifyDataSetChanged();
-                }else{
+                } else {
                     try {
                         mService.send(ServerHandler.muteUser(user.getId()));
                     } catch (RemoteException e) {
@@ -122,7 +123,6 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
 
             }
         });
-        truckModeChanged(TruckDataHandler.getInstance().getTruckMode());
 
     }
 
@@ -183,9 +183,11 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
 
     @Override
     public void truckModeChanged(boolean mode) {
-        findViewById(R.id.volume_mic_control).setVisibility(mode ? View.INVISIBLE: View.VISIBLE);
+        if (menu != null) {
+            MenuItem item = menu.findItem(R.id.volume_mic_control);
+            item.setVisible(!mode);
+        }
     }
-
     @Override
     public void onDataUpdate(String command) {
         if(command.equals("dataUpdate")){
@@ -237,6 +239,7 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
     }
 
     public boolean onCreateOptionsMenu(Menu menu){
+        this.menu = menu;
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.chatroommenu, menu);
         ImageButton locButton = (ImageButton) menu.findItem(R.id.volume_mic_control).getActionView();
