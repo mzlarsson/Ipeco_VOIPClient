@@ -95,7 +95,7 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
         CommandHandler.getInstance().addListener(this);
         truckDataHandler.addListener(this);
         final EditText ipTextField = (EditText) findViewById(R.id.ipField);
-        truckModeChanged(TruckDataHandler.getInstance().getTruckMode());
+
         ipTextField.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
@@ -182,7 +182,7 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.day_night_menu, menu);
-
+        
         return true;
     }
 
@@ -303,6 +303,7 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
     @Override
     public void truckModeChanged(boolean mode) {
         setContentView(mode? R.layout.activity_car_start: R.layout.activity_start);
+
         findViewById(R.id.day_night_toggle).setVisibility(mode? View.INVISIBLE: View.VISIBLE);
         if(mode){
             ((TextView)findViewById(R.id.IpAdress)).setText(ipText);
