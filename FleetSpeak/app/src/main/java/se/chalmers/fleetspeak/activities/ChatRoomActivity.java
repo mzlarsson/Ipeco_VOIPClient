@@ -36,6 +36,7 @@ import se.chalmers.fleetspeak.RoomHandler;
 import se.chalmers.fleetspeak.ServerHandler;
 import se.chalmers.fleetspeak.SocketService;
 import se.chalmers.fleetspeak.User;
+import se.chalmers.fleetspeak.sound.SoundController;
 import se.chalmers.fleetspeak.truck.TruckDataHandler;
 import se.chalmers.fleetspeak.truck.TruckStateListener;
 import se.chalmers.fleetspeak.util.ThemeUtils;
@@ -117,20 +118,6 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
 
             }
         });
-
-
-        /*
-        * Vad som ska hända när man klicka på en user
-        * */
-
- /*         userListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                String examplePersonText = String.valueOf(adapterView.getItemAtPosition(position));
-                Toast.makeText(ChatRoomActivity.this, examplePersonText + " "+currentRoomID, Toast.LENGTH_SHORT).show();
-            }
-        });
-        */
     }
 
 
@@ -169,10 +156,16 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
      */
     public void pushToTalk(View view) {
         Log.i("ChatroomActivity", "pushToTalkCalled");
+        isTalkActive = !isTalkActive;
         ImageButton button = (ImageButton) findViewById(R.id.pushToTalkButton);
-        button.setBackgroundResource(isTalkActive?R.drawable.ic_mic_grey:R.drawable.ic_mic_blue);
-        isTalkActive = isTalkActive? false: true;
-    }
+        button.setBackgroundResource(isTalkActive?R.drawable.ic_mic_blue:R.drawable.ic_mic_grey);
+
+        if(isTalkActive){
+            SoundController.unmute();
+        }else{
+            SoundController.mute();
+        }
+}
 
     @Override
     public void truckModeChanged(boolean mode) {

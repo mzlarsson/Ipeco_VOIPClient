@@ -44,8 +44,7 @@ public class ServerHandler {
 
 
     public static Message muteUser(int userID) {
-        //Not implemented
-        return Message.obtain(null,SocketService.MUTEUSER,userID);
+        return Message.obtain(null,SocketService.MUTEUSER, userID);
     }
     public static Message unMuteUser(int userID){
         return  Message.obtain(null, SocketService.UNMUTEUSER, userID);

@@ -138,8 +138,12 @@ public class SocketService extends Service {
                         trySend(new Command("getUsers", id, null));
                         break;
                     case MUTEUSER:
-                        //TODO
-                        Log.i(LOGNAME, "Command not implemented");
+                        Log.i(LOGNAME, "trying to send mute command");
+                        trySend(new Command("mute", id, msg.obj));
+                        break;
+                    case UNMUTEUSER:
+                        Log.i(LOGNAME, "trying to send unmute command");
+                        trySend(new Command("unmute", id, msg.obj));
                         break;
                     case SENDTESTDATA:
                         trySend(new Command("data", id, null));
