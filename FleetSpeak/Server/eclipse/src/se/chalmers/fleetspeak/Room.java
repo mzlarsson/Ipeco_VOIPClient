@@ -1,6 +1,7 @@
 package se.chalmers.fleetspeak;
 
 import se.chalmers.fleetspeak.util.IDFactory;
+import se.chalmers.fleetspeak.util.Log;
 
 /**
  * A class for representing a room.
@@ -11,10 +12,10 @@ public class Room {
     private int id;
 
     public Room(String name) {
-        this.name = name;
-        this.id = IDFactory.getInstance().getID();
+        this(name, IDFactory.getInstance().getID());
     }
     public Room(String name, int id) {
+    	Log.logDebug("Creating room");
     	this.name = name;
     	this.id = id;
     }
@@ -33,13 +34,19 @@ public class Room {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o){
+        	return true;
+        }
+        
+        if (o == null || getClass() != o.getClass()){
+        	return false;
+        }
 
         Room room = (Room) o;
 
-        if (id != room.id) return false;
-        if (name != null ? !name.equals(room.name) : room.name != null) return false;
+        if (id != room.id){
+        	return false;
+        }
 
         return true;
     }

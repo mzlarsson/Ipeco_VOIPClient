@@ -16,6 +16,7 @@
 
 package com.biasedbit.efflux.session;
 
+import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.Collection;
 import java.util.Collections;

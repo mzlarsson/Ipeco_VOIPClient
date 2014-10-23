@@ -2,11 +2,11 @@ package se.chalmers.fleetspeak;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.NoSuchElementException;
 
 import se.chalmers.fleetspeak.eventbus.EventBus;
 import se.chalmers.fleetspeak.eventbus.EventBusEvent;
 import se.chalmers.fleetspeak.util.Command;
+import se.chalmers.fleetspeak.util.Log;
 /**
  * An class for handling the rooms and client on the server side.
  * Based on the RoomHandler on the client side.
@@ -17,25 +17,30 @@ public class RoomHandler {
 	
     private HashMap<Room,ArrayList<Client>> rooms;
 	private Room defaultRoom;
+	
 	public RoomHandler(){
+		Log.logDebug("Creating a new RoomHandler");
 		rooms = new HashMap<Room,ArrayList<Client>>();
 		defaultRoom = new Room("Lobby", 0);
 	}
 	
 	public void addClient(Client c, Room r){
-		if (!rooms.containsKey(r) || rooms.get(r) == null) {
-            ArrayList<Client> list = new ArrayList<Client>();
-            list.add(c);
-            c.moveToRoom(r.getId());
-            rooms.put(r,list);
-		}else{
-			 ArrayList<Client> list = rooms.get(r);
-			 if(!list.contains(c)){
-				 list.add(c);
-				 c.moveToRoom(r.getId());
-			 }
+		if(c != null && r != null){
+			if (!rooms.containsKey(r) || rooms.get(r) == null) {
+	            ArrayList<Client> list = new ArrayList<Client>();
+	            list.add(c);
+	            c.moveToRoom(r.getId());
+	            rooms.put(r,list);
+			}else{
+				 ArrayList<Client> list = rooms.get(r);
+				 if(!list.contains(c)){
+					 list.add(c);
+					 c.moveToRoom(r.getId());
+				 }
+			}
+			
+			changeEvent();
 		}
-		changeEvent();
 	}
 	
 	public void addClient(Client c, int roomID){
@@ -56,6 +61,7 @@ public class RoomHandler {
 						c.terminate();
 					}
 					if(clientList.isEmpty() && r.getId() != 0){
+						Log.logDebug("Removing room");
 						rooms.remove(r);
 					}
 					break;
@@ -95,16 +101,22 @@ public class RoomHandler {
 	}
 	
 	public void setUsername(int clientID, String name) {
-		findClient(clientID).setName(name);
-		changeEvent();
+		Client c = findClient(clientID);
+		if(c != null){
+			c.setName(name);
+			changeEvent();
+		}
 	}
 	
 	public void setRoomName(int roomID, String name) {
-		findRoom(roomID).setName(name);
-		changeEvent();
+		Room r = findRoom(roomID);
+		if(r != null){
+			r.setName(name);
+			changeEvent();
+		}
 	}
 
-	public Client findClient(int clientID) throws NoSuchElementException {
+	public Client findClient(int clientID) {
 		for(ArrayList<Client> clients:rooms.values()){
 			for(Client c: clients){
 				if(c.getClientID()==clientID){
@@ -113,16 +125,19 @@ public class RoomHandler {
 			}
 		}
 		
+		Log.logError("\tDid not find client with ID </error><b>"+clientID+"</b>");
 		return null;
 	}
 
-	private Room findRoom(int roomID) throws NoSuchElementException {
+	private Room findRoom(int roomID) {
 		for(Room room:rooms.keySet() ){
 			if(room.getId()==roomID){
 				return room;
 			}
 		}
-		throw new NoSuchElementException("A user with ID: \"" + roomID + "\" doesn't exit.");
+
+		Log.logError("\tDid not find room with ID </error><b>"+roomID+"</b>");
+		return null;
 	}
 
 	public void terminate() {
