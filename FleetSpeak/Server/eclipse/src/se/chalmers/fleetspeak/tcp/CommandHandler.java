@@ -41,7 +41,7 @@ public class CommandHandler implements IEventBusSubscriber {
 	
 	private void serverCommands(String cmdString, Object actor) {
 		// Called to initiate the rtp sound transfer.
-		if (cmdString.startsWith(ServerCommand.SET_RTP_PORT.getName())) {
+		if (cmdString.startsWith(ServerCommand.SET_RTP_PORT.getName()+" ")) {
 			String[] data = cmdString.split(" ");
 			int clientID = -1, clientPort = -1;
 			try {
@@ -58,7 +58,7 @@ public class CommandHandler implements IEventBusSubscriber {
 				Log.log("\tThe user ID: " + clientID + " doesn't exist.");
 			}
 		// Called to clear the server console window.
-		} else if (cmdString.startsWith(ServerCommand.CLEAR.getName())) {
+		} else if (cmdString.equals(ServerCommand.CLEAR.getName())) {
 			Log.flushLog();
 		// Called to move a user from a room to an existing room.
 		} else if(cmdString.startsWith(ServerCommand.MOVE_USER.getName()+" ")){
@@ -77,7 +77,7 @@ public class CommandHandler implements IEventBusSubscriber {
 				Log.log("\tThe user ID: <error>" + clientID + "</error> or the room ID: <error>" + roomID + "</error> doesn't exist.");
 			}
 		//	Called to move a user from a room to a new room.
-		} else if(cmdString.startsWith(ServerCommand.MOVE_USER_NEW_ROOM.getName())){
+		} else if(cmdString.startsWith(ServerCommand.MOVE_USER_NEW_ROOM.getName()+" ")){
 			String[] data = cmdString.split(" ");
 			int clientID = -1;
 			try {
@@ -92,8 +92,40 @@ public class CommandHandler implements IEventBusSubscriber {
 			} catch (NoSuchElementException ex) {
 				Log.log("\tThe user ID: " + clientID + " doesn't exist.");
 			}
+		//	Called to change the name of a room.
+		} else if(cmdString.startsWith(ServerCommand.SET_ROOM_NAME.getName()+" ")){
+			String[] data = cmdString.split(" ");
+			int roomID = -1;
+			try {
+				roomID = Integer.parseInt(data[1]);
+				String roomName = data[2];
+				roomHandler.setRoomName(roomID, roomName);
+				eventBus.fireEvent(new EventBusEvent("broadcast", new Command("setRoomName", roomID, roomName), null));
+			} catch (NumberFormatException ex) {
+				wrongFormat(ServerCommand.SET_ROOM_NAME);
+			} catch (ArrayIndexOutOfBoundsException ex) {
+				wrongFormat(ServerCommand.SET_ROOM_NAME);
+			} catch (NoSuchElementException ex) {
+				Log.log("\tThe room ID: " + roomID + " doesn't exist.");
+			}
+		//	Called to change the name of a user.
+		} else if(cmdString.startsWith(ServerCommand.SET_ROOM_NAME.getName()+" ")){
+			String[] data = cmdString.split(" ");
+			int userID = -1;
+			try {
+				userID = Integer.parseInt(data[1]);
+				String Username = data[2];
+				roomHandler.setUsername(userID, Username);
+				eventBus.fireEvent(new EventBusEvent("broadcast", new Command("setName", userID, Username), null));
+			} catch (NumberFormatException ex) {
+				wrongFormat(ServerCommand.SET_USER_NAME);
+			} catch (ArrayIndexOutOfBoundsException ex) {
+				wrongFormat(ServerCommand.SET_USER_NAME);
+			} catch (NoSuchElementException ex) {
+				Log.log("\tThe user ID: " + userID + " doesn't exist.");
+			}
 		//	Called to close the server.
-		} else if (cmdString.startsWith(ServerCommand.CLOSE.getName())) {
+		} else if (cmdString.equals(ServerCommand.CLOSE.getName())) {
 			if (actor.getClass()==ServerGUI.class) {
 				((ServerGUI)actor).stop();
 			}
@@ -114,7 +146,7 @@ public class CommandHandler implements IEventBusSubscriber {
 				Log.log(ServerCommand.HELP.getInfo());
 			}
 		// Called to get all the information regarding rooms and users.
-		} else if (cmdString.startsWith(ServerCommand.ROOM_INFO.getName())) {
+		} else if (cmdString.equals(ServerCommand.ROOM_INFO.getName())) {
 			Log.log(roomHandler.getRoomInfo());
 		} else {
 			Log.log(("<error>ERROR:</error> \"<b>" + cmdString + "</b>\" <error>is not supported</error>"));
