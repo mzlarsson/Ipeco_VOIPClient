@@ -52,6 +52,8 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
     static Messenger mService = null;
     private Menu menu;
 
+    private boolean carMode = false;
+
 
     private ServiceConnection mConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className, IBinder service) {
@@ -162,9 +164,23 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
     }
 
     public void onConnectButtonClick(View view) {
-        String ipText = String.valueOf(((EditText) findViewById(R.id.ipField)).getText());
-        String portText = String.valueOf(((EditText) findViewById(R.id.portField)).getText());
-        String userNameText = String.valueOf(((EditText) findViewById(R.id.usernameField)).getText());
+        String ipText = "";
+        String portText = "";
+        String userNameText = "";
+        if(carMode || TruckDataHandler.getInstance().getTruckMode()){
+            ipText = prefs.getString(getString(R.string.ip_adress_text), "46.239.103.195");
+            portText = prefs.getString(getString(R.string.port_number_text), "8867");
+            userNameText = prefs.getString(getString(R.string.username_text), "username");
+        }else{
+            ipText = String.valueOf(((EditText) findViewById(R.id.ipField)).getText());
+            portText = String.valueOf(((EditText) findViewById(R.id.portField)).getText());
+            userNameText = String.valueOf(((EditText) findViewById(R.id.usernameField)).getText());
+
+            CheckBox checkBox = (CheckBox) findViewById(R.id.saveUserPref);
+            if(checkBox.isChecked()) {
+                savePreferences();
+            }
+        }
 
         startConnection(ipText, Integer.parseInt(portText), userNameText);
     }
@@ -215,9 +231,6 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
     }
 
     public void startConnection(String ip, int port, String userName){
-        CheckBox checkBox = (CheckBox) findViewById(R.id.saveUserPref);
-        if(checkBox.isChecked())
-            savePreferences();
         connecting(true);
 
         try {
@@ -231,6 +244,7 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
     }
 
     public void CarTrue(View view){
+        carMode = true;
         truckModeChanged(true);
     }
     public void connecting(boolean b){
