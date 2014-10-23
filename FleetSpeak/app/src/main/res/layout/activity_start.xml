@@ -59,35 +59,6 @@
             android:id="@+id/saveUserPref"
             android:layout_weight="0.5" />
 
-        <Button
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Car mode"
-            android:onClick="CarTrue"
-            android:id="@+id/button3"
-            android:layout_weight="0.1" />
-        <Button
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="showConnect"
-            android:text="Connecting"
-            android:id="@+id/button4"
-            android:layout_gravity="clip_horizontal"
-            />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Demo"
-            android:onClick="startDemo"
-            android:id="@+id/demoButton"
-            android:layout_below="@+id/progressBar2"
-            android:layout_toRightOf="@+id/progressBar2"
-            android:layout_toEndOf="@+id/progressBar2" />
-
-
     </LinearLayout>
 
     <Button

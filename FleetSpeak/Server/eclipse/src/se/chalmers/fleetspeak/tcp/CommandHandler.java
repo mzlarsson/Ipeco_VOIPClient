@@ -1,7 +1,5 @@
 package se.chalmers.fleetspeak.tcp;
 
-import java.util.NoSuchElementException;
-
 import se.chalmers.fleetspeak.Client;
 import se.chalmers.fleetspeak.Room;
 import se.chalmers.fleetspeak.RoomHandler;
@@ -54,8 +52,6 @@ public class CommandHandler implements IEventBusSubscriber {
 				wrongFormat(ServerCommand.SET_RTP_PORT);
 			} catch (ArrayIndexOutOfBoundsException ex) {
 				wrongFormat(ServerCommand.SET_RTP_PORT);
-			} catch (NoSuchElementException ex) {
-				Log.log("\tThe user ID: " + clientID + " doesn't exist.");
 			}
 		// Called to clear the server console window.
 		} else if (cmdString.equals(ServerCommand.CLEAR.getName())) {
@@ -73,8 +69,6 @@ public class CommandHandler implements IEventBusSubscriber {
 				wrongFormat(ServerCommand.MOVE_USER);
 			} catch (ArrayIndexOutOfBoundsException ex) {
 				wrongFormat(ServerCommand.MOVE_USER);
-			} catch (NoSuchElementException ex) {
-				Log.log("\tThe user ID: <error>" + clientID + "</error> or the room ID: <error>" + roomID + "</error> doesn't exist.");
 			}
 		//	Called to move a user from a room to a new room.
 		} else if(cmdString.startsWith(ServerCommand.MOVE_USER_NEW_ROOM.getName()+" ")){
@@ -83,14 +77,13 @@ public class CommandHandler implements IEventBusSubscriber {
 			try {
 				clientID = Integer.parseInt(data[1]);
 				String roomName = data[2];
-				roomHandler.moveClient(clientID, new Room(roomName));
-				eventBus.fireEvent(new EventBusEvent("broadcast", new Command("createAndMove", clientID, roomName), null));
+				Room r = new Room(roomName);
+				roomHandler.moveClient(clientID, r);
+				eventBus.fireEvent(new EventBusEvent("broadcast", new Command("createAndMove", clientID, r.getName()+","+r.getId()), null));
 			} catch (NumberFormatException ex) {
 				wrongFormat(ServerCommand.MOVE_USER_NEW_ROOM);
 			} catch (ArrayIndexOutOfBoundsException ex) {
 				wrongFormat(ServerCommand.MOVE_USER_NEW_ROOM);
-			} catch (NoSuchElementException ex) {
-				Log.log("\tThe user ID: " + clientID + " doesn't exist.");
 			}
 		//	Called to change the name of a room.
 		} else if(cmdString.startsWith(ServerCommand.SET_ROOM_NAME.getName()+" ")){
@@ -105,11 +98,9 @@ public class CommandHandler implements IEventBusSubscriber {
 				wrongFormat(ServerCommand.SET_ROOM_NAME);
 			} catch (ArrayIndexOutOfBoundsException ex) {
 				wrongFormat(ServerCommand.SET_ROOM_NAME);
-			} catch (NoSuchElementException ex) {
-				Log.log("\tThe room ID: " + roomID + " doesn't exist.");
 			}
 		//	Called to change the name of a user.
-		} else if(cmdString.startsWith(ServerCommand.SET_ROOM_NAME.getName()+" ")){
+		} else if(cmdString.startsWith(ServerCommand.SET_USER_NAME.getName()+" ")){
 			String[] data = cmdString.split(" ");
 			int userID = -1;
 			try {
@@ -121,8 +112,6 @@ public class CommandHandler implements IEventBusSubscriber {
 				wrongFormat(ServerCommand.SET_USER_NAME);
 			} catch (ArrayIndexOutOfBoundsException ex) {
 				wrongFormat(ServerCommand.SET_USER_NAME);
-			} catch (NoSuchElementException ex) {
-				Log.log("\tThe user ID: " + userID + " doesn't exist.");
 			}
 		//	Called to close the server.
 		} else if (cmdString.equals(ServerCommand.CLOSE.getName())) {

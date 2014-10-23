@@ -80,7 +80,9 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 			objectOutputStream.writeObject(command);
 			Log.log("[TCPHandler] <i>Command sent: "+command.getCommand()+"</i>");
 		} catch(SocketException e){
-			eventBus.fireEvent(new EventBusEvent("CommandHandler", new Command("disconnect", clientID, null), this));
+			if(command==null || !command.getCommand().equals("userDisconnected")){
+				eventBus.fireEvent(new EventBusEvent("CommandHandler", new Command("disconnect", clientID, null), this));
+			}
 		} catch(IOException e){
 			Log.logException(e);
 		}

@@ -38,17 +38,6 @@
        android:layout_alignParentBottom="true"
        android:layout_centerHorizontal="true"
         />
-    <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Connecting"
-        android:onClick="showConnect"
-        android:id="@+id/demoButton"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="100dp"/>
-
     />
     <RelativeLayout
         android:id="@+id/loadingPanel"
