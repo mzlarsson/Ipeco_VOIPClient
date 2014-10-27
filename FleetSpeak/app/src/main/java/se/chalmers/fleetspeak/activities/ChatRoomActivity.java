@@ -59,7 +59,7 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
     private ArrayList<User> arrayUsers = new ArrayList<User>();
     private Messenger mService = null;
     private ArrayAdapter<User> adapter;
-    private boolean isTalkActive = false; //Change to true if u wanna check how the Chatroom looks like in driving mode.
+    private boolean isTalkActive = false;
     private int currentRoomID;
 
      private ServiceConnection mConnection = new ServiceConnection() {
@@ -84,12 +84,11 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
         CommandHandler.getInstance().addListener(this);
         bindService(new Intent(this,SocketService.class), mConnection, Context.BIND_AUTO_CREATE);
 
-
         //Shows the up button
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         Intent intent = getIntent();
         currentRoomID = intent.getIntExtra("roomID", 0);
-        initUserList(); //init userList
+        initUserList();
 
         userListView = (ListView) findViewById(R.id.userList);
         adapter = new ChatRoomListAdapter(this, arrayUsers);
@@ -142,7 +141,7 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                pushToTalk(view);
+                pushToTalk();
             }
         });
         return true;
@@ -174,9 +173,8 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
 
     /**
      * Changes the pushtoTalkButton icon based on isTalkActive
-     * @param view
      */
-    public void pushToTalk(View view) {
+    public void pushToTalk() {
         Log.i("ChatroomActivity", "pushToTalkCalled");
         isTalkActive = !isTalkActive;
         ImageButton button = (ImageButton) findViewById(R.id.pushToTalkButton);
@@ -229,8 +227,6 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
         CommandHandler.removeListener(this);
 
     }
-
-
 
     /**
      * Creates a dropdown panel with a volume and mic seekbars, which is activated by a imagebutton
@@ -291,7 +287,6 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
      * The adapter handles all the items in the listView
      */
     public class ChatRoomListAdapter extends ArrayAdapter<User> {
-
         public ChatRoomListAdapter(Context context, ArrayList<User> values) {
             super(context, R.layout.list_item_users, values);
             Log.i("ChatRoom Userlist size: ", String.valueOf(values.size()));
@@ -316,7 +311,5 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
             return view;
         }
     }
-
-
 
 }
