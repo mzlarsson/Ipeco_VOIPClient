@@ -10,7 +10,7 @@ import se.chalmers.fleetspeak.sound.Constants;
 import se.chalmers.fleetspeak.tcp.CommandHandler;
 import se.chalmers.fleetspeak.util.Log;
 
-public class ServerMain{
+public class ConnectionHandler{
     
     private int port;
     
@@ -20,7 +20,7 @@ public class ServerMain{
     
     private volatile boolean running;
     
-    public ServerMain(int port) throws UnknownHostException{
+    public ConnectionHandler(int port) throws UnknownHostException{
     	Log.log("Starting server @LAN-IP "+InetAddress.getLocalHost().getHostAddress()+" on port "+port);
     	this.running = true;
     	commandHandler = new CommandHandler();

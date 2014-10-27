@@ -18,7 +18,7 @@ public class ServerConsole {
     private static int DEFAULT_PORT = 8867;
     
     private static Thread serverThread;
-    private static ServerMain server;
+    private static ConnectionHandler server;
     
     private static Scanner scanner;
 	private Logger log;
@@ -52,7 +52,7 @@ public class ServerConsole {
 		serverThread = new Thread(new Runnable() {
 			public void run() {
 				try {
-					server = new ServerMain(port);
+					server = new ConnectionHandler(port);
 					server.start();
 				} catch (UnknownHostException e) {
 					// TODO Auto-generated catch block

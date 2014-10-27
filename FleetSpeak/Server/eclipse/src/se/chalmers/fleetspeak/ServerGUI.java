@@ -55,7 +55,7 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener, IE
 	private JTextPane terminal;
 	private JTextField cmdLine;
 	
-	private static ServerMain server;
+	private static ConnectionHandler server;
 	private static Thread serverThread;
 	private Logger log;
 
@@ -300,7 +300,7 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener, IE
 			serverThread = new Thread(new Runnable() {
 				public void run() {
 					try {
-						server = new ServerMain(Integer.parseInt(tcpText
+						server = new ConnectionHandler(Integer.parseInt(tcpText
 								.getText()));
 						server.start();
 					} catch (UnknownHostException e) {
