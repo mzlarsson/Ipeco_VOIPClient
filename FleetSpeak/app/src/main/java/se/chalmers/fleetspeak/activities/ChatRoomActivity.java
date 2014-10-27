@@ -45,40 +45,35 @@ import se.chalmers.fleetspeak.util.ServiceUtil;
 import se.chalmers.fleetspeak.util.ThemeUtils;
 
 /**
- * Created by TwiZ on 2014-10-06.
+ * Created by Johan Segerlund on 2014-10-06.
  */
 public class ChatRoomActivity extends ActionBarActivity implements TruckStateListener, Commandable {
 
-    ListView userListView;
+    private ListView userListView;
     private SeekBar volumeControlBar;
     private SeekBar micControlBar;
     private Menu menu;
     private PopupWindow micAndVolumePanel;
     private static TruckDataHandler truckDataHandler;
-    User[] users;
-    ArrayList<User> arrayUsers = new ArrayList<User>();
-    private RoomHandler handler; //TODO: For test purposes
+    private User[] users;
+    private ArrayList<User> arrayUsers = new ArrayList<User>();
     private Messenger mService = null;
-    ArrayAdapter<User> adapter;
-    private boolean isTalkActive = false;
+    private ArrayAdapter<User> adapter;
+    private boolean isTalkActive = false; //Change to true if u wanna check how the Chatroom looks like in driving mode.
     private int currentRoomID;
 
      private ServiceConnection mConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className, IBinder service) {
             Log.i("SERVICECONNECTION", "service started");
             mService = new Messenger(service);
-
         }
 
-            public void onServiceDisconnected(ComponentName className) {
+        public void onServiceDisconnected(ComponentName className) {
             // This is called when the connection with the service has been unexpectedly disconnected - process crashed.
             mService = null;
             Log.i("SERVICECONNECTION", "Disconnected");
         }
     };
-
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,38 +115,10 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
                     user.setMuted(true);
                     adapter.notifyDataSetChanged();
                 }
-
             }
         });
         truckModeChanged(truckDataHandler.getInstance().getTruckMode());
         Log.i("Chat", SoundController.hasValue() + "");
-    }
-
-
-    /**
-     * Gets the user list from the handler.
-     * Moves the users to an arraylist which will be used by the adapter.
-     */
-    private void initUserList(){
-        users = CommandHandler.getUsers(currentRoomID);
-        Log.i("Users size from server", String.valueOf(users.length));
-        for(int i = 0; i < users.length; i++){
-            arrayUsers.add(users[i]);
-        }
-
-    }
-
-    /**
-     * Updates the userlist when for example a another user leaves or join a room.
-     */
-    private void updateUserList() {
-        //TODO SERVER: When a user joins this room(currentRoomID) call this method
-        users = CommandHandler.getUsers(currentRoomID);
-        arrayUsers.clear();
-        for(int i = 0; i < users.length; i++){
-            arrayUsers.add(users[i]);
-        }
-        adapter.notifyDataSetChanged(); //Pokes the adapter to view the new changes
     }
 
     @Override
@@ -163,6 +130,46 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public boolean onCreateOptionsMenu(Menu menu){
+        this.menu = menu;
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.chatroommenu, menu);
+        ImageButton locButton = (ImageButton) menu.findItem(R.id.volume_mic_control).getActionView();
+        setUpVolumeAndMicControl(this, locButton);
+        ImageButton button = (ImageButton) findViewById(R.id.pushToTalkButton);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                pushToTalk(view);
+            }
+        });
+        return true;
+    }
+
+    /**
+     * Gets the user list from the handler.
+     * Moves the users to an arraylist which will be used by the adapter.
+     */
+    private void initUserList(){
+        users = CommandHandler.getUsers(currentRoomID);
+        Log.i("Users size from server", String.valueOf(users.length));
+        for(int i = 0; i < users.length; i++){
+            arrayUsers.add(users[i]);
+        }
+    }
+
+    /**
+     * Updates the userlist when for example a another user leaves or join a room.
+     */
+    private void updateUserList() {
+        users = CommandHandler.getUsers(currentRoomID);
+        arrayUsers.clear();
+        for(int i = 0; i < users.length; i++){
+            arrayUsers.add(users[i]);
+        }
+        adapter.notifyDataSetChanged(); //Pokes the adapter to view the new changes
     }
 
     /**
@@ -189,12 +196,14 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
             item.setVisible(!mode);
         }
     }
+
     @Override
     public void onDataUpdate(String command) {
         if(command.equals("dataUpdate")){
             updateUserList();
         }
     }
+
     @Override
     protected void onPause(){
         Log.i("ChatroomActivity", "called onPause unbinding");
@@ -221,56 +230,7 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
 
     }
 
-    /**
-     * Inner class, Adapter for the ChatRoom ListView
-     * The adapter handles all the items in the listView
-     */
-    public class ChatRoomListAdapter extends ArrayAdapter<User> {
 
-        public ChatRoomListAdapter(Context context, ArrayList<User> values) {
-            super(context, R.layout.list_item_users, values);
-            Log.i("ChatRoom Userlist size: ", String.valueOf(values.size()));
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            LayoutInflater inflater = LayoutInflater.from(getContext());
-
-            View view = inflater.inflate(R.layout.list_item_users,parent, false);
-
-            User user = getItem(position);
-            String userName = user.getName();
-
-            TextView textView = (TextView) view.findViewById(R.id.userName);
-            ImageView imageView = (ImageView) view.findViewById(R.id.userTalkImage);
-
-
-            /*
-             * Sätter namnet i listan
-             */
-            textView.setText(userName);
-
-            imageView.setImageResource(user.getMuted()?R.drawable.ic_mute:R.drawable.ic_user);
-
-            return view;
-        }
-    }
-
-    public boolean onCreateOptionsMenu(Menu menu){
-        this.menu = menu;
-        super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.chatroommenu, menu);
-        ImageButton locButton = (ImageButton) menu.findItem(R.id.volume_mic_control).getActionView();
-        setUpVolumeAndMicControl(this, locButton);
-        ImageButton button = (ImageButton) findViewById(R.id.pushToTalkButton);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                pushToTalk(view);
-            }
-        });
-        return true;
-    }
 
     /**
      * Creates a dropdown panel with a volume and mic seekbars, which is activated by a imagebutton
@@ -326,6 +286,36 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
         popupWindow.setHeight(height);
     }
 
+    /**
+     * Inner class, Adapter for the ChatRoom ListView
+     * The adapter handles all the items in the listView
+     */
+    public class ChatRoomListAdapter extends ArrayAdapter<User> {
+
+        public ChatRoomListAdapter(Context context, ArrayList<User> values) {
+            super(context, R.layout.list_item_users, values);
+            Log.i("ChatRoom Userlist size: ", String.valueOf(values.size()));
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            LayoutInflater inflater = LayoutInflater.from(getContext());
+
+            View view = inflater.inflate(R.layout.list_item_users,parent, false);
+
+            User user = getItem(position);
+            String userName = user.getName();
+
+            TextView textView = (TextView) view.findViewById(R.id.userName);
+            ImageView imageView = (ImageView) view.findViewById(R.id.userTalkImage);
+
+            textView.setText(userName); //Sets the names in the list
+
+            imageView.setImageResource(user.getMuted()?R.drawable.ic_mute:R.drawable.ic_user); //Sets icon in the list
+
+            return view;
+        }
+    }
 
 
 
