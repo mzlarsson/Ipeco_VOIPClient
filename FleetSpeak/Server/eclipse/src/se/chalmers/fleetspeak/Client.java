@@ -11,6 +11,13 @@ import se.chalmers.fleetspeak.util.Command;
 import se.chalmers.fleetspeak.util.IDFactory;
 import se.chalmers.fleetspeak.util.Log;
 
+/**
+ * A class that handles all connectors with the app
+ * @author Nieo
+ *
+ */
+
+
 public class Client{
 
 	private String name;

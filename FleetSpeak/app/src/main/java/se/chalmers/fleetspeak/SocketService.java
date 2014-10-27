@@ -189,9 +189,13 @@ public class SocketService extends Service {
 
     }
 
+    /**
+     * When created it will start looking for messages
+     */
 
     @Override
     public void onCreate(){
+
          timer.scheduleAtFixedRate(new TimerTask(){ public void run() {lookForMessage();}}, 0, 100L);
     }
 
@@ -225,7 +229,6 @@ public class SocketService extends Service {
                 }
             } catch (IOException e) {
                 endSocketConnection();
-               // Log.i(LOGNAME, e.toString());
             } catch (ClassNotFoundException e) {
                 Log.e(LOGNAME, e.toString());
             } catch (NullPointerException e) {

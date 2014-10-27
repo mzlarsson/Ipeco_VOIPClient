@@ -3,8 +3,7 @@ package se.chalmers.fleetspeak.util;
 import java.io.Serializable;
 
 /**
- * A class that creates an Event that is used by the EventBus and it's
- * subscribers.
+ * A class holding a command for communication between server and client
  * @author Patrik
  * @version 1.0
  * 

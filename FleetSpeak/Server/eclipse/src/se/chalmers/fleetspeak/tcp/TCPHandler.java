@@ -14,6 +14,12 @@ import se.chalmers.fleetspeak.eventbus.IEventBusSubscriber;
 import se.chalmers.fleetspeak.util.Command;
 import se.chalmers.fleetspeak.util.Log;
 
+/**
+ * For handling of TCP connections with the andriod app
+ * @author Nieo
+ *
+ */
+
 public class TCPHandler extends Thread implements IEventBusSubscriber {
 
 	private int clientID;
@@ -39,6 +45,10 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 		eventBus.addSubscriber(this);
 
 	}
+	
+	/**
+	 * Looks for new incoming messages 
+	 */
 
 	public void run() {
 		isRunning = true;
@@ -77,7 +87,10 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 			}
 		}
 	}
-	
+	/**
+	 * Tries to send a command to the socket 
+	 * @param command
+	 */
 	public void sendData(Command command){
 		try{
 			Log.log("[TCPHandler]Trying to send " + command.getCommand());

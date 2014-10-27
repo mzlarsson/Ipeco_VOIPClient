@@ -24,27 +24,16 @@ public class CommandHandler extends Handler {
     private CommandHandler(){
         super();
         roomHandler = new RoomHandler();
-        //tester();
-    }
-
-    /**
-     * For testing without having a server connection
-     */
-    private void tester(){
-        roomHandler.addUser(new User("Simulated User55", 55));
-        roomHandler.addToNewRoom(new User("Simulated User56", 56),"Joan Rivers memory room");
-        roomHandler.addToNewRoom(new User("Simulated User57", 57), "Ryska ubåtar");
-        roomHandler.addUser(new User("Simulated User58", 58));
-        roomHandler.addUser(new User("Simulated User59", 59));
-        roomHandler.addUser(new User("Simulated User60", 60));
-
-
-
     }
 
     public static CommandHandler getInstance(){
         return commandHandler;
     }
+
+    /**
+     * Handles incomming messages form SocketService and informs GUI components
+     * @param msg
+     */
 
     public void handleMessage(Message msg) {
         Command command = (Command) msg.obj;

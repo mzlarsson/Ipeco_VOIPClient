@@ -9,7 +9,12 @@ import java.net.UnknownHostException;
 import se.chalmers.fleetspeak.sound.Constants;
 import se.chalmers.fleetspeak.tcp.CommandHandler;
 import se.chalmers.fleetspeak.util.Log;
-
+/**
+ * Listen for connections form the app
+ * Creates new clients and put them on the eventbus
+ * @author Nieo
+ *
+ */
 public class ConnectionHandler{
     
     private int port;
