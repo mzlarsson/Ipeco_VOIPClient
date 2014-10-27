@@ -15,8 +15,7 @@ import se.chalmers.fleetspeak.util.Log;
 
 public class ServerConsole {
 
-    private static int DEFAULT_PORT_TCP = 8867;
-    private static int DEFAULT_PORT_RTP = 8868;
+    private static int DEFAULT_PORT = 8867;
     
     private static Thread serverThread;
     private static ServerMain server;
@@ -25,8 +24,7 @@ public class ServerConsole {
 	private Logger log;
 	
 	public static void main(String[] args) {
-		int tcpPort = (args!=null&&args.length>0?Integer.parseInt(args[0]):DEFAULT_PORT_TCP);
-        int rtpPort = (args!=null&&args.length>1?Integer.parseInt(args[1]):DEFAULT_PORT_RTP);
+		int port = (args!=null&&args.length>0?Integer.parseInt(args[0]):DEFAULT_PORT);
         
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
 			public void run() {
@@ -44,17 +42,17 @@ public class ServerConsole {
 			}
 		}));
         
-        new ServerConsole(tcpPort, rtpPort);
+        new ServerConsole(port);
 	}
 
-	public ServerConsole(final int tcpPort, final int rtpPort) {
+	public ServerConsole(final int port) {
 		
 		setupLogger();
 		
 		serverThread = new Thread(new Runnable() {
 			public void run() {
 				try {
-					server = new ServerMain(tcpPort, rtpPort);
+					server = new ServerMain(port);
 					server.start();
 				} catch (UnknownHostException e) {
 					// TODO Auto-generated catch block

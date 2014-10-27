@@ -49,7 +49,6 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener, IE
 	private JLabel ip;
 	private JLabel roomStructure;
 	private JTextField tcpText;
-	private JTextField udpText;
 	private JButton stop;
 	private JButton start;
 	JScrollPane scrollableText;
@@ -124,15 +123,11 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener, IE
 		// The area for input of what ports to use.
 		westButtonGroup.add(ip, BorderLayout.NORTH);
 		JPanel portsPanel = new JPanel();
-		portsPanel.setLayout(new GridLayout(2, 2));
-		JLabel tcpLabel = new JLabel("TCP-Port :");
+		portsPanel.setLayout(new GridLayout(1, 2));
+		JLabel tcpLabel = new JLabel("Port :");
 		tcpText = new JTextField("8867", 4);
-		JLabel utpLabel = new JLabel("UDP-Port :");
-		udpText = new JTextField("8867", 4);
 		portsPanel.add(tcpLabel);
 		portsPanel.add(tcpText);
-		portsPanel.add(utpLabel);
-		portsPanel.add(udpText);
 		westButtonGroup.add(portsPanel, BorderLayout.CENTER);
 		JPanel buttons = new JPanel();
 		buttons.setLayout(new GridLayout(1, 2));
@@ -306,8 +301,7 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener, IE
 				public void run() {
 					try {
 						server = new ServerMain(Integer.parseInt(tcpText
-								.getText()),
-								Integer.parseInt(udpText.getText()));
+								.getText()));
 						server.start();
 					} catch (UnknownHostException e) {
 						// TODO Auto-generated catch block
@@ -324,7 +318,6 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener, IE
 				e.printStackTrace();
 			}
 			tcpText.setEnabled(false);
-			udpText.setEnabled(false);
 			start.setEnabled(false);
 			stop.setEnabled(true);
 		}
@@ -344,7 +337,6 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener, IE
 			}
 			log.log(Level.ALL, "Server stopped.");
 			tcpText.setEnabled(true);
-			udpText.setEnabled(true);
 			start.setEnabled(true);
 			stop.setEnabled(false);
 		}

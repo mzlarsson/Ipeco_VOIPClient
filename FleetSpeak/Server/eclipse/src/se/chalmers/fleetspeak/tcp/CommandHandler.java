@@ -86,6 +86,10 @@ public class CommandHandler implements IEventBusSubscriber {
 				wrongFormat(ServerCommand.MOVE_USER_NEW_ROOM);
 			}
 		//	Called to change the name of a room.
+		} else if(cmdString.startsWith(ServerCommand.KICK.getName()+"")){
+			String[] data = cmdString.split(" ");
+			int clientID = Integer.parseInt(data[1]);
+			eventBus.fireEvent(new EventBusEvent("CommandHandler", new Command("disconnect", clientID, null), this));
 		} else if(cmdString.startsWith(ServerCommand.SET_ROOM_NAME.getName()+" ")){
 			String[] data = cmdString.split(" ");
 			int roomID = -1;

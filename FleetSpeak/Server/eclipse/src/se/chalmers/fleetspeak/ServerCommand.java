@@ -22,6 +22,12 @@ public enum ServerCommand {
 			return "<b>help <command></b> Gives help about the given command.";
 		}
 	},
+	KICK("kick") {
+		@Override
+		public String getInfo(){
+			return "<b>kick <user-id></b> Kicks the user with the given ID.";
+		}
+	},
 	MOVE_USER("moveUser") {
 		@Override
 		public String getInfo(){

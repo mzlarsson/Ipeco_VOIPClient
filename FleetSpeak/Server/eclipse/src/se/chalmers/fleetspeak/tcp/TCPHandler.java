@@ -6,6 +6,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 
 import se.chalmers.fleetspeak.eventbus.EventBus;
 import se.chalmers.fleetspeak.eventbus.EventBusEvent;
@@ -51,6 +52,9 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 				eventBus.fireEvent(new EventBusEvent("CommandHandler", c, this));
 			}
 		} catch(EOFException eofe){
+			eventBus.fireEvent(new EventBusEvent("CommandHandler", new Command("disconnect", clientID, null), this));
+		} catch(SocketTimeoutException e){
+			Log.logError("Got Socket Timeout. Removing client");
 			eventBus.fireEvent(new EventBusEvent("CommandHandler", new Command("disconnect", clientID, null), this));
 		} catch(SocketException e){
 			//Only log if the handler is not terminated

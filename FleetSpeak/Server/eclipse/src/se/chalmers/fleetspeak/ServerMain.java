@@ -12,8 +12,7 @@ import se.chalmers.fleetspeak.util.Log;
 
 public class ServerMain{
     
-    private int tcpPort;
-    private int rtpPort;
+    private int port;
     
     
     private static CommandHandler commandHandler;
@@ -21,17 +20,15 @@ public class ServerMain{
     
     private volatile boolean running;
     
-    public ServerMain(int tcpPort, int rtpPort) throws UnknownHostException{
-    	Log.log("Starting server @LAN-IP "+InetAddress.getLocalHost().getHostAddress()+
-    			" tcp:"+tcpPort+" rtp:"+rtpPort);
+    public ServerMain(int port) throws UnknownHostException{
+    	Log.log("Starting server @LAN-IP "+InetAddress.getLocalHost().getHostAddress()+" on port "+port);
     	this.running = true;
     	commandHandler = new CommandHandler();
     	//TODO fix this?
     	Constants.setServerIP(InetAddress.getLocalHost().getHostAddress());
     	
 
-    	this.tcpPort = tcpPort;
-    	this.rtpPort = rtpPort;
+    	this.port = port;
     }
     
     public void start() throws UnknownHostException{
@@ -39,7 +36,7 @@ public class ServerMain{
     	//Start the server
         try {
         	InetAddress locIP = InetAddress.getLocalHost();
-            serverSocket = new ServerSocket(tcpPort, 0, locIP);
+            serverSocket = new ServerSocket(port, 0, locIP);
             Socket clientSocket = null;
             while(running){
             	//Create connection
@@ -62,7 +59,7 @@ public class ServerMain{
         Log.log("A new person joined");
         
         //Create and forward client
-        Client client = new Client(clientSocket, rtpPort);
+        Client client = new Client(clientSocket, port);
         commandHandler.addClient(client);
     }
     
