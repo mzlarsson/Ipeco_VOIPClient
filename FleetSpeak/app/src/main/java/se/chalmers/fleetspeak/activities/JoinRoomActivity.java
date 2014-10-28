@@ -1,6 +1,5 @@
 package se.chalmers.fleetspeak.activities;
 
-import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
@@ -45,7 +44,7 @@ import se.chalmers.fleetspeak.sound.SoundController;
 import se.chalmers.fleetspeak.truck.TruckDataHandler;
 import se.chalmers.fleetspeak.truck.TruckStateListener;
 import se.chalmers.fleetspeak.util.ServiceUtil;
-import se.chalmers.fleetspeak.util.ThemeUtils;
+import se.chalmers.fleetspeak.util.Utils;
 
 /**
  * Created by TwiZ on 2014-10-09.
@@ -78,7 +77,7 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
     };
 
     protected void onCreate(Bundle savedInstanceState) {
-        ThemeUtils.onCreateActivityCreateTheme(this);
+        Utils.onCreateActivityCreateTheme(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_join_room);
 
@@ -134,7 +133,7 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
         final EditText input = new EditText(this);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         //input.setHint(prefs.getString("Username", "username"));
-        input.setHint(ThemeUtils.getUsername() + "'s room");
+        input.setHint(Utils.getUsername() + "'s room");
         if(!isDriving){
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
@@ -193,10 +192,9 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()){
             case R.id.day_night_toggle:
-                ThemeUtils.changeTheme(this);
+                Utils.changeTheme(this);
                 return true;
             case android.R.id.home:
-                //NavUtils.navigateUpFromSameTask(this);
                 Intent intent = new Intent(this,StartActivity.class);
                 startActivity(intent);
                 try {
@@ -339,6 +337,18 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
         Log.i("JOINROOMACTIVITY", "called onRestart binding");
         super.onRestart();
         bindService(new Intent(this, SocketService.class), serviceConnection, Context.BIND_AUTO_CREATE);
+    }
+    @Override
+    public void onBackPressed(){
+        super.onBackPressed();
+        Intent intent = new Intent(this,StartActivity.class);
+        startActivity(intent);
+        try {
+            messenger.send(Message.obtain(ServerHandler.disconnect()));
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        unbindService(serviceConnection);
     }
 }
 

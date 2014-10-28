@@ -24,7 +24,7 @@ import java.util.Enumeration;
  * Created by Matz on 2014-10-10.
  */
 public class SoundController {
-
+    private static AudioManager audioManager;
     private static AudioGroup audioGroup;
     private static AudioStream audioStream;
     private static boolean loaded = false;
@@ -34,7 +34,7 @@ public class SoundController {
     public static void create(Context context, String serverIP, int serverPort){
         fetchIP();
 
-        AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+        audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
         audioManager.setMicrophoneMute(false);
         audioManager.setSpeakerphoneOn(true);
@@ -64,12 +64,49 @@ public class SoundController {
         loaded = true;
     }
 
-    public static void mute(){
-     //
+    /**
+     * Sets the sound volume to a integer
+     * @param i - the integer
+     */
+    public static void setVoloume(int i){
+        if(audioManager != null){
+            audioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL, i , 0);
+        }
     }
 
-    public static void unmute(){
-      //
+    /**
+     * Get the current volume as a integer
+     * @return int - the current volume
+     */
+    public static int getCurrentVolume(){
+        if(audioManager!= null){
+            return  audioManager.getStreamVolume(AudioManager.STREAM_VOICE_CALL);
+        }
+        else{
+            return  -1;
+        }
+    }
+
+    /**
+     * Get the max value of the volume as a integer
+     * @return int - the max volume value
+     */
+    public static int getMaxVolume(){
+        if(audioManager != null){
+            Log.d("AUDIOSTREAM", "ALARM: "+audioManager.getStreamMaxVolume(AudioManager.STREAM_ALARM));
+            Log.d("AUDIOSTREAM", "DTMF: "+audioManager.getStreamMaxVolume(AudioManager.STREAM_DTMF));
+            Log.d("AUDIOSTREAM", "MUSIC: "+audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
+            Log.d("AUDIOSTREAM", "NOTIF: "+audioManager.getStreamMaxVolume(AudioManager.STREAM_NOTIFICATION));
+            Log.d("AUDIOSTREAM", "RING: "+audioManager.getStreamMaxVolume(AudioManager.STREAM_RING));
+            Log.d("AUDIOSTREAM", "SYSTEM: "+audioManager.getStreamMaxVolume(AudioManager.STREAM_SYSTEM));
+            Log.d("AUDIOSTREAM", "VOICE: "+audioManager.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL));
+            return  audioManager.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL);
+        }else {
+            return -1;
+        }
+    }
+    public static void mute(boolean b){
+        audioManager.setMicrophoneMute(b);
     }
 
     private static void fetchIP(){

@@ -1,6 +1,5 @@
 package se.chalmers.fleetspeak.activities;
 
-import android.content.ClipData;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -42,7 +41,7 @@ import se.chalmers.fleetspeak.sound.SoundController;
 import se.chalmers.fleetspeak.truck.TruckDataHandler;
 import se.chalmers.fleetspeak.truck.TruckStateListener;
 import se.chalmers.fleetspeak.util.ServiceUtil;
-import se.chalmers.fleetspeak.util.ThemeUtils;
+import se.chalmers.fleetspeak.util.Utils;
 
 /**
  * Created by TwiZ on 2014-10-06.
@@ -82,7 +81,7 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        ThemeUtils.onCreateActivityCreateTheme(this);
+        Utils.onCreateActivityCreateTheme(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chatroom);
 
@@ -174,12 +173,7 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
         isTalkActive = !isTalkActive;
         ImageButton button = (ImageButton) findViewById(R.id.pushToTalkButton);
         button.setBackgroundResource(isTalkActive?R.drawable.ic_mic_blue:R.drawable.ic_mic_grey);
-
-        if(isTalkActive){
-            SoundController.unmute();
-        }else{
-            SoundController.mute();
-        }
+        SoundController.mute(isTalkActive);
     }
 
     @Override
@@ -281,9 +275,13 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
         LayoutInflater inflater = LayoutInflater.from(context);
 
         View contentView = inflater.inflate(R.layout.drop_down_seek_bar, null);
-        volumeControlBar = (SeekBar) findViewById(R.id.volume_seekbar);
-        micControlBar = (SeekBar) findViewById(R.id.mic_seekbar);
-
+        micControlBar = (SeekBar) contentView.findViewById(R.id.mic_seekbar);
+        if(contentView.findViewById(R.id.volume_seekbar) != null) {
+            setUpVolumeSeekbar((SeekBar)contentView.findViewById(R.id.volume_seekbar));
+        }
+        else{
+            Log.i("Ape", "apar mig bara");
+        }
         micAndVolumePanel = new PopupWindow(context, null,
         android.R.attr.actionDropDownStyle);
         micAndVolumePanel.setFocusable(true);
@@ -299,7 +297,32 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
         imageButton.setBackgroundResource(R.drawable.ic_control_mic_volume);
 
     }
+    private void setUpVolumeSeekbar(SeekBar seekbar){
+        volumeControlBar = seekbar;
+        if(SoundController.getMaxVolume() != -1) {
+            seekbar.setMax(SoundController.getMaxVolume());
+        }
+        if(SoundController.getCurrentVolume() != -1){
+            seekbar.setProgress(SoundController.getCurrentVolume());
+        }
+        seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
+                SoundController.setVoloume(progress);
+                Log.i("Volume value:", " " + progress);
+            }
 
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+    }
     /**
      * Set the size of the popupWindow
      * @param popupWindow
@@ -325,7 +348,6 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
         popupWindow.setWidth(width);
         popupWindow.setHeight(height);
     }
-
 
 
 

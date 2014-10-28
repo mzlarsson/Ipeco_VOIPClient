@@ -23,7 +23,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -38,8 +37,11 @@ import se.chalmers.fleetspeak.sound.SoundController;
 import se.chalmers.fleetspeak.truck.TruckDataHandler;
 import se.chalmers.fleetspeak.truck.TruckStateListener;
 import se.chalmers.fleetspeak.util.ServiceUtil;
-import se.chalmers.fleetspeak.util.ThemeUtils;
+import se.chalmers.fleetspeak.util.Utils;
 
+/**
+ * A Activity that shows the startup of the application
+ */
 public class StartActivity extends ActionBarActivity implements TruckStateListener, Commandable {
 
     private String ipText;
@@ -54,7 +56,9 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
 
     private boolean carMode = false;
 
-
+    /**
+     * Set up the connection service of the application
+     */
     private ServiceConnection mConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className, IBinder service) {
             Log.i("SERVICECONNECTION", "service started");
@@ -72,17 +76,24 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
+        // Access the shared preferences for the acitivity and creates a editor
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         prefEdit = prefs.edit();
+
+        // Get the theme saved in shared preferences with key "Theme" if no value is accessed returns 1
         int prefTheme = prefs.getInt("Theme", 1);
-        ThemeUtils.setTheme(prefTheme);
-        ThemeUtils.onCreateActivityCreateTheme(this);
+        // Set the theme of the application
+        Utils.setTheme(prefTheme);
+        Utils.onCreateActivityCreateTheme(this);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
         CommandHandler.getInstance().addListener(this);
+
         TruckDataHandler.addListener(this);
+        // Set upp layout depending on if Truck is in Driving mode
         truckModeChanged(TruckDataHandler.getInstance().getTruckMode());
         if (!TruckDataHandler.getInstance().getTruckMode()) {
             final EditText ipTextField = (EditText) findViewById(R.id.ipField);
@@ -139,27 +150,28 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
 
             portText = prefs.getString(getString(R.string.port_number_text), "8867");
             userNameText = prefs.getString(getString(R.string.username_text), "username");
-            ThemeUtils.setUsername(userNameText);
+            Utils.setUsername(userNameText);
             ipText = prefs.getString(getString(R.string.ip_adress_text), "46.239.103.195");
             ipTextField.setText(ipText);
             portField.setText(portText);
             userNameField.setText(userNameText);
-            //Removes focus from the EditTextFields in the app
-            RelativeLayout l = (RelativeLayout) findViewById(R.id.relStart_layout);
-            l.requestFocus();
 
 
-            Log.i("STARTACTIVITY", "started service");
 
-            Intent i = new Intent(this, SocketService.class);
-            startService(i);
-            Log.i("STARTACTIVITY", "binding service");
-            bindService(i, mConnection, Context.BIND_AUTO_CREATE);
         }
+        //Removes focus from the EditTextFields in the app
+        setNoFocus();
+        Log.i("STARTACTIVITY", "started service");
+        Intent i = new Intent(this, SocketService.class);
+        startService(i);
+        Log.i("STARTACTIVITY", "binding service");
+        bindService(i, mConnection, Context.BIND_AUTO_CREATE);
     }
     @Override
     public void onBackPressed(){
         super.onBackPressed();
+        this.finish();
+        System.exit(0);
     }
 
     @Override
@@ -173,7 +185,7 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.day_night_toggle) {
-             ThemeUtils.changeTheme(this);
+             Utils.changeTheme(this);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -206,10 +218,15 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
 
 
     }
+    @Override
     protected void onRestart(){
         super.onRestart();
     }
 
+    /**
+     * A method that is preformed when connect button is clicked
+     * @param view
+     */
     public void onConnectButtonClick(View view) {
         String ipText = "";
         String portText = "";
@@ -232,7 +249,7 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
         startConnection(ipText, Integer.parseInt(portText), userNameText);
     }
     /**
-     * Show Connection error message
+     * A method that creates and shows a connection error message
      */
     public void showConnectionErrorMessage(){
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -258,12 +275,18 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
         prefEdit.putString(getString(R.string.username_text), String.valueOf(et3.getText()));
             prefEdit.putString(getString(R.string.ip_adress_text), String.valueOf(et.getText()));
             prefEdit.putString(getString(R.string.port_number_text), String.valueOf(et2.getText()));
-            prefEdit.putInt("Theme",ThemeUtils.getThemeID());
+            prefEdit.putInt("Theme", Utils.getThemeID());
             prefEdit.commit();
     }
 
+    /**
+     * A method to start the connection to the server with a given IP adress, port number and username.
+     * @param ip - the IP Adress
+     * @param port- the port number
+     * @param userName - the username
+     */
     public void startConnection(String ip, int port, String userName){
-        connecting(true);
+        showConnecting(true);
 
         try {
             mService.send(Message.obtain(ServerHandler.connect(ip,port)));
@@ -274,11 +297,11 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
         } catch (RemoteException e) {}
     }
 
-    public void CarTrue(View view){
-        carMode = true;
-        truckModeChanged(true);
-    }
-    public void connecting(boolean b){
+    /**
+     * Sets the showConnecting view viability
+     * @param b
+     */
+    public void showConnecting(boolean b){
         findViewById(R.id.loadingPanel).setVisibility(b ? View.VISIBLE : View.INVISIBLE);
     }
     @Override
@@ -294,22 +317,20 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
         }
     }
 
-    public void showConnect(View view) {
-        View view1 = findViewById(R.id.loadingPanel);
-            connecting(!(view1.getVisibility() == View.VISIBLE));
-
-    }
-    public void setNoFocus(View view){
+    /**
+     * A method to remove focus from a object in the application
+     */
+    public void setNoFocus(){
         RelativeLayout view1 = (RelativeLayout)findViewById(R.id.relStart_layout);
-        view.requestFocus();
+        view1.requestFocus();
         ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
-                .hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+                .hideSoftInputFromWindow(view1.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
     }
 
     @Override
     public void onDataUpdate(String command) {
         Log.i("STARTACTIVITY", "Im Commandhadlers bitch");
-        connecting(false);
+        showConnecting(false);
         if(command.equals("connected")){
             //Without binding the server it will crash on reconnect not sure why it works
             if(ServiceUtil.isMyServiceRunning(this, SocketService.class)) {
@@ -326,9 +347,5 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
         }
 
 
-    }
-    public void startDemo(View view) {
-        Intent intent = new Intent(this,JoinRoomActivity.class);
-        startActivity(intent);
     }
 }
