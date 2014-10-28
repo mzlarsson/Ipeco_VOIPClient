@@ -48,20 +48,18 @@ import se.chalmers.fleetspeak.util.ServiceUtil;
 import se.chalmers.fleetspeak.util.ThemeUtils;
 
 /**
- * Created by TwiZ on 2014-10-09.
+ * Created by Johan Segerlund on 2014-10-09.
  */
 public class JoinRoomActivity extends ActionBarActivity implements TruckStateListener, Commandable {
-    SharedPreferences prefs;
     private Menu menu;
     private ListView roomView;
     private ArrayAdapter<Room> adapter;
     protected Room[] rooms;
     private ArrayList ArrayRooms = new ArrayList<Room>();
-    public Room[] demoRoom = {new Room("Rum1",1)};
     private static TruckDataHandler truckDataHandler;
+    private boolean isDriving = false;  //You can switch this if u don't use a truck signal and
+                                        //want to see how the gui looks like while the car is/isn't moving
 
-   // private RoomHandler handler;
-    private boolean isDriving = false;
     private Messenger messenger = null;
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
@@ -95,7 +93,7 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
         for(int i = 0; i < rooms.length; i++) {
             ArrayRooms.add(rooms[i]);
         }
-        adapter = new JoinRoomAdapter(this, ArrayRooms); //TODO Test Change rooms > ArrayRooms
+        adapter = new JoinRoomAdapter(this, ArrayRooms);
         roomView.setAdapter(adapter);
         truckModeChanged(TruckDataHandler.getInstance().getTruckMode());
         roomView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -107,33 +105,24 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
                 Room room = (Room)object;
                 int roomID = room.getId();
 
-
                 try {
                     messenger.send(Message.obtain(ServerHandler.move(roomID)));
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
-                unbindService(serviceConnection);
-                //Join the choosen room
+                //unbindService(serviceConnection); TODO: Did something fuckup when I removed this
+
                 joinRoom(roomID);
-
-                //String example = room.getName();
-                //String example = String.valueOf(adapterView.getItemAtPosition(position));
-                //Toast.makeText(JoinRoomActivity.this, example, Toast.LENGTH_SHORT).show();
-
             }
         });
-
         Log.i("join", SoundController.hasValue() + "");
     }
 
     public void create_new_room_onClick(View view) {
-       // Toast.makeText(JoinRoomActivity.this, "TODO: Join created room", Toast.LENGTH_SHORT).show(); //TODO: Remove this
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
         alertDialog.setTitle("Choose a name for your room");
         final EditText input = new EditText(this);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        //input.setHint(prefs.getString("Username", "username"));
         input.setHint(ThemeUtils.getUsername() + "'s room");
         if(!isDriving){
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
@@ -148,11 +137,8 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
                     String newRoomName;
                     if(input.getText().length() == 0){
                         newRoomName = input.getHint().toString();
-                        Toast.makeText(JoinRoomActivity.this, "Create a room with name: "+ newRoomName, Toast.LENGTH_SHORT).show();
                     } else {
                         newRoomName = input.getText().toString();
-                        Toast.makeText(JoinRoomActivity.this, "Create a room with name: "+ newRoomName, Toast.LENGTH_SHORT).show();
-
                     }
                     try {
                         messenger.send(ServerHandler.createAndMove(newRoomName));
@@ -165,12 +151,9 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.cancel();
-                  //  Toast.makeText(JoinRoomActivity.this, "You didn't create a room", Toast.LENGTH_SHORT).show(); //TODO Remove this line when finished
                 }
             });
-
             alertDialog.show();
-
         } else{ //When the car is driving and the user have selected "Create room" the user won't be
                 //allowed to pick a name since it will take to much time.
             String newRoomName = (prefs.getString("Username", "username") + "'s room");
@@ -180,7 +163,6 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
                 e.printStackTrace();
             }
         }
-
     }
 
     @Override
@@ -206,7 +188,6 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
                 }
                 unbindService(serviceConnection);
                 return true;
-
         }
         return super.onOptionsItemSelected(item);
     }
@@ -246,7 +227,7 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
         Log.i("JoinRoomActivity", "updateing room list");
         rooms = CommandHandler.getRooms();
         ArrayRooms.clear();
-        for(int i = 0; i < rooms.length; i++){ //TODO Changed
+        for(int i = 0; i < rooms.length; i++){
             ArrayRooms.add(rooms[i]);
         }
         adapter.notifyDataSetChanged();
@@ -258,18 +239,12 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
      * The adapter handles all the items in the ListView
      */
     public class JoinRoomAdapter extends ArrayAdapter<Room> {
-
-
         public JoinRoomAdapter(Context context, ArrayList<Room> values) {
-
             super(context, R.layout.list_item_rooms, values);
-            //rooms = values;
-
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-
             LayoutInflater inflater = LayoutInflater.from(getContext());
 
             View view = inflater.inflate(isDriving?R.layout.list_item_rooms_while_driving:
@@ -300,8 +275,6 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
 
             return view;
         }
-
-
     }
 
     @Override
@@ -312,6 +285,7 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
             unbindService(serviceConnection);
         }
     }
+
     @Override
     protected void onStop(){
         Log.i("JOINROOMACTIVITY", "called onStop unbinding");
@@ -320,20 +294,21 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
             unbindService(serviceConnection);
         }
     }
+
     @Override
     protected void onDestroy(){
         super.onDestroy();
         Log.i("JOINROOMACTIVITY", "called onDestroy unbinding");
         CommandHandler.removeListener(this);
-
     }
+
     @Override
     protected void onResume(){
         Log.i("JOINROOMACTIVITY", "called onResume binding");
         bindService(new Intent(this, SocketService.class), serviceConnection, Context.BIND_AUTO_CREATE);
         super.onResume();
-
     }
+
     @Override
     protected void onRestart(){
         Log.i("JOINROOMACTIVITY", "called onRestart binding");
