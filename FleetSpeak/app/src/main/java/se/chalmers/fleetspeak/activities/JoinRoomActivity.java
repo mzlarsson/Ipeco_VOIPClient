@@ -57,8 +57,7 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
     protected Room[] rooms;
     private ArrayList ArrayRooms = new ArrayList<Room>();
     private static TruckDataHandler truckDataHandler;
-    private boolean isDriving = false;  //You can switch this if u don't use a truck signal and
-                                        //want to see how the gui looks like while the car is/isn't moving
+    private boolean isDriving = false;
 
     private Messenger messenger = null;
 

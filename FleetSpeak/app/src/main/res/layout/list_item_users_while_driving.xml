@@ -6,17 +6,17 @@
 
     <ImageView
         android:id="@+id/userTalkImage"
-        android:layout_width="28dp"
-        android:layout_height="28dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_marginLeft="10dp"
-        android:layout_marginTop="14dp"
+        android:layout_marginTop="20dp"
         />
 
     <TextView
         android:id="@+id/userName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="20sp"
+        android:textSize="36sp"
         android:textStyle="bold"
         android:padding="15dp"
         />

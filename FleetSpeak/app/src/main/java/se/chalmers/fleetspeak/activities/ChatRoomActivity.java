@@ -60,6 +60,7 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
     private Messenger mService = null;
     private ArrayAdapter<User> adapter;
     private boolean isTalkActive = false;
+    public boolean isDriving = false;
     private int currentRoomID;
 
      private ServiceConnection mConnection = new ServiceConnection() {
@@ -93,6 +94,7 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
         userListView = (ListView) findViewById(R.id.userList);
         adapter = new ChatRoomListAdapter(this, arrayUsers);
         userListView.setAdapter(adapter);
+        truckModeChanged(truckDataHandler.getInstance().getTruckMode());
         userListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int pos, long l) {
@@ -116,7 +118,7 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
                 }
             }
         });
-        truckModeChanged(truckDataHandler.getInstance().getTruckMode());
+
         Log.i("Chat", SoundController.hasValue() + "");
     }
 
@@ -187,8 +189,14 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
         }
     }
 
+    /**
+     * When
+     * @param mode
+     */
     @Override
     public void truckModeChanged(boolean mode) {
+        isDriving = mode;
+        adapter.notifyDataSetChanged();
         if (menu != null) {
             MenuItem item = menu.findItem(R.id.volume_mic_control);
             item.setVisible(!mode);
@@ -296,7 +304,8 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
         public View getView(int position, View convertView, ViewGroup parent) {
             LayoutInflater inflater = LayoutInflater.from(getContext());
 
-            View view = inflater.inflate(R.layout.list_item_users,parent, false);
+            View view = inflater.inflate(isDriving?R.layout.list_item_users_while_driving:
+                    R.layout.list_item_users, parent, false);
 
             User user = getItem(position);
             String userName = user.getName();
