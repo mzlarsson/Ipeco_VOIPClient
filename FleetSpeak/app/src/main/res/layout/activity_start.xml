@@ -5,9 +5,8 @@
     android:gravity="left|top"
     android:orientation="vertical"
     android:weightSum="1"
-    android:clickable="true"
-    android:onClick="setNoFocus"
     android:focusable="true"
+    android:clickable="true"
     android:focusableInTouchMode="true"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <LinearLayout

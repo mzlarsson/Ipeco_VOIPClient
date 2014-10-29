@@ -7,7 +7,7 @@
 
     <Button
         android:text="@string/create_room_text"
-        android:onClick="create_new_room_onClick"
+        android:onClick="createNewRoomOnClick"
         android:id="@+id/buttonCreateRoom"
         android:textColor="#FFFFFF"
         android:textSize="30sp"

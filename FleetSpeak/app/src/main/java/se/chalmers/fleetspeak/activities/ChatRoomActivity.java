@@ -1,6 +1,5 @@
 package se.chalmers.fleetspeak.activities;
 
-import android.content.ClipData;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -42,16 +41,16 @@ import se.chalmers.fleetspeak.sound.SoundController;
 import se.chalmers.fleetspeak.truck.TruckDataHandler;
 import se.chalmers.fleetspeak.truck.TruckStateListener;
 import se.chalmers.fleetspeak.util.ServiceUtil;
-import se.chalmers.fleetspeak.util.ThemeUtils;
+import se.chalmers.fleetspeak.util.Utils;
 
 /**
+ * A activity that present the selected chatroom and room specific options to the Users and enables the users
+ * to do room specific actions
  * Created by Johan Segerlund on 2014-10-06.
  */
 public class ChatRoomActivity extends ActionBarActivity implements TruckStateListener, Commandable {
 
-    private ListView userListView;
-    private SeekBar volumeControlBar;
-    private SeekBar micControlBar;
+    ListView userListView;
     private Menu menu;
     private PopupWindow micAndVolumePanel;
     private static TruckDataHandler truckDataHandler;
@@ -62,7 +61,9 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
     private boolean isTalkActive = false;
     public boolean isDriving = false;
     private int currentRoomID;
-
+    /**
+     * Sets up the connection service to the server
+     */
      private ServiceConnection mConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className, IBinder service) {
             Log.i("SERVICECONNECTION", "Service connected to ChatRoomActivity");
@@ -78,15 +79,15 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        ThemeUtils.onCreateActivityCreateTheme(this);
+        Utils.onCreateActivityCreateTheme(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chatroom);
 
         CommandHandler.getInstance().addListener(this);
         bindService(new Intent(this,SocketService.class), mConnection, Context.BIND_AUTO_CREATE);
 
-        //Shows the up button
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         Intent intent = getIntent();
         currentRoomID = intent.getIntExtra("roomID", 0);
         initUserList();
@@ -132,7 +133,7 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
         }
         return super.onOptionsItemSelected(item);
     }
-
+    @Override
     public boolean onCreateOptionsMenu(Menu menu){
         this.menu = menu;
         super.onCreateOptionsMenu(menu);
@@ -162,7 +163,7 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
     }
 
     /**
-     * Updates the userlist when for example a another user leaves or join a room.
+     * A method to update the userlist
      */
     private void updateUserList() {
         users = CommandHandler.getUsers(currentRoomID);
@@ -174,25 +175,16 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
     }
 
     /**
-     * Changes the pushtoTalkButton icon based on isTalkActive
+     * A method that toggles between enables or disables the michophone and shows the current mode in the view
      */
     public void pushToTalk() {
         Log.i("ChatroomActivity", "pushToTalkCalled");
         isTalkActive = !isTalkActive;
         ImageButton button = (ImageButton) findViewById(R.id.pushToTalkButton);
         button.setBackgroundResource(isTalkActive?R.drawable.ic_mic_blue:R.drawable.ic_mic_grey);
-
-        if(isTalkActive){
-            SoundController.unmute();
-        }else{
-            SoundController.mute();
-        }
+        SoundController.mute(!isTalkActive);
     }
 
-    /**
-     * When
-     * @param mode
-     */
     @Override
     public void truckModeChanged(boolean mode) {
         isDriving = mode;
@@ -240,55 +232,91 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
     }
 
     /**
-     * Creates a dropdown panel with a volume and mic seekbars, which is activated by a imagebutton
-     * @param context
-     * @param imageButton
+     * A method to creates the dropdown panel with volume and mic control which is activated by a ImageButton
+     * @param context - the context of the dropdown panel
+     * @param imageButton - the ImageButton that activates the dropdown panel
      */
     private void setUpVolumeAndMicControl(Context context, ImageButton imageButton ){
+        //Creates the view of the PopUpWindow
         LayoutInflater inflater = LayoutInflater.from(context);
-
         View contentView = inflater.inflate(R.layout.drop_down_seek_bar, null);
-        volumeControlBar = (SeekBar) findViewById(R.id.volume_seekbar);
-        micControlBar = (SeekBar) findViewById(R.id.mic_seekbar);
-
+        // Set up the volume seekbar to control the volume
+        setUpVolumeSeekbar((SeekBar)contentView.findViewById(R.id.volume_seekbar));
+        // Creates the PopUpWindow and sets the size and view
         micAndVolumePanel = new PopupWindow(context, null,
         android.R.attr.actionDropDownStyle);
         micAndVolumePanel.setFocusable(true);
         micAndVolumePanel.setContentView(contentView);
         setPopupSize(micAndVolumePanel);
+
+        // Set up the activation of the panel to a image button
         imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                // Set the place where the PopUpWindow appears
                 micAndVolumePanel.showAsDropDown(view, 0, 0);
             }
         });
+        // Set the image view of the imageButton
         imageButton.setBackgroundResource(R.drawable.ic_control_mic_volume);
 
     }
 
     /**
+     * A method to set up a seekbar to control the volume
+     * @param seekbar
+     */
+    private void setUpVolumeSeekbar(SeekBar seekbar){
+        // Check for -1 return since the get-methods return -1 when volume control is not accessible
+        if(SoundController.getMaxVolume() != -1) {
+            seekbar.setMax(SoundController.getMaxVolume());
+            Log.i("VolumeAudio: ", "max volume =" + SoundController.getMaxVolume() );
+        }
+        if(SoundController.getCurrentVolume() != -1){
+            Log.i("VolumeAudio: ", "current volume="+ SoundController.getCurrentVolume());
+            seekbar.setProgress(SoundController.getCurrentVolume());
+        }
+        seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
+                SoundController.setVoloume(progress);
+                Log.i("Volume value:", " " + progress);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+    }
+    /**
      * Set the size of the popupWindow
-     * @param popupWindow
+     * @param popupWindow - the popupWindow that will have the size set
      */
     private void setPopupSize(PopupWindow popupWindow) {
-        View contentView = popupWindow.getContentView();
 
+        // Set the height of the popupWindow to be the measured height of its contentView with background padding
+        View contentView = popupWindow.getContentView();
         int unspecified = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
         contentView.measure(unspecified, unspecified);
-
-        int width = contentView.getMeasuredWidth();
         int height = contentView.getMeasuredHeight();
-
         Drawable background = popupWindow.getBackground();
         if (background != null) {
             Rect rect = new Rect();
             background.getPadding(rect);
-            DisplayMetrics displaymetrics = new DisplayMetrics();
-            getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
-            width   = displaymetrics.widthPixels;
-            height += rect.top + rect.bottom + 30;
+            height += rect.top + rect.bottom;
         }
+
+        // Set the width of the popupWindow to be the width of the android display
+        DisplayMetrics displaymetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+        int width = displaymetrics.widthPixels;
+
         popupWindow.setWidth(width);
         popupWindow.setHeight(height);
     }
