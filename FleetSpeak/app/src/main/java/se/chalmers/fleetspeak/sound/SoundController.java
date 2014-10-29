@@ -82,7 +82,7 @@ public class SoundController {
     }
 
     /**
-     * Get the current volume as a integer
+     * Get the current volume as a integer, if the current volume cannot be accessed return -1
      * @return int - the current volume
      */
     public static int getCurrentVolume(){
@@ -95,7 +95,7 @@ public class SoundController {
     }
 
     /**
-     * Get the max value of the volume as a integer
+     * Get the max value of the volume as a integer, if the max volume cannot be accessed return -1
      * @return int - the max volume value
      */
     public static int getMaxVolume(){

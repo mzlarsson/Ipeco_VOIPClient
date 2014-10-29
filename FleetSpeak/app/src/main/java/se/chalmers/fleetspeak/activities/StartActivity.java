@@ -108,7 +108,7 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        this.finish();
     }
 
     @Override

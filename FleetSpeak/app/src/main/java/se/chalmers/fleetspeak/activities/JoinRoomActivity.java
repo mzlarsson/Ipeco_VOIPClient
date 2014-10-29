@@ -47,6 +47,7 @@ import se.chalmers.fleetspeak.util.ServiceUtil;
 import se.chalmers.fleetspeak.util.Utils;
 
 /**
+ * A activity that guides the user through choosing or creating a room to join
  * Created by Johan Segerlund on 2014-10-09.
  */
 public class JoinRoomActivity extends ActionBarActivity implements TruckStateListener, Commandable {
@@ -59,7 +60,9 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
     private boolean isDriving = false;
 
     private Messenger messenger = null;
-
+    /**
+     * Set up the connection service to the server
+     */
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder service) {
@@ -72,7 +75,7 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
             Log.i("SERVICECONNECTION", "Disconnected");
         }
     };
-
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         Utils.onCreateActivityCreateTheme(this);
         super.onCreate(savedInstanceState);
@@ -87,7 +90,7 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
         roomView = (ListView)findViewById(R.id.roomView);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        rooms = CommandHandler.getRooms(); //Init roomslist
+        rooms = CommandHandler.getRooms();
         for(int i = 0; i < rooms.length; i++) {
             ArrayRooms.add(rooms[i]);
         }
@@ -116,15 +119,18 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
         Log.i("join", SoundController.hasValue() + "");
     }
 
-    public void create_new_room_onClick(View view) {
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-        alertDialog.setTitle("Choose a name for your room");
-        final EditText input = new EditText(this);
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        //input.setHint(prefs.getString("Username", "username"));
-        input.setHint(Utils.getUsername() + "'s room");
-
+    /**
+     * Creates a new room on a click action
+     * @param view
+     */
+    public void createNewRoomOnClick(View view) {
+        // If the user is not driving create a dialog that promts the user to select a room name and
+        // create a room with that name if the user don't put in a room name default to the users name + "'s room"
         if(!isDriving){
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+            alertDialog.setTitle("Choose a name for your room");
+            final EditText input = new EditText(this);
+            input.setHint(Utils.getUsername() + "'s room");
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.MATCH_PARENT);
@@ -156,7 +162,8 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
             alertDialog.show();
         } else{ //When the car is driving and the user have selected "Create room" the user won't be
                 //allowed to pick a name since it will take to much time.
-            String newRoomName = (prefs.getString("Username", "username") + "'s room");
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            String newRoomName = (Utils.getUsername() + "'s room");
             try {
                 messenger.send(ServerHandler.createAndMove(newRoomName));
             } catch (RemoteException e) {
@@ -171,7 +178,7 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
         getMenuInflater().inflate(R.menu.day_night_menu, menu);
         return true;
     }
-
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()){
             case R.id.day_night_toggle:
@@ -214,6 +221,10 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
         }
     }
 
+    /**
+     * Join a specific room
+     * @param roomID - the ID of the room to be joined
+     */
     private void joinRoom(int roomID) {
         bindService(new Intent(this, SocketService.class),serviceConnection, Context.BIND_AUTO_CREATE);
         unbindService(serviceConnection);
@@ -222,6 +233,9 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
         startActivity(intent);
     }
 
+    /**
+     * Update the list of rooms displayed
+     */
     private void updateRoomList(){
         Log.i("JoinRoomActivity", "updateing room list");
         rooms = CommandHandler.getRooms();
