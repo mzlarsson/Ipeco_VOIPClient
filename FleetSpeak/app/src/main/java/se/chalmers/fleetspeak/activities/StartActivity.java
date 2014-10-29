@@ -57,7 +57,7 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
 
     private ServiceConnection mConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className, IBinder service) {
-            Log.i("SERVICECONNECTION", "service started");
+            Log.i("SERVICECONNECTION", "service connected to StartActivity");
             mService = new Messenger(service);
 
         }
@@ -201,6 +201,7 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
     protected void onDestroy() {
         Log.i("STARTACTIVITY", "called onDestroy unbinding");
         CommandHandler.removeListener(this);
+        unbindService(mConnection);
         ServiceUtil.close(this);
         super.onDestroy();
 

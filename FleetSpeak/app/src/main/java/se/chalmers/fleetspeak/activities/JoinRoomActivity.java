@@ -65,6 +65,7 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder service) {
             messenger = new Messenger(service);
+            Log.i("SERVICECONNECTION", "Service connected to JoinRoomActivity");
         }
 
         @Override
@@ -109,7 +110,7 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
-                //unbindService(serviceConnection); TODO: Did something fuckup when I removed this
+
 
                 joinRoom(roomID);
             }
@@ -211,6 +212,9 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
             int roomID = Integer.parseInt(s[1]);
             joinRoom(roomID);
             updateRoomList();
+        } else if(command.equals("Disconnected")){
+            Intent intent = new Intent(this,StartActivity.class);
+            startActivity(intent);
         }
     }
 

@@ -65,7 +65,7 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
 
      private ServiceConnection mConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className, IBinder service) {
-            Log.i("SERVICECONNECTION", "service started");
+            Log.i("SERVICECONNECTION", "Service connected to ChatRoomActivity");
             mService = new Messenger(service);
         }
 
@@ -207,6 +207,9 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
     public void onDataUpdate(String command) {
         if(command.equals("dataUpdate")){
             updateUserList();
+        }else if(command.equals("Disconnected")){
+            Intent intent = new Intent(this,StartActivity.class);
+            startActivity(intent);
         }
     }
 

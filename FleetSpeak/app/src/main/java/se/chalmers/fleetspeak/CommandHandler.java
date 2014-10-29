@@ -6,6 +6,7 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
+import se.chalmers.fleetspeak.sound.SoundController;
 import se.chalmers.fleetspeak.util.Command;
 
 /**
@@ -56,7 +57,7 @@ public class CommandHandler extends Handler {
         }else if(sCommand.equals("userDisconnected")){
             roomHandler.removeUser((Integer)command.getKey());
         }else if(sCommand.equals("setRtpPort")){
-            //Not used atm
+            //Not used
         }else if(sCommand.equals("moveUser")){
             roomHandler.moveUser((Integer)command.getKey(),(Integer)command.getValue());
         }else if(sCommand.equals("newUser")){
@@ -66,11 +67,15 @@ public class CommandHandler extends Handler {
             String[] r = ((String) command.getValue()).split(",");
             roomHandler.addUser(new User(u[0],Integer.parseInt(u[1])), new Room(r[0],Integer.parseInt(r[1])));
         }else if(sCommand.equals("createAndMove")){
-            Log.i(this.getClass().toString(), "Crate and mååv ");
+            Log.i(this.getClass().toString(), "Create and move user");
             String[] s = ((String) command.getValue()).split(",");
             roomHandler.moveUser(roomHandler.getUser((Integer) command.getKey()), new Room(s[0], Integer.parseInt(s[1])));
             if((Integer)command.getKey() == user.getId())
                 aCommand = "roomCreated," + s[1];
+        }else if(sCommand.equals("Disconnected")){
+            SoundController.close();
+            roomHandler = new RoomHandler();
+            aCommand = "Disconnected";
         }else{
             aCommand = "unknown command";
         }

@@ -61,7 +61,6 @@ public class SocketService extends Service {
     }
     @Override
     public boolean onUnbind(Intent intent) {
-        // All clients have unbound with unbindService()
         return false;
     }
 
@@ -121,7 +120,6 @@ public class SocketService extends Service {
                         Log.i(LOGNAME, "Disconnecting");
                         trySend(new Command("disconnect", id, null));
                         endSocketConnection();
-                        SoundController.close();
                         break;
                     case SETNAME:
                         Log.i(LOGNAME, "Trying  to sending setName command");
@@ -241,15 +239,21 @@ public class SocketService extends Service {
 
     private void endSocketConnection(){
      try{
+         id = -1;
          if(objectInputStream != null)
             objectInputStream.close();
+            objectInputStream = null;
          if(objectOutputStream != null)
             objectOutputStream.close();
          if(socket != null)
             socket.close();
-         id = -1;
+
+         Command c = new Command("Disconnected", null,null);
+         messenger.send(Message.obtain(null, 0, c));
      }catch(IOException e){
         Log.i(LOGNAME,"Connection ended unexeptedly");
+     } catch (RemoteException e) {
+         e.printStackTrace();
      }
     }
 
