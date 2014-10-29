@@ -20,6 +20,7 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
@@ -40,7 +41,7 @@ import se.chalmers.fleetspeak.util.ServiceUtil;
 import se.chalmers.fleetspeak.util.Utils;
 
 /**
- * A Activity that shows the startup of the application
+ * A Activity that shows the starting options of the application and guides the user to connect to the server.
  */
 public class StartActivity extends ActionBarActivity implements TruckStateListener, Commandable {
 
@@ -54,10 +55,8 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
     static Messenger mService = null;
     private Menu menu;
 
-    private boolean carMode = false;
-
     /**
-     * Set up the connection service of the application
+     * Start up the connection service of the application
      */
     private ServiceConnection mConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className, IBinder service) {
@@ -76,7 +75,7 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // Access the shared preferences for the acitivity and creates a editor
+        // Access the shared preferences for the activity and creates a editor
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         prefEdit = prefs.edit();
 
@@ -91,87 +90,25 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         CommandHandler.getInstance().addListener(this);
-
         TruckDataHandler.addListener(this);
-        // Set upp layout depending on if Truck is in Driving mode
+
+        ipText = prefs.getString(getString(R.string.ip_adress_text), "46.239.103.195");
+        portText = prefs.getString(getString(R.string.port_number_text), "8867");
+        userNameText = prefs.getString(getString(R.string.username_text), "username");
+
+        // Set up the view of the layout and object in the Activity
         truckModeChanged(TruckDataHandler.getInstance().getTruckMode());
-        if (!TruckDataHandler.getInstance().getTruckMode()) {
-            final EditText ipTextField = (EditText) findViewById(R.id.ipField);
-            final EditText portField = (EditText) findViewById(R.id.portField);
-            portField.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
 
-                }
-
-                @Override
-                public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-
-                }
-
-                @Override
-                public void afterTextChanged(Editable editable) {
-                    portText = String.valueOf(portField.getText());
-                }
-            });
-            final EditText userNameField = (EditText) findViewById(R.id.usernameField);
-            userNameField.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-
-                }
-
-                @Override
-                public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-
-                }
-
-                @Override
-                public void afterTextChanged(Editable editable) {
-                    userNameText = String.valueOf(userNameField.getText());
-                }
-            });
-            ipTextField.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-
-                }
-
-                @Override
-                public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-
-                }
-
-                @Override
-                public void afterTextChanged(Editable editable) {
-                    ipText= String.valueOf(ipTextField.getText());
-                }
-            });
-
-            portText = prefs.getString(getString(R.string.port_number_text), "8867");
-            userNameText = prefs.getString(getString(R.string.username_text), "username");
-            Utils.setUsername(userNameText);
-            ipText = prefs.getString(getString(R.string.ip_adress_text), "46.239.103.195");
-            ipTextField.setText(ipText);
-            portField.setText(portText);
-            userNameField.setText(userNameText);
-
-
-
-        }
-        //Removes focus from the EditTextFields in the app
-        setNoFocus();
         Log.i("STARTACTIVITY", "started service");
         Intent i = new Intent(this, SocketService.class);
         startService(i);
         Log.i("STARTACTIVITY", "binding service");
         bindService(i, mConnection, Context.BIND_AUTO_CREATE);
     }
+
     @Override
-    public void onBackPressed(){
+    public void onBackPressed() {
         super.onBackPressed();
-        this.finish();
-        System.exit(0);
     }
 
     @Override
@@ -185,26 +122,28 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.day_night_toggle) {
-             Utils.changeTheme(this);
+            Utils.changeTheme(this);
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
+
     @Override
-    protected void onPause(){
+    protected void onPause() {
         Log.i("STARTACTIVITY", "called onPause unbinding");
         super.onPause();
         CommandHandler.removeListener(this);
-        if(ServiceUtil.isMyServiceRunning(this, ServiceConnection.class)) {
+        if (ServiceUtil.isMyServiceRunning(this, ServiceConnection.class)) {
             unbindService(mConnection);
         }
     }
+
     @Override
-    protected void onStop(){
+    protected void onStop() {
         CommandHandler.removeListener(this);
         Log.i("STARTACTIVITY", "called onStop unbinding");
         super.onStop();
-        if(ServiceUtil.isMyServiceRunning(this, ServiceConnection.class)) {
+        if (ServiceUtil.isMyServiceRunning(this, ServiceConnection.class)) {
             unbindService(mConnection);
         }
     }
@@ -218,40 +157,31 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
 
 
     }
+
     @Override
-    protected void onRestart(){
+    protected void onRestart() {
         super.onRestart();
     }
 
     /**
-     * A method that is preformed when connect button is clicked
+     * A method that preforms suitable action with Connect Button is clicked
+     *
      * @param view
      */
     public void onConnectButtonClick(View view) {
-        String ipText = "";
-        String portText = "";
-        String userNameText = "";
-        if(carMode || TruckDataHandler.getInstance().getTruckMode()){
-            ipText = prefs.getString(getString(R.string.ip_adress_text), "46.239.103.195");
-            portText = prefs.getString(getString(R.string.port_number_text), "8867");
-            userNameText = prefs.getString(getString(R.string.username_text), "username");
-        }else{
-            ipText = String.valueOf(((EditText) findViewById(R.id.ipField)).getText());
-            portText = String.valueOf(((EditText) findViewById(R.id.portField)).getText());
-            userNameText = String.valueOf(((EditText) findViewById(R.id.usernameField)).getText());
-
+        if (!TruckDataHandler.getInstance().getTruckMode()) {
             CheckBox checkBox = (CheckBox) findViewById(R.id.saveUserPref);
-            if(checkBox.isChecked()) {
+            if (checkBox.isChecked()) {
                 savePreferences();
             }
         }
-
         startConnection(ipText, Integer.parseInt(portText), userNameText);
     }
+
     /**
      * A method that creates and shows a connection error message
      */
-    public void showConnectionErrorMessage(){
+    public void showConnectionErrorMessage() {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Connection Error");
         builder.setMessage("Connection to Server failed");
@@ -266,70 +196,138 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
     }
 
     /**
-     * Saves the preferences of the User
+     * A method that saves the data from the editable text fields and the theme.
      */
-    public void savePreferences(){
-        EditText et =(EditText) findViewById(R.id.ipField);
+    public void savePreferences() {
+        EditText et = (EditText) findViewById(R.id.ipField);
         EditText et2 = (EditText) findViewById(R.id.portField);
         EditText et3 = (EditText) findViewById(R.id.usernameField);
         prefEdit.putString(getString(R.string.username_text), String.valueOf(et3.getText()));
-            prefEdit.putString(getString(R.string.ip_adress_text), String.valueOf(et.getText()));
-            prefEdit.putString(getString(R.string.port_number_text), String.valueOf(et2.getText()));
-            prefEdit.putInt("Theme", Utils.getThemeID());
-            prefEdit.commit();
+        prefEdit.putString(getString(R.string.ip_adress_text), String.valueOf(et.getText()));
+        prefEdit.putString(getString(R.string.port_number_text), String.valueOf(et2.getText()));
+        prefEdit.putInt("Theme", Utils.getThemeID());
+        prefEdit.commit();
     }
 
     /**
      * A method to start the connection to the server with a given IP adress, port number and username.
-     * @param ip - the IP Adress
-     * @param port- the port number
+     *
+     * @param ip       - the IP Adress
+     * @param port-    the port number
      * @param userName - the username
      */
-    public void startConnection(String ip, int port, String userName){
+    public void startConnection(String ip, int port, String userName) {
         showConnecting(true);
 
         try {
-            mService.send(Message.obtain(ServerHandler.connect(ip,port)));
+            mService.send(Message.obtain(ServerHandler.connect(ip, port)));
             mService.send(Message.obtain(ServerHandler.setName(userName)));
             mService.send(Message.obtain(ServerHandler.getUsers()));
             isConnected = true;
             SoundController.create(this, ip, port);
-        } catch (RemoteException e) {}
+        } catch (RemoteException e) {
+        }
     }
 
     /**
      * Sets the showConnecting view viability
-     * @param b
+     *
+     * @param b -
      */
-    public void showConnecting(boolean b){
+    public void showConnecting(boolean b) {
         findViewById(R.id.loadingPanel).setVisibility(b ? View.VISIBLE : View.INVISIBLE);
     }
+
     @Override
     public void truckModeChanged(boolean mode) {
-        setContentView(mode? R.layout.activity_car_start: R.layout.activity_start);
-        if(menu!=null){
+        setContentView(mode ? R.layout.activity_car_start : R.layout.activity_start);
+        if (menu != null) {
             MenuItem item = menu.findItem(R.id.day_night_toggle);
             item.setVisible(!mode);
         }
-        if(mode){
-            ((TextView)findViewById(R.id.IpAdress)).setText(ipText);
-            ((TextView)findViewById(R.id.userName)).setText(userNameText);
+        if (mode) {
+            ((TextView) findViewById(R.id.IpAdress)).setText(ipText);
+            ((TextView) findViewById(R.id.userName)).setText(userNameText);
+        } else {
+            View view = findViewById(R.id.relStart_layout);
+            view.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View view, MotionEvent motionEvent) {
+                    setNoFocus();
+                    return false;
+                }
+            });
         }
+        final EditText ipTextField = (EditText) findViewById(R.id.ipField);
+        final EditText portField = (EditText) findViewById(R.id.portField);
+        final EditText userNameField = (EditText) findViewById(R.id.usernameField);
+        portField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                portText = String.valueOf(portField.getText());
+            }
+        });
+
+        userNameField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                userNameText = String.valueOf(userNameField.getText());
+            }
+        });
+        ipTextField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                ipText = String.valueOf(ipTextField.getText());
+            }
+        });
+        Utils.setUsername(userNameText);
+        ipTextField.setText(ipText);
+        portField.setText(portText);
+        userNameField.setText(userNameText);
     }
 
     /**
      * A method to remove focus from a object in the application
      */
     public void setNoFocus(){
+        InputMethodManager inputMethodManager = (InputMethodManager)  this.getSystemService(this.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(), 0);
         RelativeLayout view1 = (RelativeLayout)findViewById(R.id.relStart_layout);
         view1.requestFocus();
-        ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
-                .hideSoftInputFromWindow(view1.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
     }
 
     @Override
     public void onDataUpdate(String command) {
-        Log.i("STARTACTIVITY", "Im Commandhadlers bitch");
         showConnecting(false);
         if(command.equals("connected")){
             //Without binding the server it will crash on reconnect not sure why it works

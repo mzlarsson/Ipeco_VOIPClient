@@ -49,8 +49,6 @@ import se.chalmers.fleetspeak.util.Utils;
 public class ChatRoomActivity extends ActionBarActivity implements TruckStateListener, Commandable {
 
     ListView userListView;
-    private SeekBar volumeControlBar;
-    private SeekBar micControlBar;
     private Menu menu;
     private PopupWindow micAndVolumePanel;
     private static TruckDataHandler truckDataHandler;
@@ -173,7 +171,7 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
         isTalkActive = !isTalkActive;
         ImageButton button = (ImageButton) findViewById(R.id.pushToTalkButton);
         button.setBackgroundResource(isTalkActive?R.drawable.ic_mic_blue:R.drawable.ic_mic_grey);
-        SoundController.mute(isTalkActive);
+        SoundController.mute(!isTalkActive);
     }
 
     @Override
@@ -275,13 +273,7 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
         LayoutInflater inflater = LayoutInflater.from(context);
 
         View contentView = inflater.inflate(R.layout.drop_down_seek_bar, null);
-        micControlBar = (SeekBar) contentView.findViewById(R.id.mic_seekbar);
-        if(contentView.findViewById(R.id.volume_seekbar) != null) {
-            setUpVolumeSeekbar((SeekBar)contentView.findViewById(R.id.volume_seekbar));
-        }
-        else{
-            Log.i("Ape", "apar mig bara");
-        }
+        setUpVolumeSeekbar((SeekBar)contentView.findViewById(R.id.volume_seekbar));
         micAndVolumePanel = new PopupWindow(context, null,
         android.R.attr.actionDropDownStyle);
         micAndVolumePanel.setFocusable(true);
@@ -298,11 +290,12 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
 
     }
     private void setUpVolumeSeekbar(SeekBar seekbar){
-        volumeControlBar = seekbar;
         if(SoundController.getMaxVolume() != -1) {
             seekbar.setMax(SoundController.getMaxVolume());
+            Log.i("VolumeAudio: ", "max volume =" + SoundController.getMaxVolume() );
         }
         if(SoundController.getCurrentVolume() != -1){
+            Log.i("VolumeAudio: ", "current volume="+ SoundController.getCurrentVolume());
             seekbar.setProgress(SoundController.getCurrentVolume());
         }
         seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {

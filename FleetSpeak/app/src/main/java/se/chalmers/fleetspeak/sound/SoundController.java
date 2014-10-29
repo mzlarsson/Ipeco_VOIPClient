@@ -70,7 +70,14 @@ public class SoundController {
      */
     public static void setVoloume(int i){
         if(audioManager != null){
-            audioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL, i , 0);
+            Log.i("AudioManager", ": set Volume to" + i);
+            if(i == 0){
+                audioManager.setStreamMute(AudioManager.STREAM_VOICE_CALL, true);
+            }
+            else {
+                audioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL, i, 0);
+                Log.i("AudioManager: ", "current Volume = " + audioManager.getStreamVolume(AudioManager.STREAM_VOICE_CALL));
+            }
         }
     }
 
@@ -93,13 +100,6 @@ public class SoundController {
      */
     public static int getMaxVolume(){
         if(audioManager != null){
-            Log.d("AUDIOSTREAM", "ALARM: "+audioManager.getStreamMaxVolume(AudioManager.STREAM_ALARM));
-            Log.d("AUDIOSTREAM", "DTMF: "+audioManager.getStreamMaxVolume(AudioManager.STREAM_DTMF));
-            Log.d("AUDIOSTREAM", "MUSIC: "+audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
-            Log.d("AUDIOSTREAM", "NOTIF: "+audioManager.getStreamMaxVolume(AudioManager.STREAM_NOTIFICATION));
-            Log.d("AUDIOSTREAM", "RING: "+audioManager.getStreamMaxVolume(AudioManager.STREAM_RING));
-            Log.d("AUDIOSTREAM", "SYSTEM: "+audioManager.getStreamMaxVolume(AudioManager.STREAM_SYSTEM));
-            Log.d("AUDIOSTREAM", "VOICE: "+audioManager.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL));
             return  audioManager.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL);
         }else {
             return -1;
