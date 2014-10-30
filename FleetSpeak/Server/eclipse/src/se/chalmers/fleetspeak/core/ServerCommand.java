@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak;
+package se.chalmers.fleetspeak.core;
 
 import java.util.ArrayList;
 
@@ -8,12 +8,6 @@ public enum ServerCommand {
 		@Override
 		public String getInfo(){
 			return "<b>cls</b> Clears the console window of all text.";
-		}
-	},
-	CLOSE("close") {
-		@Override
-		public String getInfo(){
-			return "<b>close</b> Shuts down the server.";
 		}
 	},
 	HELP("help") {

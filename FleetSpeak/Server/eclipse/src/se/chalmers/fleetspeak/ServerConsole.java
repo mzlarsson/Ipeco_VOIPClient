@@ -8,6 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
+import se.chalmers.fleetspeak.core.ConnectionHandler;
 import se.chalmers.fleetspeak.eventbus.EventBus;
 import se.chalmers.fleetspeak.eventbus.EventBusEvent;
 import se.chalmers.fleetspeak.util.Command;
