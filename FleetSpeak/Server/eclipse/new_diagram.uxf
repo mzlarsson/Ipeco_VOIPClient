@@ -1,0 +1,498 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="12.2">
+  <zoom_level>6</zoom_level>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>234</x>
+      <y>18</y>
+      <w>120</w>
+      <h>54</h>
+    </coordinates>
+    <panel_attributes>ServerConsole
+--
+Responsibilities
+Running the server in the
+console with support for
+handling commands
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>420</x>
+      <y>18</y>
+      <w>120</w>
+      <h>54</h>
+    </coordinates>
+    <panel_attributes>ServerGUI
+--
+Responibilities
+GUI for running the server
+with support for changing
+ports and handling commands
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>0</x>
+      <y>108</y>
+      <w>174</w>
+      <h>132</h>
+    </coordinates>
+    <panel_attributes>ConnectionHandler
+--
+-commandHandler: CommandHandler
+-port: int
+-ServerSocket serverSocket
+--
++ConnectionHandler(int): ConnectionHandler
++start(): void
++terminate(): void
+-addClient(Socket): void
+--
+Responsibilities
+Activly listening to the port for new
+connections and initializing them as
+clients</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>6</x>
+      <y>270</y>
+      <w>162</w>
+      <h>120</h>
+    </coordinates>
+    <panel_attributes>CommandHandler
+--
+-roomHandler: RoomHandler
+--
++CommandHandler(): CommandHandler
++addClient(Client): void
++terminate(): void
++eventPerformed(EventBusEvent): void
+-serverCommands(String, Object): void
+--
+Responsibilities
+Listening to the EventBus for requests
+from the client or commands from the
+server GUI and execute them. </panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>0</x>
+      <y>444</y>
+      <w>174</w>
+      <h>222</h>
+    </coordinates>
+    <panel_attributes>RoomHandler
+--
+-rooms: HashMap&lt;Room,ArrayList&lt;Client&gt;&gt;
+-defaultRoom: Room
+--
++RoomHandler(): RoomHandler
++addClient(Client, Room): void
++removeClient(Client, boolean): void
++moveClient(Client, Room): void
++terminate(): void
++setUsername(int, String): void
++setRoomName(int, String): void
++getRooms(): Room[]
++getClients(Room): Client[]
++findClient(int): Client
++findRoom(int): Room
++getRoomInfo(): String
++getHTMLRoomInfo(): String
++changeEvent(): void
+--
+Responsibilities
+Handels the structure of rooms and clients
+with all functionality concerning the
+management of them.</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>372</x>
+      <y>444</y>
+      <w>126</w>
+      <h>240</h>
+    </coordinates>
+    <panel_attributes>Client
+--
+-name: String
+-clientID: int
+-serverRtpPort: int
+-tcp: TCPHandler
+-rtp: SoundHandler
+-ip: InetAdress
+-latestMixerID: int
+--
++Client(Socket, int): Client
++getName(): String
++getClientID(): int
++terminate(): void
++connectionLost(): void
++setNmae(String): void
++startRTPTransfer(int): void
++moveToRoom(int): void
+--
+Responsibilities
+Represents an instance of the
+Android application holding
+the unique connections
+associated to this instance of
+the application.</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>210</x>
+      <y>444</y>
+      <w>126</w>
+      <h>114</h>
+    </coordinates>
+    <panel_attributes>Room
+--
+-name: String
+-id: int
+--
++Room(String, int): Room
++getNmae(): String
++getID(): int
++setName(String): void
+--
+Responsibilities
+Represents a room with clients
+talking to eachother.</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>282</x>
+      <y>114</y>
+      <w>174</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>ConnectionHandler
+--
+Responsibilities
+Activly listening to the port for new
+connections and initializing them as
+clients</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>288</x>
+      <y>216</y>
+      <w>162</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>CommandHandler
+--
+Responsibilities
+Listening to the EventBus for requests
+from the client or commands from the
+server GUI and execute them. </panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>294</x>
+      <y>330</y>
+      <w>144</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>RoomHandler
+--
+Responsibilities
+Handels the structure of rooms
+and clients with all functionality
+concerning the management of them.</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>510</x>
+      <y>300</y>
+      <w>126</w>
+      <h>54</h>
+    </coordinates>
+    <panel_attributes>Room
+--
+Responsibilities
+Represents a room with clients
+talking to eachother.</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>510</x>
+      <y>378</y>
+      <w>126</w>
+      <h>84</h>
+    </coordinates>
+    <panel_attributes>Client
+--
+Responsibilities
+Represents an instance of the
+Android application holding
+the unique connections
+associated to this instance of
+the application.</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>678</x>
+      <y>396</y>
+      <w>132</w>
+      <h>66</h>
+    </coordinates>
+    <panel_attributes>TCPHandler
+--
+Responsibilites
+This handles the TCP connection
+to the client with is used for
+sending and recieving commands.</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>870</x>
+      <y>396</y>
+      <w>132</w>
+      <h>78</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;interface&gt;&gt;
+SoundHandler
+--
+Responsibilites
+This handles the RTP connection
+to the client with is used for
+sending and recieving sound
+streams.</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>384</x>
+      <y>54</y>
+      <w>84</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>72;18;72;42;18;42;18;60</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>276</x>
+      <y>54</y>
+      <w>78</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>18;18;18;42;66;42;66;60</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>348</x>
+      <y>156</y>
+      <w>30</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>18;18;18;60</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>348</x>
+      <y>258</y>
+      <w>30</w>
+      <h>84</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>18;18;18;72</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>420</x>
+      <y>312</y>
+      <w>102</w>
+      <h>54</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>18;42;54;42;54;18;90;18</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>420</x>
+      <y>348</y>
+      <w>102</w>
+      <h>84</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>18;18;54;18;54;72;90;72</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>618</x>
+      <y>408</y>
+      <w>72</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>18;18;60;18</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>792</x>
+      <y>408</y>
+      <w>90</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>18;18;78;18</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>1080</x>
+      <y>396</y>
+      <w>132</w>
+      <h>66</h>
+    </coordinates>
+    <panel_attributes>RTPSoundMixer
+--
+Responsibilites
+?</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>972</x>
+      <y>510</y>
+      <w>132</w>
+      <h>66</h>
+    </coordinates>
+    <panel_attributes>RTPSoundHandler
+--
+Responsibilites
+?</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>918</x>
+      <y>456</y>
+      <w>132</w>
+      <h>66</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;.</panel_attributes>
+    <additional_attributes>18;18;18;30;120;30;120;54</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>1020</x>
+      <y>444</y>
+      <w>138</w>
+      <h>78</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;.</panel_attributes>
+    <additional_attributes>126;18;126;42;18;42;18;66</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>972</x>
+      <y>612</y>
+      <w>132</w>
+      <h>66</h>
+    </coordinates>
+    <panel_attributes>RTPConnector
+--
+Responsibilites
+?</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>1152</x>
+      <y>612</y>
+      <w>132</w>
+      <h>66</h>
+    </coordinates>
+    <panel_attributes>Efflux
+--
+Responsibilites
+?</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>492</x>
+      <y>216</y>
+      <w>120</w>
+      <h>54</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;enum&gt;&gt;
+ServerCommands
+--
+Responibilities
+Contains all commands
+available from the GUI.</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>486</x>
+      <y>54</y>
+      <w>78</w>
+      <h>174</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>18;18;18;90;66;90;66;162</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>432</x>
+      <y>228</y>
+      <w>72</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>18;18;60;18</additional_attributes>
+  </element>
+</diagram>

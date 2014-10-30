@@ -59,7 +59,7 @@ public class ConnectionHandler{
         }
     }
     
-    public void addClient(Socket clientSocket) throws IOException{
+    private void addClient(Socket clientSocket) throws IOException{
         //Print info in server console
         Log.log("A new person joined");
         

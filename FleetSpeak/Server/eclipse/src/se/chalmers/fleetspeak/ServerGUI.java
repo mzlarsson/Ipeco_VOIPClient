@@ -172,7 +172,7 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener, IE
 		Handler logHandler = new Handler() {
 			
 			@Override
-			public void publish(LogRecord record) {
+			public synchronized void publish(LogRecord record) {
 				try {
 					String msg = record.getMessage();
 					StyledDocument doc = terminal.getStyledDocument();

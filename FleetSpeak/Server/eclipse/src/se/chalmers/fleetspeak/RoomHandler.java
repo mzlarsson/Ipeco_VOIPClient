@@ -11,7 +11,7 @@ import se.chalmers.fleetspeak.util.Log;
  * An class for handling the rooms and client on the server side.
  * Based on the RoomHandler on the client side.
  * @author David Michaelsson
- *
+ * @author Patrik Haar
  */
 public class RoomHandler {
 	
@@ -24,6 +24,11 @@ public class RoomHandler {
 		defaultRoom = new Room("Lobby", 0);
 	}
 	
+	/**
+	 * Adds a client to the room specified, initializes the room if newly created.
+	 * @param c The Client to add to the room
+	 * @param r The targeted Room
+	 */
 	public void addClient(Client c, Room r){
 		if(c != null && r != null){
 			if (!rooms.containsKey(r) || rooms.get(r) == null) {
@@ -51,6 +56,12 @@ public class RoomHandler {
 		addClient(client, defaultRoom);
 	}
 
+	/**
+	 * Removes the given clients connection to its room and removes it completely if "terminate" is true
+	 * @param c The Client to be removed
+	 * @param terminate true if the the Client should be removed completely
+	 * false to just remove the room tracking, used for switching rooms.
+	 */
 	public void removeClient(Client c, boolean terminate){
 		if(c != null){
 			for(Room r : rooms.keySet()){
@@ -79,6 +90,11 @@ public class RoomHandler {
 		this.removeClient(findClient(clientID), false);
 	}
 	
+	/**
+	 * Moves the Client from its current room to the room specified
+	 * @param c The Client to be moved.
+	 * @param r The targeted Room.
+	 */
 	public void moveClient(Client c, Room r){
 		this.removeClient(c, false);
 		this.addClient(c, r);
@@ -129,7 +145,7 @@ public class RoomHandler {
 		return null;
 	}
 
-	private Room findRoom(int roomID) {
+	public Room findRoom(int roomID) {
 		for(Room room:rooms.keySet() ){
 			if(room.getId()==roomID){
 				return room;
@@ -140,6 +156,9 @@ public class RoomHandler {
 		return null;
 	}
 
+	/**
+	 * Closes and removes everything held by the roomhandler
+	 */
 	public void terminate() {
 		for(ArrayList<Client> clients:rooms.values()){
 			for(Client c: clients){
@@ -149,15 +168,11 @@ public class RoomHandler {
 		rooms.clear();
 		changeEvent();
 	}
-	
-	public int getNbrOfClients(Room r){
-		return rooms.get(r).size();
-	}
-	
-	public int getNbrOfRooms(){
-		return this.getRooms().length;
-	}
 
+	/**
+	 * Gets a formated String for printing the room structure in the console
+	 * @return The room structure as a String
+	 */
 	public String getRoomInfo() {
 		StringBuilder info = new StringBuilder();
 		info.append(rooms.keySet().isEmpty()?"No clients connected.":"");
@@ -170,6 +185,10 @@ public class RoomHandler {
 		return info.toString();
 	}
 	
+	/**
+	 * Gets a HTML-formatted String for printing the room structure in the GUI
+	 * @return The room structure as a String
+	 */
 	public String getHTMLRoomInfo() {
 		StringBuilder info = new StringBuilder();
 		info.append("<html>" + (rooms.keySet().isEmpty()?"No clients connected.":""));
@@ -183,6 +202,9 @@ public class RoomHandler {
 		return info.toString();
 	}
 	
+	/**
+	 * Send a notification to the GUI that the room structure has been changed
+	 */
 	public void changeEvent() {
 		EventBus.getInstance().fireEvent(new EventBusEvent("ServerGUI", new Command("roomsChanged", null, getHTMLRoomInfo()), this));
 	}
