@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak;
+package se.chalmers.fleetspeak.core;
 
 import java.io.IOException;
 import java.net.InetAddress;

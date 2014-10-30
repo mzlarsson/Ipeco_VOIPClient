@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak;
+package se.chalmers.fleetspeak.core;
 
 import java.util.ArrayList;
 import java.util.HashMap;

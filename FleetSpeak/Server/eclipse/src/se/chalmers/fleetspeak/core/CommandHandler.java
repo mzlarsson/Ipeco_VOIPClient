@@ -1,5 +1,6 @@
-package se.chalmers.fleetspeak;
+package se.chalmers.fleetspeak.core;
 
+import se.chalmers.fleetspeak.ServerGUI;
 import se.chalmers.fleetspeak.eventbus.EventBus;
 import se.chalmers.fleetspeak.eventbus.EventBusEvent;
 import se.chalmers.fleetspeak.eventbus.IEventBusSubscriber;
@@ -112,11 +113,6 @@ public class CommandHandler implements IEventBusSubscriber {
 				wrongFormat(ServerCommand.SET_USER_NAME);
 			} catch (ArrayIndexOutOfBoundsException ex) {
 				wrongFormat(ServerCommand.SET_USER_NAME);
-			}
-		//	Called to close the server.
-		} else if (cmdString.equals(ServerCommand.CLOSE.getName())) {
-			if (actor.getClass()==ServerGUI.class) {
-				((ServerGUI)actor).stop();
 			}
 		//	Called in dire situations.
 		} else if (cmdString.startsWith(ServerCommand.HELP.getName())) {
