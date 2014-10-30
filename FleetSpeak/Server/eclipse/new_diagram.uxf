@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<diagram program="umlet" version="12.2">
+<diagram program="umlet" version="13.0">
   <zoom_level>6</zoom_level>
   <element>
     <type>com.umlet.element.Class</type>
     <coordinates>
       <x>234</x>
-      <y>18</y>
+      <y>0</y>
       <w>120</w>
       <h>54</h>
     </coordinates>
@@ -22,7 +22,7 @@ handling commands
     <type>com.umlet.element.Class</type>
     <coordinates>
       <x>420</x>
-      <y>18</y>
+      <y>0</y>
       <w>120</w>
       <h>54</h>
     </coordinates>
@@ -39,7 +39,7 @@ ports and handling commands
     <type>com.umlet.element.Class</type>
     <coordinates>
       <x>0</x>
-      <y>108</y>
+      <y>90</y>
       <w>174</w>
       <h>132</h>
     </coordinates>
@@ -64,7 +64,7 @@ clients</panel_attributes>
     <type>com.umlet.element.Class</type>
     <coordinates>
       <x>6</x>
-      <y>270</y>
+      <y>252</y>
       <w>162</w>
       <h>120</h>
     </coordinates>
@@ -88,7 +88,7 @@ server GUI and execute them. </panel_attributes>
     <type>com.umlet.element.Class</type>
     <coordinates>
       <x>0</x>
-      <y>444</y>
+      <y>426</y>
       <w>174</w>
       <h>222</h>
     </coordinates>
@@ -122,7 +122,7 @@ management of them.</panel_attributes>
     <type>com.umlet.element.Class</type>
     <coordinates>
       <x>372</x>
-      <y>444</y>
+      <y>426</y>
       <w>126</w>
       <h>240</h>
     </coordinates>
@@ -157,7 +157,7 @@ the application.</panel_attributes>
     <type>com.umlet.element.Class</type>
     <coordinates>
       <x>210</x>
-      <y>444</y>
+      <y>426</y>
       <w>126</w>
       <h>114</h>
     </coordinates>
@@ -180,7 +180,7 @@ talking to eachother.</panel_attributes>
     <type>com.umlet.element.Class</type>
     <coordinates>
       <x>282</x>
-      <y>114</y>
+      <y>96</y>
       <w>174</w>
       <h>60</h>
     </coordinates>
@@ -196,7 +196,7 @@ clients</panel_attributes>
     <type>com.umlet.element.Class</type>
     <coordinates>
       <x>288</x>
-      <y>216</y>
+      <y>198</y>
       <w>162</w>
       <h>60</h>
     </coordinates>
@@ -212,7 +212,7 @@ server GUI and execute them. </panel_attributes>
     <type>com.umlet.element.Class</type>
     <coordinates>
       <x>294</x>
-      <y>330</y>
+      <y>312</y>
       <w>144</w>
       <h>60</h>
     </coordinates>
@@ -228,7 +228,7 @@ concerning the management of them.</panel_attributes>
     <type>com.umlet.element.Class</type>
     <coordinates>
       <x>510</x>
-      <y>300</y>
+      <y>282</y>
       <w>126</w>
       <h>54</h>
     </coordinates>
@@ -243,7 +243,7 @@ talking to eachother.</panel_attributes>
     <type>com.umlet.element.Class</type>
     <coordinates>
       <x>510</x>
-      <y>378</y>
+      <y>360</y>
       <w>126</w>
       <h>84</h>
     </coordinates>
@@ -260,8 +260,8 @@ the application.</panel_attributes>
   <element>
     <type>com.umlet.element.Class</type>
     <coordinates>
-      <x>678</x>
-      <y>396</y>
+      <x>696</x>
+      <y>312</y>
       <w>132</w>
       <h>66</h>
     </coordinates>
@@ -276,8 +276,8 @@ sending and recieving commands.</panel_attributes>
   <element>
     <type>com.umlet.element.Class</type>
     <coordinates>
-      <x>870</x>
-      <y>396</y>
+      <x>684</x>
+      <y>474</y>
       <w>132</w>
       <h>78</h>
     </coordinates>
@@ -285,17 +285,15 @@ sending and recieving commands.</panel_attributes>
 SoundHandler
 --
 Responsibilites
-This handles the RTP connection
-to the client with is used for
-sending and recieving sound
-streams.</panel_attributes>
+Handles the sound connection
+from/to a specific client</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <type>com.umlet.element.Relation</type>
     <coordinates>
       <x>384</x>
-      <y>54</y>
+      <y>36</y>
       <w>84</w>
       <h>72</h>
     </coordinates>
@@ -306,7 +304,7 @@ streams.</panel_attributes>
     <type>com.umlet.element.Relation</type>
     <coordinates>
       <x>276</x>
-      <y>54</y>
+      <y>36</y>
       <w>78</w>
       <h>72</h>
     </coordinates>
@@ -317,7 +315,7 @@ streams.</panel_attributes>
     <type>com.umlet.element.Relation</type>
     <coordinates>
       <x>348</x>
-      <y>156</y>
+      <y>138</y>
       <w>30</w>
       <h>72</h>
     </coordinates>
@@ -328,7 +326,7 @@ streams.</panel_attributes>
     <type>com.umlet.element.Relation</type>
     <coordinates>
       <x>348</x>
-      <y>258</y>
+      <y>240</y>
       <w>30</w>
       <h>84</h>
     </coordinates>
@@ -339,7 +337,7 @@ streams.</panel_attributes>
     <type>com.umlet.element.Relation</type>
     <coordinates>
       <x>420</x>
-      <y>312</y>
+      <y>294</y>
       <w>102</w>
       <h>54</h>
     </coordinates>
@@ -350,7 +348,7 @@ streams.</panel_attributes>
     <type>com.umlet.element.Relation</type>
     <coordinates>
       <x>420</x>
-      <y>348</y>
+      <y>330</y>
       <w>102</w>
       <h>84</h>
     </coordinates>
@@ -361,107 +359,101 @@ streams.</panel_attributes>
     <type>com.umlet.element.Relation</type>
     <coordinates>
       <x>618</x>
-      <y>408</y>
-      <w>72</w>
-      <h>30</h>
+      <y>324</y>
+      <w>90</w>
+      <h>96</h>
     </coordinates>
     <panel_attributes>lt=&lt;-</panel_attributes>
-    <additional_attributes>18;18;60;18</additional_attributes>
+    <additional_attributes>18;84;78;18</additional_attributes>
   </element>
   <element>
     <type>com.umlet.element.Relation</type>
     <coordinates>
-      <x>792</x>
-      <y>408</y>
-      <w>90</w>
-      <h>30</h>
+      <x>564</x>
+      <y>426</y>
+      <w>132</w>
+      <h>90</h>
     </coordinates>
     <panel_attributes>lt=&lt;-</panel_attributes>
-    <additional_attributes>18;18;78;18</additional_attributes>
+    <additional_attributes>18;18;18;78;120;78</additional_attributes>
   </element>
   <element>
     <type>com.umlet.element.Class</type>
     <coordinates>
-      <x>1080</x>
-      <y>396</y>
+      <x>906</x>
+      <y>606</y>
       <w>132</w>
       <h>66</h>
     </coordinates>
     <panel_attributes>RTPSoundMixer
 --
 Responsibilites
-?</panel_attributes>
+Handles data from RTP packages
+and mixes it together as sound.</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <type>com.umlet.element.Class</type>
     <coordinates>
-      <x>972</x>
-      <y>510</y>
+      <x>900</x>
+      <y>390</y>
       <w>132</w>
       <h>66</h>
     </coordinates>
-    <panel_attributes>RTPSoundHandler
+    <panel_attributes>RTPHandler
 --
 Responsibilites
-?</panel_attributes>
+Handles RTP connections to a
+client on a specific IP and port</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <type>com.umlet.element.Relation</type>
     <coordinates>
-      <x>918</x>
-      <y>456</y>
-      <w>132</w>
-      <h>66</h>
+      <x>798</x>
+      <y>492</y>
+      <w>114</w>
+      <h>30</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;.</panel_attributes>
-    <additional_attributes>18;18;18;30;120;30;120;54</additional_attributes>
-  </element>
-  <element>
-    <type>com.umlet.element.Relation</type>
-    <coordinates>
-      <x>1020</x>
-      <y>444</y>
-      <w>138</w>
-      <h>78</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;&lt;.</panel_attributes>
-    <additional_attributes>126;18;126;42;18;42;18;66</additional_attributes>
+    <additional_attributes>18;18;102;18</additional_attributes>
   </element>
   <element>
     <type>com.umlet.element.Class</type>
     <coordinates>
-      <x>972</x>
-      <y>612</y>
+      <x>1266</x>
+      <y>606</y>
       <w>132</w>
       <h>66</h>
     </coordinates>
     <panel_attributes>RTPConnector
 --
 Responsibilites
-?</panel_attributes>
+The bridge between efflux and
+the internal implementation.
+Receives/sends RTP data.</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <type>com.umlet.element.Class</type>
     <coordinates>
-      <x>1152</x>
-      <y>612</y>
+      <x>1266</x>
+      <y>714</y>
       <w>132</w>
       <h>66</h>
     </coordinates>
-    <panel_attributes>Efflux
+    <panel_attributes>efflux
 --
 Responsibilites
-?</panel_attributes>
+Library that handles RTP
+connections/traffic</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <type>com.umlet.element.Class</type>
     <coordinates>
       <x>492</x>
-      <y>216</y>
+      <y>198</y>
       <w>120</w>
       <h>54</h>
     </coordinates>
@@ -477,7 +469,7 @@ available from the GUI.</panel_attributes>
     <type>com.umlet.element.Relation</type>
     <coordinates>
       <x>486</x>
-      <y>54</y>
+      <y>36</y>
       <w>78</w>
       <h>174</h>
     </coordinates>
@@ -488,11 +480,137 @@ available from the GUI.</panel_attributes>
     <type>com.umlet.element.Relation</type>
     <coordinates>
       <x>432</x>
-      <y>228</y>
+      <y>210</y>
       <w>72</w>
       <h>30</h>
     </coordinates>
     <panel_attributes>lt=&lt;-</panel_attributes>
     <additional_attributes>18;18;60;18</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>900</x>
+      <y>486</y>
+      <w>132</w>
+      <h>66</h>
+    </coordinates>
+    <panel_attributes>RTPSoundHandler
+--
+Responsibilites
+Handles the sound connection
+from/to a specific client via RTP
+by using mixers.</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>954</x>
+      <y>450</y>
+      <w>18</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;60.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>954</x>
+      <y>546</y>
+      <w>18</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>10.0;100.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1332</x>
+      <y>666</y>
+      <w>18</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.</panel_attributes>
+    <additional_attributes>10.0;80.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>684</x>
+      <y>600</y>
+      <w>132</w>
+      <h>66</h>
+    </coordinates>
+    <panel_attributes>SoundHandlerFactory
+--
+Responsibilites
+Creates a SoundHandler with a
+specific given protocol. Currently
+only RTP is supported.</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>738</x>
+      <y>546</y>
+      <w>18</w>
+      <h>66</h>
+    </coordinates>
+    <panel_attributes/>
+    <additional_attributes>10.0;10.0;10.0;90.0</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>1092</x>
+      <y>600</y>
+      <w>132</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;interface&gt;&gt;
+RTPListener
+--
+Responsibilites
+Adapter between raw RTP data
+and the internal implementation</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1032</x>
+      <y>636</y>
+      <w>72</w>
+      <h>18</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;.</panel_attributes>
+    <additional_attributes>100.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1218</x>
+      <y>636</y>
+      <w>60</w>
+      <h>18</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.</panel_attributes>
+    <additional_attributes>80.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1026</x>
+      <y>510</y>
+      <w>324</w>
+      <h>108</h>
+    </coordinates>
+    <panel_attributes>lt=-
+sends data &gt;</panel_attributes>
+    <additional_attributes>10.0;20.0;520.0;20.0;520.0;160.0</additional_attributes>
   </element>
 </diagram>
