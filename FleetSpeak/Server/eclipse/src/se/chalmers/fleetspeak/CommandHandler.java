@@ -1,13 +1,9 @@
-package se.chalmers.fleetspeak.tcp;
+package se.chalmers.fleetspeak;
 
-import se.chalmers.fleetspeak.Client;
-import se.chalmers.fleetspeak.Room;
-import se.chalmers.fleetspeak.RoomHandler;
-import se.chalmers.fleetspeak.ServerCommand;
-import se.chalmers.fleetspeak.ServerGUI;
 import se.chalmers.fleetspeak.eventbus.EventBus;
 import se.chalmers.fleetspeak.eventbus.EventBusEvent;
 import se.chalmers.fleetspeak.eventbus.IEventBusSubscriber;
+import se.chalmers.fleetspeak.tcp.TCPHandler;
 import se.chalmers.fleetspeak.util.Command;
 import se.chalmers.fleetspeak.util.Log;
 
