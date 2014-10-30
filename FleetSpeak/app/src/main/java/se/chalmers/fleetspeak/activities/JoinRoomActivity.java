@@ -48,18 +48,19 @@ import se.chalmers.fleetspeak.util.Utils;
 
 /**
  * A activity that guides the user through choosing or creating a room to join
+ *
  * Created by Johan Segerlund on 2014-10-09.
  */
 public class JoinRoomActivity extends ActionBarActivity implements TruckStateListener, Commandable {
+    private static TruckDataHandler truckDataHandler;
     private Menu menu;
     private ListView roomView;
     private ArrayAdapter<Room> adapter;
-    protected Room[] rooms;
+    private Room[] rooms;
     private ArrayList ArrayRooms = new ArrayList<Room>();
-    private static TruckDataHandler truckDataHandler;
     private boolean isDriving = false;
-
     private Messenger messenger = null;
+
     /**
      * Set up the connection service to the server
      */
@@ -101,7 +102,6 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
         roomView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-
                 //Checks which room the user choose to join.
                 Object object = adapterView.getItemAtPosition(position);
                 Room room = (Room)object;
@@ -112,8 +112,6 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
-
-
                 joinRoom(roomID);
             }
         });
@@ -259,7 +257,6 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
         public JoinRoomAdapter(Context context, ArrayList<Room> values) {
             super(context, R.layout.list_item_rooms, values);
         }
-
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             LayoutInflater inflater = LayoutInflater.from(getContext());

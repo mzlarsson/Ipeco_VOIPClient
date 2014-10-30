@@ -46,6 +46,7 @@ import se.chalmers.fleetspeak.util.Utils;
 /**
  * A activity that present the selected chatroom and room specific options to the Users and enables the users
  * to do room specific actions
+ *
  * Created by Johan Segerlund on 2014-10-06.
  */
 public class ChatRoomActivity extends ActionBarActivity implements TruckStateListener, Commandable {
@@ -59,8 +60,9 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
     private Messenger mService = null;
     private ArrayAdapter<User> adapter;
     private boolean isTalkActive = false;
-    public boolean isDriving = false;
+    private boolean isDriving = false;
     private int currentRoomID;
+
     /**
      * Sets up the connection service to the server
      */
@@ -197,6 +199,7 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
 
     @Override
     public void onDataUpdate(String command) {
+        Log.i("ChatRoomActivity", "onDataUpdate got command: " + command);
         if(command.equals("dataUpdate")){
             updateUserList();
         }else if(command.equals("Disconnected")){
