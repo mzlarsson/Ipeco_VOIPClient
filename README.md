@@ -1,6 +1,6 @@
 #FleetSpeak
 
-**by DeadliestTrucks**
+######by DeadliestTrucks
 ===============
 
 ##Purpose
@@ -23,15 +23,18 @@ The client is responsible for recording the audio to send to the server and rece
 ##Getting started
 **Server:**
 
-1. Make sure the wanted port is forwarded in the network with the server (Default is port 8867).
-2. Start the ServerGUI if you want a GUI, ServerConsole if not.
+1. The server is an eclipse project in the fleetspeak/Server folder.
+2. Make sure the wanted port is forwarded in the network with the server (Default is port 8867).
+3. Start the ServerGUI if you want a GUI, ServerConsole if not.
+4. The server is now running, write help for a list of commands.
 
 **Client:**
 
-1. Start the application.
-2. Make sure the IP is the same as the servers IP.
-3. Make sure the selected port is the same as the servers.
-4. Press connect.
+1. This is a Android Studio project.
+2. Start startActivity on an Android device of your choice supporting API 14 or higher.
+3. Make sure the IP is the same as the servers IP.
+4. Make sure the selected port is the same as the servers.
+5. Press connect.
 
 ##Troubleshooting
 **Client can't get connection to the server:**
