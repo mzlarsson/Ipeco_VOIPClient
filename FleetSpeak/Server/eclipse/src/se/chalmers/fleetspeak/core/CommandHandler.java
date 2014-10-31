@@ -1,6 +1,5 @@
 package se.chalmers.fleetspeak.core;
 
-import se.chalmers.fleetspeak.ServerGUI;
 import se.chalmers.fleetspeak.eventbus.EventBus;
 import se.chalmers.fleetspeak.eventbus.EventBusEvent;
 import se.chalmers.fleetspeak.eventbus.IEventBusSubscriber;
