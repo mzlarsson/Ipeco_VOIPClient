@@ -2,7 +2,7 @@ package se.chalmers.fleetspeak.tests;
 
 import se.chalmers.fleetspeak.sound.RTPSoundMixer;
 
-public class testDynamicRange {
+public class TestDynamicRange {
 	
 	public static void main(String args[]){
 	
