@@ -87,18 +87,19 @@ public class CommandHandler implements IEventBusSubscriber {
 			int clientID = Integer.parseInt(data[1]);
 			eventBus.fireEvent(new EventBusEvent("CommandHandler", new Command("disconnect", clientID, null), this));
 		} else if(cmdString.startsWith(ServerCommand.SET_ROOM_NAME.getName()+" ")){
-			String[] data = cmdString.split(" ");
-			int roomID = -1;
-			try {
-				roomID = Integer.parseInt(data[1]);
-				String roomName = data[2];
-				roomHandler.setRoomName(roomID, roomName);
-				eventBus.fireEvent(new EventBusEvent("broadcast", new Command("setRoomName", roomID, roomName), null));
-			} catch (NumberFormatException ex) {
-				wrongFormat(ServerCommand.SET_ROOM_NAME);
-			} catch (ArrayIndexOutOfBoundsException ex) {
-				wrongFormat(ServerCommand.SET_ROOM_NAME);
-			}
+			Log.logError("Command is not yet implemented");
+//			String[] data = cmdString.split(" ");
+//			int roomID = -1;
+//			try {
+//				roomID = Integer.parseInt(data[1]);
+//				String roomName = data[2];
+//				roomHandler.setRoomName(roomID, roomName);
+//				eventBus.fireEvent(new EventBusEvent("broadcast", new Command("setRoomName", roomID, roomName), null));
+//			} catch (NumberFormatException ex) {
+//				wrongFormat(ServerCommand.SET_ROOM_NAME);
+//			} catch (ArrayIndexOutOfBoundsException ex) {
+//				wrongFormat(ServerCommand.SET_ROOM_NAME);
+//			}
 		//	Called to change the name of a user.
 		} else if(cmdString.startsWith(ServerCommand.SET_USER_NAME.getName()+" ")){
 			String[] data = cmdString.split(" ");
