@@ -99,8 +99,7 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener, IE
 
 		pack();
 		setVisible(true);
-		
-		start();
+	
 	}
 
 	private void populate() {
