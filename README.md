@@ -18,7 +18,7 @@ The server can be run with a GUI or through the console and provides some useful
 
 **Client:**
 
-The client is responsible for recording the audio to send to the server and receiving audio from the server and playing it. Most of the other features need to go through the server before they take effect such as changing or creating new rooms.
+The client is responsible for recording the audio, send it to the server, receiving audio from the server and playing it. Most of the other features need to go through the server before they take effect such as changing or creating new rooms.
 
 ##Getting started
 **Server:**
@@ -45,3 +45,16 @@ Otherwise make sure the port and IP on the client is the one used by the server,
 **Client is wonky:**
 
 Exit the application and close it completely before restarting it.
+
+##Unimplemented features
+- Push-to-talk button is only implemented in the GUI, it only toggles the image.
+- Muting other users is only implemented in the GUI, it only toggles the image.
+- Changing the mic volume is only implemented in the GUI, it's only a visual change.
+
+##Known problems
+- Reconnecting in the client after connecting once does not work, exit and kill the app to reset it.
+- Error message upon killing the app due to a service leak.
+- The app cannot be started in "Car mode", it has to be started in "Standstill mode" and then changed (wheel based speed > 0).
+- More than two people in a conversation at the same time lowers the sound quality exponentionally (3 hearable, 4 static).
+- No packet-loss-handling makes the soundquality drop significantly on bad connections.
+- Using the android built-in back button can cause problems. Use the in-app back button for more consistent results.
