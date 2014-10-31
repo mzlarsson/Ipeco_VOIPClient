@@ -18,7 +18,7 @@ The server can be run with a GUI or through the console and provides some useful
 
 **Client:**
 
-The client is responsible for recording the audio to send to the server and receiving audio from the server and playing it. Most of the other features need to go through the server before they take effect such as changing or creating new rooms.
+The client is responsible for recording the audio, send it to the server, receiving audio from the server and playing it. Most of the other features need to go through the server before they take effect such as changing or creating new rooms.
 
 ##Getting started
 **Server:**
