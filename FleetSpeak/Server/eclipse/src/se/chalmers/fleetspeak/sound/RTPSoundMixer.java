@@ -1,6 +1,7 @@
 package se.chalmers.fleetspeak.sound;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -24,7 +25,7 @@ public class RTPSoundMixer implements RTPListener{
 
 	public static List<RTPSoundMixer> mixers = new ArrayList<RTPSoundMixer>();
 	
-	private List<RTPSoundPacket> data;
+	private HashMap<Long,JitterBuffer> buffers;
 	private RTPConnector connector;
 	private int identifier;
 	
@@ -34,7 +35,7 @@ public class RTPSoundMixer implements RTPListener{
 	 * @param identifier A unique identifier for this mixer
 	 */
 	private RTPSoundMixer(RTPConnector connector, int identifier){
-		this.data = new ArrayList<RTPSoundPacket>();
+		buffers = new HashMap<Long,JitterBuffer>();
 		this.connector = connector;
 		this.identifier = identifier;
 	}
@@ -48,7 +49,7 @@ public class RTPSoundMixer implements RTPListener{
 		connector.setRTPListener(sourceID, this);
 		
 		//Adds an empty packet to be filled with data later
-		data.add(new RTPSoundPacket(sourceID, getCurrentSequenceOffset()));
+		buffers.put(sourceID, new JitterBuffer());
 	}
 
 	/**
@@ -62,43 +63,14 @@ public class RTPSoundMixer implements RTPListener{
 		}
 		
 		//Remove the collected data from the client (if found)
-		RTPSoundPacket packet = RTPSoundPacket.getPacket(this.data, sourceID);
-		if(packet != null){
-			this.data.remove(packet);
-		}
-
-		if(this.data.isEmpty()){
+		buffers.remove(sourceID);
+		if(buffers.isEmpty()){
 			this.close();
 		}
 	}
 	
-	/**
-	 * Mutes/Unmutes a client for another client
-	 * @param sourceID The client that requests the mute/unmute
-	 * @param muteID The client to mute/unmute
-	 * @param muted If the client should be muted or unmuted
-	 */
-	public void setMuted(long sourceID, long muteID, boolean muted){
-		RTPSoundPacket packet = RTPSoundPacket.getPacket(this.data, sourceID);
-		if(packet != null){
-			packet.setMuted(muteID, muted);
-		}
-	}
 	
-	/**
-	 * Checks whether a client is muted for a certain client
-	 * @param sourceID The client that is affected by the mute
-	 * @param muteID The client that is muted/unmuted
-	 * @return If the client with muteID as ID is muted for the client with sourceID as ID
-	 */
-	public boolean isMuted(long sourceID, long muteID){
-		RTPSoundPacket packet = RTPSoundPacket.getPacket(this.data, sourceID);
-		if(packet != null){
-			return packet.isMuted(muteID);
-		}else{
-			return false;
-		}
-	}
+	
 	
 	
 
@@ -108,48 +80,55 @@ public class RTPSoundMixer implements RTPListener{
 	 * @param minSequenceNumber The minimum (relative) sequence number that is acceptable
 	 * @return A sound mix of all clients except the one that requests the data
 	 */	
-	public byte[] getMixedSound(long sourceID, int minSequenceNumber){
-		if(data.size()>1){
-			RTPSoundPacket requester = RTPSoundPacket.getPacket(this.data, sourceID);
-			byte[][] bytedata = new byte[data.size()-1][Constants.RTP_PACKET_SIZE];
-			int foundUsers = 0;
-			for(int i = 0; i<data.size(); i++){
-				if(data.get(i) != null){
-					if(data.get(i).getSourceID() != sourceID && requester != null && !requester.isMuted(data.get(i).getSourceID())){
-						bytedata[foundUsers] = data.get(i).getData(minSequenceNumber);
-						foundUsers++;
-					}
-				}
-			}
+	public byte[] getMixedSound(long sourceID){
+		if(buffers.size()>1){
 			
-			if(foundUsers>0){
-				if(foundUsers==1){
-					return bytedata[0];
-				}else{
-					byte[] mix = new byte[Constants.RTP_PACKET_SIZE];
-					short sum = 0;
-					for(int i = 0; i<Constants.RTP_PACKET_SIZE; i++) {
-						sum = 0;
-						for(int j = 0; j<foundUsers; j++){
-							if(bytedata[j].length>i){
-								sum += byteToShort(bytedata[j][i]);
-								sum = dynamicRangeCompression(cutNoise(sum),(short)4000);
-							}
-						}
-						
-	//					sum /= bytedata.length;		//Lower all volume. IMPORTANT! This value effects MUCH!
-		
-						mix[i] = shortToByte((short)Math.max(-128, Math.min(127, sum)));
-					}
-					
-					return mix;
-				}
-			}else{
-				return new byte[0];
+			int foundUsers = 0;
+			for(Long key : buffers.keySet()){
+				if(key != sourceID)
+					return buffers.get(key).read();
+			
 			}
-		}else{
-			return new byte[0];
 		}
+//			RTPSoundPacket requester = RTPSoundPacket.getPacket(this.data, sourceID);
+//			byte[][] bytedata = new byte[data.size()-1][Constants.RTP_PACKET_SIZE];
+//			int foundUsers = 0;
+//			for(int i = 0; i<data.size(); i++){
+//				if(data.get(i) != null){
+//					if(data.get(i).getSourceID() != sourceID && requester != null && !requester.isMuted(data.get(i).getSourceID())){
+//						bytedata[foundUsers] = data.get(i).getData(minSequenceNumber);
+//						foundUsers++;
+//					}
+//				}
+//			}
+			
+//			if(foundUsers>0){
+//				if(foundUsers==1){
+//					return bytedata[0];
+//				}else{
+//					byte[] mix = new byte[Constants.RTP_PACKET_SIZE];
+//					short sum = 0;
+//					for(int i = 0; i<Constants.RTP_PACKET_SIZE; i++) {
+//						sum = 0;
+//						for(int j = 0; j<foundUsers; j++){
+//							if(bytedata[j].length>i){
+//								sum += byteToShort(bytedata[j][i]);
+//								sum = dynamicRangeCompression(cutNoise(sum),(short)4000);
+//							}
+//						}
+//						
+//	//					sum /= bytedata.length;		//Lower all volume. IMPORTANT! This value effects MUCH!
+//		
+//						mix[i] = shortToByte((short)Math.max(-128, Math.min(127, sum)));
+//					}
+//					
+//					return mix;
+//				}
+//			}else{
+//				return new byte[0];
+//			}
+		
+		return new byte[0];
 	}
 
 	/**
@@ -177,50 +156,22 @@ public class RTPSoundMixer implements RTPListener{
 	 * @param data The data from the received packet
 	 */
 	@Override
-	public void dataPacketReceived(long sourceID, int sequenceNumber, byte[] data) {
-		RTPSoundPacket soundPacket = RTPSoundPacket.getPacket(this.data, sourceID);
+	public void dataPacketReceived(long sourceID, long timestamp, byte[] data) {
 		
-		if(soundPacket != null){
-			soundPacket.setData(sequenceNumber, data);
-		}
-	}
-	
-	/**
-	 * Retrieves the current sequence number of the specified client
-	 * @param source The source ID of the actual client (retrieved from RTPConnector)
-	 * @return The current sequence number of the specified client. 0 if not found.
-	 */
-	public int getSequenceNumber(long sourceID){
-		RTPSoundPacket p = RTPSoundPacket.getPacket(data, sourceID);
-		if(p != null){
-			return p.getRelativeSequenceNumber();
-		}else{
-			return 0;
-		}
-	}
-	
-	/**
-	 * Retrieves the highest (relative) sequence number of the clients connected to this mixer
-	 * @return The highest sequence number in this mixer
-	 */
-	public int getCurrentSequenceOffset(){
-		int offset = 0;
-		for(int i = 0; i<data.size(); i++){
-			offset = Math.max(offset, data.get(i).getRelativeSequenceNumber());
-		}
+		buffers.get(sourceID).write(data, timestamp);
 		
-		return offset;
 	}
+
 	
 	/**
 	 * Removes all data from this mixer and untracks itself as a SoundMixer.
 	 */
 	public void close(){
-		for(int i = 0; i<data.size(); i++){
-			connector.removeRTPListener(data.get(i).getSourceID());
+		for(long l : buffers.keySet()){
+			connector.removeRTPListener(l);
 		}
 		
-		data.clear();
+		buffers.clear();
 		connector = null;
 		mixers.remove(this);
 	}

@@ -168,18 +168,6 @@ public class CommandHandler implements IEventBusSubscriber {
 			} else if (commandName.equals("moveUser")) {
 				roomHandler.moveClient((Integer)command.getKey(), (Integer)command.getValue());
 				eventBus.fireEvent(new EventBusEvent("broadcast", command, null));
-			// Called when commands are manually entered into the command line.
-			} else if (commandName.equals("mute")) {
-				Log.logDebug("Got mute command");
-				Client muter = roomHandler.findClient((Integer)command.getKey());
-				Client muteObject = roomHandler.findClient((Integer)command.getValue());
-				muter.setMuted(muteObject, true);
-				//Called to unmute user
-			} else if (commandName.equals("unmute")) {
-				Log.logDebug("Got unmute command");
-				Client muter = roomHandler.findClient((Integer)command.getKey());
-				Client muteObject = roomHandler.findClient((Integer)command.getValue());
-				muter.setMuted(muteObject, false);
 				// Called when commands are manually entered into the command line.
 			} else if (commandName.equals("consoleCommand")) {
 				serverCommands((String)command.getValue(), event.getActor());

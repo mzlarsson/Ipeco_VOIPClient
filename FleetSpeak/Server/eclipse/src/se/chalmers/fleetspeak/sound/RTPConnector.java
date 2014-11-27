@@ -183,7 +183,7 @@ public class RTPConnector implements RtpSessionDataListener{
 	public void dataPacketReceived(RtpSession session, RtpParticipantInfo participant, DataPacket packet) {
 		RTPListener listener = listeners.get(participant.getSsrc());
 		if(listener != null){
-			listener.dataPacketReceived(participant.getSsrc(), packet.getSequenceNumber(), packet.getDataAsArray());
+			listener.dataPacketReceived(participant.getSsrc(), packet.getTimestamp(), packet.getDataAsArray());
 		}else{
 			//Check if the packet is from an unknown sender
 			if(participants.get(participant.getSsrc()) == null){

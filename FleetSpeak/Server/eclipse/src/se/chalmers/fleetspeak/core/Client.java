@@ -66,18 +66,6 @@ public class Client{
 	public String getName() {
 		return name;
 	}
-	
-	public void setMuted(Client client, boolean muted){
-		if(this.rtp != null){
-			this.rtp.setMuted(client.rtp, muted);
-		}else{
-			Log.log("<error>Could not "+(muted?"mute":"unmute")+" since sound transfer is not started</error>");
-		}
-	}
-
-	public boolean isMuted(Client client) {
-		return (this.rtp==null || this.rtp.isMuted(client.rtp));
-	}
 
 	public void terminate() {
 		if (rtp != null) {

@@ -14,6 +14,6 @@ public interface RTPListener {
 	 * @param sequenceNumber The sequence number of the RTP packet
 	 * @param data The data from the received packet
 	 */
-	public void dataPacketReceived(long sourceID, int sequenceNumber, byte[] data);
+	public void dataPacketReceived(long sourceID, long timestamp, byte[] data);
 	
 }
