@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import se.chalmers.fleetspeak.util.Log;
+
 /**
  * Class for mixing sound based on RTP packages.
  * 
@@ -81,14 +83,9 @@ public class RTPSoundMixer implements RTPListener{
 	 * @return A sound mix of all clients except the one that requests the data
 	 */	
 	public byte[] getMixedSound(long sourceID){
-		if(buffers.size()>1){
+		if(buffers.size()>0){
 			
-			int foundUsers = 0;
-			for(Long key : buffers.keySet()){
-				if(key != sourceID)
-					return buffers.get(key).read();
-			
-			}
+			return buffers.get(sourceID).read();
 		}
 //			RTPSoundPacket requester = RTPSoundPacket.getPacket(this.data, sourceID);
 //			byte[][] bytedata = new byte[data.size()-1][Constants.RTP_PACKET_SIZE];
@@ -158,6 +155,8 @@ public class RTPSoundMixer implements RTPListener{
 	@Override
 	public void dataPacketReceived(long sourceID, long timestamp, byte[] data) {
 		
+		if(!buffers.containsKey(sourceID))
+			addClientToMixer(sourceID);
 		buffers.get(sourceID).write(data, timestamp);
 		
 	}
