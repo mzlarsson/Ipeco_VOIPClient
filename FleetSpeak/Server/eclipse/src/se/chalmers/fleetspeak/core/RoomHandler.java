@@ -75,9 +75,13 @@ public class RoomHandler {
 						Log.logDebug("Removing room");
 						rooms.remove(r);
 					}
+					
+					EventBus.getInstance().fireEvent(new EventBusEvent("broadcast", 
+							new Command("removedClient", c.getClientID(), r.getId()), null));
 					break;
 				}
 			}
+			
 			changeEvent();
 		}
 	}

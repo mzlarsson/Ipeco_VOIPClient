@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="808.0" prefWidth="1056.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="se.chalmers.fleetspeak.gui.ServerGUIController">
+	<center>
+		<SplitPane dividerPositions="0.5" focusTraversable="false" orientation="VERTICAL" prefHeight="789.0" prefWidth="1002.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+		   <items>
+			  <ToolBar prefHeight="87.0" prefWidth="1054.0">
+               <items>
+                  <Button mnemonicParsing="false" onAction="#openLog">
+                     <graphic>
+                        <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@loadLog.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
+                  <Button mnemonicParsing="false" onAction="#saveLog">
+                     <graphic>
+                        <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@saveLog.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
+                  <Separator orientation="VERTICAL" prefHeight="69.0" prefWidth="13.0" />
+                  <Button mnemonicParsing="false" onAction="#clearConsole">
+                     <graphic>
+                        <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@cls.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
+               </items>
+			  </ToolBar>
+			  <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1054.0">
+				 <left>
+					<AnchorPane id="menuPane" prefHeight="700.0" prefWidth="292.0" BorderPane.alignment="CENTER">
+					   <children>
+						  <Label layoutX="50.0" layoutY="29.0" prefHeight="35.0" prefWidth="75.0" text="Your IP is:" />
+						  <Label id="ipLabel" layoutX="136.0" layoutY="29.0" prefHeight="35.0" prefWidth="127.0" style="-fx-font-weight: bold;" text="[Loading...]">
+							 <font>
+								<Font size="18.0" />
+							 </font>
+						  </Label>
+						  <Label layoutX="50.0" layoutY="73.0" prefHeight="27.0" prefWidth="67.0" text="Port:">
+							 <tooltip>
+								<Tooltip text="For TCP/UDP traffic" />
+							 </tooltip>
+						  </Label>
+						  <TextField id="portInput" fx:id="portNumber" layoutX="136.0" layoutY="71.0" onKeyReleased="#portNumberChanged" prefHeight="31.0" prefWidth="103.0" promptText="XXXX" text="8867" />
+						  <Button fx:id="startButton" layoutX="50.0" layoutY="121.0" mnemonicParsing="false" onAction="#startServer" prefHeight="38.0" prefWidth="191.0" text="Start" />
+						  <Separator layoutY="186.0" prefHeight="5.0" prefWidth="297.0" />
+                        <ScrollPane id="dynamicInfo" layoutY="186.0" prefHeight="536.0" prefWidth="292.0" />
+					   </children>
+					</AnchorPane>
+				 </left>
+				 <center>
+					<AnchorPane id="contentPane" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+					   <children>
+						  <TextField fx:id="commandInput" focusTraversable="false" layoutX="26.0" layoutY="654.0" onAction="#commandEntered" onKeyPressed="#commandInputPressed" onKeyReleased="#commandInputChanged" prefHeight="35.0" prefWidth="706.0" promptText="Command" />
+						  <Separator layoutX="-5.0" layoutY="-1.0" orientation="VERTICAL" prefHeight="700.0" prefWidth="8.0" />
+                        <AnchorPane layoutX="-2.0" prefHeight="37.0" prefWidth="760.0">
+                           <children>
+                              <Label layoutX="298.0" layoutY="8.0" prefHeight="21.0" prefWidth="165.0" text="Fleetspeak Terminal 2.0" />
+                           </children>
+                        </AnchorPane>
+                        <AnchorPane id="terminalWrapper" layoutX="-1.0" layoutY="37.0" prefHeight="608.0" prefWidth="758.0">
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                        </AnchorPane>
+					   </children>
+					</AnchorPane>
+				 </center>
+			  </BorderPane>
+		   </items>
+		</SplitPane>
+	</center>
+</BorderPane>

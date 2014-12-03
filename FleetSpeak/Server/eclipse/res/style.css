@@ -1,0 +1,12 @@
+.split-pane *.split-pane-divider {
+    -fx-padding: 0 1 0 1;
+}
+
+.tferror {
+  -fx-text-box-border: red ;
+  -fx-focus-color: red ;
+}
+.tfvalid {
+  -fx-text-box-border: green ;
+  -fx-focus-color: green ;
+}
