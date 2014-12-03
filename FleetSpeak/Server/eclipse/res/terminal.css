@@ -1,0 +1,15 @@
+.tag_b{
+	-fx-font-weight:bold;
+}
+.tag_i{
+	-fx-font-style:italic;
+}
+.tag_error{
+	-fx-fill:#C00000;
+}
+.tag_info{
+	-fx-fill:#12A012;
+}
+.tag_debug{
+	-fx-fill:#A045A0;
+}

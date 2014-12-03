@@ -18,7 +18,6 @@ public class ConnectionHandler{
     
     private int port;
     
-    
     private static CommandHandler commandHandler;
     private static ServerSocket serverSocket = null;
     
@@ -65,6 +64,10 @@ public class ConnectionHandler{
         //Create and forward client
         Client client = new Client(clientSocket, port);
         commandHandler.addClient(client);
+    }
+    
+    public boolean isRunning(){
+    	return this.running;
     }
     
     public void terminate() {
