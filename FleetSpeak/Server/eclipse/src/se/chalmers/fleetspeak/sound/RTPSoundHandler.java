@@ -57,11 +57,12 @@ public class RTPSoundHandler extends RTPHandler implements SoundHandler{
 				
 				//Fetch the data from all other sound sources
 				byte[] data = mixer.getMixedSound(getParticipantSourceID());
+				System.out.println(data);
 				//Send data
 				if(data != null && data.length>0){
 					if(getConnector().sendData(getParticipantSourceID(), data)){
 						//Increase sequence number if any data was sent (no double sending)
-						currSeqNumber++;
+						System.out.println("Sent data");
 					}
 				}
 			}
