@@ -20,7 +20,9 @@ public class CommandSearcher {
 	}
 	
 	public static String next(){
-		searchIndex = (searchIndex+1)%result.size();
+		if(result!=null && result.size()>0){
+			searchIndex = (searchIndex+1)%result.size();
+		}
 		
 		return getValue();
 	}
