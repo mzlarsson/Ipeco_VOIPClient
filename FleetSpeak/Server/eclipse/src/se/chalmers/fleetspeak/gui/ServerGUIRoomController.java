@@ -2,6 +2,7 @@ package se.chalmers.fleetspeak.gui;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -35,6 +36,7 @@ public class ServerGUIRoomController implements IEventBusSubscriber{
 	
 	public void registerClient(String name, int id){
 		clients.put(id, name);
+		moveClient(id, 0);
 	}
 	
 	public void registerRoom(String name, int id){
@@ -75,6 +77,18 @@ public class ServerGUIRoomController implements IEventBusSubscriber{
 		}
 	}
 	
+	public void renameClient(int clientID, String newName){
+		Integer currentRoom = clientRooms.get(clientID);
+		if(currentRoom != null){
+			TreeItem<String> clientNode = findClient(clientID, findRoom(currentRoom));
+			if(clientNode != null){
+				clientNode.setValue(newName);
+			}
+		}
+		
+		clients.put(clientID, newName);
+	}
+	
 	private TreeItem<String> findRoom(int roomID){
 		String name = rooms.get(roomID);
 		ObservableList<TreeItem<String>> roomItems = roomsRoot.getChildren();
@@ -105,20 +119,25 @@ public class ServerGUIRoomController implements IEventBusSubscriber{
 	@Override
 	public void eventPerformed(EventBusEvent event) {
 		String cmd = event.getCommand().getCommand();
-//		System.out.println("ServerGuiRoomController caught event: "+cmd);
+		System.out.println("ServerGuiRoomController caught event: "+cmd+" "+event.getCommand().getKey()+" "+event.getCommand().getValue());
+		System.out.println("Thread: Id="+Thread.currentThread().getId()+", Name="+Thread.currentThread().getName());
 		if(cmd.equals("addUser")){
 			String[] data = ((String)event.getCommand().getKey()).split(",");
 			registerClient(data[0], Integer.parseInt(data[1]));
+			
+//			data = ((String)event.getCommand().getValue()).split(",");
 		}else if(cmd.equals("move")){
 			moveClient((Integer)event.getCommand().getKey(), (Integer)event.getCommand().getValue());
 		}else if(cmd.equals("createAndMove")){
 			String[] roomData = ((String)event.getCommand().getValue()).split(",");
-			int roomID = Integer.parseInt(roomData[0]);
-			registerRoom(roomData[1], roomID);
+			int roomID = Integer.parseInt(roomData[1]);
+			registerRoom(roomData[0], roomID);
 			
 			moveClient((Integer)event.getCommand().getKey(), roomID);
 		}else if(cmd.equals("removedClient")){
 			removeClient((Integer)event.getCommand().getKey());
+		}else if(cmd.equals("setName")){
+			renameClient((Integer)event.getCommand().getKey(), (String)event.getCommand().getValue());
 		}
 	}
 	

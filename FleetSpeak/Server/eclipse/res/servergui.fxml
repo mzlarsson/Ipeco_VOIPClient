@@ -50,7 +50,7 @@
 					<AnchorPane id="menuPane" prefHeight="700.0" prefWidth="292.0" BorderPane.alignment="CENTER">
 					   <children>
 						  <Label layoutX="50.0" layoutY="29.0" prefHeight="35.0" prefWidth="75.0" text="Your IP is:" />
-						  <Label id="ipLabel" layoutX="136.0" layoutY="29.0" prefHeight="35.0" prefWidth="127.0" style="-fx-font-weight: bold;" text="[Loading...]">
+						  <Label id="ipLabel" layoutX="136.0" layoutY="29.0" prefHeight="35.0" prefWidth="140.0" style="-fx-font-weight: bold;" text="[Loading...]">
 							 <font>
 								<Font size="18.0" />
 							 </font>
