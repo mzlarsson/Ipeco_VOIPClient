@@ -173,8 +173,8 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        this.menu = menu;
         getMenuInflater().inflate(R.menu.day_night_menu, menu);
+        this.menu = menu;
         return true;
     }
     @Override
