@@ -298,6 +298,7 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
         if(ServiceUtil.isMyServiceRunning(this, ServiceConnection.class)) {
             unbindService(serviceConnection);
         }
+        CommandHandler.removeListener(this);
     }
 
     @Override
@@ -307,6 +308,7 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
         if(ServiceUtil.isMyServiceRunning(this, ServiceConnection.class)) {
             unbindService(serviceConnection);
         }
+        CommandHandler.removeListener(this);
     }
 
     @Override
@@ -320,12 +322,15 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
     protected void onResume(){
         Log.i("JOINROOMACTIVITY", "called onResume binding");
         bindService(new Intent(this, SocketService.class), serviceConnection, Context.BIND_AUTO_CREATE);
+        CommandHandler.addListener(this);
         super.onResume();
+
     }
 
     @Override
     protected void onRestart(){
         Log.i("JOINROOMACTIVITY", "called onRestart binding");
+        CommandHandler.addListener(this);
         super.onRestart();
         bindService(new Intent(this, SocketService.class), serviceConnection, Context.BIND_AUTO_CREATE);
     }

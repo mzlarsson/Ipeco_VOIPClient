@@ -80,7 +80,9 @@ public class CommandHandler extends Handler {
             aCommand = "unknown command";
         }
 
-        listUsers();
+        for(Commandable a : activities){
+            Log.i("Commandable" , a.getClass().toString());
+        }
         postUpdate(aCommand);
 
     }
