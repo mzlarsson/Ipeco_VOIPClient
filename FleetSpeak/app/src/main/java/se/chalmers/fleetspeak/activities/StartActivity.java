@@ -163,6 +163,7 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
     @Override
     protected void onRestart() {
         super.onRestart();
+        CommandHandler.addListener(this);
     }
 
     /**
