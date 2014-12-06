@@ -51,7 +51,6 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
     private String userNameText;
     private SharedPreferences prefs;
     private SharedPreferences.Editor prefEdit;
-    private boolean isConnected = false;
     static Messenger mService = null;
     private Menu menu;
 
@@ -152,7 +151,9 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
     protected void onDestroy() {
         Log.i("STARTACTIVITY", "called onDestroy unbinding");
         CommandHandler.removeListener(this);
-        unbindService(mConnection);
+        if (ServiceUtil.isMyServiceRunning(this, ServiceConnection.class)) {
+            unbindService(mConnection);
+        }
         ServiceUtil.close(this);
         super.onDestroy();
 
@@ -224,7 +225,6 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
             mService.send(Message.obtain(ServerHandler.connect(ip, port)));
             mService.send(Message.obtain(ServerHandler.setName(userName)));
             mService.send(Message.obtain(ServerHandler.getUsers()));
-            isConnected = true;
             SoundController.create(this, ip, port);
         } catch (RemoteException e) {
         }
