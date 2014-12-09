@@ -19,29 +19,38 @@
                      <graphic>
                         <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@loadLog.png" />
+                              <Image url="@toolbar_open.png" />
                            </image>
                         </ImageView>
                      </graphic>
+                     <tooltip>
+                        <Tooltip text="Open log" />
+                     </tooltip>
                   </Button>
                   <Button mnemonicParsing="false" onAction="#saveLog">
                      <graphic>
-                        <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fitHeight="65.0" fitWidth="65.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@saveLog.png" />
+                              <Image url="@toolbar_save.png" />
                            </image>
                         </ImageView>
                      </graphic>
+                     <tooltip>
+                        <Tooltip text="Save log" />
+                     </tooltip>
                   </Button>
                   <Separator orientation="VERTICAL" prefHeight="69.0" prefWidth="13.0" />
                   <Button mnemonicParsing="false" onAction="#clearConsole">
                      <graphic>
                         <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@cls.png" />
+                              <Image url="@toolbar_clear_terminal.png" />
                            </image>
                         </ImageView>
                      </graphic>
+                     <tooltip>
+                        <Tooltip text="Empty terminal" />
+                     </tooltip>
                   </Button>
                </items>
 			  </ToolBar>
