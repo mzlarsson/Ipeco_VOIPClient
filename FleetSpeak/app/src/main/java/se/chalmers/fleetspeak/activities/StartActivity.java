@@ -1,10 +1,12 @@
 package se.chalmers.fleetspeak.activities;
 
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
@@ -14,6 +16,7 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -28,9 +31,6 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-
-import se.chalmers.fleetspeak.CommandHandler;
-import se.chalmers.fleetspeak.Commandable;
 import se.chalmers.fleetspeak.R;
 import se.chalmers.fleetspeak.ServerHandler;
 import se.chalmers.fleetspeak.SocketService;
@@ -43,7 +43,7 @@ import se.chalmers.fleetspeak.util.Utils;
 /**
  * A Activity that shows the starting options of the application and guides the user to connect to the server.
  */
-public class StartActivity extends ActionBarActivity implements TruckStateListener, Commandable {
+public class StartActivity extends ActionBarActivity implements TruckStateListener{
 
     private String ipText;
     private Context context = this;
@@ -88,7 +88,7 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
         setContentView(R.layout.activity_start);
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        CommandHandler.getInstance().addListener(this);
+       // CommandHandler.getInstance().addListener(this);
         TruckDataHandler.addListener(this);
 
         ipText = prefs.getString(getString(R.string.ip_adress_text), "46.239.103.195");
@@ -131,7 +131,7 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
     protected void onPause() {
         Log.i("STARTACTIVITY", "called onPause unbinding");
         super.onPause();
-        CommandHandler.removeListener(this);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
         if (ServiceUtil.isMyServiceRunning(this, ServiceConnection.class)) {
             unbindService(mConnection);
         }
@@ -139,7 +139,6 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
 
     @Override
     protected void onStop() {
-        CommandHandler.removeListener(this);
         Log.i("STARTACTIVITY", "called onStop unbinding");
         super.onStop();
         if (ServiceUtil.isMyServiceRunning(this, ServiceConnection.class)) {
@@ -150,7 +149,6 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
     @Override
     protected void onDestroy() {
         Log.i("STARTACTIVITY", "called onDestroy unbinding");
-        CommandHandler.removeListener(this);
         if (ServiceUtil.isMyServiceRunning(this, ServiceConnection.class)) {
             unbindService(mConnection);
         }
@@ -159,13 +157,37 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
 
 
     }
-
     @Override
-    protected void onRestart() {
+       protected void onRestart() {
         super.onRestart();
-        CommandHandler.addListener(this);
+    }
+    protected  void onResume(){
+        super.onResume();
+        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("update"));
     }
 
+    // Our handler for received Intents. This will be called whenever an Intent
+    // with an action named "custom-event-name" is broadcasted.
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            showConnecting(false);
+            // Get extra data included in the Intent
+            String message = intent.getStringExtra("message");
+            Log.d("receiver", "Got message: " + message);
+            if(message.equals("connected")){
+                unbindService(mConnection);
+                Intent joinRoom = new Intent(StartActivity.this,JoinRoomActivity.class);
+                startActivity(joinRoom);
+            }else if(message.equals("connection failed")){
+                SoundController.close();
+                Log.i("STARTACTIVITY", " try again");
+                showConnectionErrorMessage();
+            }
+        }
+
+
+    };
     /**
      * A method that preforms suitable action with Connect Button is clicked
      *
@@ -328,24 +350,5 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
         view1.requestFocus();
     }
 
-    @Override
-    public void onDataUpdate(String command) {
-        showConnecting(false);
-        if(command.equals("connected")){
-            //Without binding the server it will crash on reconnect not sure why it works
-            if(ServiceUtil.isMyServiceRunning(this, SocketService.class)) {
-                bindService(new Intent(this, SocketService.class), mConnection, Context.BIND_AUTO_CREATE);
-            }
 
-            unbindService(mConnection);
-            Intent intent = new Intent(this,JoinRoomActivity.class);
-            startActivity(intent);
-        }else if(command.equals("connection failed")){
-            SoundController.close();
-            Log.i("STARTACTIVITY", " try again");
-            showConnectionErrorMessage();
-        }
-
-
-    }
 }
