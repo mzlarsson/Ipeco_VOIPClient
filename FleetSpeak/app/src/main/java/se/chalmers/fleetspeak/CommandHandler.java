@@ -1,11 +1,14 @@
 package se.chalmers.fleetspeak;
 
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import java.util.ArrayList;
 
+import se.chalmers.fleetspeak.activities.StartActivity;
 import se.chalmers.fleetspeak.sound.SoundController;
 import se.chalmers.fleetspeak.util.Command;
 
@@ -20,7 +23,9 @@ public class CommandHandler extends Handler {
     private static CommandHandler commandHandler = new CommandHandler();
     private static RoomHandler roomHandler;
     private static User user;
-    private static ArrayList<Commandable> activities = new ArrayList<Commandable>();
+
+
+    LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(new StartActivity());
 
     private CommandHandler(){
         super();
@@ -80,26 +85,11 @@ public class CommandHandler extends Handler {
             aCommand = "unknown command";
         }
 
-        for(Commandable a : activities){
-            Log.i("Commandable" , a.getClass().toString());
-        }
-        postUpdate(aCommand);
 
-    }
+        Intent intent = new Intent("update");
+        intent.putExtra("message", aCommand);
+        localBroadcastManager.sendBroadcast(intent);
 
-    public static void addListener(Commandable a){
-        if(!activities.contains(a))
-            activities.add(a);
-    }
-
-    public static void removeListener(Commandable a){
-        activities.remove(a);
-    }
-
-    private void postUpdate(String command){
-        for(Commandable a: activities){
-            a.onDataUpdate(command);
-        }
     }
 
     public static User[] getUsers(int roomID){
