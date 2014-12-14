@@ -6,7 +6,6 @@ import android.os.Message;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import java.util.ArrayList;
 
 import se.chalmers.fleetspeak.activities.StartActivity;
 import se.chalmers.fleetspeak.sound.SoundController;
@@ -26,6 +25,8 @@ public class CommandHandler extends Handler {
 
 
     LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(new StartActivity());
+
+
 
     private CommandHandler(){
         super();
@@ -84,6 +85,8 @@ public class CommandHandler extends Handler {
         }else{
             aCommand = "unknown command";
         }
+
+        Log.d(this.getClass().toString(), roomHandler.toString());
 
 
         Intent intent = new Intent("update");

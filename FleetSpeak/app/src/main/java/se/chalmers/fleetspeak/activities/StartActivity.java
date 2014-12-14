@@ -103,6 +103,7 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
         startService(i);
         Log.i("STARTACTIVITY", "binding service");
         bindService(i, mConnection, Context.BIND_AUTO_CREATE);
+
     }
 
     @Override
