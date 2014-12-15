@@ -1,20 +1,21 @@
 package se.chalmers.fleetspeak.activities;
 
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
-
-import android.os.Bundle;
-import android.preference.PreferenceManager;
-
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.preference.PreferenceManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -29,12 +30,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
 import se.chalmers.fleetspeak.CommandHandler;
-import se.chalmers.fleetspeak.Commandable;
 import se.chalmers.fleetspeak.R;
 import se.chalmers.fleetspeak.Room;
 import se.chalmers.fleetspeak.ServerHandler;
@@ -46,12 +45,14 @@ import se.chalmers.fleetspeak.truck.TruckStateListener;
 import se.chalmers.fleetspeak.util.ServiceUtil;
 import se.chalmers.fleetspeak.util.Utils;
 
+;
+
 /**
  * A activity that guides the user through choosing or creating a room to join
  *
  * Created by Johan Segerlund on 2014-10-09.
  */
-public class JoinRoomActivity extends ActionBarActivity implements TruckStateListener, Commandable {
+public class JoinRoomActivity extends ActionBarActivity implements TruckStateListener {
     private static TruckDataHandler truckDataHandler;
     private Menu menu;
     private ListView roomView;
@@ -77,6 +78,28 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
             Log.i("SERVICECONNECTION", "Disconnected");
         }
     };
+
+    // Our handler for received Intents. This will be called whenever an Intent
+    // with an action named "custom-event-name" is broadcasted.
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            String message = intent.getStringExtra("message");
+            Log.d("receiver", "Got message: " + message);
+            if(message.startsWith("roomCreated")){
+                String[] s = message.split(",");
+                int roomID = Integer.parseInt(s[1]);
+                joinRoom(roomID);
+                updateRoomList();
+            }else if(message.equals("Disconnected")){
+                Intent i = new Intent(JoinRoomActivity.this,StartActivity.class);
+                startActivity(i);
+            }
+        }
+
+
+    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Utils.onCreateActivityCreateTheme(this);
@@ -87,7 +110,7 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
             bindService(new Intent(this, SocketService.class), serviceConnection, Context.BIND_AUTO_CREATE);
         }
 
-        CommandHandler.addListener(this);
+       // CommandHandler.addListener(this);
 
         roomView = (ListView)findViewById(R.id.roomView);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -208,21 +231,6 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
         }
     }
 
-    @Override
-    public void onDataUpdate(String command) {
-        if(command.equals("dataUpdate")){
-            updateRoomList();
-        } else if(command.startsWith("roomCreated")) {
-            String[] s = command.split(",");
-            int roomID = Integer.parseInt(s[1]);
-            joinRoom(roomID);
-            updateRoomList();
-        } else if(command.equals("Disconnected")){
-            Intent intent = new Intent(this,StartActivity.class);
-            startActivity(intent);
-        }
-    }
-
     /**
      * Join a specific room
      * @param roomID - the ID of the room to be joined
@@ -295,9 +303,11 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
     protected void onPause(){
         Log.i("JOINROOMACTIVITY", "called onPause unbinding");
         super.onPause();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
         if(ServiceUtil.isMyServiceRunning(this, ServiceConnection.class)) {
             unbindService(serviceConnection);
         }
+
     }
 
     @Override
@@ -307,20 +317,23 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
         if(ServiceUtil.isMyServiceRunning(this, ServiceConnection.class)) {
             unbindService(serviceConnection);
         }
+
     }
 
     @Override
     protected void onDestroy(){
         super.onDestroy();
-        Log.i("JOINROOMACTIVITY", "called onDestroy unbinding");
-        CommandHandler.removeListener(this);
+
     }
 
     @Override
     protected void onResume(){
+        super.onResume();
         Log.i("JOINROOMACTIVITY", "called onResume binding");
         bindService(new Intent(this, SocketService.class), serviceConnection, Context.BIND_AUTO_CREATE);
-        super.onResume();
+        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("update"));
+
+
     }
 
     @Override

@@ -2,12 +2,13 @@ package se.chalmers.fleetspeak.gui;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import se.chalmers.fleetspeak.eventbus.EventBus;
 import se.chalmers.fleetspeak.eventbus.EventBusEvent;
@@ -27,11 +28,18 @@ public class ServerGUIRoomController implements IEventBusSubscriber{
 	
 	private Map<Integer, Integer> clientRooms;
 	
+	private ImageView allRoomsIcon, roomIcon;
+	
 	public ServerGUIRoomController(){
 		EventBus.getInstance().addSubscriber(this);
 		clients = new HashMap<Integer, String>();
 		rooms = new HashMap<Integer, String>();
 		clientRooms = new HashMap<Integer, Integer>();
+
+		try{
+			this.allRoomsIcon = new ImageView(new Image(getClass().getClassLoader().getResourceAsStream("users_allrooms.png")));
+			this.roomIcon = new ImageView(new Image(getClass().getClassLoader().getResourceAsStream("users_room.png")));
+		}catch(Exception e){System.out.println(e.getMessage());}
 	}
 	
 	public void registerClient(String name, int id){
@@ -43,12 +51,12 @@ public class ServerGUIRoomController implements IEventBusSubscriber{
 		rooms.put(id, name);
 		
 		if(roomsRoot == null){
-			roomsRoot = new TreeItem<String>("Rooms", null);
+			roomsRoot = new TreeItem<String>("Rooms", allRoomsIcon);
 			roomsRoot.setExpanded(true);
 			treeRoot.setRoot(roomsRoot);
 		}
 		
-		TreeItem<String> room = new TreeItem<String>(name, null);
+		TreeItem<String> room = new TreeItem<String>(name, roomIcon);
 		roomsRoot.getChildren().add(room);
 		
 		TreeItem<String> emptyLabel = new TreeItem<String>("[None]");
