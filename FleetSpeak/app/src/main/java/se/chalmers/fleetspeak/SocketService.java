@@ -83,8 +83,6 @@ public class SocketService extends Service {
                 switch (msg.what) {
                     case CONNECT:
                         commandQueue.clear();
-                        if(socket != null)
-                            endSocketConnection();
                         final String s = (String) msg.obj;
                         final int i = msg.arg1;
 
@@ -101,7 +99,11 @@ public class SocketService extends Service {
                                     objectInputStream = new ObjectInputStream(socket.getInputStream());
                                     Log.i(LOGNAME, "InputStream ready");
 
-
+                                    timer.scheduleAtFixedRate(new TimerTask() {
+                                        public void run() {
+                                            lookForMessage();
+                                        }
+                                    }, 0, 100L);
 
                                 } catch (IOException e) {
                                     Log.i("Connector.connect", "Connection failed " + e.getMessage());
@@ -193,8 +195,6 @@ public class SocketService extends Service {
 
     @Override
     public void onCreate(){
-
-         timer.scheduleAtFixedRate(new TimerTask(){ public void run() {lookForMessage();}}, 0, 100L);
     }
 
     /**
@@ -204,7 +204,6 @@ public class SocketService extends Service {
 
     private void lookForMessage() {
         if(objectInputStream != null) {
-            //Log.i(LOGNAME, "Looking for message form server");
             try {
                 Command c;
                 c = (Command) objectInputStream.readObject();
@@ -238,18 +237,24 @@ public class SocketService extends Service {
     }
 
     private void endSocketConnection(){
-     try{
-         id = -1;
-         if(objectInputStream != null)
-            objectInputStream.close();
+        try{
+            timer.purge();
+            id = -1;
+            if(objectOutputStream != null)
+                objectOutputStream.close();
+
+            if(objectInputStream != null)
+                objectInputStream.close();
+            if(socket != null)
+                socket.close();
+            objectOutputStream = null;
             objectInputStream = null;
-         if(objectOutputStream != null)
-            objectOutputStream.close();
-         if(socket != null)
-            socket.close();
+            socket = null;
+
 
          Command c = new Command("Disconnected", null,null);
          messenger.send(Message.obtain(null, 0, c));
+         Log.i(LOGNAME, "Succesfully ended connection");
      }catch(IOException e){
         Log.i(LOGNAME,"Connection ended unexeptedly");
      } catch (RemoteException e) {
