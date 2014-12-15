@@ -1,8 +1,10 @@
 package se.chalmers.fleetspeak.activities;
 
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
@@ -11,6 +13,7 @@ import android.os.IBinder;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.v4.app.NavUtils;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -31,7 +34,6 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import se.chalmers.fleetspeak.CommandHandler;
-import se.chalmers.fleetspeak.Commandable;
 import se.chalmers.fleetspeak.R;
 import se.chalmers.fleetspeak.RoomHandler;
 import se.chalmers.fleetspeak.ServerHandler;
@@ -49,7 +51,7 @@ import se.chalmers.fleetspeak.util.Utils;
  *
  * Created by Johan Segerlund on 2014-10-06.
  */
-public class ChatRoomActivity extends ActionBarActivity implements TruckStateListener, Commandable {
+public class ChatRoomActivity extends ActionBarActivity implements TruckStateListener {
 
     ListView userListView;
     private Menu menu;
@@ -78,6 +80,23 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
             Log.i("SERVICECONNECTION", "Disconnected");
         }
     };
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            // Get extra data included in the Intent
+            String message = intent.getStringExtra("message");
+            Log.d("receiver", "Got message: " + message);
+            if(message.equals("dataUpdate")){
+                updateUserList();
+            }else if(message.equals("Disconnected")){
+                Intent start = new Intent(ChatRoomActivity.this,StartActivity.class);
+                startActivity(start);
+            }
+        }
+
+
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,7 +104,6 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chatroom);
 
-        CommandHandler.getInstance().addListener(this);
         bindService(new Intent(this,SocketService.class), mConnection, Context.BIND_AUTO_CREATE);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -197,29 +215,21 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
         }
     }
 
-    @Override
-    public void onDataUpdate(String command) {
-        Log.i("ChatRoomActivity", "onDataUpdate got command: " + command);
-        if(command.equals("dataUpdate")){
-            updateUserList();
-        }else if(command.equals("Disconnected")){
-            Intent intent = new Intent(this,StartActivity.class);
-            startActivity(intent);
-        }
+    protected  void onResume(){
+        super.onResume();
+        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,new IntentFilter("update"));
     }
-
     @Override
     protected void onPause(){
         Log.i("ChatroomActivity", "called onPause unbinding");
         super.onPause();
-        CommandHandler.removeListener(this);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
         if(ServiceUtil.isMyServiceRunning(this, ServiceConnection.class)) {
             unbindService(mConnection);
         }
     }
     @Override
     protected void onStop(){
-        CommandHandler.removeListener(this);
         Log.i("ChatroomActivity", "called onStop unbinding");
         super.onStop();
         if(ServiceUtil.isMyServiceRunning(this, ServiceConnection.class)) {
@@ -230,7 +240,7 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
     public void onDestroy(){
         super.onDestroy();
         Log.i("CHATROOMACTIVITY", "called onDestroy unbinding");
-        CommandHandler.removeListener(this);
+
 
     }
 

@@ -2,57 +2,53 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="se.chalmers.fleetspeak" >
 
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.BROADCAST_STICKY"/>
-    <user-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
-    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.BROADCAST_STICKY" />
+
+    <user-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/Theme.Fleetspeak_dark"
-        >
-
+        android:theme="@style/Theme.Fleetspeak_dark" >
         <activity
-            android:name=".activities.StartActivity"
+            android:name="se.chalmers.fleetspeak.activities.StartActivity"
             android:label="@string/app_name"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".activities.BookmarkActivity"
+        <activity
+            android:name="se.chalmers.fleetspeak.activities.BookmarkActivity"
             android:label="Bookmark"
-            android:theme="@style/AppTheme">
-
-            </activity>
-
-
-        <activity android:name=".activities.NewServerActivity"
+            android:theme="@style/AppTheme" >
+        </activity>
+        <activity
+            android:name="se.chalmers.fleetspeak.activities.NewServerActivity"
             android:label="NewServer"
-            android:theme="@style/AppTheme"/>
-
-        <activity android:name=".activities.ChatRoomActivity"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name="se.chalmers.fleetspeak.activities.ChatRoomActivity"
             android:label="ChatRoom"
-            android:parentActivityName=".activities.JoinRoomActivity"
-            android:screenOrientation="portrait">
-
-
+            android:parentActivityName="se.chalmers.fleetspeak.activities.JoinRoomActivity"
+            android:screenOrientation="portrait" >
         </activity>
-        <activity android:name=".activities.JoinRoomActivity"
+        <activity
+            android:name="se.chalmers.fleetspeak.activities.JoinRoomActivity"
             android:label="JoinRoom"
-            android:parentActivityName=".activities.StartActivity"
-            android:screenOrientation="portrait">
-
+            android:parentActivityName="se.chalmers.fleetspeak.activities.StartActivity"
+            android:screenOrientation="portrait" >
         </activity>
 
-        <service android:enabled="true"
-            android:name="se.chalmers.fleetspeak.SocketService"  />
-
+        <service
+            android:name="se.chalmers.fleetspeak.SocketService"
+            android:enabled="true" />
 
     </application>
 
