@@ -25,6 +25,8 @@ public class CommandInfo {
 		}
 
 		/**
+		 * The name of the command, for example:
+		 * "ExampleCommand"
 		 * @return the name of the command.
 		 */
 		public String getName() {
@@ -32,6 +34,8 @@ public class CommandInfo {
 		}
 
 		/**
+		 * The format of the command, for example:
+		 * "ExampleCommand [param1] [param2]"
 		 * @return the correct format for use of the command.
 		 */
 		public String getFormat() {
@@ -39,6 +43,8 @@ public class CommandInfo {
 		}
 
 		/**
+		 * The description of the command, for example:
+		 * "Executes test-function number 5"
 		 * @return the description of the command.
 		 */
 		public String getDescription() {
@@ -46,9 +52,16 @@ public class CommandInfo {
 		}
 
 		/**
-		 * @return the execCode to ease linking this info object to the actual Command.
+		 * The code linking this info object to its command, this is used in
+		 * optimizations and ease of handling.
+		 * @return the execution code linking this info object to the actual Command.
 		 */
 		public int getExecCode() {
 			return execCode;
+		}
+		
+		@Override
+		public CommandInfo clone() {
+			return new CommandInfo(getName(), getFormat(), getDescription(), getExecCode());
 		}
 }

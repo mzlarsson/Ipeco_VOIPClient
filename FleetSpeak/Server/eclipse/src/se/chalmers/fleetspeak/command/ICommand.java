@@ -12,7 +12,7 @@ public interface ICommand {
 	 * the command was successfully executed.
 	 * @param requester The id of the one requesting the command, used for permission checks.
 	 * @param params The parameters sent to the command.
-	 * @return true if successfully executed, false if not.
+	 * @return true if successfully executed, false if denied of failed.
 	 */
 	public boolean execute(int requester, Object... params);
 	
