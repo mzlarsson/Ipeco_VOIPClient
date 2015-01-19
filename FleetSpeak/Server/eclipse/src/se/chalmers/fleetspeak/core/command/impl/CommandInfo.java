@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.command;
+package se.chalmers.fleetspeak.core.command.impl;
 
 /**
  * An immutable class that holds the information about an available Command.

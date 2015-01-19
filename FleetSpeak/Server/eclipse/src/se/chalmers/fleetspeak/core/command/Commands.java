@@ -1,4 +1,8 @@
-package se.chalmers.fleetspeak.command;
+package se.chalmers.fleetspeak.core.command;
+
+import se.chalmers.fleetspeak.core.command.impl.CommandInfo;
+import se.chalmers.fleetspeak.core.command.impl.ICommand;
+
 
 /**
  * A singleton class handling all the commands available on the server.
@@ -67,24 +71,13 @@ public class Commands {
 	}
 	
 	/**
-	 * Add a CommandListener to all commands, it will be called with all the 
+	 * Sets a CommandListener to all commands, it will be called with all the 
 	 * specific instructions needed to execute the called commands. 
-	 * @param cl The CommandListener to be added.
+	 * @param cl The CommandListener to be set.
 	 */
 	public void addCommandListener(CommandListener cl) {
 		for (ICommand c : commands) {
-			c.addCommandListener(cl);
-		}
-	}
-	
-	/**
-	 * Removes a CommandListener from all commands, it will no longer be called
-	 * with all the specific instructions needed to execute the called commands. 
-	 * @param cl The CommandListener to be removed.
-	 */
-	public void removeCommandListener(CommandListener cl) {
-		for (ICommand c : commands) {
-			c.removeCommandListener(cl);
+			c.setCommandListener(cl);
 		}
 	}
 }
