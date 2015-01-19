@@ -1,4 +1,7 @@
-package se.chalmers.fleetspeak.command;
+package se.chalmers.fleetspeak.core.command.impl;
+
+import se.chalmers.fleetspeak.core.command.CommandListener;
+
 
 /**
  * An interface for executable commands.
@@ -23,16 +26,9 @@ public interface ICommand {
 	public CommandInfo getInfo();
 	
 	/**
-	 * Add a CommandListener to this command, it will be called with all the 
+	 * set a CommandListener to this command, it will be called with all the 
 	 * specific instructions needed to execute this command. 
 	 * @param cl The CommandListener to be added.
 	 */
-	public void addCommandListener(CommandListener cl);
-	
-	/**
-	 * Removes a CommandListener from this command, it will no longer be called
-	 * with all the specific instructions needed to execute this command. 
-	 * @param cl The CommandListener to be removed.
-	 */
-	public void removeCommandListener(CommandListener cl);
+	public void setCommandListener(CommandListener cl);
 }
