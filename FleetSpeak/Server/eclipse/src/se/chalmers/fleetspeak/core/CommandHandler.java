@@ -16,7 +16,7 @@ public class CommandHandler implements IEventBusSubscriber {
 	public CommandHandler() {
 		eventBus = EventBus.getInstance();
 		eventBus.addSubscriber(this);
-		roomHandler = new RoomHandler();
+		roomHandler = RoomHandler.getInstance();
 	}
 
 	public void addClient(Client client) {

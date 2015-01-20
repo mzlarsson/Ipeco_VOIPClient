@@ -8,20 +8,37 @@ import se.chalmers.fleetspeak.eventbus.EventBusEvent;
 import se.chalmers.fleetspeak.util.Command;
 import se.chalmers.fleetspeak.util.Log;
 /**
- * An class for handling the rooms and client on the server side.
+ * A Singleton class for handling the rooms and client on the server side.
  * Based on the RoomHandler on the client side.
  * @author David Michaelsson
  * @author Patrik Haar
  */
 public class RoomHandler {
 	
+	private static RoomHandler instance;
+	
     private HashMap<Room,ArrayList<Client>> rooms;
 	private Room defaultRoom;
 	
-	public RoomHandler(){
+	/**
+	 * Constructor for the RoomHandler, creates the room-structure and the default lobby-
+	 * Only used internally in getInstance() due to it being a singleton. 
+	 */
+	private RoomHandler(){
 		Log.logDebug("Creating a new RoomHandler");
 		rooms = new HashMap<Room,ArrayList<Client>>();
 		defaultRoom = new Room("Lobby", 0);
+	}
+	
+	/**
+	 * Get the singleton instance of the RoomHandler class.
+	 * @return the active RoomHandler instance.
+	 */
+	public static RoomHandler getInstance() {
+		if (instance == null) {
+			instance = new RoomHandler();
+		}
+		return instance;
 	}
 	
 	/**
@@ -48,10 +65,19 @@ public class RoomHandler {
 		}
 	}
 	
+	/**
+	 * Adds a client to a room.
+	 * @param c the client to be added.
+	 * @param roomID the ID of the room to add the client to.
+	 */
 	public void addClient(Client c, int roomID){
 		this.addClient(c, findRoom(roomID)); 
 	}
 	
+	/**
+	 * Adds a client to the default room.
+	 * @param client the client to be added.
+	 */
 	public void addClient(Client client) {
 		addClient(client, defaultRoom);
 	}
@@ -86,10 +112,20 @@ public class RoomHandler {
 		}
 	}
 	
+	/**
+	 * Removes the given clients connection to its room and removes it completely if "terminate" is true
+	 * @param clientID The ID of the Client to be removed
+	 * @param terminate true if the the Client should be removed completely
+	 * false to just remove the room tracking, used for switching rooms.
+	 */
 	public void removeClient(int clientID, boolean terminate){
 		this.removeClient(findClient(clientID), terminate);
 	}
 
+	/**
+	 * Removes the client from its current room.
+	 * @param clientID the ID of the client to be removed.
+	 */
 	public void removeClient(int clientID){
 		this.removeClient(findClient(clientID), false);
 	}
@@ -104,22 +140,46 @@ public class RoomHandler {
 		this.addClient(c, r);
 	}
 	
+	/**
+	 * Moves the Client from its current room to the room specified
+	 * @param clientID The ID of the Client to be moved.
+	 * @param r The targeted Room.
+	 */
 	public void moveClient(int clientID, Room room){
 		this.moveClient(this.findClient(clientID), room);
 	}
 	
+	/**
+	 * Moves the Client from its current room to the room specified
+	 * @param clientID The ID of the Client to be moved.
+	 * @param roomID The ID of the targeted Room.
+	 */
 	public void moveClient(int clientID, int roomID){
 		this.moveClient(this.findClient(clientID), this.findRoom(roomID));
 	}
 	
+	/**
+	 * Get all the available rooms.
+	 * @return An array with the available rooms.
+	 */
 	public Room[] getRooms(){
 		return rooms.keySet().toArray(new Room[rooms.keySet().size()]);
 	}
 	
+	/**
+	 * Get all clients in a given room.
+	 * @param r the room to get the clients from.
+	 * @return An array with all clients in the room.
+	 */
 	public Client[] getClients(Room r){
 		return rooms.get(r).toArray(new Client[rooms.get(r).size()]);
 	}
 	
+	/**
+	 * Sets the username of a client.
+	 * @param clientID the ID of the client to set the name of.
+	 * @param name the new name of the client.
+	 */
 	public void setUsername(int clientID, String name) {
 		Client c = findClient(clientID);
 		if(c != null){
@@ -128,6 +188,11 @@ public class RoomHandler {
 		}
 	}
 	
+	/**
+	 * Sets the name of a room.
+	 * @param roomID the ID of the room to set the name of.
+	 * @param name the new name of the room.
+	 */
 	public void setRoomName(int roomID, String name) {
 		Room r = findRoom(roomID);
 		if(r != null){
@@ -136,6 +201,11 @@ public class RoomHandler {
 		}
 	}
 
+	/**
+	 * Finds the client with the given ID.
+	 * @param clientID the ID of the client to be found.
+	 * @return the client if found, null if not found.
+	 */
 	public Client findClient(int clientID) {
 		for(ArrayList<Client> clients:rooms.values()){
 			for(Client c: clients){
@@ -149,6 +219,11 @@ public class RoomHandler {
 		return null;
 	}
 
+	/**
+	 * Finds the room with the given ID.
+	 * @param roomID the ID of the room to be found.
+	 * @return the room if found, null if not found.
+	 */
 	public Room findRoom(int roomID) {
 		for(Room room:rooms.keySet() ){
 			if(room.getId()==roomID){
@@ -161,7 +236,7 @@ public class RoomHandler {
 	}
 
 	/**
-	 * Closes and removes everything held by the roomhandler
+	 * Closes and removes everything held by the RoomHandler.
 	 */
 	public void terminate() {
 		for(ArrayList<Client> clients:rooms.values()){
@@ -174,8 +249,8 @@ public class RoomHandler {
 	}
 
 	/**
-	 * Gets a formated String for printing the room structure in the console
-	 * @return The room structure as a String
+	 * Gets a formated String for printing the room structure in the console.
+	 * @return The room structure as a String.
 	 */
 	public String getRoomInfo() {
 		StringBuilder info = new StringBuilder();
@@ -190,8 +265,8 @@ public class RoomHandler {
 	}
 	
 	/**
-	 * Gets a HTML-formatted String for printing the room structure in the GUI
-	 * @return The room structure as a String
+	 * Gets a HTML-formatted String for printing the room structure in the GUI.
+	 * @return The room structure as a String.
 	 */
 	public String getHTMLRoomInfo() {
 		StringBuilder info = new StringBuilder();
