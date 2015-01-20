@@ -15,6 +15,8 @@ class MoveUser implements ICommand {
 	private CommandInfo info;
 	private CommandListener handler;
 	
+	public MoveUser(){this(0);}
+	
 	/**
 	 * Constructor for the command, creates the relevant
 	 * info-object describing this command.
@@ -49,6 +51,11 @@ class MoveUser implements ICommand {
 	@Override
 	public void setCommandListener(CommandListener cl) {
 		handler = cl;
+	}
+	
+	@Override
+	public String toString(){
+		return "MoveUser ["+this.info.getExecCode()+"]";
 	}
 
 }
