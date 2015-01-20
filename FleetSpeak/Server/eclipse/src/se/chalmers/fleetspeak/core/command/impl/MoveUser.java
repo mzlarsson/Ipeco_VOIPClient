@@ -1,6 +1,8 @@
 package se.chalmers.fleetspeak.core.command.impl;
 
-import se.chalmers.fleetspeak.core.command.CommandListener;
+import se.chalmers.fleetspeak.core.RoomHandler;
+import se.chalmers.fleetspeak.core.permission.Permission;
+import se.chalmers.fleetspeak.core.permission.Permissions;
 
 
 /**
@@ -10,12 +12,7 @@ import se.chalmers.fleetspeak.core.command.CommandListener;
  * @author Patrik Haar
  *
  */
-class MoveUser implements ICommand {
-
-	private CommandInfo info;
-	private CommandListener handler;
-	
-	public MoveUser(){this(0);}
+class MoveUser extends BasicCommand implements ICommand {
 	
 	/**
 	 * Constructor for the command, creates the relevant
@@ -23,39 +20,26 @@ class MoveUser implements ICommand {
 	 * @param exCode The execution-code used to locate this command.
 	 */
 	public MoveUser(int exCode) {
-		info = new CommandInfo(	"MoveUser",
+		super(new CommandInfo("MoveUser",
 								"MoveUser [user-id] [target-room-id]",
 								"Moves the user with the given user-ID to"
 								+ "the room with the given room-ID",
-								exCode);
-	}
+								exCode));
+	}	
 	
 	@Override
 	public boolean execute(int requester, Object... params) {
-		if (handler == null) {
-			return false;
-		}
-		int userID, roomID;
-		userID = params[0].getClass() == Integer.class ?
-				(Integer)params[0] : Integer.parseInt((String)params[0]);
-		roomID = params[1].getClass() == Integer.class ?
-				(Integer)params[1] : Integer.parseInt((String)params[1]);
-		return handler.moveUser(requester, userID, roomID);
-	}
-
-	@Override
-	public CommandInfo getInfo() {
-		return info;
-	}
-
-	@Override
-	public void setCommandListener(CommandListener cl) {
-		handler = cl;
-	}
-	
-	@Override
-	public String toString(){
-		return "MoveUser ["+this.info.getExecCode()+"]";
+		try{
+			int userID = params[0].getClass()==Integer.class ? (Integer)params[0] : Integer.parseInt((String)params[0]);
+			int roomID = params[1].getClass()==Integer.class ? (Integer)params[1] : Integer.parseInt((String)params[1]);
+			if((userID == requester && Permissions.isAllowed(requester, Permission.MOVE_OWN_USER)) ||
+			  (userID != requester && Permissions.isAllowed(requester, Permission.MOVE_OTHER_USER))){
+				RoomHandler.getInstance().moveClient(userID, roomID);
+				return true;
+			}
+		}catch(NumberFormatException nfe){}
+		
+		return false;
 	}
 
 }

@@ -1,8 +1,5 @@
 package se.chalmers.fleetspeak.core.command.impl;
 
-import se.chalmers.fleetspeak.core.command.CommandListener;
-
-
 /**
  * An interface for executable commands.
  * @author Patrik Haar
@@ -24,11 +21,4 @@ public interface ICommand {
 	 * @return the info-object for the command.
 	 */
 	public CommandInfo getInfo();
-	
-	/**
-	 * set a CommandListener to this command, it will be called with all the 
-	 * specific instructions needed to execute this command. 
-	 * @param cl The CommandListener to be added.
-	 */
-	public void setCommandListener(CommandListener cl);
 }
