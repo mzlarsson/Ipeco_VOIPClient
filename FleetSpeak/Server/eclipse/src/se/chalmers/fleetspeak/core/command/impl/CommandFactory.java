@@ -3,6 +3,7 @@ package se.chalmers.fleetspeak.core.command.impl;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,13 +12,6 @@ import java.util.List;
 public class CommandFactory {
 	
 	private static ICommand[] commands;
-	
-	public static void main(String[] args){
-		ICommand[] commands = createCommands();
-		for(ICommand command : commands){
-			System.out.println(command.toString());
-		}
-	}
 
 	/**
 	 * Creates all commands by using reflection.
@@ -78,10 +72,12 @@ public class CommandFactory {
 					clsName = command.getName().substring(0, command.getName().lastIndexOf("."));
 					try {
 						cls = Class.forName(packageName+"."+clsName);
-						for(Type type : cls.getGenericInterfaces()){
-							if(type.getTypeName().equals(packageName+".ICommand")){
-								classes.add(cls);
-								break;
+						if(!cls.isInterface() && !Modifier.toString(cls.getModifiers()).contains("abstract")){
+							for(Type type : cls.getGenericInterfaces()){
+								if(type.getTypeName().equals(packageName+".ICommand")){
+									classes.add(cls);
+									break;
+								}
 							}
 						}
 					} catch (ClassNotFoundException e) {

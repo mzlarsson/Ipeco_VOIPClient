@@ -1,5 +1,6 @@
 package se.chalmers.fleetspeak.core.command;
 
+import se.chalmers.fleetspeak.core.command.impl.CommandFactory;
 import se.chalmers.fleetspeak.core.command.impl.CommandInfo;
 import se.chalmers.fleetspeak.core.command.impl.ICommand;
 
@@ -17,7 +18,7 @@ public class Commands {
 	private CommandInfo[] cmdInfos;
 	
 	private Commands() {
-		commands = null; //TODO Unimplemented, need to check what commands are available on the file-level.
+		commands = CommandFactory.createCommands();
 		cmdInfos = new CommandInfo[commands.length];
 		for (int i=0; i<commands.length; i++) {
 			cmdInfos[i] = commands[i].getInfo();
@@ -63,21 +64,10 @@ public class Commands {
 	 */
 	public CommandInfo findCommand(String cmdName) {
 		for (CommandInfo ci : cmdInfos) {
-			if (ci.getName().equals(cmdName)) {
+			if (ci.getName().equalsIgnoreCase(cmdName)) {
 				return ci;
 			}
 		}
 		return null;
-	}
-	
-	/**
-	 * Sets a CommandListener to all commands, it will be called with all the 
-	 * specific instructions needed to execute the called commands. 
-	 * @param cl The CommandListener to be set.
-	 */
-	public void addCommandListener(CommandListener cl) {
-		for (ICommand c : commands) {
-			c.setCommandListener(cl);
-		}
 	}
 }
