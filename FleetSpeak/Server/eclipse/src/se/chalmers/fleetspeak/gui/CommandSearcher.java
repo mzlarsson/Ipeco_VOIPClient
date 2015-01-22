@@ -1,18 +1,30 @@
 package se.chalmers.fleetspeak.gui;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import se.chalmers.fleetspeak.core.ServerCommand;
+import se.chalmers.fleetspeak.core.command.Commands;
+import se.chalmers.fleetspeak.core.command.impl.CommandInfo;
 
 public class CommandSearcher {
 
-	private static List<ServerCommand> result = null;
+	private static CommandInfo[] commands;
+	private static List<String> result = new ArrayList<String>();
 	private static int searchIndex = 0;
 	
 	private static String prevSearch = null;
 	
 	public static String search(String search){
-		result = ServerCommand.getPossibleCommands(search);
+		if(commands == null){
+			commands = Commands.getInstance().getCommands();
+		}
+		
+		result.clear();
+		for(CommandInfo info : commands){
+			if(info.getName().toLowerCase().startsWith(search.toLowerCase())){
+				result.add(info.getName());
+			}
+		}
 		searchIndex = 0;
 		prevSearch = search;
 		
@@ -28,17 +40,17 @@ public class CommandSearcher {
 	}
 	
 	public static void clearSearch(){
-		result = null;
+		result.clear();
 		prevSearch = null;
 	}
 	
 	public static boolean hasSearch(){
-		return result != null;
+		return !result.isEmpty();
 	}
 	
 	private static String getValue(){
 		if(searchIndex>=0 && searchIndex<result.size()){
-			return result.get(searchIndex).getName();
+			return result.get(searchIndex);
 		}else{
 			return prevSearch;
 		}

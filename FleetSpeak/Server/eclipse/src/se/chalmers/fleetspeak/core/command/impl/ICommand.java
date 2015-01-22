@@ -1,5 +1,7 @@
 package se.chalmers.fleetspeak.core.command.impl;
 
+import se.chalmers.fleetspeak.core.command.InvalidCommandArgumentsException;
+
 /**
  * An interface for executable commands.
  * @author Patrik Haar
@@ -14,7 +16,7 @@ public interface ICommand {
 	 * @param params The parameters sent to the command.
 	 * @return true if successfully executed, false if denied of failed.
 	 */
-	public boolean execute(int requester, Object... params);
+	public boolean execute(int requester, Object... params) throws InvalidCommandArgumentsException;
 	
 	/**
 	 * Gets the info-object holding the information about the command.

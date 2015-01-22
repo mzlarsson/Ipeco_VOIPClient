@@ -30,7 +30,6 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 	private boolean isRunning = false;
 
 	public TCPHandler(Socket clientSocket, int clientID) {
-		
 		this.clientID = clientID;
 		this.clientSocket = clientSocket;
 		try {
@@ -44,6 +43,10 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 		eventBus = EventBus.getInstance();
 		eventBus.addSubscriber(this);
 
+	}
+	
+	public int getClientID(){
+		return this.clientID;
 	}
 	
 	/**
