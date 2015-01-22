@@ -37,10 +37,10 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
 import se.chalmers.fleetspeak.core.ConnectionHandler;
-import se.chalmers.fleetspeak.core.ServerCommand;
 import se.chalmers.fleetspeak.eventbus.EventBus;
 import se.chalmers.fleetspeak.eventbus.EventBusEvent;
 import se.chalmers.fleetspeak.eventbus.IEventBusSubscriber;
+import se.chalmers.fleetspeak.gui.CommandSearcher;
 import se.chalmers.fleetspeak.util.Command;
 import se.chalmers.fleetspeak.util.Log;
 import sun.awt.WindowClosingListener;
@@ -62,8 +62,7 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener, IE
 	private Logger log;
 
 	private ArrayList<String> cmdLog;
-	private ArrayList<ServerCommand> searchCmds;
-	private int cmdLogIndex, searchIndex;
+	private int cmdLogIndex;
 	private Color FOREST_GREEN = new Color(20, 170, 0);
 	private Color DEFAULT_BACKGROUND;
 	
@@ -368,13 +367,10 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener, IE
 	public void keyReleased(KeyEvent e) {
 		// This is for using the TAB key to auto-complete
 		if (e.getKeyCode()==KeyEvent.VK_TAB) {
-			if (searchCmds == null) {
-				searchCmds = ServerCommand.getPossibleCommands(cmdLine.getText());
-				searchIndex = 0;
-			}
-			if (!searchCmds.isEmpty()) {
-				cmdLine.setText(searchCmds.get(searchIndex).getName());
-				searchIndex = (searchIndex+1)%searchCmds.size();
+			if (!CommandSearcher.hasSearch()) {
+				cmdLine.setText(CommandSearcher.search(cmdLine.getText()));
+			}else{
+				cmdLine.setText(CommandSearcher.next());
 			}
 		} else {
 			if (e.getKeyCode()==KeyEvent.VK_ENTER) {
@@ -385,7 +381,8 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener, IE
 				if (cmd.equals("party")) {
 					startTheParty();
 				} else {
-					EventBus.getInstance().fireEvent(new EventBusEvent("CommandHandler", new Command("consoleCommand", null, cmd), this));
+					String[] cmdParts = cmd.split(" ");
+					EventBus.getInstance().fireEvent(new EventBusEvent("CommandHandler", new Command(cmdParts[0], cmdParts.length>1?cmdParts[1]:null, cmdParts.length>2?cmdParts[2]:null), this));
 				}
 				
 				cmdLine.setText("");
@@ -396,7 +393,8 @@ public class ServerGUI extends JFrame implements ActionListener, KeyListener, IE
 				cmdLogIndex = (cmdLogIndex+1)%cmdLog.size();
 				cmdLine.setText(cmdLog.get(cmdLogIndex));
 			}
-			searchCmds = null;
+			
+			CommandSearcher.clearSearch();
 		}
 	}
 

@@ -2,6 +2,7 @@ package se.chalmers.fleetspeak.core.command.impl;
 
 import se.chalmers.fleetspeak.core.Room;
 import se.chalmers.fleetspeak.core.RoomHandler;
+import se.chalmers.fleetspeak.core.command.InvalidCommandArgumentsException;
 import se.chalmers.fleetspeak.core.permission.Permission;
 import se.chalmers.fleetspeak.core.permission.Permissions;
 
@@ -16,7 +17,7 @@ public class MoveUserToNewRoom extends BasicCommand implements ICommand {
 	}
 
 	@Override
-	public boolean execute(int requester, Object... params) {
+	public boolean execute(int requester, Object... params) throws InvalidCommandArgumentsException{
 		try{
 			int userID = params[0].getClass()==Integer.class ? (Integer)params[0] : Integer.parseInt((String)params[0]);
 			String roomName = (String)params[1];
@@ -25,7 +26,11 @@ public class MoveUserToNewRoom extends BasicCommand implements ICommand {
 				RoomHandler.getInstance().moveClient(userID, new Room(roomName));
 				return true;
 			}
-		}catch(NumberFormatException nfe){}
+		}catch(NumberFormatException nfe){
+			throw new InvalidCommandArgumentsException(getInfo());
+		}catch(NullPointerException nfe){
+			throw new InvalidCommandArgumentsException(getInfo());
+		}
 		
 		return false;
 	}
