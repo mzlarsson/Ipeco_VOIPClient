@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.tcp;
+package se.chalmers.fleetspeak.core;
 
 import java.io.EOFException;
 import java.io.IOException;
