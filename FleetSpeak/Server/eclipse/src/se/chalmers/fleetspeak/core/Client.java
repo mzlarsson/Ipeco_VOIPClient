@@ -6,7 +6,6 @@ import java.net.Socket;
 
 import se.chalmers.fleetspeak.sound.SoundHandler;
 import se.chalmers.fleetspeak.sound.SoundHandlerFactory;
-import se.chalmers.fleetspeak.tcp.TCPHandler;
 import se.chalmers.fleetspeak.util.Command;
 import se.chalmers.fleetspeak.util.IDFactory;
 import se.chalmers.fleetspeak.util.Log;

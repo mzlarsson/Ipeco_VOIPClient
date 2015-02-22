@@ -2,6 +2,7 @@ package se.chalmers.fleetspeak.core.command;
 
 import java.util.Arrays;
 
+import se.chalmers.fleetspeak.core.TCPHandler;
 import se.chalmers.fleetspeak.core.command.impl.CommandFactory;
 import se.chalmers.fleetspeak.core.command.impl.CommandInfo;
 import se.chalmers.fleetspeak.core.command.impl.ICommand;
@@ -10,7 +11,6 @@ import se.chalmers.fleetspeak.core.permission.Permissions;
 import se.chalmers.fleetspeak.eventbus.EventBus;
 import se.chalmers.fleetspeak.eventbus.EventBusEvent;
 import se.chalmers.fleetspeak.eventbus.IEventBusSubscriber;
-import se.chalmers.fleetspeak.tcp.TCPHandler;
 import se.chalmers.fleetspeak.util.Log;
 
 
