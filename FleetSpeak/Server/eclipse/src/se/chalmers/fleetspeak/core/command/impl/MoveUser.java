@@ -1,6 +1,7 @@
 package se.chalmers.fleetspeak.core.command.impl;
 
 import se.chalmers.fleetspeak.core.RoomHandler;
+import se.chalmers.fleetspeak.core.command.Commands;
 import se.chalmers.fleetspeak.core.command.InvalidCommandArgumentsException;
 import se.chalmers.fleetspeak.core.permission.Permission;
 import se.chalmers.fleetspeak.core.permission.Permissions;
@@ -13,7 +14,7 @@ import se.chalmers.fleetspeak.core.permission.Permissions;
  * @author Patrik Haar
  *
  */
-class MoveUser extends BasicCommand implements ICommand {
+class MoveUser extends BasicCommand{
 	
 	/**
 	 * Constructor for the command, creates the relevant
@@ -36,6 +37,8 @@ class MoveUser extends BasicCommand implements ICommand {
 			if((userID == requester && Permissions.isAllowed(requester, Permission.MOVE_OWN_USER)) ||
 			  (userID != requester && Permissions.isAllowed(requester, Permission.MOVE_OTHER_USER))){
 				RoomHandler.getInstance().moveClient(userID, roomID);
+				Commands cmds = Commands.getInstance();
+				cmds.execute(requester, cmds.findCommand("GetUsers"));
 				return true;
 			}
 		}catch(NumberFormatException nfe){

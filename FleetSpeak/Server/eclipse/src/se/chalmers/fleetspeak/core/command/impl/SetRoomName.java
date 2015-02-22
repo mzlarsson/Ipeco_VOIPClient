@@ -6,7 +6,7 @@ import se.chalmers.fleetspeak.core.permission.Permission;
 import se.chalmers.fleetspeak.core.permission.Permissions;
 
 
-public class SetRoomName extends BasicCommand implements ICommand {
+public class SetRoomName extends BasicCommand{
 
 	public SetRoomName(int execCode){
 		super(new CommandInfo("SetRoomName", "SetRoomName [room-id] [room-name]", "Sets the name of the room with the given ID.", execCode));
