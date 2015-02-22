@@ -86,6 +86,7 @@ public class Client{
 		if (tcp != null) {
 			tcp.terminate();
 		}
+		IDFactory.getInstance().freeID(clientID);
 	}
 
 	public void connectionLost() {

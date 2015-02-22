@@ -100,6 +100,7 @@ public class RoomHandler {
 					if(clientList.isEmpty() && r.getId() != 0){
 						Log.logDebug("Removing room");
 						rooms.remove(r);
+						r.terminate();
 						EventBus.getInstance().fireEvent(new EventBusEvent("UpdateStatus", 
 								new Command("removedRoom", r.getId(), null), null));
 					}
