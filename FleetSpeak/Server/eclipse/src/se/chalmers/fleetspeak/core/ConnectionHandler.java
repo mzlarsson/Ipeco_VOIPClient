@@ -6,6 +6,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import se.chalmers.fleetspeak.core.command.Commands;
 import se.chalmers.fleetspeak.sound.Constants;
 import se.chalmers.fleetspeak.util.Log;
 /**
@@ -18,7 +19,6 @@ public class ConnectionHandler{
     
     private int port;
     
-    private static CommandHandler commandHandler;
     private static ServerSocket serverSocket = null;
     
     private volatile boolean running;
@@ -26,10 +26,9 @@ public class ConnectionHandler{
     public ConnectionHandler(int port) throws UnknownHostException{
     	Log.log("Starting server @LAN-IP "+InetAddress.getLocalHost().getHostAddress()+" on port "+port);
     	this.running = true;
-    	commandHandler = new CommandHandler();
     	//TODO fix this?
     	Constants.setServerIP(InetAddress.getLocalHost().getHostAddress());
-    	
+    	Commands.initialize();
 
     	this.port = port;
     }
@@ -63,7 +62,7 @@ public class ConnectionHandler{
         
         //Create and forward client
         Client client = new Client(clientSocket, port);
-        commandHandler.addClient(client);
+        Commands.getInstance().execute(-1, Commands.getInstance().findCommand("AddUser"), client);
     }
     
     public boolean isRunning(){
@@ -76,7 +75,7 @@ public class ConnectionHandler{
     			serverSocket.close();
     		}
 		} catch (IOException e) {}
-    	commandHandler.terminate();
+    	Commands.terminate();
     	running = false;
     }
 }
