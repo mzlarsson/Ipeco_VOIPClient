@@ -34,7 +34,6 @@ import android.widget.TextView;
 import se.chalmers.fleetspeak.R;
 import se.chalmers.fleetspeak.ServerHandler;
 import se.chalmers.fleetspeak.SocketService;
-import se.chalmers.fleetspeak.sound.SoundController;
 import se.chalmers.fleetspeak.truck.TruckDataHandler;
 import se.chalmers.fleetspeak.truck.TruckStateListener;
 import se.chalmers.fleetspeak.util.ServiceUtil;
@@ -181,7 +180,7 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
                 Intent joinRoom = new Intent(StartActivity.this,JoinRoomActivity.class);
                 startActivity(joinRoom);
             }else if(message.equals("connection failed")){
-                SoundController.close();
+
                 Log.i("STARTACTIVITY", " try again");
                 showConnectionErrorMessage();
             }
@@ -249,7 +248,6 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
             mService.send(Message.obtain(ServerHandler.connect(ip, port)));
             mService.send(Message.obtain(ServerHandler.setName(userName)));
             mService.send(Message.obtain(ServerHandler.getUsers()));
-            SoundController.create(this, ip, port);
         } catch (RemoteException e) {
         }
     }

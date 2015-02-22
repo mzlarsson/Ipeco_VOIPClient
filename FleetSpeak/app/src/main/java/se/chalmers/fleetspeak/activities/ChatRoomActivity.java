@@ -35,11 +35,9 @@ import java.util.ArrayList;
 
 import se.chalmers.fleetspeak.CommandHandler;
 import se.chalmers.fleetspeak.R;
-import se.chalmers.fleetspeak.RoomHandler;
 import se.chalmers.fleetspeak.ServerHandler;
 import se.chalmers.fleetspeak.SocketService;
 import se.chalmers.fleetspeak.User;
-import se.chalmers.fleetspeak.sound.SoundController;
 import se.chalmers.fleetspeak.truck.TruckDataHandler;
 import se.chalmers.fleetspeak.truck.TruckStateListener;
 import se.chalmers.fleetspeak.util.ServiceUtil;
@@ -140,7 +138,6 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
             }
         });
 
-        Log.i("Chat", SoundController.hasValue() + "");
     }
 
     @Override
@@ -202,7 +199,6 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
         isTalkActive = !isTalkActive;
         ImageButton button = (ImageButton) findViewById(R.id.pushToTalkButton);
         button.setBackgroundResource(isTalkActive?R.drawable.ic_mic_blue:R.drawable.ic_mic_grey);
-        SoundController.mute(!isTalkActive);
     }
 
     @Override
@@ -280,32 +276,7 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
      * @param seekbar
      */
     private void setUpVolumeSeekbar(SeekBar seekbar){
-        // Check for -1 return since the get-methods return -1 when volume control is not accessible
-        if(SoundController.getMaxVolume() != -1) {
-            seekbar.setMax(SoundController.getMaxVolume());
-            Log.i("VolumeAudio: ", "max volume =" + SoundController.getMaxVolume() );
-        }
-        if(SoundController.getCurrentVolume() != -1){
-            Log.i("VolumeAudio: ", "current volume="+ SoundController.getCurrentVolume());
-            seekbar.setProgress(SoundController.getCurrentVolume());
-        }
-        seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
-                SoundController.setVoloume(progress);
-                Log.i("Volume value:", " " + progress);
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
+        //TODO doesnt work with new soundcontroller
     }
     /**
      * Set the size of the popupWindow
@@ -341,7 +312,7 @@ public class ChatRoomActivity extends ActionBarActivity implements TruckStateLis
     public class ChatRoomListAdapter extends ArrayAdapter<User> {
         public ChatRoomListAdapter(Context context, ArrayList<User> values) {
             super(context, R.layout.list_item_users, values);
-            Log.i("ChatRoom Userlist size: ", String.valueOf(values.size()));
+            Log.i("ChatRoomUserlist size: ", String.valueOf(values.size()));
         }
 
         @Override
