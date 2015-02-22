@@ -1,7 +1,6 @@
 package se.chalmers.fleetspeak.util;
 
 import se.chalmers.fleetspeak.SocketService;
-import se.chalmers.fleetspeak.sound.SoundController;
 
 import android.app.ActivityManager;
 import android.content.Context;

@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import se.chalmers.fleetspeak.sound.SoundController;
 import se.chalmers.fleetspeak.util.Command;
 
 /**

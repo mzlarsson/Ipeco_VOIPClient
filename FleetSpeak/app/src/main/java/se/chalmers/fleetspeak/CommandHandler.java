@@ -8,7 +8,6 @@ import android.util.Log;
 
 
 import se.chalmers.fleetspeak.activities.StartActivity;
-import se.chalmers.fleetspeak.sound.SoundController;
 import se.chalmers.fleetspeak.util.Command;
 
 /**
@@ -79,7 +78,6 @@ public class CommandHandler extends Handler {
             if((Integer)command.getKey() == user.getId())
                 aCommand = "roomCreated," + s[1];
         }else if(sCommand.equals("Disconnected")){
-            SoundController.close();
             roomHandler = new RoomHandler();
             aCommand = "Disconnected";
         }else{

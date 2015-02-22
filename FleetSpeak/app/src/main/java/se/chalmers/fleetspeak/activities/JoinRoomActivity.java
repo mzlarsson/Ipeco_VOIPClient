@@ -39,7 +39,6 @@ import se.chalmers.fleetspeak.Room;
 import se.chalmers.fleetspeak.ServerHandler;
 import se.chalmers.fleetspeak.SocketService;
 import se.chalmers.fleetspeak.User;
-import se.chalmers.fleetspeak.sound.SoundController;
 import se.chalmers.fleetspeak.truck.TruckDataHandler;
 import se.chalmers.fleetspeak.truck.TruckStateListener;
 import se.chalmers.fleetspeak.util.ServiceUtil;
@@ -138,7 +137,6 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
                 joinRoom(roomID);
             }
         });
-        Log.i("join", SoundController.hasValue() + "");
     }
 
     /**
