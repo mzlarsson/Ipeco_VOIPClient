@@ -6,7 +6,7 @@ import se.chalmers.fleetspeak.core.permission.Permission;
 import se.chalmers.fleetspeak.core.permission.Permissions;
 
 
-public class SetUsername extends BasicCommand implements ICommand {
+public class SetUsername extends BasicCommand{
 
 	public SetUsername(int execCode){
 		super(new CommandInfo("SetUsername", "SetUsername [user-id] [user-name]", "Sets the name of the user with the given ID", execCode));
