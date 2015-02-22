@@ -1,5 +1,7 @@
 package se.chalmers.fleetspeak.util;
 
+import java.util.LinkedList;
+
 /**
  * A Class for creating a new unique ID.
  * @author Patrik Haar
@@ -9,6 +11,7 @@ public class IDFactory {
 
 	private int currentID = 1;
 	private static IDFactory instance;
+	private LinkedList<Integer> recycledIDs = new LinkedList<Integer>();
 	/**
 	 * Creates a new IDFactory
 	 */
@@ -29,7 +32,19 @@ public class IDFactory {
 	 * Creates a unique ID.
 	 * @return The unique ID.
 	 */
-	public int getID() {
+	public synchronized int getID() {
+		if(!recycledIDs.isEmpty()){
+			return recycledIDs.pop();
+		}
+		
 		return currentID++;
+	}
+
+	/**
+	 * Creates a unique ID.
+	 * @return The unique ID.
+	 */
+	public synchronized void freeID(int id) {
+		recycledIDs.addLast(id);
 	}
 }
