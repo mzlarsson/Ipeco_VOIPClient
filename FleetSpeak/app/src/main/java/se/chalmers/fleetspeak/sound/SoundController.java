@@ -14,13 +14,11 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.List;
 
 /**
  * Created by Nieo on 22/02/15.
- * For controling a Audiogroup
+ * For controling an Audiogroup
  */
 public class SoundController {
     private AudioManager audioManager;
@@ -28,7 +26,7 @@ public class SoundController {
     private AudioStream upStream;
 
     /**
-     * Constructor
+     * Starts a new send only stream that connected to ip:port
      */
     public SoundController(Context context, String ip, int port){
         audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
@@ -78,7 +76,7 @@ public class SoundController {
         for(AudioStream a : streams){
             if(a.getRemotePort() == port)
                 a.join(null);
-                a.release();
+               // a.release();
         }
     }
 

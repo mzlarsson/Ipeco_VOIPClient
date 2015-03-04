@@ -7,7 +7,7 @@ import android.os.Message;
  * Help class for messages
  * How to use
  * try {
- *      serviceConnection.send(Message.obtain(SERVERHANDLER.[command]()));
+ *      serviceConnection.send(ServerHandler.[command]());
  *  } catch (RemoteException e) {
  *  }
 
@@ -23,7 +23,6 @@ public class ServerHandler {
 
     }
 
-
     public static Message disconnect() {
         return Message.obtain(null,SocketService.DISCONNECT,null);
     }
@@ -35,21 +34,16 @@ public class ServerHandler {
 
 
     public static Message move(int roomID) {
-        return Message.obtain(null,SocketService.MOVEUSER,roomID);
+        return Message.obtain(null,SocketService.MOVE,roomID);
     }
 
-    public static Message getUsers() {
-        return Message.obtain(null,SocketService.GETUSERS);
+    public static Message moveNewRoom(String name){
+        return Message.obtain(null,SocketService.MOVENEWROOM,name);
+    }
+
+    public static Message setSoundPort(int remoteUserid, int port) {
+        return Message.obtain(null,SocketService.SETSOUNDPORT, port, 0, remoteUserid);
     }
 
 
-    public static Message muteUser(int userID) {
-        return Message.obtain(null,SocketService.MUTEUSER, userID);
-    }
-    public static Message unMuteUser(int userID){
-        return  Message.obtain(null, SocketService.UNMUTEUSER, userID);
-    }
-    public static Message createAndMove(String name){
-        return Message.obtain(null,SocketService.CREATEANDMOVE,name);
-    }
 }
