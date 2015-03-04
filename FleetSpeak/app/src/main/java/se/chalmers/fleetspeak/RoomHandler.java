@@ -21,6 +21,15 @@ public class RoomHandler implements IUserHandler{
         defaultRoom = new Room("Lobby",0);
     }
 
+    public void addRoom(int id, String name){
+       Room room = new Room(name, id);
+       ArrayList<User> list = new ArrayList<User>();
+       rooms.put(room, list);
+    }
+    public void removeRoom(int id){
+        rooms.remove(id);
+    }
+
     public void addUser(User user, Room room) {
         if (!rooms.containsKey(room) || rooms.get(room) == null) {
             ArrayList<User> list = new ArrayList<User>();
@@ -37,14 +46,6 @@ public class RoomHandler implements IUserHandler{
     public void addUser(User user, int roomID) {
         addUser(user, findRoom(roomID));
     }
-    public void addUser(User user){
-        addUser(user,defaultRoom);
-    }
-
-    public void addToNewRoom(User user, String name){
-        Room r = new Room(name);
-        addUser(user, r);
-    }
 
 
     public void removeUser(User user) {
@@ -53,11 +54,6 @@ public class RoomHandler implements IUserHandler{
             if (userList.contains(user)) {
                 userList.remove(user);
                 Log.i(this.getClass().toString(), "user removed");
-                if (userList.isEmpty()) {
-                    if(room.getId() != 0)
-                        rooms.remove(room);
-
-                }
                 break;
             }
         }
