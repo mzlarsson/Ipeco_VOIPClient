@@ -10,12 +10,22 @@ import java.util.Map;
 
 import se.chalmers.fleetspeak.util.Log;
 
+/**
+ * 
+ * A class for routing data
+ *
+ */
 public class Router implements Runnable{
 	private boolean running;
 	private DatagramSocket inport;
 	private DatagramSocket outport;
 	private Map<Integer, DatagramPacket> clients;
 	private DatagramPacket buffer;
+	
+	/**
+	 * Creates a Router instance from a selected inport
+	 * @param inPort The port from which the data is taken from
+	 */
 	public Router(int inPort){
 		try {
 			inport = new DatagramSocket(inPort);
@@ -43,6 +53,10 @@ public class Router implements Runnable{
 		
 	}
 	
+	/**
+	 * A method for transmitting data to the clients
+	 * @param data The data to be transmitted
+	 */
 	private synchronized void send(byte[] data){
 		
 		for(DatagramPacket p: clients.values()){
@@ -55,19 +69,34 @@ public class Router implements Runnable{
 			}
 		}
 	}
-	
-	public synchronized void addClient(int id, InetAddress addres, int port){
+	/**
+	 * Adds a client to the client list
+	 * @param id The id of the client
+	 * @param address The IP address of the client
+	 * @param port The port from which the data should be transmitted to
+	 */
+	public synchronized void addClient(int id, InetAddress address, int port){
 		byte[] buf = new byte[172];
-		DatagramPacket p = new DatagramPacket(buf, buf.length, addres, port);
+		DatagramPacket p = new DatagramPacket(buf, buf.length, address, port);
 		clients.put(id, p);
 	}
+	/**
+	 * Removes a client from the client list
+	 * @param id
+	 */
 	public synchronized void removeClient(int id){
 		clients.remove(id);
 	}
+	/**
+	 * Removes all the clients from the client list
+	 */
 	public synchronized void removeAllClients(){
 		clients.clear();
 	}
 	
+	/**
+	 * Closes this router thread
+	 */
 	public void shutdown(){
 		running = false;
 	}
