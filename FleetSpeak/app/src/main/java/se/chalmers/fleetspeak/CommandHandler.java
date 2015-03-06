@@ -7,7 +7,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 
-import se.chalmers.fleetspeak.activities.StartActivity;
+import se.chalmers.fleetspeak.fragments.MainActivity;
 import se.chalmers.fleetspeak.sound.SoundController;
 import se.chalmers.fleetspeak.util.Command;
 
@@ -24,7 +24,7 @@ public class CommandHandler extends Handler {
     private static User user;
 
 
-    LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(new StartActivity());
+    LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(new MainActivity());
 
 
 

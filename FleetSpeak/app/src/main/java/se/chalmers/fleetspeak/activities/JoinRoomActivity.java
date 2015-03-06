@@ -265,6 +265,7 @@ public class JoinRoomActivity extends ActionBarActivity implements TruckStateLis
         public JoinRoomAdapter(Context context, ArrayList<Room> values) {
             super(context, R.layout.list_item_rooms, values);
         }
+
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             LayoutInflater inflater = LayoutInflater.from(getContext());
