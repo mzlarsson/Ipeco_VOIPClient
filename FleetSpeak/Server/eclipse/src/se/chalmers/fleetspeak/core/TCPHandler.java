@@ -8,6 +8,8 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 
+import se.chalmers.fleetspeak.core.command.Commands;
+import se.chalmers.fleetspeak.core.command.impl.CommandResponse;
 import se.chalmers.fleetspeak.eventbus.EventBus;
 import se.chalmers.fleetspeak.eventbus.EventBusEvent;
 import se.chalmers.fleetspeak.eventbus.IEventBusSubscriber;
@@ -26,7 +28,6 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 	private Socket clientSocket;
 	private ObjectOutputStream objectOutputStream;
 	private ObjectInputStream objectInputStream;
-	EventBus eventBus;
 	private boolean isRunning = false;
 
 	public TCPHandler(Socket clientSocket, int clientID) {
@@ -40,9 +41,7 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 		} catch (IOException e) {
 			Log.logException(e);
 		}
-		eventBus = EventBus.getInstance();
-		eventBus.addSubscriber(this);
-
+		EventBus.getInstance().addSubscriber(this);
 	}
 	
 	public int getClientID(){
@@ -62,13 +61,13 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 				Log.log("[TCPHandler] Found: " + o.getClass().toString());
 				Command c = (Command) o ;//objectInputStream.readObject();
 				Log.log("[TCPHandler] Got command " + c.getCommand());
-				eventBus.fireEvent(new EventBusEvent("CommandHandler", c, this));
+				doCommand(fixCommand(c));
 			}
 		} catch(EOFException eofe){
-			eventBus.fireEvent(new EventBusEvent("CommandHandler", new Command("disconnect", clientID, null), this));
+			doCommand(new Command("disconnect", clientID, null));
 		} catch(SocketTimeoutException e){
 			Log.logError("Got Socket Timeout. Removing client");
-			eventBus.fireEvent(new EventBusEvent("CommandHandler", new Command("disconnect", clientID, null), this));
+			doCommand(new Command("disconnect", clientID, null));
 		} catch(SocketException e){
 			//Only log if the handler is not terminated
 			if(isRunning){
@@ -81,15 +80,6 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 		}
 	}
 
-	@Override
-	public void eventPerformed(EventBusEvent event) {
-		// Will forward the command to its client if this event starts with broadcast and the actor is this class or null.
-		if (event.getReciever().startsWith("broadcast")) {
-			if (event.getActor()==null || event.getActor()==this) {
-				sendData(event.getCommand());
-			}
-		}
-	}
 	/**
 	 * Tries to send a command to the socket 
 	 * @param command
@@ -101,16 +91,26 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 			Log.log("[TCPHandler] <i>Command sent: "+command.getCommand()+"</i>");
 		} catch(SocketException e){
 			if(command==null || !command.getCommand().equals("userDisconnected")){
-				eventBus.fireEvent(new EventBusEvent("CommandHandler", new Command("disconnect", clientID, null), this));
+				doCommand(new Command("disconnect", clientID, null));
 			}
 		} catch(IOException e){
 			Log.logException(e);
 		}
 	}
+	
+	private Command fixCommand(Command c){
+		return c;
+	}
+	
+	public void doCommand(Command c){
+		Commands com = Commands.getInstance();
+		CommandResponse r = com.execute(clientID, com.findCommand(c.getCommand()), c.getKey(), c.getValue());
+		Log.logDebug("Got command response: ["+(r.wasSuccessful()?"Success":"Failure")+": "+r.getMessage()+"]");
+	}
 
 	public boolean terminate() {
 		isRunning = false;
-		eventBus.removeSubscriber(this);
+		EventBus.getInstance().removeSubscriber(this);
 		try {
 			if (clientSocket != null) {
 				clientSocket.close();
@@ -118,6 +118,17 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 			return true;
 		} catch (IOException e) {
 			return false;
+		}
+	}
+	
+
+	@Override
+	public void eventPerformed(EventBusEvent event) {
+		// Will forward the command to its client if this event starts with broadcast and the actor is this class or null.
+		if (event.getReciever().startsWith("broadcast")) {
+			if (event.getActor()==null || event.getActor()==this) {
+				sendData(event.getCommand());
+			}
 		}
 	}
 }

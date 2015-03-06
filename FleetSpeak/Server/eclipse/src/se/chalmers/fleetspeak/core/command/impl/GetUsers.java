@@ -3,7 +3,6 @@ package se.chalmers.fleetspeak.core.command.impl;
 import se.chalmers.fleetspeak.core.Client;
 import se.chalmers.fleetspeak.core.Room;
 import se.chalmers.fleetspeak.core.RoomHandler;
-import se.chalmers.fleetspeak.core.command.InvalidCommandArgumentsException;
 import se.chalmers.fleetspeak.eventbus.EventBus;
 import se.chalmers.fleetspeak.eventbus.EventBusEvent;
 import se.chalmers.fleetspeak.util.Command;
@@ -15,7 +14,7 @@ public class GetUsers extends BasicCommand {
 	}
 
 	@Override
-	public boolean execute(int requester, Object... params) throws InvalidCommandArgumentsException {
+	public CommandResponse execute(int requester, Object... params){
 		RoomHandler handler = RoomHandler.getInstance();
 		EventBus bus = EventBus.getInstance();
 		for(Room r: handler.getRooms()){
@@ -24,7 +23,7 @@ public class GetUsers extends BasicCommand {
 			}
 		}
 		
-		return true;
+		return new CommandResponse(true, "Requested broadcast");
 	}
 
 }

@@ -14,7 +14,7 @@ public class BroadcastUsers extends BasicCommand{
 	}
 	
 	@Override
-	public boolean execute(int requester, Object... params){
+	public CommandResponse execute(int requester, Object... params){
 		EventBus bus = EventBus.getInstance();
 		for(Room r: RoomHandler.getInstance().getRooms()){
 			for( Client c : RoomHandler.getInstance().getClients(r)){
@@ -22,7 +22,7 @@ public class BroadcastUsers extends BasicCommand{
 			}
 		}
 		
-		return true;
+		return new CommandResponse(true, "Broadcasted to all clients");
 	}
 
 }

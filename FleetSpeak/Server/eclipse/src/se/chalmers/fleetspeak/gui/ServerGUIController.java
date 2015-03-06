@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 import java.util.logging.Handler;
@@ -29,9 +30,8 @@ import javafx.stage.Stage;
 import org.fxmisc.richtext.StyleClassedTextArea;
 
 import se.chalmers.fleetspeak.core.ConnectionHandler;
-import se.chalmers.fleetspeak.eventbus.EventBus;
-import se.chalmers.fleetspeak.eventbus.EventBusEvent;
-import se.chalmers.fleetspeak.util.Command;
+import se.chalmers.fleetspeak.core.command.Commands;
+import se.chalmers.fleetspeak.core.command.impl.CommandResponse;
 import se.chalmers.fleetspeak.util.Log;
 
 public class ServerGUIController implements StageOwner{
@@ -264,9 +264,23 @@ public class ServerGUIController implements StageOwner{
 		if (cmd.equals("party")) {
 			startTheParty();
 		} else {
-			EventBus.getInstance().fireEvent(new EventBusEvent("CommandHandler", new Command("consoleCommand", null, cmd), this));
-			if(!this.hasRunningServer()){
-				Log.log("    Warning: The server is offline and will not receive any commands");
+			if(hasRunningServer()){
+				String[] parts = cmd.split(" ");
+				Commands com = Commands.getInstance();
+				CommandResponse response = null;
+				if(parts.length==1){
+					response = com.execute(-1, com.findCommand(parts[0]));
+				}else{
+					response = com.execute(-1, com.findCommand(parts[0]), (Object[])Arrays.copyOfRange(parts, 1, parts.length));
+				}
+	
+				if(response != null){
+					Log.logDebug("\t"+(response.wasSuccessful()?"[Success]":"[Failure]")+" "+response.getMessage());
+				}else{
+					Log.logDebug("Command not found. Please try again.");
+				}
+			}else{
+				Log.logError("Commands disabled when server is not running");
 			}
 		}
 	}
