@@ -58,6 +58,12 @@ public class Room {
         return result;
     }
 
+    /**
+     * Frees all resources used by the room.
+     */
+    public void terminate() {
+		IDFactory.getInstance().freeID(id);
+    }
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */

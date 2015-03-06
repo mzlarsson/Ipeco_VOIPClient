@@ -6,7 +6,7 @@ import se.chalmers.fleetspeak.core.permission.Permission;
 import se.chalmers.fleetspeak.core.permission.Permissions;
 
 
-public class Kick extends BasicCommand implements ICommand {
+public class Kick extends BasicCommand{
 	
 	public Kick(int execCode){
 		super(new CommandInfo("Kick", "Kick [user-id]", "Kicks the user with the given ID.", execCode));
