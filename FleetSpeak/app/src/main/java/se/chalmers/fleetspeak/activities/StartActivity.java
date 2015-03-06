@@ -55,7 +55,7 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
     private Menu menu;
 
     /**
-     * Start up the connection service of the application
+     * A Anonymous class to control the connection to the socket service
      */
     private ServiceConnection mConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className, IBinder service) {
@@ -95,7 +95,7 @@ public class StartActivity extends ActionBarActivity implements TruckStateListen
         portText = prefs.getString(getString(R.string.port_number_text), "8867");
         userNameText = prefs.getString(getString(R.string.username_text), "username");
 
-        // Set up the view of the layout and object in the Activity
+        // Set up the view of the layout and object in the Activity depending on TruckMode
         truckModeChanged(TruckDataHandler.getInstance().getTruckMode());
 
         Log.i("STARTACTIVITY", "started service");
