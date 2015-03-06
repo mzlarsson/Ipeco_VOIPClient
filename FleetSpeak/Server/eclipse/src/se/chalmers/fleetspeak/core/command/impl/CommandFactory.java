@@ -15,7 +15,7 @@ public class CommandFactory {
 
 	/**
 	 * Creates all commands by using reflection.
-	 * NOTE: This is only effective ONE time
+	 * NOTE: This is only done ONE time
 	 * @return An array of all the available commands
 	 */
 	@SuppressWarnings("unchecked")
@@ -73,11 +73,16 @@ public class CommandFactory {
 					try {
 						cls = Class.forName(packageName+"."+clsName);
 						if(!cls.isInterface() && !Modifier.toString(cls.getModifiers()).contains("abstract")){
-							for(Type type : cls.getGenericInterfaces()){
-								if(type.getTypeName().equals(packageName+".ICommand")){
-									classes.add(cls);
-									break;
+							Class<?> searchClass = cls;
+							while(searchClass != null){
+								for(Type type : searchClass.getGenericInterfaces()){
+									if(((Class<?>)type).getCanonicalName().equals(packageName+".ICommand")){		//FIXME use type.getTypeName() on Java 8
+										classes.add(cls);
+										break;
+									}
 								}
+								
+								searchClass = searchClass.getSuperclass();
 							}
 						}
 					} catch (ClassNotFoundException e) {

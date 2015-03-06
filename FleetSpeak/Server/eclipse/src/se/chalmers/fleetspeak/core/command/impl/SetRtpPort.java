@@ -4,7 +4,7 @@ import se.chalmers.fleetspeak.core.Client;
 import se.chalmers.fleetspeak.core.RoomHandler;
 import se.chalmers.fleetspeak.core.command.InvalidCommandArgumentsException;
 
-public class SetRtpPort extends BasicCommand implements ICommand {
+public class SetRtpPort extends BasicCommand{
 
 	public SetRtpPort(int execCode){
 		super(new CommandInfo("SetRtpPort", "SetRtpPort [user-id] [rtp-port]", "Sets the given RTP port for the user with the given ID.", execCode));

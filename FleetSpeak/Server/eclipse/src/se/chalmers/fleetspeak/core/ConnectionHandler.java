@@ -7,6 +7,8 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 import se.chalmers.fleetspeak.core.command.Commands;
+import se.chalmers.fleetspeak.core.permission.PermissionLevel;
+import se.chalmers.fleetspeak.core.permission.Permissions;
 import se.chalmers.fleetspeak.sound.Constants;
 import se.chalmers.fleetspeak.util.Log;
 /**
@@ -28,7 +30,7 @@ public class ConnectionHandler{
     	this.running = true;
     	//TODO fix this?
     	Constants.setServerIP(InetAddress.getLocalHost().getHostAddress());
-    	Commands.initialize();
+    	Commands.getInstance();
 
     	this.port = port;
     }
@@ -62,7 +64,10 @@ public class ConnectionHandler{
         
         //Create and forward client
         Client client = new Client(clientSocket, port);
-        Commands.getInstance().execute(-1, Commands.getInstance().findCommand("AddUser"), client);
+        
+        Commands cmds = Commands.getInstance();
+        Permissions.addUserLevel(client.getClientID(), PermissionLevel.ADMIN_ALL);
+        cmds.execute(-1, cmds.findCommand("AddUser"), client);
     }
     
     public boolean isRunning(){

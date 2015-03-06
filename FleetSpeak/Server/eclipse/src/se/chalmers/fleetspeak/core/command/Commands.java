@@ -1,5 +1,7 @@
 package se.chalmers.fleetspeak.core.command;
 
+import java.util.Arrays;
+
 import se.chalmers.fleetspeak.core.TCPHandler;
 import se.chalmers.fleetspeak.core.command.impl.CommandFactory;
 import se.chalmers.fleetspeak.core.command.impl.CommandInfo;
@@ -36,10 +38,6 @@ public class Commands implements IEventBusSubscriber{
 		Permissions.addUserLevel(-1, PermissionLevel.ADMIN_ALL);		//FIXME only for debugging
 	}
 	
-	public static void initialize(){
-		Commands.getInstance();
-	}
-	
 	/**
 	 * Returns the singleton instance of the Commands-class.
 	 * @return the singleton-instance.
@@ -59,6 +57,12 @@ public class Commands implements IEventBusSubscriber{
 	 * @return true if successfully executed, false if denied of failed.
 	 */
 	public boolean execute(int requester, CommandInfo cmdInfo, Object... params) {
+		if(cmdInfo == null){
+			System.out.println(Arrays.toString(cmdInfos));
+			return false;
+		}
+		
+		//FIXME is the try-catch necessary
 		try{
 			if(commands[cmdInfo.getExecCode()].execute(requester, params)){
 				return true;
