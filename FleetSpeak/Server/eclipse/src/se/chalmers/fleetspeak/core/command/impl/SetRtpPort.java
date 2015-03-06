@@ -2,7 +2,6 @@ package se.chalmers.fleetspeak.core.command.impl;
 
 import se.chalmers.fleetspeak.core.Client;
 import se.chalmers.fleetspeak.core.RoomHandler;
-import se.chalmers.fleetspeak.core.command.InvalidCommandArgumentsException;
 
 public class SetRtpPort extends BasicCommand{
 
@@ -11,17 +10,15 @@ public class SetRtpPort extends BasicCommand{
 	}
 	
 	@Override
-	public boolean execute(int requester, Object... params) throws InvalidCommandArgumentsException{
+	public CommandResponse execute(int requester, Object... params){
 		try{
 			int userID = (params[0].getClass()==Integer.class||params[0].getClass()==int.class?(Integer)params[0]:Integer.parseInt((String)params[0]));
 			int port = (params[1].getClass()==Integer.class||params[1].getClass()==int.class?(Integer)params[1]:Integer.parseInt((String)params[1]));
 			Client c = RoomHandler.getInstance().findClient(userID);
 			c.startRTPTransfer(port);
-			return true;
-		}catch(NumberFormatException nfe){
-			throw new InvalidCommandArgumentsException(getInfo());
-		}catch(NullPointerException nfe){
-			throw new InvalidCommandArgumentsException(getInfo());
+			return new CommandResponse(true, "The RTP Port was set");
+		}catch(NumberFormatException | NullPointerException e){
+			return new CommandResponse(false, "Invalid command use: '"+getInfo().getFormat()+"'");
 		}
 	}
 

@@ -88,7 +88,7 @@ public class RoomHandler {
 	 * @param terminate true if the the Client should be removed completely
 	 * false to just remove the room tracking, used for switching rooms.
 	 */
-	public void removeClient(Client c, boolean terminate){
+	public boolean removeClient(Client c, boolean terminate){
 		if(c != null){
 			for(Room r : rooms.keySet()){
 				ArrayList<Client> clientList = rooms.get(r);
@@ -101,18 +101,16 @@ public class RoomHandler {
 						Log.logDebug("Removing room");
 						rooms.remove(r);
 						r.terminate();
-						EventBus.getInstance().fireEvent(new EventBusEvent("UpdateStatus", 
-								new Command("removedRoom", r.getId(), null), null));
+						EventBus.getInstance().fireEvent(new EventBusEvent("UpdateStatus", new Command("removedRoom", r.getId(), null), null));
 					}
 					
-					EventBus.getInstance().fireEvent(new EventBusEvent("UpdateStatus", 
-							new Command("removedClient", c.getClientID(), r.getId()), null));
-					break;
+					EventBus.getInstance().fireEvent(new EventBusEvent("UpdateStatus", new Command("removedClient", c.getClientID(), r.getId()), null));
+					return true;
 				}
 			}
-			
-			changeEvent();
 		}
+		
+		return false;
 	}
 	
 	/**
@@ -121,16 +119,16 @@ public class RoomHandler {
 	 * @param terminate true if the the Client should be removed completely
 	 * false to just remove the room tracking, used for switching rooms.
 	 */
-	public void removeClient(int clientID, boolean terminate){
-		this.removeClient(findClient(clientID), terminate);
+	public boolean removeClient(int clientID, boolean terminate){
+		return removeClient(findClient(clientID), terminate);
 	}
 
 	/**
 	 * Removes the client from its current room.
 	 * @param clientID the ID of the client to be removed.
 	 */
-	public void removeClient(int clientID){
-		this.removeClient(findClient(clientID), false);
+	public boolean removeClient(int clientID){
+		return removeClient(findClient(clientID), false);
 	}
 	
 	/**
@@ -138,9 +136,14 @@ public class RoomHandler {
 	 * @param c The Client to be moved.
 	 * @param r The targeted Room.
 	 */
-	public void moveClient(Client c, Room r){
-		this.removeClient(c, false);
-		this.addClient(c, r);
+	public boolean moveClient(Client c, Room r){
+		if(c!=null && r!=null){
+			this.removeClient(c, false);
+			this.addClient(c, r);
+			return true;
+		}else{
+			return false;
+		}
 	}
 	
 	/**
@@ -148,8 +151,8 @@ public class RoomHandler {
 	 * @param clientID The ID of the Client to be moved.
 	 * @param r The targeted Room.
 	 */
-	public void moveClient(int clientID, Room room){
-		this.moveClient(this.findClient(clientID), room);
+	public boolean moveClient(int clientID, Room room){
+		return moveClient(this.findClient(clientID), room);
 	}
 	
 	/**
@@ -157,8 +160,8 @@ public class RoomHandler {
 	 * @param clientID The ID of the Client to be moved.
 	 * @param roomID The ID of the targeted Room.
 	 */
-	public void moveClient(int clientID, int roomID){
-		this.moveClient(this.findClient(clientID), this.findRoom(roomID));
+	public boolean moveClient(int clientID, int roomID){
+		return moveClient(this.findClient(clientID), this.findRoom(roomID));
 	}
 	
 	/**
