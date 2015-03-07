@@ -11,6 +11,7 @@ import se.chalmers.fleetspeak.core.permission.PermissionLevel;
 import se.chalmers.fleetspeak.core.permission.Permissions;
 import se.chalmers.fleetspeak.sound.Constants;
 import se.chalmers.fleetspeak.util.Log;
+import se.chalmers.fleetspeak.util.PortFactory;
 /**
  * Listen for connections form the app
  * Creates new clients and put them on the eventbus
@@ -63,10 +64,10 @@ public class ConnectionHandler{
         Log.log("A new person joined");
         
         //Create and forward client
-        Client client = new Client(clientSocket, port);
+        Client client = new Client(clientSocket);
         
         Commands cmds = Commands.getInstance();
-        Permissions.addUserLevel(client.getClientID(), PermissionLevel.ADMIN_ALL);
+        Permissions.addUserLevel(client.getClientID(), PermissionLevel.ADMIN_ALL); // TODO If not all clients should have ADMIN rights this is the place.
         cmds.execute(-1, cmds.findCommand("AddUser"), client);
     }
     

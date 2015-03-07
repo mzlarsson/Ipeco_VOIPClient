@@ -1,4 +1,4 @@
-package audiogroups;
+package se.chalmers.fleetspeak.sound;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import se.chalmers.fleetspeak.util.Log;
+import se.chalmers.fleetspeak.util.PortFactory;
 
 /**
  * 
@@ -26,9 +27,9 @@ public class Router implements Runnable{
 	 * Creates a Router instance from a selected inport
 	 * @param inPort The port from which the data is taken from
 	 */
-	public Router(int inPort){
+	public Router(){
 		try {
-			inport = new DatagramSocket(inPort);
+			inport = new DatagramSocket(PortFactory.getInstance().getPort());
 			outport = new DatagramSocket();
 		} catch (SocketException e) {
 			Log.log("Failed to create datagram sockets");
@@ -64,7 +65,7 @@ public class Router implements Runnable{
 			try {
 				outport.send(p);
 			} catch (IOException e) {
-				Log.log("failed sending packet");
+				Log.log("Failed sending packet");
 				e.printStackTrace();
 			}
 		}
@@ -97,7 +98,9 @@ public class Router implements Runnable{
 	/**
 	 * Closes this router thread
 	 */
-	public void shutdown(){
+	public void terminate(){
 		running = false;
+		removeAllClients();
+		PortFactory.getInstance().freePort(inport.getLocalPort());
 	}
 }
