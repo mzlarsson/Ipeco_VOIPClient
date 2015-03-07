@@ -50,14 +50,17 @@ public class RoomHandler {
 		if(c != null && r != null){
 			if (!rooms.containsKey(r) || rooms.get(r) == null) {
 	            ArrayList<Client> list = new ArrayList<Client>();
+	            c.moveToRoom(list);
 	            list.add(c);
-	            c.moveToRoom(r.getId());
 	            rooms.put(r,list);
 			}else{
 				 ArrayList<Client> list = rooms.get(r);
 				 if(!list.contains(c)){
+					 for (Client listeners : list) {
+						 listeners.addListeningClient(c);
+					 }
+					 c.moveToRoom(list);
 					 list.add(c);
-					 c.moveToRoom(r.getId());
 				 }
 			}
 			
@@ -94,6 +97,10 @@ public class RoomHandler {
 				ArrayList<Client> clientList = rooms.get(r);
 				if(clientList.contains(c)){
 					clientList.remove(c);
+					for (Client listeners : clientList) {
+						listeners.removeListeningClient(c);
+					}
+					c.removeAllListeningClients();
 					if (terminate) {
 						c.terminate();
 					}
