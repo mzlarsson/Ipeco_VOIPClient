@@ -4,6 +4,8 @@ import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
@@ -39,8 +41,11 @@ public class JoinFragment extends Fragment{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final Context contextThemeWrapper = new ContextThemeWrapper(getActivity(), Utils.getThemeID());
+
         LayoutInflater localInflater = inflater.cloneInContext(contextThemeWrapper);
         View view = localInflater.inflate(R.layout.join_fragment, container, false);
+        getActivity().getWindow().setBackgroundDrawable(new ColorDrawable(Utils.getThemeID() == R.style.Theme_Fleetspeak_light ? Color.WHITE : Color.BLACK));
+
         ListView roomView = ((ListView)view.findViewById(R.id.roomView));
         adapter = new JoinRoomAdapter(getMain(), getMain().getRooms());
         roomView.setAdapter(adapter);
@@ -80,6 +85,7 @@ public class JoinFragment extends Fragment{
         switch(item.getItemId()){
             case  R.id.day_night_toggle:
                 Utils.changeTheme(getMain());
+
                 return true;
             case android.R.id.home:
                 getMain().setFragment(FragmentHandler.FragmentName.START);
