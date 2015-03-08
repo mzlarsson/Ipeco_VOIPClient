@@ -58,7 +58,19 @@ public class FragmentHandler {
        }else{
            activity.finish();
        }
-
-
+    }
+    public void resetFragment(MainActivity activity){
+        if(currentFragment == FragmentName.CHAT){
+            fragments[3] = new ChatFragment();
+        }else if(currentFragment == FragmentName.JOIN){
+            fragments[2] = new JoinFragment();
+        }else {
+            if(Utils.getCarMode()){
+                fragments[1] = new CarStartFragment();
+            }else{
+                fragments[0] = new StartFragment();
+            }
+        }
+        activity.setFragment(currentFragment);
     }
 }

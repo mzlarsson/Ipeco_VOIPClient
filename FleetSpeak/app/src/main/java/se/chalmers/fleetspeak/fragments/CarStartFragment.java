@@ -51,7 +51,7 @@ public class CarStartFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.day_night_toggle) {
-            Utils.changeTheme((MainActivity)this.getActivity(), this);
+            Utils.changeTheme((MainActivity)this.getActivity());
             return true;
         }
         return super.onOptionsItemSelected(item);

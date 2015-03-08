@@ -74,21 +74,8 @@ public class Utils {
      * @return the temporary username
      */
     public static int getPort(){return currentPort;}
-    /**
-     * Change the theme of the application
-     * @param activity
-     */
-    public static void changeTheme(Activity activity){
-        firstRun = false;
-        if(appTheme == DARK){
-            appTheme = LIGHT;
-        }else{
-            appTheme = DARK;
-        }
-        activity.finish();
-        activity.startActivity(new Intent(activity, activity.getClass()));
-    }
-    public static void changeTheme(MainActivity activity, Fragment fragment){
+
+    public static void changeTheme(MainActivity activity){
         firstRun = false;
         if(appTheme == DARK){
             appTheme = LIGHT;
@@ -96,13 +83,6 @@ public class Utils {
             appTheme = DARK;
         }
         activity.resetFragment();
-    }
-    /**
-     * A method that set the theme of the application when the activity is created
-     * @param activity
-     */
-    public static void onCreateActivityCreateTheme(Activity activity) {
-    activity.setTheme(appTheme);
     }
 
     /**
