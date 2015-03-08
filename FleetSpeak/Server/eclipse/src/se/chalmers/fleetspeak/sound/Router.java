@@ -96,6 +96,14 @@ public class Router implements Runnable{
 	}
 	
 	/**
+	 * Retrieves the port that the user should send sound data to
+	 * @return The port that the user should send data to
+	 */
+	public int getReceivePort(){
+		return this.inport.getPort();
+	}
+	
+	/**
 	 * Closes this router thread
 	 */
 	public void terminate(){

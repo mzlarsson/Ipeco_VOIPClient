@@ -18,12 +18,15 @@ public class SetUsername extends BasicCommand{
 			String username = (String)params[1];
 			if((userID == requester && Permissions.isAllowed(requester, Permission.RENAME_OWN_USER)) ||
 			  (userID != requester && Permissions.isAllowed(requester, Permission.RENAME_OTHER_USER))){
-				RoomHandler.getInstance().setUsername(userID, username);
-				return new CommandResponse(true, "Renamed user to '"+username+"'");
+				if(RoomHandler.getInstance().setUsername(userID, username)){
+					return new CommandResponse(true, "Renamed user to '"+username+"'");
+				}else{
+					return new CommandResponse(false, "Internal error occured. Failed to perform action.");
+				}
 			}else{
 				return new CommandResponse(false, "Insuffient permissions. Action denied.");
 			}
-		}catch(NumberFormatException | NullPointerException e){
+		}catch(NumberFormatException | NullPointerException | ClassCastException e){
 			return new CommandResponse(false, "Invalid command use: '"+getInfo().getFormat()+"'");
 		}
 	}

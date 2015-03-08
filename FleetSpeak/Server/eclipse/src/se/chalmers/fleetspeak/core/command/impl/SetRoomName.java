@@ -22,7 +22,7 @@ public class SetRoomName extends BasicCommand{
 			}else{
 				return new CommandResponse(false, "Insuffient permissions. Action denied.");
 			}
-		}catch(NumberFormatException | NullPointerException e){
+		}catch(NumberFormatException | NullPointerException | ClassCastException e){
 			return new CommandResponse(false, "Invalid command use: '"+getInfo().getFormat()+"'");
 		}
 	}

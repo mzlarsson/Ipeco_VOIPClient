@@ -1,7 +1,6 @@
 package se.chalmers.fleetspeak.core.command.impl;
 
 import se.chalmers.fleetspeak.core.RoomHandler;
-import se.chalmers.fleetspeak.core.command.Commands;
 import se.chalmers.fleetspeak.core.permission.Permission;
 import se.chalmers.fleetspeak.core.permission.Permissions;
 
@@ -36,8 +35,6 @@ class MoveUser extends BasicCommand{
 			if((userID == requester && Permissions.isAllowed(requester, Permission.MOVE_OWN_USER)) ||
 			  (userID != requester && Permissions.isAllowed(requester, Permission.MOVE_OTHER_USER))){
 				if(RoomHandler.getInstance().moveClient(userID, roomID)){
-					Commands cmds = Commands.getInstance();
-					cmds.execute(requester, cmds.findCommand("GetUsers"));
 					return new CommandResponse(true, "Moved user to room");
 				}else{
 					return new CommandResponse(false, "Internal error occured. Failed to perform action.");
