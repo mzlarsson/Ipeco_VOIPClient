@@ -38,6 +38,9 @@ public class SoundController {
         audioGroup = new AudioGroup();
         audioGroup.setMode(AudioGroup.MODE_NORMAL);
 
+        Log.d("SoundController", "Addres" + ip + ":" + port);
+
+
         try {
             upStream = new AudioStream(InetAddress.getByName(fetchIP()));
             upStream.setMode(RtpStream.MODE_SEND_ONLY);
@@ -59,10 +62,17 @@ public class SoundController {
     public int addStream(int userid){
         AudioStream stream = null;
 
+        Log.d("Add stream", "Audiogroup " + audioGroup);
+
         try {
-            stream = new AudioStream(InetAddress.getByName(fetchIP()));
+            String ip = fetchIP();
+            Log.d("Add steam", "ip:"+ip);
+            stream = new AudioStream(InetAddress.getByName(ip));
             stream.setMode(RtpStream.MODE_RECEIVE_ONLY);
             stream.setCodec(AudioCodec.PCMU);
+
+            Log.d("Add stream", "The stream " + stream.getLocalAddress().toString());
+
             stream.join(audioGroup);
             downStreams.put(userid, stream);
         } catch (UnknownHostException e) {

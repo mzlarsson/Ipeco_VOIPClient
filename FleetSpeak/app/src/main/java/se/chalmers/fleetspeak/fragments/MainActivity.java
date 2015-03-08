@@ -13,7 +13,6 @@ import android.view.View;
 
 import java.util.ArrayList;
 
-import se.chalmers.fleetspeak.Connector;
 import se.chalmers.fleetspeak.Model;
 import se.chalmers.fleetspeak.R;
 import se.chalmers.fleetspeak.Room;
@@ -35,8 +34,7 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
     private Model model;
 
     protected void onCreate(Bundle savedInstanceState){
-        //FIXME add a handler
-        model = new Model(this, new Handler());
+        model = new Model(this, updateHandler);
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         prefEdit = prefs.edit();
@@ -158,9 +156,10 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
         return  model.getUsers(id);
     }
 
-    private Handler UpdateHandler = new Handler(){
+    private Handler updateHandler = new Handler(){
       @Override
       public void handleMessage(Message msg){
+          Log.d("updateHandler", "Message" + msg.what);
           switch (msg.what){
               case MessageValues.CONNECTED:
                   showConnecting(false);

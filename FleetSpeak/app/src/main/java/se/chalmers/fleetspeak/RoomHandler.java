@@ -20,7 +20,7 @@ public class RoomHandler{
 
     private HashMap<Room,ArrayList<User>> rooms;
 
-    private Room defaultRoom;
+    private Room lobby;
 
 
     private int userid;
@@ -32,7 +32,7 @@ public class RoomHandler{
 
     public RoomHandler(Handler updateListener) {
         rooms = new HashMap<Room,ArrayList<User>>();
-        defaultRoom = new Room("Lobby",0);
+        lobby = new Room("Lobby",0);
 
         updateMessenger = new Messenger(updateListener);
 
