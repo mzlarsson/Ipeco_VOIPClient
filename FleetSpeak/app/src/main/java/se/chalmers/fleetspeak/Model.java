@@ -2,12 +2,8 @@ package se.chalmers.fleetspeak;
 
 import android.content.Context;
 import android.os.Handler;
-import android.os.Message;
-import android.util.Log;
 
 import java.util.ArrayList;
-
-import se.chalmers.fleetspeak.sound.SoundController;
 
 /**
  * Created by Nieo on 08/03/15.
@@ -16,31 +12,14 @@ public class Model {
     private RoomHandler roomHandler;
     private CommandHandler commandHandler;
     private Connector connector;
-    private SoundController soundController;
     private Handler callbackHandler;
 
 
-    public Model(final Context context){
-        roomHandler = new RoomHandler();
-        commandHandler = new CommandHandler(roomHandler);
+    public Model(final Context context, Handler callbackHandler){
+        roomHandler = new RoomHandler(callbackHandler);
+        commandHandler = new CommandHandler(roomHandler, context);
         connector = new Connector(commandHandler);
-        callbackHandler = new Handler() {
-            public void handleMessage(Message msg) {
-                switch (msg.what){
-                    case Connector.CONNECTED:
-                        //TODO send message to Activity that connection successful
-                        soundController = new SoundController(context, (String)msg.obj, msg.arg1);
-                    break;
-                    case Connector.DISCONNECTED:
-                        //TODO send message to Activity that user disconnected
-                        soundController.close();
-                    break;
-                    default:
-                        Log.d("Model", "No command with id" + msg.what);
-                    break;
-                }
-            }
-        };
+        this.callbackHandler = callbackHandler;
     }
 
     public ArrayList<Room> getRooms(){
@@ -55,7 +34,7 @@ public class Model {
     }
 
     public void disconnect(){
-        connector.discconect(callbackHandler);
+        connector.disconnect(callbackHandler);
     }
     public void setName(String name){
         connector.setName(callbackHandler, name);

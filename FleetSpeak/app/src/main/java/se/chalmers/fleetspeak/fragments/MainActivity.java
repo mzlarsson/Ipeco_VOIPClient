@@ -4,6 +4,7 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -30,8 +31,8 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
     private Model model;
 
     protected void onCreate(Bundle savedInstanceState){
-
-        model = new Model(this);
+        //FIXME add a handler
+        model = new Model(this, new Handler());
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         prefEdit = prefs.edit();
