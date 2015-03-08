@@ -35,7 +35,6 @@ public class Client{
 		this.name = "UnknownUser";
 		this.tcp = new TCPHandler(socket, clientID);
 		this.tcp.start();
-		this.tcp.sendData(new Command("setID", clientID, null));
 
 		this.ip = socket.getInetAddress();
 		this.soundRouter = new Router();
