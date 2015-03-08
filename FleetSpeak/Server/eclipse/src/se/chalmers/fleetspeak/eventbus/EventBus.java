@@ -3,6 +3,8 @@ package se.chalmers.fleetspeak.eventbus;
 import java.util.ArrayList;
 import java.util.List;
 
+import se.chalmers.fleetspeak.util.Command;
+
 /**
  * A singleton that forwards events inside the server.
  * @author Patrik
@@ -72,4 +74,9 @@ public class EventBus {
 	public void emptySubscriberList() {
 		subscribers.clear();
 	}
+	
+	public static void postEvent(String receiver, Command command, Object actor ){
+		EventBus.getInstance().fireEvent(new EventBusEvent(receiver, command, actor));
+	}
+	
 }

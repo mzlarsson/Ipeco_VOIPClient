@@ -1,7 +1,6 @@
 package se.chalmers.fleetspeak.core.command.impl;
 
 import se.chalmers.fleetspeak.core.RoomHandler;
-import se.chalmers.fleetspeak.core.command.InvalidCommandArgumentsException;
 import se.chalmers.fleetspeak.core.permission.Permission;
 import se.chalmers.fleetspeak.core.permission.Permissions;
 
@@ -13,21 +12,19 @@ public class SetRoomName extends BasicCommand{
 	}
 	
 	@Override
-	public boolean execute(int requester, Object... params) throws InvalidCommandArgumentsException{
+	public CommandResponse execute(int requester, Object... params){
 		try{
 			if(Permissions.isAllowed(requester, Permission.RENAME_ROOM)){
 				int roomID = (params[0].getClass()==Integer.class||params[0].getClass()==int.class?(Integer)params[0]:Integer.parseInt((String)params[0]));
 				String roomName = (String)params[1];
 				RoomHandler.getInstance().setRoomName(roomID, roomName);
-				return true;
+				return new CommandResponse(true, "Room name changed to '"+roomName+"'");
+			}else{
+				return new CommandResponse(false, "Insuffient permissions. Action denied.");
 			}
-		}catch(NumberFormatException nfe){
-			throw new InvalidCommandArgumentsException(getInfo());
-		}catch(NullPointerException nfe){
-			throw new InvalidCommandArgumentsException(getInfo());
+		}catch(NumberFormatException | NullPointerException | ClassCastException e){
+			return new CommandResponse(false, "Invalid command use: '"+getInfo().getFormat()+"'");
 		}
-		
-		return false;
 	}
 
 }

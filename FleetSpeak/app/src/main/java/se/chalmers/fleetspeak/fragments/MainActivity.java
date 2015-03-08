@@ -20,6 +20,7 @@ import se.chalmers.fleetspeak.Room;
 import se.chalmers.fleetspeak.User;
 import se.chalmers.fleetspeak.truck.TruckDataHandler;
 import se.chalmers.fleetspeak.truck.TruckStateListener;
+import se.chalmers.fleetspeak.util.MessageValues;
 import se.chalmers.fleetspeak.util.Utils;
 
 /**
@@ -34,8 +35,8 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
     private Model model;
 
     protected void onCreate(Bundle savedInstanceState){
-
-        model = new Model(this);
+        //FIXME add a handler
+        model = new Model(this, new Handler());
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         prefEdit = prefs.edit();
@@ -161,11 +162,11 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
       @Override
       public void handleMessage(Message msg){
           switch (msg.what){
-              case Connector.CONNECTED:
+              case MessageValues.CONNECTED:
                   showConnecting(false);
                   setFragment(FragmentHandler.FragmentName.JOIN);
               break;
-              case Connector.DISCONNECTED:
+              case MessageValues.DISCONNECTED:
                   setFragment(FragmentHandler.FragmentName.START);
               break;
 

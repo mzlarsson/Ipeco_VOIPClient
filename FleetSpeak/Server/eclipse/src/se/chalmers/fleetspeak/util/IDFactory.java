@@ -1,6 +1,7 @@
 package se.chalmers.fleetspeak.util;
 
 import java.util.LinkedList;
+import java.util.Queue;
 
 /**
  * A Class for creating a new unique ID.
@@ -11,7 +12,7 @@ public class IDFactory {
 
 	private int currentID = 1;
 	private static IDFactory instance;
-	private LinkedList<Integer> recycledIDs = new LinkedList<Integer>();
+	private Queue<Integer> recycledIDs = new LinkedList<Integer>();
 	/**
 	 * Creates a new IDFactory
 	 */
@@ -34,17 +35,17 @@ public class IDFactory {
 	 */
 	public synchronized int getID() {
 		if(!recycledIDs.isEmpty()){
-			return recycledIDs.pop();
+			return recycledIDs.poll();
 		}
 		
 		return currentID++;
 	}
 
 	/**
-	 * Creates a unique ID.
-	 * @return The unique ID.
+	 * Frees the ID to be used by someone else.
+	 * @return the old ID.
 	 */
 	public synchronized void freeID(int id) {
-		recycledIDs.addLast(id);
+		recycledIDs.add(id);
 	}
 }

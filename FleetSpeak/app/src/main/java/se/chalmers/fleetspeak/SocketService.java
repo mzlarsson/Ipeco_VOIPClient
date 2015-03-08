@@ -192,8 +192,4 @@ public class SocketService extends Service {
         endSocketConnection();
 
     }
-
-
-
-
 }

@@ -13,6 +13,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 import se.chalmers.fleetspeak.util.Command;
+import se.chalmers.fleetspeak.util.MessageValues;
 
 /**
  * Created by Nieo on 07/03/15.
@@ -20,15 +21,7 @@ import se.chalmers.fleetspeak.util.Command;
  */
 public class Connector {
 
-    public static final int CONNECT = 1;
-    public static final int DISCONNECT = 2;
-    public static final int SETNAME = 3;
-    public static final int MOVENEWROOM = 4;
-    public static final int MOVE = 5;
-    public static final int SETSOUNDPORT = 6;
 
-    public static final int CONNECTED = 10;
-    public static final int DISCONNECTED = 11;
 
     private SocketWriter socketWriter;
     private SocketReader socketListener;
@@ -37,6 +30,10 @@ public class Connector {
 
     private Socket socket;
     private Messenger threadMessenger;
+
+
+
+    private Handler handler = null;
 
     /**
      * @param h Handler to recieve objects from server
@@ -47,8 +44,6 @@ public class Connector {
         outThread.start();
         socketListener = new SocketReader(new Messenger(h));
         inThread = new Thread(socketListener);
-
-
     }
 
     /**
@@ -58,15 +53,15 @@ public class Connector {
      * @param port
      */
     public void connect(Handler callbackHandler, String ip, int port){
-        sendMessage(callbackHandler, CONNECT, ip, port);
+        sendMessage(callbackHandler, MessageValues.CONNECT, ip, port);
     }
 
     /**
      * Disconnects from the server
      * @param callbackHandler Handler for callback message
      */
-    public void discconect(Handler callbackHandler ){
-        sendMessage(callbackHandler, DISCONNECT, null, 0);
+    public void disconnect(Handler callbackHandler){
+        sendMessage(callbackHandler, MessageValues.DISCONNECT, null, 0);
     }
 
     /**
@@ -75,7 +70,7 @@ public class Connector {
      * @param name
      */
     public void setName(Handler callbackHandler, String name){
-        sendMessage(callbackHandler, SETNAME, name, 0);
+        sendMessage(callbackHandler, MessageValues.SETNAME, name, 0);
     }
 
     /**
@@ -84,7 +79,7 @@ public class Connector {
      * @param roomid id of room to move to
      */
     public void move(Handler callbackHandler, int roomid){
-        sendMessage(callbackHandler, MOVE, roomid, 0);
+        sendMessage(callbackHandler, MessageValues.MOVE, roomid, 0);
     }
 
     /**
@@ -93,29 +88,19 @@ public class Connector {
      * @param roomname name of new room
      */
     public void moveNewRoom(Handler callbackHandler, String roomname){
-        sendMessage(callbackHandler, MOVENEWROOM, roomname, 0);
-    }
-
-    /**
-     * Tell server what port you are using to receive soundpackets from a specific user
-     * @param callbackHandler Handler for callback message
-     * @param remoteUserid id of user
-     * @param port local port used to receive packets
-     */
-    public void setSoundPort(Handler callbackHandler, int remoteUserid, int port){
-        sendMessage(callbackHandler, SETSOUNDPORT, remoteUserid, port);
+        sendMessage(callbackHandler, MessageValues.MOVENEWROOM, roomname, 0);
     }
 
     /**
      * sends a message to the socketwriter
-     * @param callbackhandler handler for callbackamessage
+     * @param callbackHandler handler for callbackamessage
      * @param command command to send
      * @param key command key
      * @param value command value
      */
-    private void sendMessage(Handler callbackhandler, int command, Object key, int value){
+    private void sendMessage(Handler callbackHandler, int command, Object key, int value){
         try{
-            threadMessenger.send(Message.obtain(callbackhandler, command, value, 0, key));
+            threadMessenger.send(Message.obtain(callbackHandler, command, value, 0, key));
         }catch(RemoteException e){
             e.printStackTrace();
         }
@@ -145,7 +130,7 @@ public class Connector {
      */
     private class SocketWriter implements Runnable{
 
-        Handler handler = null;
+
         ObjectOutputStream oos;
 
         @Override
@@ -154,48 +139,52 @@ public class Connector {
 
             handler = new Handler() {
                 public void handleMessage(Message msg) {
-                    if (msg != null) {
-                        Log.i("Connector", "Command received. id: " + msg.what);
+                if (msg != null) {
+                    Log.i("Connector", "Command received. id: " + msg.what);
 
-                        switch (msg.what) {
-                            case CONNECT:
-                                Log.i("Connector", "Connecting...");
-                                try{
-                                    socket = new Socket((String)msg.obj, msg.arg1);
-                                    startSocketListener();
-                                    oos = new ObjectOutputStream(socket.getOutputStream());
-
-                                }catch(IOException e){
-                                    Log.i("EROORRORORR", "IOException" );
-                                    e.printStackTrace();
-                                }
-                                Log.i("Connector", "Connected to" + msg.obj + ":" + msg.arg1);
-                                try {
-                                    new Messenger(msg.getTarget()).send(Message.obtain(null, CONNECTED));
-                                } catch (RemoteException e) {
-                                    e.printStackTrace();
-                                }
-                                break;
-                            case DISCONNECT:
-                                sendCommand("closeSocket", null ,null);
-                                closeSocket();
-                                break;
-                            case SETNAME:
-                                sendCommand("setname", msg.obj, null);
-                                break;
-                            case MOVENEWROOM:
-                                sendCommand("movenewroom", msg.obj, null);
-                                break;
-                            case MOVE:
-                                sendCommand("move", msg.obj, null);
-                                break;
-                            case SETSOUNDPORT:
-                                sendCommand("setsoundport", msg.obj, msg.arg1);
-                                break;
-                            default:
-                                break;
-                        }
+                    switch (msg.what) {
+                        case MessageValues.CONNECT:
+                            Log.i("Connector", "Connecting...");
+                            try{
+                                socket = new Socket((String)msg.obj, msg.arg1);
+                                startSocketListener();
+                                oos = new ObjectOutputStream(socket.getOutputStream());
+                            }catch(IOException e){
+                                Log.i("Connector", "IOException" );
+                                e.printStackTrace();
+                            }
+                            Log.i("Connector", "Connected to" + msg.obj + ":" + msg.arg1);
+                            try {
+                                new Messenger(msg.getTarget()).send(Message.obtain(null, MessageValues.CONNECTED));
+                            } catch (RemoteException e) {
+                                e.printStackTrace();
+                            }
+                            break;
+                        case MessageValues.DISCONNECT:
+                            sendCommand("closeSocket", null ,null);
+                            closeSocket();
+                            try {
+                                new Messenger(msg.getTarget()).send(Message.obtain(null, MessageValues.DISCONNECTED));
+                            } catch (RemoteException e) {
+                                e.printStackTrace();
+                            }
+                            break;
+                        case MessageValues.SETNAME:
+                            sendCommand("setname", msg.obj, null);
+                            break;
+                        case MessageValues.MOVENEWROOM:
+                            sendCommand("movenewroom", msg.obj, null);
+                            break;
+                        case MessageValues.MOVE:
+                            sendCommand("move", msg.obj, null);
+                            break;
+                        case MessageValues.SETSOUNDPORT:
+                            sendCommand("setsoundport", msg.obj, msg.arg1);
+                            break;
+                        default:
+                            break;
                     }
+                }
                 }
             };
             threadMessenger = new Messenger(handler);

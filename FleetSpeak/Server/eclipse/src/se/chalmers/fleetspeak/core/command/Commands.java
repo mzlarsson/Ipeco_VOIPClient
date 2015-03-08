@@ -1,17 +1,11 @@
 package se.chalmers.fleetspeak.core.command;
 
-import java.util.Arrays;
-
-import se.chalmers.fleetspeak.core.TCPHandler;
 import se.chalmers.fleetspeak.core.command.impl.CommandFactory;
 import se.chalmers.fleetspeak.core.command.impl.CommandInfo;
+import se.chalmers.fleetspeak.core.command.impl.CommandResponse;
 import se.chalmers.fleetspeak.core.command.impl.ICommand;
 import se.chalmers.fleetspeak.core.permission.PermissionLevel;
 import se.chalmers.fleetspeak.core.permission.Permissions;
-import se.chalmers.fleetspeak.eventbus.EventBus;
-import se.chalmers.fleetspeak.eventbus.EventBusEvent;
-import se.chalmers.fleetspeak.eventbus.IEventBusSubscriber;
-import se.chalmers.fleetspeak.util.Log;
 
 
 /**
@@ -20,7 +14,7 @@ import se.chalmers.fleetspeak.util.Log;
  * @revised Matz Larsson
  *
  */
-public class Commands implements IEventBusSubscriber{
+public class Commands{
 
 	private static Commands instance;
 	
@@ -34,7 +28,6 @@ public class Commands implements IEventBusSubscriber{
 			cmdInfos[i] = commands[i].getInfo();
 		}
 
-		EventBus.getInstance().addSubscriber(this);
 		Permissions.addUserLevel(-1, PermissionLevel.ADMIN_ALL);		//FIXME only for debugging
 	}
 	
@@ -56,24 +49,12 @@ public class Commands implements IEventBusSubscriber{
 	 * @param params The parameters to the command in question.
 	 * @return true if successfully executed, false if denied of failed.
 	 */
-	public boolean execute(int requester, CommandInfo cmdInfo, Object... params) {
+	public CommandResponse execute(int requester, CommandInfo cmdInfo, Object... params) {
 		if(cmdInfo == null){
-			System.out.println(Arrays.toString(cmdInfos));
-			return false;
+			return null;
 		}
 		
-		//FIXME is the try-catch necessary
-		try{
-			if(commands[cmdInfo.getExecCode()].execute(requester, params)){
-				return true;
-			}else{
-				Log.logError("You do not have permission to do this");
-			}
-		}catch(InvalidCommandArgumentsException icae){
-			Log.logError(icae.getMessage());
-		}
-
-		return false;
+		return commands[cmdInfo.getExecCode()].execute(requester, params);
 	}
 	
 	
@@ -99,53 +80,12 @@ public class Commands implements IEventBusSubscriber{
 		}
 		return null;
 	}
-
-	/**
-	 * Handles all calls that is received via the EventBus
-	 */
-	@Override
-	public void eventPerformed(EventBusEvent event) {
-		if(event.getReciever().equals("CommandHandler")){
-			String name = getRealCommand(event.getCommand().getCommand());
-			CommandInfo info = findCommand(name);
-			if(info != null){
-				int requester = -1;
-				if(event.getActor() instanceof TCPHandler){
-					requester = ((TCPHandler)event.getActor()).getClientID();
-				}
-				
-				execute(requester, info, event.getCommand().getKey(), event.getCommand().getValue());
-			}else{
-				Log.logDebug("Command not found: "+name);
-			}
-		}else{
-			System.out.println("Does not handle cmd to "+event.getReciever()+": "+event.getCommand().getCommand());
-		}
-	}
-	
-	/**
-	 * Fix command names that are differently named on server/client
-	 * @param cmd The command to fix
-	 * @return The server command name of the given command
-	 */
-	private String getRealCommand(String cmd){
-		if(cmd.equals("setName")){
-			return "setUsername";
-		}else if(cmd.equals("createAndMove")){
-			return "moveUserToNewRoom";
-		}else if(cmd.equals("getUsers")){
-			return "broadcastUsers";
-		}
-		
-		return cmd;
-	}
 	
 	/**
 	 * Restores the Commands class to its closed state and resets the instance
 	 */
 	public static void terminate(){
 		if(instance != null){
-			EventBus.getInstance().removeSubscriber(instance);
 			instance = null;
 		}
 	}
