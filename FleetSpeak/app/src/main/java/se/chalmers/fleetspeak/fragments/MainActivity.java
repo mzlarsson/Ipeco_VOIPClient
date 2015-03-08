@@ -41,9 +41,8 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         prefEdit = prefs.edit();
         // Get the theme saved in shared preferences with key "Theme" if no value is accessed returns 1
-        int prefTheme = prefs.getInt("Theme", 1);
+
         // Set the theme of the application and username
-        Utils.setTheme(prefTheme);
         Utils.setUsername(prefs.getString("username", "username"));
         Utils.setIpAdress(prefs.getString("ipAdress", "46.239.103.195"));
         Utils.setPortNumber(prefs.getInt("portNumber", 8867));
@@ -76,6 +75,7 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
     }
 
     public void resetFragment(){
+        Log.i("MainActivity"," reseting");
         handler.resetFragment(this);
     }
     /*
@@ -84,10 +84,10 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
     @param ipAdress - the adress to the server
     @param portNumber - the port number to the server
      */
-    public void setUserSettings(String username, String ipAdress, int portNumber){
-        prefEdit.putString("username", username);
-        prefEdit.putString("ipAdress", ipAdress);
-        prefEdit.putInt("portNumber", portNumber);
+    public void setUserSettings(){
+        prefEdit.putString("username", Utils.getUsername());
+        prefEdit.putString("ipAdress", Utils.getIpAdress());
+        prefEdit.putInt("portNumber", Utils.getPort());
         prefEdit.putInt("Theme", Utils.getThemeID());
         prefEdit.commit();
     }
@@ -169,7 +169,6 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
               case MessageValues.DISCONNECTED:
                   setFragment(FragmentHandler.FragmentName.START);
               break;
-
           }
       }
     };
