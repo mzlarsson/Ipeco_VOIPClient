@@ -45,23 +45,17 @@ public class ServerGUIRoomController implements IEventBusSubscriber{
 	}
 	
 	public void initialize(){
-		if(roomsRoot == null){
-			System.out.println("initializing room root");
-			roomsRoot = new TreeItem<String>("Rooms", allRoomsIcon);
-			roomsRoot.setExpanded(true);
-			treeRoot.setRoot(roomsRoot);
-		}else{
-			System.out.println("root is not null");
-		}
+		roomsRoot = new TreeItem<String>("Rooms", allRoomsIcon);
+		roomsRoot.setExpanded(true);
+		treeRoot.setRoot(roomsRoot);
 	}
 	
 	public void registerClient(int id, int roomid){
-		clients.put(id, "");
+		clients.put(id, "[Unnamed user]");
 		moveClient(id, roomid);
 	}
 	
 	public void registerRoom(int id, String name){
-		System.out.println("\t\t Registering room id:"+id+" name:"+name);
 		rooms.put(id, name);
 		
 		//Update GUI
@@ -78,19 +72,24 @@ public class ServerGUIRoomController implements IEventBusSubscriber{
 	}
 	
 	public void moveClient(int clientID, int roomID){
-		System.out.println(roomID);
+		//Remove from old room
 		removeClient(clientID);
 		
+		//Add to new room
 		clientRooms.put(clientID, roomID);
-		final TreeItem<String> room = findRoom(roomID);
-		final TreeItem<String> client = new TreeItem<String>(clients.get(clientID));
-		
+		//Do GUI stuff
 		Platform.runLater(new Runnable(){
 			@Override
 			public void run() {
-				room.getChildren().add(client);
-				if(room.getChildren().remove(findClient("[None]", room))){
-					room.setExpanded(true);
+				final TreeItem<String> room = findRoom(roomID);
+				final TreeItem<String> client = new TreeItem<String>(clients.get(clientID));
+				if(room != null){
+					room.getChildren().add(client);
+					if(room.getChildren().remove(findClient("[None]", room))){
+						room.setExpanded(true);
+					}
+				}else{
+					System.out.println("RAGE! Could not find room to update");
 				}
 			}
 		});
@@ -120,45 +119,43 @@ public class ServerGUIRoomController implements IEventBusSubscriber{
 	public void removeRoom(int roomID){
 		for(Entry<Integer, Integer> relation : clientRooms.entrySet()){
 			if(relation.getValue() == roomID){
-				System.out.println("removing client from room");
 				clients.remove(relation.getKey());
 				clientRooms.remove(relation.getKey());
 			}
 		}
 		
-		//TODO concurrentmodificationexception
 		rooms.remove(roomID);
 	}
 	
 	public void renameClient(int clientID, String newName){
 		Integer currentRoom = clientRooms.get(clientID);
 		if(currentRoom != null){
-			TreeItem<String> clientNode = findClient(clientID, findRoom(currentRoom));
-			if(clientNode != null){
-				//Update GUI
-				Platform.runLater(new Runnable(){
-					@Override
-					public void run() {
+			//Update GUI
+			Platform.runLater(new Runnable(){
+				@Override
+				public void run() {
+					TreeItem<String> clientNode = findClient(clientID, findRoom(currentRoom));
+					if(clientNode != null){
 						clientNode.setValue(newName);
 					}
-				});
-			}
+				}
+			});
 		}
 		
 		clients.put(clientID, newName);
 	}
 	
 	public void renameRoom(int roomID, String newName){
-		TreeItem<String> roomNode = findRoom(roomID);
-		if(roomNode != null){
-			//Update GUI
-			Platform.runLater(new Runnable(){
-				@Override
-				public void run() {
+		//Update GUI
+		Platform.runLater(new Runnable(){
+			@Override
+			public void run() {
+				TreeItem<String> roomNode = findRoom(roomID);
+				if(roomNode != null){
 					roomNode.setValue(newName);
 				}
-			});
-		}
+			}
+		});
 		
 		rooms.put(roomID, newName);
 	}
@@ -192,7 +189,6 @@ public class ServerGUIRoomController implements IEventBusSubscriber{
 
 	@Override
 	public void eventPerformed(EventBusEvent event) {
-		System.out.println("ServerGuiRoomController: "+event.toString());
 		if(event.getReciever().equals("broadcast")){
 			String cmd = event.getCommand().getCommand();
 			if(cmd.equals("addedUser")){
