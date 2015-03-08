@@ -109,9 +109,6 @@ public class ServerGUI extends Application implements StageOwner{
             loader.setLocation(this.getClass().getClassLoader().getResource("dynamicinfo.fxml"));
             VBox dynamicInfo = (VBox) loader.load();
             
-            ServerGUIRoomController c = (ServerGUIRoomController)loader.getController();
-            c.registerRoom("Lobby", 0);
-            
             ((ScrollPane)this.primaryStage.getScene().lookup("#dynamicInfo")).setContent(dynamicInfo);
         } catch (IOException e) {
             e.printStackTrace();
