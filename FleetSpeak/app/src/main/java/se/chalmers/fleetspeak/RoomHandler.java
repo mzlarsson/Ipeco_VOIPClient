@@ -69,8 +69,6 @@ public class RoomHandler{
         postUpdate(MessageValues.MODELCHANGED);
     }
 
-
-
     /**
      * Removes a user found in the room it's residing in
      * @param user The user to be removed

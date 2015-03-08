@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import se.chalmers.fleetspeak.eventbus.EventBus;
-import se.chalmers.fleetspeak.eventbus.EventBusEvent;
 import se.chalmers.fleetspeak.util.Command;
 import se.chalmers.fleetspeak.util.Log;
 /**
@@ -12,6 +11,7 @@ import se.chalmers.fleetspeak.util.Log;
  * Based on the RoomHandler on the client side.
  * @author David Michaelsson
  * @author Patrik Haar
+ * @author Matz Larsson
  */
 public class RoomHandler {
 	
@@ -27,7 +27,7 @@ public class RoomHandler {
 	private RoomHandler(){
 		Log.logDebug("Creating a new RoomHandler");
 		rooms = new HashMap<Room,ArrayList<Client>>();
-		defaultRoom = new Room("Lobby", 0);
+		defaultRoom = new Room("Lobby", true);
 	}
 	
 	/**
@@ -50,18 +50,20 @@ public class RoomHandler {
 		if(c != null && r != null){
 			if (!rooms.containsKey(r) || rooms.get(r) == null) {
 	            ArrayList<Client> list = new ArrayList<Client>();
+	            c.moveToRoom(list);
 	            list.add(c);
-	            c.moveToRoom(r.getId());
 	            rooms.put(r,list);
+	            EventBus.postEvent("broadcast", new Command("createdRoom", r.getId(), r.getName()), this);
 			}else{
 				 ArrayList<Client> list = rooms.get(r);
 				 if(!list.contains(c)){
+					 for (Client listeners : list) {
+						 listeners.requestListeningClient(c);
+					 }
+					 c.moveToRoom(list);
 					 list.add(c);
-					 c.moveToRoom(r.getId());
 				 }
 			}
-			
-			changeEvent();
 		}
 	}
 	
@@ -76,10 +78,12 @@ public class RoomHandler {
 	
 	/**
 	 * Adds a client to the default room.
+	 * NOTE: Call on this only when the user connected to server, not on move actions.
 	 * @param client the client to be added.
 	 */
 	public void addClient(Client client) {
 		addClient(client, defaultRoom);
+		EventBus.postEvent("broadcast", new Command("addedUser", client.getClientID(), defaultRoom.getId()), this);
 	}
 
 	/**
@@ -88,31 +92,30 @@ public class RoomHandler {
 	 * @param terminate true if the the Client should be removed completely
 	 * false to just remove the room tracking, used for switching rooms.
 	 */
-	public void removeClient(Client c, boolean terminate){
+	public boolean removeClient(Client c, boolean terminate){
 		if(c != null){
 			for(Room r : rooms.keySet()){
 				ArrayList<Client> clientList = rooms.get(r);
 				if(clientList.contains(c)){
 					clientList.remove(c);
+					for (Client listeners : clientList) {
+						listeners.removeListeningClient(c);
+					}
+					c.removeAllListeningClients();
 					if (terminate) {
 						c.terminate();
+						EventBus.postEvent("broadcast", new Command("removedUser", c.getClientID(), null), this);
 					}
-					if(clientList.isEmpty() && r.getId() != 0){
-						Log.logDebug("Removing room");
-						rooms.remove(r);
-						r.terminate();
-						EventBus.getInstance().fireEvent(new EventBusEvent("UpdateStatus", 
-								new Command("removedRoom", r.getId(), null), null));
+					if(clientList.isEmpty() && !r.isPermanent()){
+						removeRoom(r);
 					}
 					
-					EventBus.getInstance().fireEvent(new EventBusEvent("UpdateStatus", 
-							new Command("removedClient", c.getClientID(), r.getId()), null));
-					break;
+					return true;
 				}
 			}
-			
-			changeEvent();
 		}
+		
+		return false;
 	}
 	
 	/**
@@ -121,16 +124,44 @@ public class RoomHandler {
 	 * @param terminate true if the the Client should be removed completely
 	 * false to just remove the room tracking, used for switching rooms.
 	 */
-	public void removeClient(int clientID, boolean terminate){
-		this.removeClient(findClient(clientID), terminate);
+	public boolean removeClient(int clientID, boolean terminate){
+		return removeClient(findClient(clientID), terminate);
 	}
 
 	/**
 	 * Removes the client from its current room.
 	 * @param clientID the ID of the client to be removed.
 	 */
-	public void removeClient(int clientID){
-		this.removeClient(findClient(clientID), false);
+	public boolean removeClient(int clientID){
+		return removeClient(findClient(clientID), false);
+	}
+	
+	/**
+	 * Removes a room permanently.
+	 * NOTE: The room will be removed regardless of the permanent property
+	 * @param room The room to remove
+	 * @return <code>true</code> if the room was removed
+	 */
+	public boolean removeRoom(Room room){
+		if(room != null){
+			Log.logDebug("Removing room");
+			rooms.remove(room);
+			room.terminate();
+			EventBus.postEvent("broadcast", new Command("removedRoom", room.getId(), null), this);
+			return true;
+		}
+		
+		return false;
+	}
+
+	/**
+	 * Removes a room permanently.
+	 * NOTE: The room will be removed regardless of the permanent property
+	 * @param roomID The ID of the room to remove
+	 * @return <code>true</code> if the room was removed
+	 */
+	public boolean removeRoom(int roomID){
+		return removeRoom(findRoom(roomID));
 	}
 	
 	/**
@@ -138,9 +169,15 @@ public class RoomHandler {
 	 * @param c The Client to be moved.
 	 * @param r The targeted Room.
 	 */
-	public void moveClient(Client c, Room r){
-		this.removeClient(c, false);
-		this.addClient(c, r);
+	public boolean moveClient(Client c, Room r){
+		if(c!=null && r!=null){
+			this.removeClient(c, false);
+			this.addClient(c, r);
+			EventBus.postEvent("broadcast", new Command("movedUser", c.getClientID(), r.getId()), this);
+			return true;
+		}else{
+			return false;
+		}
 	}
 	
 	/**
@@ -148,8 +185,8 @@ public class RoomHandler {
 	 * @param clientID The ID of the Client to be moved.
 	 * @param r The targeted Room.
 	 */
-	public void moveClient(int clientID, Room room){
-		this.moveClient(this.findClient(clientID), room);
+	public boolean moveClient(int clientID, Room room){
+		return moveClient(this.findClient(clientID), room);
 	}
 	
 	/**
@@ -157,8 +194,8 @@ public class RoomHandler {
 	 * @param clientID The ID of the Client to be moved.
 	 * @param roomID The ID of the targeted Room.
 	 */
-	public void moveClient(int clientID, int roomID){
-		this.moveClient(this.findClient(clientID), this.findRoom(roomID));
+	public boolean moveClient(int clientID, int roomID){
+		return moveClient(this.findClient(clientID), this.findRoom(roomID));
 	}
 	
 	/**
@@ -183,12 +220,15 @@ public class RoomHandler {
 	 * @param clientID the ID of the client to set the name of.
 	 * @param name the new name of the client.
 	 */
-	public void setUsername(int clientID, String name) {
+	public boolean setUsername(int clientID, String name) {
 		Client c = findClient(clientID);
 		if(c != null){
 			c.setName(name);
-			changeEvent();
+			EventBus.postEvent("broadcast", new Command("changedUsername", c.getClientID(), c.getName()), this);
+			return true;
 		}
+		
+		return false;
 	}
 	
 	/**
@@ -196,12 +236,15 @@ public class RoomHandler {
 	 * @param roomID the ID of the room to set the name of.
 	 * @param name the new name of the room.
 	 */
-	public void setRoomName(int roomID, String name) {
+	public boolean setRoomName(int roomID, String name) {
 		Room r = findRoom(roomID);
 		if(r != null){
 			r.setName(name);
-			changeEvent();
+			EventBus.postEvent("broadcast", new Command("changedRoomName", r.getId(), r.getName()), this);
+			return true;
 		}
+		
+		return false;
 	}
 
 	/**
@@ -248,46 +291,5 @@ public class RoomHandler {
 			}
 		}
 		rooms.clear();
-		changeEvent();
-	}
-
-	/**
-	 * Gets a formated String for printing the room structure in the console.
-	 * @return The room structure as a String.
-	 */
-	public String getRoomInfo() {
-		StringBuilder info = new StringBuilder();
-		info.append(rooms.keySet().isEmpty()?"No clients connected.":"");
-		for (Room room : getRooms()) {
-			info.append(room.toString() + "\n");
-			for (Client client : getClients(room)) {
-				info.append("\t" + client.toString() + "\n");
-			}
-		}
-		return info.toString();
-	}
-	
-	/**
-	 * Gets a HTML-formatted String for printing the room structure in the GUI.
-	 * @return The room structure as a String.
-	 */
-	public String getHTMLRoomInfo() {
-		StringBuilder info = new StringBuilder();
-		info.append("<html>" + (rooms.keySet().isEmpty()?"No clients connected.":""));
-		for (Room room : getRooms()) {
-			info.append(room.getName() + " (" + room.getId() + ")<br>");
-			for (Client client : getClients(room)) {
-				info.append("&nbsp;&nbsp;&nbsp;&nbsp;" + client.getName() + " (" + client.getClientID() + ")<br>");
-			}
-		}
-		info.append("</html>");
-		return info.toString();
-	}
-	
-	/**
-	 * Send a notification to the GUI that the room structure has been changed
-	 */
-	public void changeEvent() {
-		EventBus.getInstance().fireEvent(new EventBusEvent("ServerGUI", new Command("roomsChanged", null, getHTMLRoomInfo()), this));
 	}
 }
