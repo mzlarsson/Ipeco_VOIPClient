@@ -1,38 +1,21 @@
 package se.chalmers.fleetspeak.fragments;
 
-import android.app.ActionBar;
-import android.app.Activity;
-import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.os.Message;
-import android.os.Messenger;
-import android.os.RemoteException;
 import android.preference.PreferenceManager;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 
 import java.util.ArrayList;
 
+import se.chalmers.fleetspeak.Model;
 import se.chalmers.fleetspeak.R;
 import se.chalmers.fleetspeak.Room;
-import se.chalmers.fleetspeak.ServerHandler;
-import se.chalmers.fleetspeak.SocketService;
 import se.chalmers.fleetspeak.User;
-import se.chalmers.fleetspeak.sound.SoundController;
 import se.chalmers.fleetspeak.truck.TruckDataHandler;
 import se.chalmers.fleetspeak.truck.TruckStateListener;
-import se.chalmers.fleetspeak.util.ServiceUtil;
 import se.chalmers.fleetspeak.util.Utils;
 
 /**
@@ -44,28 +27,11 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
     private SharedPreferences prefs;
     private SharedPreferences.Editor prefEdit;
     private FragmentHandler handler = new FragmentHandler();
-
-    static Messenger mService = null;
-
-    /**
-     * A Anonymous class to control the connection to the socket service
-     */
-    private ServiceConnection mConnection = new ServiceConnection() {
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            Log.i("SERVICECONNECTION", "service connected to StartActivity");
-            mService = new Messenger(service);
-
-        }
-
-        public void onServiceDisconnected(ComponentName className) {
-            // This is called when the connection with the service has been unexpectedly disconnected - process crashed.
-            mService = null;
-            Log.i("SERVICECONNECTION", "Disconnected");
-        }
-    };
-
+    private Model model;
 
     protected void onCreate(Bundle savedInstanceState){
+
+        model = new Model(this);
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         prefEdit = prefs.edit();
@@ -88,7 +54,10 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
         // Set the start fragment
         setFragment(FragmentHandler.FragmentName.START);
 
+
     }
+
+
     /*
     Switch the current fragment showned in the view
     @param fragName - the fragement to be showed
@@ -125,11 +94,12 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
      * A method to start the connection to the server with a given IP adress, port number and username.
      */
     public void startConnection(){
-        String ip = Utils.getIpAdress();
+        String ip = "192.168.10.100"; //FIXME fuckade ur lite Utils.getIpAdress();
         String userName = Utils.getUsername();
         int port = Utils.getPort();
         setFragment(FragmentHandler.FragmentName.JOIN);
-
+        model.connect(ip, port);
+        model.setName(userName);
     }
 
     protected void onPause() {
@@ -182,11 +152,11 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
     public void updateRooms(){
 
     }
-    public ArrayList<Room> getRoom(){
-        return  null;
+    public ArrayList<Room> getRooms(){
+        return  model.getRooms();
     }
-    public ArrayList<User> getUsers(){
-        return  null;
+    public ArrayList<User> getUsers(int id){
+        return  model.getUsers(id);
     }
 
 }

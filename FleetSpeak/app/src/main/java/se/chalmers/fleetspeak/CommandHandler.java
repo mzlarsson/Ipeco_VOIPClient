@@ -1,14 +1,9 @@
 package se.chalmers.fleetspeak;
 
-import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-
-import se.chalmers.fleetspeak.fragments.MainActivity;
-import se.chalmers.fleetspeak.sound.SoundController;
 import se.chalmers.fleetspeak.util.Command;
 
 /**
@@ -19,26 +14,16 @@ import se.chalmers.fleetspeak.util.Command;
  */
 public class CommandHandler extends Handler {
 
-    private static CommandHandler commandHandler = new CommandHandler();
-    private static RoomHandler roomHandler;
-    private static User user;
+    private  RoomHandler roomHandler;
 
 
-    LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(new MainActivity());
-
-
-
-    private CommandHandler(){
+    public CommandHandler(RoomHandler roomHandler){
         super();
-        roomHandler = new RoomHandler();
+        this.roomHandler = roomHandler;
     }
 
-    public static CommandHandler getInstance(){
-        return commandHandler;
-    }
-
-    /**
-     * Handles incomming messages form SocketService and informs GUI components
+     /**
+     * Handles incomming messages form SocketService and changes the model
      * @param msg
      */
 
@@ -46,17 +31,13 @@ public class CommandHandler extends Handler {
         Command command = (Command) msg.obj;
         String sCommand = command.getCommand();
         Log.i("Commandhandler", "Got the command " + sCommand);
-        //TODO
 
-        String aCommand = "dataUpdate";
+        //TODO way to send info to activity
 
+        //TODO implement  spec
         if(sCommand.equals("setID")){
-            user = new User((Integer)command.getKey());
-            roomHandler = new RoomHandler();
-            roomHandler.addUser(user);
-            aCommand = "connected";
+          //TODO where to save id??
         }else if(sCommand.equals("connection failed")){
-            aCommand = "connection failed";
         }else if(sCommand.equals("setName")){
             User u = roomHandler.getUser((Integer) command.getKey());
             u.setName((String)command.getValue());
@@ -76,46 +57,16 @@ public class CommandHandler extends Handler {
             Log.i(this.getClass().toString(), "Create and move user");
             String[] s = ((String) command.getValue()).split(",");
             roomHandler.moveUser(roomHandler.getUser((Integer) command.getKey()), new Room(s[0], Integer.parseInt(s[1])));
-            if((Integer)command.getKey() == user.getId())
-                aCommand = "roomCreated," + s[1];
         }else if(sCommand.equals("Disconnected")){
-            SoundController.close();
-            roomHandler = new RoomHandler();
-            aCommand = "Disconnected";
         }else{
-            aCommand = "unknown command";
         }
 
         Log.d(this.getClass().toString(), roomHandler.toString());
 
 
-        Intent intent = new Intent("update");
-        intent.putExtra("message", aCommand);
-        localBroadcastManager.sendBroadcast(intent);
-
-    }
-
-    public static User[] getUsers(int roomID){
-        return roomHandler.getUsers(roomID);
-    }
-
-    public static Room[] getRooms(){
-         return roomHandler.getRooms();
-    }
-
-    public static User getUser(){
-        return user;
     }
 
 
-    private void listUsers(){
-        for(Room r : roomHandler.getRooms()){
-            Log.i("LISTUSER", "RoomID " + r.getId());
-            for(User u : roomHandler.getUsers(r)){
-                Log.i("LISTUSER", u.toString());
-            }
-        }
-    }
 
 
 

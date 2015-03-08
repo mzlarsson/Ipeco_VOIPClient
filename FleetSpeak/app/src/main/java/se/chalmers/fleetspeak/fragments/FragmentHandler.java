@@ -1,6 +1,5 @@
 package se.chalmers.fleetspeak.fragments;
 
-import android.app.Activity;
 import android.app.Fragment;
 
 import se.chalmers.fleetspeak.util.Utils;
