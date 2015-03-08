@@ -18,6 +18,7 @@ import se.chalmers.fleetspeak.util.PortFactory;
  */
 public class Router implements Runnable{
 	private boolean running;
+	private int inportNbr;
 	private DatagramSocket inport;
 	private DatagramSocket outport;
 	private Map<Integer, DatagramPacket> clients;
@@ -28,8 +29,9 @@ public class Router implements Runnable{
 	 * @param inPort The port from which the data is taken from
 	 */
 	public Router(){
+		inportNbr = PortFactory.getInstance().getPort();
 		try {
-			inport = new DatagramSocket(PortFactory.getInstance().getPort());
+			inport = new DatagramSocket(inportNbr);
 			outport = new DatagramSocket();
 		} catch (SocketException e) {
 			Log.log("Failed to create datagram sockets");
@@ -100,7 +102,7 @@ public class Router implements Runnable{
 	 * @return The port that the user should send data to
 	 */
 	public int getReceivePort(){
-		return this.inport.getPort();
+		return inportNbr;
 	}
 	
 	/**
@@ -108,7 +110,9 @@ public class Router implements Runnable{
 	 */
 	public void terminate(){
 		running = false;
+		inport.close();
+		outport.close();
 		removeAllClients();
-		PortFactory.getInstance().freePort(inport.getLocalPort());
+		PortFactory.getInstance().freePort(inportNbr);
 	}
 }
