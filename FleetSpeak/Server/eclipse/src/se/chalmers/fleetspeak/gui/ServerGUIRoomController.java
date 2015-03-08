@@ -44,12 +44,12 @@ public class ServerGUIRoomController implements IEventBusSubscriber{
 		}catch(Exception e){System.out.println(e.getMessage());}
 	}
 	
-	public void registerClient(String name, int id){
-		clients.put(id, name);
-		moveClient(id, 0);
+	public void registerClient(int id, int roomid){
+		clients.put(id, "");
+		moveClient(id, roomid);
 	}
 	
-	public void registerRoom(String name, int id){
+	public void registerRoom(int id, String name){
 		System.out.println("\t\t Registering room id:"+id+" name:"+name);
 		rooms.put(id, name);
 		
@@ -122,6 +122,15 @@ public class ServerGUIRoomController implements IEventBusSubscriber{
 		clients.put(clientID, newName);
 	}
 	
+	public void renameRoom(int roomID, String newName){
+		TreeItem<String> roomNode = findRoom(roomID);
+		if(roomNode != null){
+			roomNode.setValue(newName);
+		}
+		
+		rooms.put(roomID, newName);
+	}
+	
 	private TreeItem<String> findRoom(int roomID){
 		String name = rooms.get(roomID);
 		ObservableList<TreeItem<String>> roomItems = roomsRoot.getChildren();
@@ -151,35 +160,23 @@ public class ServerGUIRoomController implements IEventBusSubscriber{
 
 	@Override
 	public void eventPerformed(EventBusEvent event) {
-		if(!event.getReciever().equals("broadcast")){
+		System.out.println("ServerGuiRoomController: "+event.toString());
+		if(event.getReciever().equals("broadcast")){
 			String cmd = event.getCommand().getCommand();
-			System.out.println("ServerGuiRoomController caught event: "+cmd+" "+event.getCommand().getKey()+" "+event.getCommand().getValue());
-			if(cmd.equals("addUser")){
-				String[] data = ((String)event.getCommand().getKey()).split(",");
-				registerClient(data[0], Integer.parseInt(data[1]));
-				
-	//			data = ((String)event.getCommand().getValue()).split(",");
-			}else if(cmd.equals("move")){
+			if(cmd.equals("addedUser")){
+				registerClient((Integer)event.getCommand().getKey(), (Integer)event.getCommand().getValue());
+			}else if(cmd.equals("changedUsername")){
+				renameClient((Integer)event.getCommand().getKey(), (String)event.getCommand().getValue());
+			}else if(cmd.equals("changedRoomName")){
+				renameRoom((Integer)event.getCommand().getKey(), (String)event.getCommand().getValue());
+			}else if(cmd.equals("movedUser")){
 				moveClient((Integer)event.getCommand().getKey(), (Integer)event.getCommand().getValue());
-			}else if(cmd.equals("removedClient")){
+			}else if(cmd.equals("createdRoom")){
+				registerRoom((Integer)event.getCommand().getKey(), (String)event.getCommand().getValue());
+			}else if(cmd.equals("removedUser")){
 				removeClient((Integer)event.getCommand().getKey());
 			}else if(cmd.equals("removedRoom")){
 				removeRoom((Integer)event.getCommand().getKey());
-			}else if(cmd.equals("setName")){
-				renameClient((Integer)event.getCommand().getKey(), (String)event.getCommand().getValue());
-			}
-		}else{
-			String cmd = event.getCommand().getCommand();
-			if(cmd.equals("createAndMove")){
-				Object key = event.getCommand().getKey();
-				int clientID = (key.getClass()==Integer.class||key.getClass()==int.class?
-								(Integer)key:Integer.parseInt((String)event.getCommand().getKey()));
-				String[] room = ((String)event.getCommand().getValue()).split(",");
-				if(room.length>=2){
-					int roomID = Integer.parseInt(room[1]);
-					registerRoom(room[0], roomID);
-					moveClient(clientID, roomID);
-				}
 			}
 		}
 	}
