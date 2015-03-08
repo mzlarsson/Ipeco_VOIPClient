@@ -51,10 +51,11 @@ public class RoomHandler{
     /**
      * Adds an user to a room
      * @param user The user to be added
-     * @param room The destination room
+     * @param roomid The id of the destination room
      */
 
-    public void addUser(User user, Room room) {
+    public void addUser(User user, int roomid) {
+        Room room = findRoom(roomid);
         if (!rooms.containsKey(room) || rooms.get(room) == null) {
             ArrayList<User> list = new ArrayList<User>();
             list.add(user);
@@ -68,13 +69,6 @@ public class RoomHandler{
         postUpdate(MessageValues.MODELCHANGED);
     }
 
-    /**
-     * Adds an user to a defaultRoom
-     * @param user The user to be added
-     */
-    public void addUser(User user){
-        addUser(user,defaultRoom);
-    }
 
 
     /**
@@ -102,15 +96,6 @@ public class RoomHandler{
         removeUser(getUser(userID));
     }
 
-    /**
-     * Moves a user to a specified room
-     * @param user The user to be moved
-     * @param targetRoom The room the user to be moved to
-     */
-    public void moveUser(User user, Room targetRoom) {
-        removeUser(user);
-        addUser(user, targetRoom);
-    }
 
     /**
      * Moves a user to a specified
@@ -118,7 +103,9 @@ public class RoomHandler{
      * @param targetRoomID The ID of the destination room
      */
     public void moveUser(int userID, int targetRoomID) {
-        moveUser(getUser(userID), findRoom(targetRoomID));
+        User user = getUser(userid);
+        removeUser(user);
+        addUser(user, targetRoomID);
     }
 
     /**
