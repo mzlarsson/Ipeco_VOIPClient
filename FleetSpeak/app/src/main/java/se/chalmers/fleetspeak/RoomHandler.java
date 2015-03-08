@@ -1,10 +1,16 @@
 package se.chalmers.fleetspeak;
 
+import android.os.Handler;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
+
+import se.chalmers.fleetspeak.util.MessageValues;
 
 /**
  * A class for keeping tracks of which room the different users are in.
@@ -16,17 +22,40 @@ public class RoomHandler{
 
     private Room defaultRoom;
 
-    public RoomHandler() {
+
+    private int userid;
+
+    private int currentroom;
+
+    private Messenger updateMessenger;
+
+
+    public RoomHandler(Handler updateListener) {
         rooms = new HashMap<Room,ArrayList<User>>();
         defaultRoom = new Room("Lobby",0);
+
+        updateMessenger = new Messenger(updateListener);
+
     }
+
+    public int getUserid() {
+        return userid;
+    }
+
+    public void setUserid(int userid) {
+        this.userid = userid;
+        postUpdate(MessageValues.MODELCHANGED);
+    }
+
 
     /**
      * Adds an user to a room
      * @param user The user to be added
-     * @param room The destination room
+     * @param roomid The id of the destination room
      */
-    public void addUser(User user, Room room) {
+
+    public void addUser(User user, int roomid) {
+        Room room = findRoom(roomid);
         if (!rooms.containsKey(room) || rooms.get(room) == null) {
             ArrayList<User> list = new ArrayList<User>();
             list.add(user);
@@ -37,16 +66,8 @@ public class RoomHandler{
                 list.add(user);
             }
         }
+        postUpdate(MessageValues.MODELCHANGED);
     }
-
-    /**
-     * Adds an user to a defaultRoom
-     * @param user The user to be added
-     */
-    public void addUser(User user){
-        addUser(user,defaultRoom);
-    }
-
 
     /**
      * Removes a user found in the room it's residing in
@@ -58,11 +79,7 @@ public class RoomHandler{
             if (userList.contains(user)) {
                 userList.remove(user);
                 Log.i(this.getClass().toString(), "user removed");
-                if (userList.isEmpty()) {
-                    if(room.getId() != 0)
-                        rooms.remove(room);
-
-                }
+                postUpdate(MessageValues.MODELCHANGED);
                 break;
             }
         }
@@ -77,15 +94,6 @@ public class RoomHandler{
         removeUser(getUser(userID));
     }
 
-    /**
-     * Moves a user to a specified room
-     * @param user The user to be moved
-     * @param targetRoom The room the user to be moved to
-     */
-    public void moveUser(User user, Room targetRoom) {
-        removeUser(user);
-        addUser(user, targetRoom);
-    }
 
     /**
      * Moves a user to a specified
@@ -93,7 +101,9 @@ public class RoomHandler{
      * @param targetRoomID The ID of the destination room
      */
     public void moveUser(int userID, int targetRoomID) {
-        moveUser(getUser(userID), findRoom(targetRoomID));
+        User user = getUser(userid);
+        removeUser(user);
+        addUser(user, targetRoomID);
     }
 
     /**
@@ -164,5 +174,32 @@ public class RoomHandler{
             }
         }
         return outPrint;
+    }
+
+
+
+
+    public void addRoom(int roomid, String roomname) {
+        Room room = new Room(roomname, roomid);
+        ArrayList<User> list = new ArrayList<User>();
+        rooms.put(room, list);
+        postUpdate(MessageValues.MODELCHANGED);
+    }
+
+    public void removeRoom(int roomid) {
+        rooms.remove(findRoom(roomid));
+    }
+
+    public void changeRoomName(int roomid, String roomname) {
+        findRoom(roomid).setName(roomname);
+        postUpdate(MessageValues.MODELCHANGED);
+    }
+
+    private void postUpdate(int what){
+        try {
+            updateMessenger.send(Message.obtain(null, what));
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 }

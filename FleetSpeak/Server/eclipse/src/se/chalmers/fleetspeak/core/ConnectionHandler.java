@@ -8,7 +8,6 @@ import java.net.UnknownHostException;
 
 import se.chalmers.fleetspeak.core.command.Commands;
 import se.chalmers.fleetspeak.core.permission.PermissionLevel;
-import se.chalmers.fleetspeak.core.permission.Permissions;
 import se.chalmers.fleetspeak.sound.Constants;
 import se.chalmers.fleetspeak.util.Log;
 /**
@@ -63,11 +62,10 @@ public class ConnectionHandler{
         Log.log("A new person joined");
         
         //Create and forward client
-        Client client = new Client(clientSocket, port);
+        Client client = new Client(clientSocket);
         
         Commands cmds = Commands.getInstance();
-        Permissions.addUserLevel(client.getClientID(), PermissionLevel.ADMIN_ALL);
-        cmds.execute(-1, cmds.findCommand("AddUser"), client);
+        cmds.execute(-1, cmds.findCommand("AddUser"), client, PermissionLevel.ADMIN_ALL); // TODO If not all clients should have ADMIN rights this is the place.
     }
     
     public boolean isRunning(){
