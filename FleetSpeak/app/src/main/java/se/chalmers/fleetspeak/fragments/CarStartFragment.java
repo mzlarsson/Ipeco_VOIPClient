@@ -4,6 +4,8 @@ import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
@@ -28,6 +30,7 @@ public class CarStartFragment extends Fragment {
         LayoutInflater localInflater = inflater.cloneInContext(contextThemeWrapper);
 
         View view = localInflater.inflate(R.layout.car_start_fragment, container, false);
+        getActivity().getWindow().setBackgroundDrawable(new ColorDrawable(Utils.getThemeID() == R.style.Theme_Fleetspeak_light ? Color.WHITE : Color.BLACK));
 
         final Button connect = (Button)view.findViewById(R.id.connectionButton);
         connect.setOnClickListener(new View.OnClickListener() {
@@ -52,6 +55,7 @@ public class CarStartFragment extends Fragment {
         int id = item.getItemId();
         if (id == R.id.day_night_toggle) {
             Utils.changeTheme((MainActivity)this.getActivity());
+
             return true;
         }
         return super.onOptionsItemSelected(item);

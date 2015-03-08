@@ -1,6 +1,7 @@
 package se.chalmers.fleetspeak.fragments;
 
 import android.app.Fragment;
+import android.util.Log;
 
 import se.chalmers.fleetspeak.util.Utils;
 
@@ -22,7 +23,6 @@ public class FragmentHandler {
         switch (name) {
             case START:
                 return Utils.getCarMode()?fragments[1]:fragments[0];
-
             case JOIN:
                 JoinFragment fragment = (JoinFragment)fragments[2];
                 fragment.updateRooms();
@@ -60,17 +60,7 @@ public class FragmentHandler {
        }
     }
     public void resetFragment(MainActivity activity){
-        if(currentFragment == FragmentName.CHAT){
-            fragments[3] = new ChatFragment();
-        }else if(currentFragment == FragmentName.JOIN){
-            fragments[2] = new JoinFragment();
-        }else {
-            if(Utils.getCarMode()){
-                fragments[1] = new CarStartFragment();
-            }else{
-                fragments[0] = new StartFragment();
-            }
-        }
+        fragments = new Fragment[] { new StartFragment(), new CarStartFragment(), new JoinFragment(), new ChatFragment()};
         activity.setFragment(currentFragment);
     }
 }

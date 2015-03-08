@@ -4,9 +4,13 @@ import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -27,12 +31,15 @@ import se.chalmers.fleetspeak.util.Utils;
 public class StartFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final Context contextThemeWrapper = new ContextThemeWrapper(getActivity(), Utils.getThemeID());
+        Log.i("StartFragment","isDark=" + (Utils.getThemeID() == R.style.Theme_Fleetspeak_dark));
+        Log.i("StartFragment","isLight=" + (Utils.getThemeID() == R.style.Theme_Fleetspeak_light));
 
-        LayoutInflater localInflater = inflater.cloneInContext(contextThemeWrapper);
+        Context contextThemeWrapper = new ContextThemeWrapper(getActivity(), Utils.getThemeID());
+        LayoutInflater localInflater = inflater.from(contextThemeWrapper);
 
         View view = localInflater.inflate(R.layout.start_fragment, container, false);
 
+        getActivity().getWindow().setBackgroundDrawable(new ColorDrawable(Utils.getThemeID() == R.style.Theme_Fleetspeak_light ? Color.WHITE : Color.BLACK));
         setHasOptionsMenu(true);
 
         Button connectButton = (Button) view.findViewById(R.id.connectionButton);
@@ -120,10 +127,7 @@ public class StartFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
     private void setNewUserSettings(){
-       String username = String.valueOf(( this.getView().findViewById(R.id.usernameField)));
-       String ipAdress = String.valueOf(( this.getView().findViewById(R.id.ipField)));
-       int port= 8867;//FIXME Integer.parseInt(String.valueOf((this.getView().findViewById(R.id.portField))));
-        ((MainActivity) this.getActivity()).setUserSettings(username, ipAdress, port);
+        ((MainActivity) this.getActivity()).setUserSettings();
     }
     private void connect(){
         View view = this.getView();

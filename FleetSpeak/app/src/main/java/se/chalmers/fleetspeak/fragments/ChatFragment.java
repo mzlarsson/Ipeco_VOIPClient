@@ -2,7 +2,9 @@ package se.chalmers.fleetspeak.fragments;
 
 import android.app.Fragment;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -44,6 +46,8 @@ public class ChatFragment extends Fragment {
         final Context contextThemeWrapper = new ContextThemeWrapper(getActivity(), Utils.getThemeID());
         LayoutInflater localInflater = inflater.cloneInContext(contextThemeWrapper);
         View view = localInflater.inflate(R.layout.chat_fragment, container, false);
+        getActivity().getWindow().setBackgroundDrawable(new ColorDrawable(Utils.getThemeID() == R.style.Theme_Fleetspeak_light ? Color.WHITE : Color.BLACK));
+
 
         ListView userListView = (ListView) view.findViewById(R.id.userList);
         adapter = new ChatRoomListAdapter(getMain(), userArrayList);
