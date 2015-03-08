@@ -41,13 +41,16 @@ public class CommandHandler extends Handler {
     public void handleMessage(Message msg) {
         Command command = (Command) msg.obj;
         String sCommand = command.getCommand();
-        Log.i("Commandhandler", "Got the command " + sCommand);
+        Log.i("Commandhandler", "Got the command " + sCommand + "(" + command.getKey().getClass() + ": " + command.getKey() + ")");
         //TODO way to send info to activity
 
         //TODO implement  spec
        switch (sCommand.toLowerCase()){
+           case "connected":
+               remoteIP = (String) command.getKey();
+               break;
            case "setid":
-               roomHandler.setUserid((Integer) command.getValue());
+               roomHandler.setUserid((Integer) command.getKey());
                break;
            case "addeduser":
                roomHandler.addUser(new User((Integer)command.getKey()), (Integer) command.getValue());
@@ -72,7 +75,7 @@ public class CommandHandler extends Handler {
            case "requestsoundport":
                int port = soundController.addStream((Integer) command.getKey());
                try {
-                   new Messenger(msg.getTarget()).send(Message.obtain(null, MessageValues.SETSOUNDPORT, port));
+                   new Messenger(msg.getTarget()).send(Message.obtain(null, MessageValues.SETSOUNDPORT, (Integer) command.getKey(), 0, port));
                } catch (RemoteException e) {
                    e.printStackTrace();
                }
