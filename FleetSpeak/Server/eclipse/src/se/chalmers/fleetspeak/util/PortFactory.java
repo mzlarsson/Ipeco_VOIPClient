@@ -12,6 +12,7 @@ public class PortFactory {
 
 	private int currentPort = 8868;
 	private static PortFactory instance;
+	private LinkedList<Integer> portsInUse = new LinkedList<Integer>();
 	private Queue<Integer> recycledPorts = new LinkedList<Integer>();
 	
 	/**
@@ -37,18 +38,26 @@ public class PortFactory {
 	 */
 	public synchronized int getPort() {
 		if(!recycledPorts.isEmpty()){
-			return recycledPorts.poll();
+			int recycledPort = recycledPorts.poll();
+			portsInUse.add(recycledPort);
+			return recycledPort;
+		} else {
+			int port = currentPort;
+			currentPort += 2;
+			portsInUse.add(port);
+			return port;
 		}
-		int port = currentPort;
-		currentPort += 2;
-		return port;
 	}
 
 	/**
 	 * Frees the port to be used by someone else.
 	 * @return the old portNbr.
 	 */
-	public synchronized void freePort(int portNbr) {
-		recycledPorts.add(portNbr);
+	public synchronized void freePort(Integer portNbr) {
+		if (portsInUse.remove(portNbr)) {
+			recycledPorts.add(portNbr);
+		} else {
+			Log.logError("Tried to free a port that was not in use.");
+		}
 	}
 }
