@@ -29,7 +29,7 @@
         <item name="actionModeBackground">@drawable/cab_background_top_fleetspeak_dark</item>
         <item name="actionModeSplitBackground">@drawable/cab_background_bottom_fleetspeak_dark</item>
         <item name="actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Fleetspeak_dark</item>
-
+        <item name="themeName">dark</item>
         
     </style>
 
