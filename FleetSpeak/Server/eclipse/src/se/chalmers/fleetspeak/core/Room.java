@@ -1,7 +1,6 @@
 package se.chalmers.fleetspeak.core;
 
 import se.chalmers.fleetspeak.util.IDFactory;
-import se.chalmers.fleetspeak.util.Log;
 
 /**
  * A class for representing a room.
@@ -10,14 +9,16 @@ import se.chalmers.fleetspeak.util.Log;
 public class Room {
     private String name;
     private int id;
+    private boolean permanent;
 
-    public Room(String name) {
-        this(name, IDFactory.getInstance().getID());
+    public Room(String name){
+    	this(name, false);
     }
-    public Room(String name, int id) {
-    	Log.logDebug("Creating room");
+    
+    public Room(String name, boolean permanent){
     	this.name = name;
-    	this.id = id;
+    	this.id = IDFactory.getInstance().getID();
+    	this.permanent = permanent;
     }
 
     public int getId() {
@@ -30,6 +31,14 @@ public class Room {
 
     public void setName(String name) {
         this.name = name;
+    }
+    
+    public boolean isPermanent(){
+    	return permanent;
+    }
+    
+    public void setPermanent(boolean permanent){
+    	this.permanent = permanent;
     }
 
     @Override
@@ -69,7 +78,7 @@ public class Room {
 	 */
 	@Override
 	public String toString() {
-		return "Room: name=" + name + ", id=" + id;
+		return "Room: name=" + name + ", id=" + id +", permanent=" + permanent;
 	}
 
 }
