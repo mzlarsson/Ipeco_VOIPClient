@@ -1,13 +1,9 @@
 package se.chalmers.fleetspeak.truck;
 
 import android.app.Activity;
-import android.content.Context;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import se.chalmers.fleetspeak.activities.StartActivity;
 
 /**
  * Created by Matz on 2014-10-17.

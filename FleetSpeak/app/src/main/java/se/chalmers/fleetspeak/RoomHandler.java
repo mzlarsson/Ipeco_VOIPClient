@@ -10,7 +10,7 @@ import java.util.NoSuchElementException;
  * A class for keeping tracks of which room the different users are in.
  * Created by Patrik on 2014-10-07.
  */
-public class RoomHandler implements IUserHandler{
+public class RoomHandler{
 
     private HashMap<Room,ArrayList<User>> rooms;
 
@@ -76,13 +76,13 @@ public class RoomHandler implements IUserHandler{
         moveUser(getUser(userID), findRoom(targetRoomID));
     }
 
-    public Room[] getRooms() {
-        return rooms.keySet().toArray(new Room[rooms.keySet().size()]);
+    public ArrayList<Room> getRooms() {
+        return new ArrayList<Room>(rooms.keySet());
     }
 
-    public User[] getUsers(Room room) {
+    public ArrayList<User> getUsers(Room room) {
         if(rooms.get(room) != null)
-            return rooms.get(room).toArray(new User[rooms.get(room).size()]);
+            return rooms.get(room);
         return null;
     }
 
@@ -91,7 +91,7 @@ public class RoomHandler implements IUserHandler{
      * @return List of users in the room with the given id
      *
      */
-    public User[] getUsers(int id) {
+    public ArrayList<User>getUsers(int id) {
         return getUsers(findRoom(id));
     }
     /**

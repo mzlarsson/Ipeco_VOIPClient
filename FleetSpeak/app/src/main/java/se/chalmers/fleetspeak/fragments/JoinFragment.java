@@ -94,7 +94,7 @@ public class JoinFragment extends Fragment{
         return super.onOptionsItemSelected(item);
     }
     public void updateRooms(){
-        Log.i("JoinRoomActivity", "updateing room list");
+        Log.i("JoinFragment", "updateing room list");
         //Room[] rooms = CommandHandler.getRooms();
         //ArrayRooms.clear();
         //for(Room r: rooms){
@@ -164,7 +164,7 @@ public class JoinFragment extends Fragment{
 
             View view = inflater.inflate(Utils.getCarMode()?R.layout.list_item_rooms_while_driving:
                     R.layout.list_item_rooms, parent, false);
-
+/*
             TextView roomView = (TextView) view.findViewById(R.id.roomName);
             ImageView imageView = (ImageView) view.findViewById(R.id.roomIcon);
             TextView userView = (TextView) view.findViewById(R.id.list_item_users);
@@ -186,7 +186,7 @@ public class JoinFragment extends Fragment{
                     }
                 }
             }
-            userView.setText(userText);
+            userView.setText(userText);*/
 
             return view;
         }

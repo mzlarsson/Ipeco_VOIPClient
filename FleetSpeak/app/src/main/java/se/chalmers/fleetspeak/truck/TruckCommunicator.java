@@ -3,7 +3,6 @@ package se.chalmers.fleetspeak.truck;
 import android.os.AsyncTask;
 import android.swedspot.automotiveapi.AutomotiveSignal;
 import android.swedspot.automotiveapi.AutomotiveSignalId;
-import android.swedspot.scs.data.SCSBoolean;
 import android.swedspot.scs.data.SCSFloat;
 import android.swedspot.scs.data.Uint8;
 import android.util.Log;

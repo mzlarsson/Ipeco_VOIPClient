@@ -13,11 +13,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import se.chalmers.fleetspeak.sound.SoundController;
 import se.chalmers.fleetspeak.util.Command;
 
 /**
@@ -31,24 +29,16 @@ public class SocketService extends Service {
     private ObjectInputStream objectInputStream;
     private ObjectOutputStream objectOutputStream;
     private Timer timer = new Timer();
-    private Messenger messenger = new Messenger(CommandHandler.getInstance());
-
-    private ArrayList<Command> commandQueue = new ArrayList<Command>();
-
-
-    // This should probably not be here but it was so much easier to save in here
-    private int id = -1;
+    private Messenger messenger;
 
     //Commands
+    public static final int SETMESSENGER = 0;
     public static final int CONNECT = 1;
     public static final int DISCONNECT = 2;
     public static final int SETNAME = 3;
-    public static final int CREATEANDMOVE = 4;
-    public static final int MOVEUSER = 5;
-    public static final int GETUSERS = 6;
-    public static final int MUTEUSER = 7;
-    public static final int UNMUTEUSER = 8;
-    public static final int SENDTESTDATA = 44; // only for testing will send a string from the server when used
+    public static final int MOVENEWROOM = 4;
+    public static final int MOVE = 5;
+    public static final int SETSOUNDPORT = 6;
 
     private String LOGNAME = "SocketService";
 
@@ -66,8 +56,6 @@ public class SocketService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        // We want this service to continue running until it is explicitly
-        // stopped, so return sticky.
         return START_STICKY;
     }
 
@@ -81,74 +69,49 @@ public class SocketService extends Service {
                 Log.i(LOGNAME, "Command received. id: " + msg.what);
 
                 switch (msg.what) {
+                    case SETMESSENGER:
+                        messenger = new Messenger((CommandHandler)msg.obj);
+                        break;
                     case CONNECT:
-                        commandQueue.clear();
                         final String s = (String) msg.obj;
                         final int i = msg.arg1;
 
-                                Log.i(LOGNAME, "Trying to connect to " + s);
-                                try {
-                                    socket = new Socket(s, i);
-                                    Log.i(LOGNAME, "Connection established to" + socket.toString());
-
-
-                                    objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-                                    Log.i(LOGNAME, "Outputsteam ready");
-
-
-                                    objectInputStream = new ObjectInputStream(socket.getInputStream());
-                                    Log.i(LOGNAME, "InputStream ready");
-
-                                    timer.scheduleAtFixedRate(new TimerTask() {
-                                        public void run() {
-                                            lookForMessage();
-                                        }
-                                    }, 0, 100L);
-
-                                } catch (IOException e) {
-                                    Log.i("Connector.connect", "Connection failed " + e.getMessage());
-                                    try {
-                                        endSocketConnection();
-                                        messenger.send(Message.obtain(null, 0,new Command("connection failed", null, null)));
-                                    } catch (RemoteException e1) {
-                                        e1.printStackTrace();
-                                    }
-                                }
-
-
-
+                        Log.i(LOGNAME, "Trying to connect to " + s);
+                        try {
+                            socket = new Socket(s, i);
+                            Log.i(LOGNAME, "Connection established to" + socket.toString());
+                            objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+                            Log.i(LOGNAME, "Outputsteam ready");
+                            objectInputStream = new ObjectInputStream(socket.getInputStream());
+                            Log.i(LOGNAME, "InputStream ready");
+                            timer.scheduleAtFixedRate(new TimerTask() {
+                                public void run() {lookForMessage();}
+                            }, 0, 100L);
+                        } catch (IOException e) {
+                            Log.i("Connector.connect", "Connection failed " + e.getMessage());
+                            try {
+                                endSocketConnection();
+                                messenger.send(Message.obtain(null, 0,new Command("connection failed", null, null)));
+                            } catch (RemoteException e1) {
+                                e1.printStackTrace();
+                            }
+                        }
                         break;
                     case DISCONNECT:
-                        Log.i(LOGNAME, "Disconnecting");
-                        trySend(new Command("disconnect", id, null));
+                        send(new Command("disconnect", null, null));
                         endSocketConnection();
                         break;
                     case SETNAME:
-                        Log.i(LOGNAME, "Trying  to sending setName command");
-                        trySend(new Command("setName", id, msg.obj));
+                        send(new Command("setName", msg.obj, null));
                         break;
-                    case CREATEANDMOVE:
-                        Log.i(LOGNAME, "trying to send createAndMove command");
-                        trySend(new Command("createAndMove", id, msg.obj));
+                    case MOVENEWROOM:
+                        send(new Command("moveNewRoom", msg.obj, null));
                         break;
-                    case MOVEUSER:
-                        trySend(new Command("moveUser", id, msg.obj));
+                    case MOVE:
+                        send(new Command("moveUser", msg.obj, null));
                         break;
-                    case GETUSERS:
-                        Log.i(LOGNAME, "trying to send getRooms command");
-                        trySend(new Command("getUsers", id, null));
-                        break;
-                    case MUTEUSER:
-                        Log.i(LOGNAME, "trying to send mute command");
-                        trySend(new Command("mute", id, msg.obj));
-                        break;
-                    case UNMUTEUSER:
-                        Log.i(LOGNAME, "trying to send unmute command");
-                        trySend(new Command("unmute", id, msg.obj));
-                        break;
-                    case SENDTESTDATA:
-                        trySend(new Command("data", id, null));
-                        break;
+                    case SETSOUNDPORT:
+                        send(new Command("setSoundPort", msg.obj, msg.arg1));
                     default:
                         break;
                 }
@@ -156,47 +119,17 @@ public class SocketService extends Service {
         }
     }
 
-    private void trySend(Command c){
-
-        if(id > 0){
-            Log.d("Volt", "Trying to send: "+c.getCommand()+", "+c.getKey()+","+c.getValue());
-            try {
-
-                objectOutputStream.writeObject(c);
-                objectOutputStream.flush();
-                Log.i(LOGNAME, "Sent command: " + c.getCommand());
-            } catch (IOException e) {
-                Log.e(LOGNAME, e.toString());
-            }
-
-        }else{
-            Log.i(LOGNAME, "Command added to commandQueue " + c.getCommand());
-            commandQueue.add(c);
+    private void send(Command c){
+        Log.d(LOGNAME, "Trying to send: "+c.getCommand()+", "+c.getKey()+","+c.getValue());
+        try {
+            objectOutputStream.writeObject(c);
+            objectOutputStream.flush();
+            Log.i(LOGNAME, "Sent command: " + c.getCommand());
+        } catch (IOException e) {
+            Log.e(LOGNAME, e.toString());
         }
-    }
-    private void sendCommandQueue(){
-
-            while (0 < commandQueue.size()) {
-                Log.d("Volt", "Sending in commandQueue: "+commandQueue.get(0).getCommand()+", "+id+","+commandQueue.get(0).getValue());
-
-                Command correctIDcommand = new Command(commandQueue.get(0).getCommand(), id, commandQueue.get(0).getValue());
-
-                    trySend(correctIDcommand);
-                    Log.i(LOGNAME, "Sent command form queue: " + correctIDcommand.getCommand());
-                    commandQueue.remove(0);
-
-            }
 
     }
-
-    /**
-     * When created it will start looking for messages
-     */
-
-    @Override
-    public void onCreate(){
-    }
-
     /**
      * Checks if there is something on the input stream
      * Pass on everything found to CommandHandler
@@ -210,16 +143,6 @@ public class SocketService extends Service {
 
                 if (c != null) {
                     Log.i(LOGNAME, " Something have been found: " + c.getCommand());
-                    if(c.getCommand().equals("setID")){
-                        id = (Integer) c.getKey();
-                        Log.i(LOGNAME, "ID is set now");
-                        sendCommandQueue();
-
-                        while(!SoundController.hasValue()){
-                            try{Thread.sleep(10);}catch(InterruptedException ie){}
-                        }
-                        objectOutputStream.writeObject(new Command("setRtpPort", id, SoundController.getPort()));
-                    }
                     messenger.send(Message.obtain(null, 0, c));
                 }else {
                     Log.i(LOGNAME, "Found nothing");
@@ -239,7 +162,6 @@ public class SocketService extends Service {
     private void endSocketConnection(){
         try{
             timer.purge();
-            id = -1;
             if(objectOutputStream != null)
                 objectOutputStream.close();
 
@@ -252,14 +174,14 @@ public class SocketService extends Service {
             socket = null;
 
 
-         Command c = new Command("Disconnected", null,null);
-         messenger.send(Message.obtain(null, 0, c));
-         Log.i(LOGNAME, "Succesfully ended connection");
-     }catch(IOException e){
-        Log.i(LOGNAME,"Connection ended unexeptedly");
-     } catch (RemoteException e) {
-         e.printStackTrace();
-     }
+            Command c = new Command("Disconnected", null,null);
+            messenger.send(Message.obtain(null, 0, c));
+            Log.i(LOGNAME, "Succesfully ended connection");
+        }catch(IOException e){
+            Log.i(LOGNAME,"Connection ended unexeptedly");
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

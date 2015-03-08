@@ -25,10 +25,8 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import se.chalmers.fleetspeak.CommandHandler;
 import se.chalmers.fleetspeak.R;
 import se.chalmers.fleetspeak.User;
-import se.chalmers.fleetspeak.sound.SoundController;
 import se.chalmers.fleetspeak.util.Utils;
 
 /**
@@ -94,7 +92,7 @@ public class ChatFragment extends Fragment {
         isTalkActive = !isTalkActive;
         ImageButton button = (ImageButton) this.getActivity().findViewById(R.id.pushToTalkButton);
         button.setBackgroundResource(isTalkActive?R.drawable.ic_mic_blue:R.drawable.ic_mic_grey);
-        SoundController.mute(!isTalkActive);
+        //TODO and functionallity not just change image
     }
 
 
@@ -121,7 +119,7 @@ public class ChatFragment extends Fragment {
     public class ChatRoomListAdapter extends ArrayAdapter<User> {
         public ChatRoomListAdapter(Context context, ArrayList<User> values) {
             super(context, R.layout.list_item_users, values);
-            Log.d("ChatRoom Userlist size: ", String.valueOf(values.size()));
+            Log.d("ChatRoom Userlistsize: ", String.valueOf(values.size()));
         }
 
         @Override
@@ -185,33 +183,9 @@ public class ChatFragment extends Fragment {
      * @param seekbar
      */
     private void setUpVolumeSeekbar(SeekBar seekbar){
-        // Check for -1 return since the get-methods return -1 when volume control is not accessible
-        if(SoundController.getMaxVolume() != -1) {
-            seekbar.setMax(SoundController.getMaxVolume());
-            Log.i("VolumeAudio: ", "max volume =" + SoundController.getMaxVolume() );
-        }
-        if(SoundController.getCurrentVolume() != -1){
-            Log.i("VolumeAudio: ", "current volume="+ SoundController.getCurrentVolume());
-            seekbar.setProgress(SoundController.getCurrentVolume());
-        }
-        seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
-                SoundController.setVoloume(progress);
-                Log.i("Volume value:", " " + progress);
-            }
+        //TODO
 
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
-    }
+       }
     /**
      * Set the size of the popupWindow
      * @param popupWindow - the popupWindow that will have the size set

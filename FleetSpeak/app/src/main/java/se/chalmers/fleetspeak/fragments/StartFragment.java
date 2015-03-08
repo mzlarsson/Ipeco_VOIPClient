@@ -18,8 +18,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 
-import java.util.MissingFormatArgumentException;
-
 import se.chalmers.fleetspeak.R;
 import se.chalmers.fleetspeak.util.Utils;
 
@@ -124,7 +122,7 @@ public class StartFragment extends Fragment {
     private void setNewUserSettings(){
        String username = String.valueOf(( this.getView().findViewById(R.id.usernameField)));
        String ipAdress = String.valueOf(( this.getView().findViewById(R.id.ipField)));
-       int port= Integer.parseInt(String.valueOf((this.getView().findViewById(R.id.portField))));
+       int port= 8867;//FIXME Integer.parseInt(String.valueOf((this.getView().findViewById(R.id.portField))));
         ((MainActivity) this.getActivity()).setUserSettings(username, ipAdress, port);
     }
     private void connect(){
