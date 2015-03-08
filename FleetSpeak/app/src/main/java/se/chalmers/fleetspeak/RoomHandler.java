@@ -21,6 +21,11 @@ public class RoomHandler{
         defaultRoom = new Room("Lobby",0);
     }
 
+    /**
+     * Adds an user to a room
+     * @param user The user to be added
+     * @param room The destination room
+     */
     public void addUser(User user, Room room) {
         if (!rooms.containsKey(room) || rooms.get(room) == null) {
             ArrayList<User> list = new ArrayList<User>();
@@ -34,19 +39,19 @@ public class RoomHandler{
         }
     }
 
-    public void addUser(User user, int roomID) {
-        addUser(user, findRoom(roomID));
-    }
+    /**
+     * Adds an user to a defaultRoom
+     * @param user The user to be added
+     */
     public void addUser(User user){
         addUser(user,defaultRoom);
     }
 
-    public void addToNewRoom(User user, String name){
-        Room r = new Room(name);
-        addUser(user, r);
-    }
 
-
+    /**
+     * Removes a user found in the room it's residing in
+     * @param user The user to be removed
+     */
     public void removeUser(User user) {
         for (Room room : rooms.keySet()) {
             ArrayList<User> userList = rooms.get(room);
@@ -63,23 +68,47 @@ public class RoomHandler{
         }
     }
 
+
+    /**
+     * Removes a user from the room
+     * @param userID The ID of the user to be removed
+     */
     public void removeUser(int userID) {
         removeUser(getUser(userID));
     }
 
+    /**
+     * Moves a user to a specified room
+     * @param user The user to be moved
+     * @param targetRoom The room the user to be moved to
+     */
     public void moveUser(User user, Room targetRoom) {
         removeUser(user);
         addUser(user, targetRoom);
     }
 
+    /**
+     * Moves a user to a specified
+     * @param userID ID of the user to be moved
+     * @param targetRoomID The ID of the destination room
+     */
     public void moveUser(int userID, int targetRoomID) {
         moveUser(getUser(userID), findRoom(targetRoomID));
     }
 
+    /**
+     * Returns a list of all the rooms
+     * @return An arrayList containing all the rooms
+     */
     public ArrayList<Room> getRooms() {
         return new ArrayList<Room>(rooms.keySet());
     }
 
+    /**
+     * Returns all the users in a room
+      * @param room The room to get all the users from
+     * @return An ArrayList containing all the users from the room
+     */
     public ArrayList<User> getUsers(Room room) {
         if(rooms.get(room) != null)
             return rooms.get(room);
@@ -94,6 +123,7 @@ public class RoomHandler{
     public ArrayList<User>getUsers(int id) {
         return getUsers(findRoom(id));
     }
+
     /**
      * Finds the first user with the specified id.
      * @param id The ID of the user.
@@ -121,7 +151,6 @@ public class RoomHandler{
                 return room;
             }
         }
-        //throw new NoSuchElementException("A room with ID: \"" + id + "\" doesn't exit.");
         return null;
     }
 
