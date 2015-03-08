@@ -26,6 +26,7 @@ public class SoundController {
     private AudioGroup audioGroup;
     private AudioStream upStream;
     private HashMap<Integer, AudioStream> downStreams;
+	
     /**
      * Starts a new send only stream that connected to ip:port
      */
@@ -48,9 +49,8 @@ public class SoundController {
             Log.d(this.getClass().toString(), "Socket Error");
         }
         upStream.join(audioGroup);
-
+		
         downStreams = new HashMap<Integer, AudioStream>();
-
     }
 
     /**

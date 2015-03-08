@@ -1,7 +1,6 @@
 package se.chalmers.fleetspeak.core.command.impl;
 
 import se.chalmers.fleetspeak.core.RoomHandler;
-import se.chalmers.fleetspeak.core.command.InvalidCommandArgumentsException;
 import se.chalmers.fleetspeak.core.permission.Permission;
 import se.chalmers.fleetspeak.core.permission.Permissions;
 
@@ -13,22 +12,23 @@ public class SetUsername extends BasicCommand{
 	}
 	
 	@Override
-	public boolean execute(int requester, Object... params) throws InvalidCommandArgumentsException{
+	public CommandResponse execute(int requester, Object... params){
 		try{
 			int userID = (params[0].getClass()==Integer.class||params[0].getClass()==int.class?(Integer)params[0]:Integer.parseInt((String)params[0]));
 			String username = (String)params[1];
 			if((userID == requester && Permissions.isAllowed(requester, Permission.RENAME_OWN_USER)) ||
 			  (userID != requester && Permissions.isAllowed(requester, Permission.RENAME_OTHER_USER))){
-				RoomHandler.getInstance().setUsername(userID, username);
-				return true;
+				if(RoomHandler.getInstance().setUsername(userID, username)){
+					return new CommandResponse(true, "Renamed user to '"+username+"'");
+				}else{
+					return new CommandResponse(false, "Internal error occured. Failed to perform action.");
+				}
+			}else{
+				return new CommandResponse(false, "Insuffient permissions. Action denied.");
 			}
-		}catch(NumberFormatException nfe){
-			throw new InvalidCommandArgumentsException(getInfo());
-		}catch(NullPointerException nfe){
-			throw new InvalidCommandArgumentsException(getInfo());
+		}catch(NumberFormatException | NullPointerException | ClassCastException e){
+			return new CommandResponse(false, "Invalid command use: '"+getInfo().getFormat()+"'");
 		}
-		
-		return false;
 	}
 
 }

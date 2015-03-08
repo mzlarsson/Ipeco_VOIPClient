@@ -20,7 +20,6 @@ import se.chalmers.fleetspeak.util.MessageValues;
 public class CommandHandler extends Handler {
 
     private RoomHandler roomHandler;
-
     private SoundController soundController;
 
     private Context context;
@@ -43,7 +42,6 @@ public class CommandHandler extends Handler {
         Command command = (Command) msg.obj;
         String sCommand = command.getCommand();
         Log.i("Commandhandler", "Got the command " + sCommand);
-
         //TODO way to send info to activity
 
         //TODO implement  spec
@@ -88,9 +86,4 @@ public class CommandHandler extends Handler {
 
 
     }
-
-
-
-
-
 }
