@@ -58,7 +58,7 @@ public class RoomHandler {
 				 ArrayList<Client> list = rooms.get(r);
 				 if(!list.contains(c)){
 					 for (Client listeners : list) {
-						 listeners.addListeningClient(c);
+						 listeners.requestListeningClient(c);
 					 }
 					 c.moveToRoom(list);
 					 list.add(c);
@@ -220,12 +220,15 @@ public class RoomHandler {
 	 * @param clientID the ID of the client to set the name of.
 	 * @param name the new name of the client.
 	 */
-	public void setUsername(int clientID, String name) {
+	public boolean setUsername(int clientID, String name) {
 		Client c = findClient(clientID);
 		if(c != null){
 			c.setName(name);
 			EventBus.postEvent("broadcast", new Command("changedUsername", c.getClientID(), c.getName()), this);
+			return true;
 		}
+		
+		return false;
 	}
 	
 	/**
@@ -233,11 +236,15 @@ public class RoomHandler {
 	 * @param roomID the ID of the room to set the name of.
 	 * @param name the new name of the room.
 	 */
-	public void setRoomName(int roomID, String name) {
+	public boolean setRoomName(int roomID, String name) {
 		Room r = findRoom(roomID);
 		if(r != null){
 			r.setName(name);
+			EventBus.postEvent("broadcast", new Command("changedRoomName", r.getId(), r.getName()), this);
+			return true;
 		}
+		
+		return false;
 	}
 
 	/**

@@ -39,6 +39,7 @@ public class Client{
 
 		this.ip = socket.getInetAddress();
 		this.soundRouter = new Router();
+		this.tcp.sendData(new Command("useSoundPort", soundRouter.getReceivePort(), null));
 	}
 	
 	/**
@@ -50,16 +51,25 @@ public class Client{
 		// FIXME Make android-client drop all incoming ports.
 		removeAllListeningClients();
 		for (Client c : clientList) {
-			addListeningClient(c);
+			requestListeningClient(c);
 		}
 	}
 
 	/**
-	 * Adds a client to listen to this client.
+	 * Requests a port for this client to start connection
 	 * @param client The client to listen to.
 	 */
-	public void addListeningClient(Client client){
-		soundRouter.addClient(client.clientID, client.ip, client.requestSoundPort());
+	public void requestListeningClient(Client client){
+		tcp.sendData(new Command("requestSoundPort", client.getClientID(), null));
+	}
+	
+	/**
+	 * Adds a client to this client connection list
+	 * @param remoteClient The remote client
+	 * @param port The port that is used
+	 */
+	public void addListeningClient(Client remoteClient, int port){
+		soundRouter.addClient(remoteClient.getClientID(), remoteClient.ip, port);
 	}
 	
 	/**
@@ -68,6 +78,7 @@ public class Client{
 	 */
 	public void removeListeningClient(Client client) {
 		soundRouter.removeClient(client.clientID);
+		tcp.sendData(new Command("closeSoundPort", client.getClientID(), null));
 	}
 	
 	/**
@@ -75,14 +86,6 @@ public class Client{
 	 */
 	public void removeAllListeningClients() {
 		soundRouter.removeAllClients();
-	}
-	
-	/**
-	 * Requests a port from the client to use for incoming sound-packages.
-	 * @return The port-number of a port ready to accept sound-packages.
-	 */
-	private int requestSoundPort() {
-		return -1; // FIXME Request a usable port for incoming sound from the client.
 	}
 	
 	/**
