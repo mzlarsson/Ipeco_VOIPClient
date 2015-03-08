@@ -89,7 +89,7 @@ public class Client{
 	 * Set the name of this client.
 	 * @param name The new name of the client.
 	 */
-	public void setName(String name) {
+	protected void setName(String name) {
 		if(name != null){
 			this.name = name;
 		}

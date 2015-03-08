@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import se.chalmers.fleetspeak.eventbus.EventBus;
-import se.chalmers.fleetspeak.eventbus.EventBusEvent;
 import se.chalmers.fleetspeak.util.Command;
 import se.chalmers.fleetspeak.util.Log;
 /**
@@ -54,6 +53,7 @@ public class RoomHandler {
 	            c.moveToRoom(list);
 	            list.add(c);
 	            rooms.put(r,list);
+	            EventBus.postEvent("broadcast", new Command("createdRoom", r.getId(), r.getName()), this);
 			}else{
 				 ArrayList<Client> list = rooms.get(r);
 				 if(!list.contains(c)){
@@ -78,10 +78,12 @@ public class RoomHandler {
 	
 	/**
 	 * Adds a client to the default room.
+	 * NOTE: Call on this only when the user connected to server, not on move actions.
 	 * @param client the client to be added.
 	 */
 	public void addClient(Client client) {
 		addClient(client, defaultRoom);
+		EventBus.postEvent("broadcast", new Command("addedUser", client.getClientID(), defaultRoom.getId()), this);
 	}
 
 	/**
@@ -102,12 +104,12 @@ public class RoomHandler {
 					c.removeAllListeningClients();
 					if (terminate) {
 						c.terminate();
+						EventBus.postEvent("broadcast", new Command("removedUser", c.getClientID(), null), this);
 					}
 					if(clientList.isEmpty() && !r.isPermanent()){
 						removeRoom(r);
 					}
 					
-					EventBus.getInstance().fireEvent(new EventBusEvent("UpdateStatus", new Command("removedClient", c.getClientID(), r.getId()), null));
 					return true;
 				}
 			}
@@ -145,7 +147,7 @@ public class RoomHandler {
 			Log.logDebug("Removing room");
 			rooms.remove(room);
 			room.terminate();
-			EventBus.getInstance().fireEvent(new EventBusEvent("UpdateStatus", new Command("removedRoom", room.getId(), null), null));
+			EventBus.postEvent("broadcast", new Command("removedRoom", room.getId(), null), this);
 			return true;
 		}
 		
@@ -171,6 +173,7 @@ public class RoomHandler {
 		if(c!=null && r!=null){
 			this.removeClient(c, false);
 			this.addClient(c, r);
+			EventBus.postEvent("broadcast", new Command("movedUser", c.getClientID(), r.getId()), this);
 			return true;
 		}else{
 			return false;
@@ -221,6 +224,7 @@ public class RoomHandler {
 		Client c = findClient(clientID);
 		if(c != null){
 			c.setName(name);
+			EventBus.postEvent("broadcast", new Command("changedUsername", c.getClientID(), c.getName()), this);
 		}
 	}
 	

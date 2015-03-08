@@ -42,6 +42,8 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 			Log.logException(e);
 		}
 		EventBus.getInstance().addSubscriber(this);
+		
+		sendData(new Command("setID", clientID, null));
 	}
 	
 	public int getClientID(){
