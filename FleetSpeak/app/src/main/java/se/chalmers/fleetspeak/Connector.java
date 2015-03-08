@@ -30,9 +30,6 @@ public class Connector {
     public static final int CONNECTED = 10;
     public static final int DISCONNECTED = 11;
 
-
-
-
     private SocketWriter socketWriter;
     private SocketReader socketListener;
     private Thread outThread;

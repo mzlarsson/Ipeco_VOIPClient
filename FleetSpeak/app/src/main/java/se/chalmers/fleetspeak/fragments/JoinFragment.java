@@ -36,22 +36,13 @@ import se.chalmers.fleetspeak.util.Utils;
 public class JoinFragment extends Fragment{
 
     private ArrayAdapter<Room> adapter;
-    private ArrayList ArrayRooms = new ArrayList<Room>();
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final Context contextThemeWrapper = new ContextThemeWrapper(getActivity(), Utils.getThemeID());
         LayoutInflater localInflater = inflater.cloneInContext(contextThemeWrapper);
         View view = localInflater.inflate(R.layout.join_fragment, container, false);
-
-
-        // Initiates the rooms
-   //     Room[] rooms  = CommandHandler.getRooms();
-   //     for(Room r : rooms){
-   //         ArrayRooms.add(r);
-   //     }
-
         ListView roomView = ((ListView)view.findViewById(R.id.roomView));
-        adapter = new JoinRoomAdapter(this.getActivity(), ArrayRooms);
+        adapter = new JoinRoomAdapter(getMain(), getMain().getRooms());
         roomView.setAdapter(adapter);
         roomView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -74,6 +65,9 @@ public class JoinFragment extends Fragment{
 
         return view;
     }
+    private MainActivity getMain(){
+        return (MainActivity) this.getActivity();
+    }
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.day_night_menu, menu);
@@ -82,35 +76,29 @@ public class JoinFragment extends Fragment{
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        MainActivity activity = (MainActivity) this.getActivity();
+
         switch(item.getItemId()){
             case  R.id.day_night_toggle:
-                Utils.changeTheme(activity);
+                Utils.changeTheme(getMain());
                 return true;
             case android.R.id.home:
-                activity.setFragment(FragmentHandler.FragmentName.START);
+                getMain().setFragment(FragmentHandler.FragmentName.START);
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
     public void updateRooms(){
         Log.i("JoinFragment", "updateing room list");
-        //Room[] rooms = CommandHandler.getRooms();
-        //ArrayRooms.clear();
-        //for(Room r: rooms){
-        //    ArrayRooms.add(r);
-        //}
-//        adapter.notifyDataSetChanged();
-        //FIXME
+        adapter.notifyDataSetChanged();
         // this.getActivity().getWindow().getDecorView().findViewById(android.R.id.content).getRootView().invalidate();
     }
     private void createNewRoomOnClick() {
         // If the user is not driving create a dialog that promts the user to select a room name and
         // create a room with that name if the user don't put in a room name default to the users name + "'s room"
         if(!Utils.getCarMode()){
-            AlertDialog.Builder alertDialog = new AlertDialog.Builder(this.getActivity());
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(getMain());
             alertDialog.setTitle("Choose a name for your room");
-            final EditText input = new EditText(this.getActivity());
+            final EditText input = new EditText(getMain());
             input.setHint(Utils.getUsername() + "'s room");
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
@@ -144,10 +132,10 @@ public class JoinFragment extends Fragment{
         }
     }
     private void createAndMoveRoom(String newRoomName){
-        ((MainActivity)this.getActivity()).createAndMoveRoom(newRoomName);
+        getMain().createAndMoveRoom(newRoomName);
     }
     private void joinRoom(int roomID){
-        ((MainActivity)this.getActivity()).moveToRoom(roomID);
+        getMain().moveToRoom(roomID);
     }
 
     /**
@@ -164,7 +152,6 @@ public class JoinFragment extends Fragment{
 
             View view = inflater.inflate(Utils.getCarMode()?R.layout.list_item_rooms_while_driving:
                     R.layout.list_item_rooms, parent, false);
-/*
             TextView roomView = (TextView) view.findViewById(R.id.roomName);
             ImageView imageView = (ImageView) view.findViewById(R.id.roomIcon);
             TextView userView = (TextView) view.findViewById(R.id.list_item_users);
@@ -174,25 +161,22 @@ public class JoinFragment extends Fragment{
             roomView.setText(whatRoom);
             imageView.setImageResource(R.drawable.ic_room);
 
-            User[] users =  CommandHandler.getUsers(getItem(position).getId());
-            String userText = "";
+            ArrayList<User> users =  getMain().getUsers(getItem(position).getId());
+            StringBuilder builder = new StringBuilder();
             if(users != null) {
                 if (Utils.getCarMode()) {
-                    userText = ("(" + users.length + ")");
+                    builder.append(("(" + users.size() + ")"));
                 } else {
-                    for (int i = 0; i < users.length; i++) {
-                        if (i == 0) userText = users[i].getName();
-                        else userText = userText + (", " + users[i].getName());
+                    builder.append(users.get(0));
+                    int i = 1;
+                    while(i < users.size()){
+                        builder.append(users.get(i));
                     }
                 }
             }
-            userView.setText(userText);*/
+            userView.setText(builder.toString());
 
             return view;
         }
     }
-    /**
-     * Update the list of rooms displayed
-     */
-
 }

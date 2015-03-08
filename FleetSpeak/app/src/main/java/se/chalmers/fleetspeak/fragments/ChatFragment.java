@@ -46,7 +46,7 @@ public class ChatFragment extends Fragment {
         View view = localInflater.inflate(R.layout.chat_fragment, container, false);
 
         ListView userListView = (ListView) view.findViewById(R.id.userList);
-        adapter = new ChatRoomListAdapter(this.getActivity(), userArrayList);
+        adapter = new ChatRoomListAdapter(getMain(), userArrayList);
         userListView.setAdapter(adapter);
         userListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -72,9 +72,9 @@ public class ChatFragment extends Fragment {
         this.menu = menu;
         inflater.inflate(R.menu.chatroommenu, menu);
         ImageButton locButton = (ImageButton) menu.findItem(R.id.volume_mic_control).getActionView();
-        setUpVolumeAndMicControl(this.getActivity(), locButton);
+        setUpVolumeAndMicControl(getMain(), locButton);
 
-        ImageButton button = (ImageButton) this.getActivity().findViewById(R.id.pushToTalkButton);
+        ImageButton button = (ImageButton) this.getView().findViewById(R.id.pushToTalkButton);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -90,7 +90,7 @@ public class ChatFragment extends Fragment {
     public void pushToTalk() {
         Log.i("ChatroomActivity", "pushToTalkCalled");
         isTalkActive = !isTalkActive;
-        ImageButton button = (ImageButton) this.getActivity().findViewById(R.id.pushToTalkButton);
+        ImageButton button = (ImageButton) this.getView().findViewById(R.id.pushToTalkButton);
         button.setBackgroundResource(isTalkActive?R.drawable.ic_mic_blue:R.drawable.ic_mic_grey);
         //TODO and functionallity not just change image
     }
@@ -99,24 +99,18 @@ public class ChatFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == android.R.id.home){
-            ((MainActivity) this.getActivity()).setFragment(FragmentHandler.FragmentName.JOIN);
+            getMain().setFragment(FragmentHandler.FragmentName.JOIN);
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
-
-
-
-    public void setRoomID(int currentRoomID){
-//        User[] users = CommandHandler.getUsers(currentRoomID);
- //       userArrayList.clear();
- //       for(User u: users){
- //           userArrayList.add(u);
- //       }
- //       adapter.notifyDataSetChanged();
-
+    public void updateUsers(){
+        adapter.notifyDataSetChanged();
     }
-    public class ChatRoomListAdapter extends ArrayAdapter<User> {
+
+
+
+public class ChatRoomListAdapter extends ArrayAdapter<User> {
         public ChatRoomListAdapter(Context context, ArrayList<User> values) {
             super(context, R.layout.list_item_users, values);
             Log.d("ChatRoom Userlistsize: ", String.valueOf(values.size()));
@@ -206,11 +200,14 @@ public class ChatFragment extends Fragment {
 
         // Set the width of the popupWindow to be the width of the android display
         DisplayMetrics displaymetrics = new DisplayMetrics();
-        this.getActivity().getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+        getMain().getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
         int width = displaymetrics.widthPixels;
 
         popupWindow.setWidth(width);
         popupWindow.setHeight(height);
+    }
+    private MainActivity getMain(){
+        return (MainActivity) this.getActivity();
     }
 
 

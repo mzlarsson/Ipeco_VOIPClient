@@ -74,21 +74,5 @@
         android:shadowRadius="5"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
-    <RelativeLayout
-        android:id="@+id/loadingPanel"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:background="#DD111111"
-        android:visibility="invisible">
 
-        <ProgressBar
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:indeterminate="true"
-            android:id="@+id/progressBar2" /><![CDATA[
-        />
-
-    ]]>
-    </RelativeLayout>
 </RelativeLayout>
