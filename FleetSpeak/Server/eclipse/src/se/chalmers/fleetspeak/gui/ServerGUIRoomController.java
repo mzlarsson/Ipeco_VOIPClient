@@ -44,6 +44,17 @@ public class ServerGUIRoomController implements IEventBusSubscriber{
 		}catch(Exception e){System.out.println(e.getMessage());}
 	}
 	
+	public void initialize(){
+		if(roomsRoot == null){
+			System.out.println("initializing room root");
+			roomsRoot = new TreeItem<String>("Rooms", allRoomsIcon);
+			roomsRoot.setExpanded(true);
+			treeRoot.setRoot(roomsRoot);
+		}else{
+			System.out.println("root is not null");
+		}
+	}
+	
 	public void registerClient(int id, int roomid){
 		clients.put(id, "");
 		moveClient(id, roomid);
@@ -56,13 +67,7 @@ public class ServerGUIRoomController implements IEventBusSubscriber{
 		//Update GUI
 		Platform.runLater(new Runnable(){
 			@Override
-			public void run() {
-				if(roomsRoot == null){
-					roomsRoot = new TreeItem<String>("Rooms", allRoomsIcon);
-					roomsRoot.setExpanded(true);
-					treeRoot.setRoot(roomsRoot);
-				}
-				
+			public void run() {				
 				TreeItem<String> room = new TreeItem<String>(name, roomIcon);
 				roomsRoot.getChildren().add(room);
 				
