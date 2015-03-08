@@ -7,8 +7,11 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.util.HashMap;
+import java.util.Map;
 
 import se.chalmers.fleetspeak.core.command.Commands;
+import se.chalmers.fleetspeak.core.command.impl.CommandInfo;
 import se.chalmers.fleetspeak.core.command.impl.CommandResponse;
 import se.chalmers.fleetspeak.eventbus.EventBus;
 import se.chalmers.fleetspeak.eventbus.EventBusEvent;
@@ -29,7 +32,8 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 	private ObjectOutputStream objectOutputStream;
 	private ObjectInputStream objectInputStream;
 	private boolean isRunning = false;
-
+	private Map<String, CommandInfo> cmds;
+	
 	public TCPHandler(Socket clientSocket, int clientID) {
 		this.clientID = clientID;
 		this.clientSocket = clientSocket;
@@ -42,7 +46,7 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 			Log.logException(e);
 		}
 		EventBus.getInstance().addSubscriber(this);
-		
+		initializeAndroidCommands();
 		sendData(new Command("setID", clientID, null));
 	}
 	
@@ -66,10 +70,10 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 				runAndroidCommand(c);
 			}
 		} catch(EOFException eofe){
-			doCommand("disconnect", clientID, null);
+			doCommand(cmds.get("disconnect"), clientID, null);
 		} catch(SocketTimeoutException e){
 			Log.logError("Got Socket Timeout. Removing client");
-			doCommand("disconnect", clientID, null);
+			doCommand(cmds.get("disconnect"), clientID, null);
 		} catch(SocketException e){
 			//Only log if the handler is not terminated
 			if(isRunning){
@@ -93,29 +97,38 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 			Log.log("[TCPHandler] <i>Command sent: "+command.getCommand()+"</i>");
 		} catch(SocketException e){
 			if(command==null || !command.getCommand().equals("userDisconnected")){
-				doCommand("disconnect", clientID, null);
+				doCommand(cmds.get("disconnect"), clientID, null);
 			}
 		} catch(IOException e){
 			Log.logException(e);
 		}
 	}
 	
+	private void initializeAndroidCommands() {
+		cmds = new HashMap<String, CommandInfo>();
+		cmds.put("setUsername", Commands.getInstance().findCommand("setUsername"));
+		cmds.put("setSoundPort", Commands.getInstance().findCommand("setSoundPort"));
+		cmds.put("moveUser", Commands.getInstance().findCommand("moveUser"));
+		cmds.put("createRoom", Commands.getInstance().findCommand("createRoom"));
+		cmds.put("disconnect", Commands.getInstance().findCommand("disconnect"));
+	}
+	
 	private void runAndroidCommand(Command c){
 		//Do translation Android --> Server according to spec
 		switch(c.getCommand()){
-			case "setName":			doCommand("setUsername", clientID, c.getKey());break;
-			case "setSoundPort":	doCommand("setSoundPort", clientID, c.getKey()+","+c.getValue());break;
-			case "move":			doCommand("moveUser", clientID, c.getKey());break;
-			case "moveNewRoom":		Object[] data = doCommand("createRoom", c.getKey(), null);
+			case "setName":			doCommand(cmds.get("setUsername"), clientID, c.getKey());break;
+			case "setSoundPort":	doCommand(cmds.get("setSoundPort"), clientID, c.getKey()+","+c.getValue());break;
+			case "move":			doCommand(cmds.get("moveUser"), clientID, c.getKey());break;
+			case "moveNewRoom":		Object[] data = doCommand(cmds.get("createRoom"), c.getKey(), null);
 									int roomID = (data!=null&&data.length>0?(Integer)data[0]:-1);
-									doCommand("moveUser", clientID, roomID);break;
-			case "disconnect":		doCommand("disconnect", clientID, null);break;
+									doCommand(cmds.get("moveUser"), clientID, roomID);break;
+			case "disconnect":		doCommand(cmds.get("disconnect"), clientID, null);break;
 		}
 	}
 	
-	public Object[] doCommand(String cmd, Object key, Object value){
+	public Object[] doCommand(CommandInfo cmd, Object key, Object value){
 		Commands com = Commands.getInstance();
-		CommandResponse r = com.execute(clientID, com.findCommand(cmd), key, value);
+		CommandResponse r = com.execute(clientID, cmd, key, value);
 		Log.logDebug("Got command response: ["+(r.wasSuccessful()?"Success":"Failure")+": "+r.getMessage()+"]");
 		return r.getData();
 	}
