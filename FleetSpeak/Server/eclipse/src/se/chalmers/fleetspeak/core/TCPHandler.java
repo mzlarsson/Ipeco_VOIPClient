@@ -61,13 +61,13 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 				Log.log("[TCPHandler] Found: " + o.getClass().toString());
 				Command c = (Command) o ;//objectInputStream.readObject();
 				Log.log("[TCPHandler] Got command " + c.getCommand());
-				doCommand(fixCommand(c));
+				runAndroidCommand(c);
 			}
 		} catch(EOFException eofe){
-			doCommand(new Command("disconnect", clientID, null));
+			doCommand("disconnect", clientID, null);
 		} catch(SocketTimeoutException e){
 			Log.logError("Got Socket Timeout. Removing client");
-			doCommand(new Command("disconnect", clientID, null));
+			doCommand("disconnect", clientID, null);
 		} catch(SocketException e){
 			//Only log if the handler is not terminated
 			if(isRunning){
@@ -91,21 +91,31 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 			Log.log("[TCPHandler] <i>Command sent: "+command.getCommand()+"</i>");
 		} catch(SocketException e){
 			if(command==null || !command.getCommand().equals("userDisconnected")){
-				doCommand(new Command("disconnect", clientID, null));
+				doCommand("disconnect", clientID, null);
 			}
 		} catch(IOException e){
 			Log.logException(e);
 		}
 	}
 	
-	private Command fixCommand(Command c){
-		return c;
+	private void runAndroidCommand(Command c){
+		//Do translation Android --> Server according to spec
+		switch(c.getCommand()){
+			case "setName":			doCommand("setName", clientID, c.getKey());break;
+			case "setSoundPort":	doCommand("setSoundPort", clientID, c.getKey()+","+c.getValue());break;
+			case "move":			doCommand("moveUser", clientID, c.getKey());break;
+			case "moveNewRoom":		Object[] data = doCommand("createRoom", c.getKey(), null);
+									int roomID = (data!=null&&data.length>0?(Integer)data[0]:-1);
+									doCommand("moveUser", clientID, roomID);break;
+			case "disconnect":		doCommand("disconnect", clientID, null);break;
+		}
 	}
 	
-	public void doCommand(Command c){
+	public Object[] doCommand(String cmd, Object key, Object value){
 		Commands com = Commands.getInstance();
-		CommandResponse r = com.execute(clientID, com.findCommand(c.getCommand()), c.getKey(), c.getValue());
+		CommandResponse r = com.execute(clientID, com.findCommand(cmd), key, value);
 		Log.logDebug("Got command response: ["+(r.wasSuccessful()?"Success":"Failure")+": "+r.getMessage()+"]");
+		return r.getData();
 	}
 
 	public boolean terminate() {

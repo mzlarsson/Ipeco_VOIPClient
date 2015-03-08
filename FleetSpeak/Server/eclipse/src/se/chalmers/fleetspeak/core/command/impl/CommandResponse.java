@@ -4,10 +4,12 @@ public class CommandResponse {
 
 	private boolean success;
 	private String message;
+	private Object[] data;
 	
-	public CommandResponse(boolean success, String message){
+	public CommandResponse(boolean success, String message, Object... data){
 		this.success = success;
 		this.message = message;
+		this.data = data;
 	}
 	
 	public String getMessage(){
@@ -18,4 +20,7 @@ public class CommandResponse {
 		return success;
 	}
 	
+	public Object[] getData(){
+		return data;
+	}
 }
