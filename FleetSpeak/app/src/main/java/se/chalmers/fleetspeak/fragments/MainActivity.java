@@ -4,12 +4,16 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.View;
 
 import java.util.ArrayList;
 
+import se.chalmers.fleetspeak.Connector;
 import se.chalmers.fleetspeak.Model;
 import se.chalmers.fleetspeak.R;
 import se.chalmers.fleetspeak.Room;
@@ -51,6 +55,7 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
         Utils.setCarmode(TruckDataHandler.getInstance().getTruckMode());
 
         setContentView(R.layout.activity_main);
+        findViewById(R.id.loadingPanel).setVisibility(View.INVISIBLE);
         // Set the start fragment
         setFragment(FragmentHandler.FragmentName.START);
 
@@ -89,15 +94,17 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
         Utils.setCarmode(mode);
         Utils.getCarMode();
     }
-
+    private void showConnecting(boolean b){
+        findViewById(R.id.loadingPanel).setVisibility(b ? View.VISIBLE : View.INVISIBLE);
+    }
     /**
      * A method to start the connection to the server with a given IP adress, port number and username.
      */
     public void startConnection(){
-        String ip = "192.168.10.100"; //FIXME fuckade ur lite Utils.getIpAdress();
+        String ip = Utils.getIpAdress();
         String userName = Utils.getUsername();
         int port = Utils.getPort();
-        setFragment(FragmentHandler.FragmentName.JOIN);
+        showConnecting(true);
         model.connect(ip, port);
         model.setName(userName);
     }
@@ -112,19 +119,15 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
         Log.i("STARTACTIVITY", "called onStop unbinding");
         super.onStop();
     }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
-
+        model.disconnect();
     }
-
     @Override
     public void onBackPressed() {
         handler.backPressed(this);
     }
-
     @Override
     protected void onRestart() {
         super.onRestart();
@@ -135,22 +138,17 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
 
     // Create and move
     public void createAndMoveRoom(String RoomName){
-        setFragment(FragmentHandler.FragmentName.CHAT);
+        model.moveNewRoom(RoomName);
     }
     // Move to room
     public void moveToRoom(int roomID){
-        handler.setRoomID(roomID);
-
+        model.move(roomID);
     }
-
     public void muteUser(User user, boolean mute){
-
+        //TODO
     }
-    public void updateUsers(){
-
-    }
-    public void updateRooms(){
-
+    public void Update(){
+        handler.update();
     }
     public ArrayList<Room> getRooms(){
         return  model.getRooms();
@@ -159,4 +157,19 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
         return  model.getUsers(id);
     }
 
+    private Handler UpdateHandler = new Handler(){
+      @Override
+      public void handleMessage(Message msg){
+          switch (msg.what){
+              case Connector.CONNECTED:
+                  showConnecting(false);
+                  setFragment(FragmentHandler.FragmentName.JOIN);
+              break;
+              case Connector.DISCONNECTED:
+                  setFragment(FragmentHandler.FragmentName.START);
+              break;
+
+          }
+      }
+    };
 }

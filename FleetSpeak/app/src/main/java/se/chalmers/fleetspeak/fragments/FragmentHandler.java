@@ -10,12 +10,10 @@ import se.chalmers.fleetspeak.util.Utils;
  */
 public class FragmentHandler {
     private FragmentName currentFragment;
-    private int roomID = -1;
     private Fragment[] fragments ={ new StartFragment(), new CarStartFragment(), new JoinFragment(), new ChatFragment()};
     public enum FragmentName{
         START, JOIN, CHAT;
     }
-    public void setRoomID(int i){roomID = i;}
     public FragmentName getCurrentFragment(){
         return currentFragment;
     }
@@ -32,16 +30,12 @@ public class FragmentHandler {
 
             case CHAT:
                 ChatFragment chatFragment = ((ChatFragment) fragments[3]);
-                chatFragment.setRoomID(roomID);
+                chatFragment.updateUsers();
                 return  chatFragment;
 
             default:
                 return  null;
         }
-    }
-    public void showConnecting(){
-        ((StartFragment)fragments[0]).showConnecting(Utils.getCarMode());
-        ((CarStartFragment)fragments[1]).showConnecting(Utils.getCarMode());
     }
     public void showConnectionErrorMessage(){
         if(Utils.getCarMode())
@@ -49,11 +43,11 @@ public class FragmentHandler {
         else
             ((StartFragment) fragments[0]).showConnectionErrorMessage();
     }
-    public void upDate(){
+    public void update(){
         if(currentFragment == FragmentName.CHAT){
-
+            ((ChatFragment)fragments[3]).updateUsers();
         }else if(currentFragment == FragmentName.JOIN){
-
+            ((JoinFragment)fragments[2]).updateRooms();
         }
     }
     public void backPressed(MainActivity activity){

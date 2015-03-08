@@ -59,9 +59,6 @@ public class CarStartFragment extends Fragment {
     private void connect(){
         ((MainActivity) this.getActivity()).startConnection();
     }
-    public void showConnecting(boolean b){
-        this.getView().findViewById(R.id.loadingPanel).setVisibility(b ? View.VISIBLE : View.INVISIBLE);
-    }
     /**
      * A method that creates and shows a connection error message
      */
