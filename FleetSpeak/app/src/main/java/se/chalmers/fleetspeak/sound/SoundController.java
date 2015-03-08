@@ -75,11 +75,19 @@ public class SoundController {
         return 0;
     }
 
-    public void removeStream(int userid){
+    /**
+     * Removes the an user-stream from this client's stream
+     * @param userid The user ID identifying the downStream
+     */
+    public void removeUserFromDownStream(int userid){
         downStreams.get(userid).join(null);
         downStreams.remove(userid);
     }
 
+    /**
+     * Fetches the IPv4 address of the client device
+     * @return A String containing the IPV4 address
+     */
     private String fetchIP(){
         try {
             NetworkInterface network = null;
