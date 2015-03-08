@@ -56,24 +56,23 @@ public class SoundController {
     /**
      * Adds a stream to the audioGroup
      */
-    public void addStream(int userid, String ip, int port){
-        AudioStream stream;
+    public int addStream(int userid){
+        AudioStream stream = null;
 
         try {
             stream = new AudioStream(InetAddress.getByName(fetchIP()));
             stream.setMode(RtpStream.MODE_RECEIVE_ONLY);
             stream.setCodec(AudioCodec.PCMU);
-            stream.associate(InetAddress.getByName(ip), port);
             stream.join(audioGroup);
             downStreams.put(userid, stream);
         } catch (UnknownHostException e) {
-            Log.d(this.getClass().toString(), "Unknown host: " + ip);
+            Log.d(this.getClass().toString(), "Unknown host ");
         } catch (SocketException e) {
             Log.d(this.getClass().toString(), "Socket Error");
         }
-
-
-
+        if(stream != null)
+            return stream.getLocalPort();
+        return 0;
     }
 
     public void removeStream(int userid){
