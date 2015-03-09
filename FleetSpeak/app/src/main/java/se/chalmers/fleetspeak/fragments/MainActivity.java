@@ -73,8 +73,7 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
     }
 
     public void resetFragment(){
-        Log.i("MainActivity"," reseting");
-        handler.resetFragment(this);
+        setFragment(handler.getCurrentFragment());
     }
     /*
     Set the setting for the user

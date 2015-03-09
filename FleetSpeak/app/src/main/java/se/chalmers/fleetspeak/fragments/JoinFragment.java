@@ -39,6 +39,7 @@ public class JoinFragment extends Fragment{
     private ArrayAdapter<Room> adapter;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.d("Joinfragment","constructor called");
         final Context contextThemeWrapper = new ContextThemeWrapper(getActivity(), Utils.getThemeID());
 
         LayoutInflater localInflater = inflater.cloneInContext(contextThemeWrapper);
