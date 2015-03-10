@@ -31,6 +31,7 @@ public class Connector {
     private Socket socket;
     private Messenger threadMessenger;
 
+    private Messenger messenger;
 
 
     private Handler handler = null;
@@ -42,7 +43,8 @@ public class Connector {
         socketWriter = new SocketWriter();
         outThread = new Thread(socketWriter);
         outThread.start();
-        socketListener = new SocketReader(new Messenger(h));
+        messenger = new Messenger(h);
+        socketListener = new SocketReader();
         inThread = new Thread(socketListener);
     }
 
@@ -100,7 +102,9 @@ public class Connector {
      */
     private void sendMessage(Handler callbackHandler, int command, Object key, int value){
         try{
-            threadMessenger.send(Message.obtain(callbackHandler, command, value, 0, key));
+            Message m = Message.obtain(null, command, value, 0, key);
+            m.replyTo = new Messenger(callbackHandler);
+            threadMessenger.send(m);
         }catch(RemoteException e){
             e.printStackTrace();
         }
@@ -123,6 +127,7 @@ public class Connector {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        socket = null;
     }
 
     /**
@@ -131,7 +136,7 @@ public class Connector {
     private class SocketWriter implements Runnable{
 
 
-        ObjectOutputStream oos;
+        ObjectOutputStream objectOutputStream;
 
         @Override
         public void run() {
@@ -140,7 +145,7 @@ public class Connector {
             handler = new Handler() {
                 public void handleMessage(Message msg) {
                 if (msg != null) {
-                    Log.i("Connector", "Command received. id: " + msg.what);
+                    Log.i("Connector", "Command received. id: " + msg.toString());
 
                     switch (msg.what) {
                         case MessageValues.CONNECT:
@@ -148,14 +153,15 @@ public class Connector {
                             try{
                                 socket = new Socket((String)msg.obj, msg.arg1);
                                 startSocketListener();
-                                oos = new ObjectOutputStream(socket.getOutputStream());
+                                objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
                             }catch(IOException e){
                                 Log.i("Connector", "IOException" );
                                 e.printStackTrace();
                             }
                             Log.i("Connector", "Connected to" + msg.obj + ":" + msg.arg1);
                             try {
-                                new Messenger(msg.getTarget()).send(Message.obtain(null, MessageValues.CONNECTED));
+                                msg.replyTo.send(Message.obtain(null, MessageValues.CONNECTED));
+                                messenger.send(Message.obtain(null, MessageValues.CONNECTED, new Command("connected", msg.obj, null)));
                             } catch (RemoteException e) {
                                 e.printStackTrace();
                             }
@@ -193,7 +199,7 @@ public class Connector {
 
         void sendCommand(String command, Object key, Object value){
             try {
-                oos.writeObject(new Command(command, key, value));
+                objectOutputStream.writeObject(new Command(command, key, value));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -205,23 +211,20 @@ public class Connector {
      */
 
     private class SocketReader implements Runnable{
-        Messenger messenger;
-        ObjectInputStream ois;
-        public SocketReader(Messenger m){
-            messenger = m;
-        }
+        ObjectInputStream objectInputStream;
+        public SocketReader(){}
         @Override
         public void run() {
             try {
-                ois = new ObjectInputStream(socket.getInputStream());
+                objectInputStream = new ObjectInputStream(socket.getInputStream());
             } catch (IOException e) {
                 e.printStackTrace();
             }
             while(socket != null){
                 try {
                     Object o;
-                    if((o = ois.readObject()) != null){
-                        messenger.send(Message.obtain(null, 0, o));
+                    if((o = objectInputStream.readObject()) != null){
+                        messenger.send(Message.obtain(handler, 0, o));
                     }
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();

@@ -24,15 +24,9 @@ public class FragmentHandler {
             case START:
                 return Utils.getCarMode()?fragments[1]:fragments[0];
             case JOIN:
-                JoinFragment fragment = (JoinFragment)fragments[2];
-                fragment.updateRooms();
-                return fragment;
-
+                return fragments[2];
             case CHAT:
-                ChatFragment chatFragment = ((ChatFragment) fragments[3]);
-                chatFragment.updateUsers();
-                return  chatFragment;
-
+                return fragments[3];
             default:
                 return  null;
         }
@@ -58,9 +52,5 @@ public class FragmentHandler {
        }else{
            activity.finish();
        }
-    }
-    public void resetFragment(MainActivity activity){
-        fragments = new Fragment[] { new StartFragment(), new CarStartFragment(), new JoinFragment(), new ChatFragment()};
-        activity.setFragment(currentFragment);
     }
 }
