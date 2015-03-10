@@ -75,7 +75,7 @@ public class CommandHandler extends Handler {
            case "requestsoundport":
                int port = soundController.addStream((Integer) command.getKey());
                try {
-                   msg.replyTo.send(Message.obtain(null, MessageValues.SETSOUNDPORT, (Integer) command.getKey(), 0, port));
+                   msg.replyTo.send(Message.obtain(null, MessageValues.SETSOUNDPORT, port, 0, command.getKey()));
                } catch (RemoteException e) {
                    e.printStackTrace();
                }
