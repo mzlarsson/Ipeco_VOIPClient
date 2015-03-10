@@ -224,7 +224,10 @@ public class Connector {
                 try {
                     Object o;
                     if((o = objectInputStream.readObject()) != null){
-                        messenger.send(Message.obtain(handler, 0, o));
+                        Message msg = Message.obtain(handler, 0, o);
+                        msg.replyTo = threadMessenger;
+                        messenger.send(msg);
+
                     }
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
