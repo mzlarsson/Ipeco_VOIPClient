@@ -26,7 +26,6 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import se.chalmers.fleetspeak.CommandHandler;
 import se.chalmers.fleetspeak.R;
 import se.chalmers.fleetspeak.Room;
 import se.chalmers.fleetspeak.User;
@@ -40,6 +39,7 @@ public class JoinFragment extends Fragment{
     private ArrayAdapter<Room> adapter;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.d("Joinfragment","constructor called");
         final Context contextThemeWrapper = new ContextThemeWrapper(getActivity(), Utils.getThemeID());
 
         LayoutInflater localInflater = inflater.cloneInContext(contextThemeWrapper);
@@ -48,6 +48,8 @@ public class JoinFragment extends Fragment{
 
         ListView roomView = ((ListView)view.findViewById(R.id.roomView));
         adapter = new JoinRoomAdapter(getMain(), getMain().getRooms());
+
+        Log.d("JoinFragment","Adapter" +  adapter);
         roomView.setAdapter(adapter);
         roomView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -151,6 +153,7 @@ public class JoinFragment extends Fragment{
     private class JoinRoomAdapter extends ArrayAdapter<Room> {
         private JoinRoomAdapter(Context context, ArrayList<Room> values) {
             super(context, R.layout.list_item_rooms, values);
+            Log.d("JoinFragment", "Creating join room adapter");
         }
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
