@@ -170,6 +170,9 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
               case MessageValues.DISCONNECTED:
                   setFragment(FragmentHandler.FragmentName.START);
               break;
+              case MessageValues.MODELCHANGED:
+                  update();
+              break;
           }
       }
     };

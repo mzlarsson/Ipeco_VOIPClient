@@ -47,7 +47,23 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 		}
 		EventBus.getInstance().addSubscriber(this);
 		initializeAndroidCommands();
-		sendData(new Command("setID", clientID, null));
+		syncToClient();
+	}
+	
+	/**
+	 * Syncs the current model to the client so it is fully updated
+	 */
+	public void syncToClient(){
+		RoomHandler handler = RoomHandler.getInstance();
+		for(Room r : handler.getRooms()){
+			sendData(new Command("createdRoom", r.getId(), r.getName()));
+			for(Client c : handler.getClients(r)){
+				if(c.getClientID() != clientID){
+					sendData(new Command("addedUser", c.getClientID(), r.getId()));
+					sendData(new Command("changedUsername", c.getClientID(), c.getName()));
+				}
+			}
+		}
 	}
 	
 	public int getClientID(){
