@@ -97,7 +97,7 @@ public class JoinFragment extends Fragment{
     }
     public void updateRooms(){
         Log.i("JoinFragment", "updateing room list");
-        adapter.notifyDataSetChanged();
+        //adapter.notifyDataSetChanged();
         // this.getActivity().getWindow().getDecorView().findViewById(android.R.id.content).getRootView().invalidate();
     }
     private void createNewRoomOnClick() {

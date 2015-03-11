@@ -32,11 +32,12 @@ public class SoundController {
      */
     public SoundController(Context context, String ip, int port){
         audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-        audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
+        Log.d("SoundControler", "getMode " + audioManager.getMode());
+        audioManager.setMode(3);
         audioManager.setSpeakerphoneOn(true);
-
+        Log.d("SoundControler", "getMode " + audioManager.getMode());
         audioGroup = new AudioGroup();
-        audioGroup.setMode(AudioGroup.MODE_NORMAL);
+        audioGroup.setMode(AudioGroup.MODE_ECHO_SUPPRESSION);
 
         Log.d("SoundController", "Addres" + ip + ":" + port);
 
@@ -71,9 +72,10 @@ public class SoundController {
             stream.setMode(RtpStream.MODE_RECEIVE_ONLY);
             stream.setCodec(AudioCodec.PCMU);
 
-            Log.d("Add stream", "The stream " + stream.getLocalAddress().toString());
-
-            stream.join(audioGroup);
+            Log.d("Add stream", "The stream " + stream.getLocalAddress().toString() + ":" + stream.getLocalPort());
+            for(AudioStream a: audioGroup.getStreams())
+            Log.d("Add stream", "group" + a.getLocalAddress().toString() + ":" +  a.getLocalPort());
+            stream.join(null);
             downStreams.put(userid, stream);
         } catch (UnknownHostException e) {
             Log.d(this.getClass().toString(), "Unknown host ");
