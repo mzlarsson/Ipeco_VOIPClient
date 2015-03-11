@@ -2,7 +2,6 @@ package se.chalmers.fleetspeak.gui;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
@@ -113,12 +112,6 @@ public class ServerGUIRoomController implements IEventBusSubscriber{
 	}
 	
 	public void removeRoom(int roomID){
-		for(Entry<Integer, Integer> relation : clientRooms.entrySet()){
-			if(relation.getValue() == roomID){
-				clientRooms.remove(relation.getKey());
-			}
-		}
-
 		//Update GUI
 		Platform.runLater(new Runnable(){
 			@Override
