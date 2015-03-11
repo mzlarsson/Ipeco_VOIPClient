@@ -2,6 +2,8 @@ package se.chalmers.fleetspeak.core;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 
 import se.chalmers.fleetspeak.eventbus.EventBus;
 import se.chalmers.fleetspeak.util.Command;
@@ -220,8 +222,8 @@ public class RoomHandler {
 	 * Get all the available rooms.
 	 * @return An array with the available rooms.
 	 */
-	public Room[] getRooms(){
-		return rooms.keySet().toArray(new Room[rooms.keySet().size()]);
+	public Set<Room> getRooms(){
+		return rooms.keySet();
 	}
 	
 	/**
@@ -229,8 +231,8 @@ public class RoomHandler {
 	 * @param r the room to get the clients from.
 	 * @return An array with all clients in the room.
 	 */
-	public Client[] getClients(Room r){
-		return rooms.get(r).toArray(new Client[rooms.get(r).size()]);
+	public List<Client> getClients(Room r){
+		return rooms.get(r);
 	}
 	
 	/**
