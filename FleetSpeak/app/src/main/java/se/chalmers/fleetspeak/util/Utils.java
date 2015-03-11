@@ -3,6 +3,7 @@ package se.chalmers.fleetspeak.util;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
+import android.util.Log;
 
 import se.chalmers.fleetspeak.R;
 import se.chalmers.fleetspeak.fragments.MainActivity;
@@ -82,7 +83,9 @@ public class Utils {
         }else{
             appTheme = DARK;
         }
+        Log.d("Utils:", "Theme changed to Dark =" +(appTheme == DARK));
         activity.resetFragment();
+        activity.setTheme((appTheme == LIGHT));
     }
 
     /**

@@ -3,11 +3,14 @@ package se.chalmers.fleetspeak.fragments;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
 
@@ -56,8 +59,6 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
         findViewById(R.id.loadingPanel).setVisibility(View.INVISIBLE);
         // Set the start fragment
         setFragment(FragmentHandler.FragmentName.START);
-
-
     }
 
 
@@ -73,6 +74,7 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
     }
 
     public void resetFragment(){
+        handler.resetFragmet(handler.getCurrentFragment());
         setFragment(handler.getCurrentFragment());
     }
     /*
@@ -108,13 +110,11 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
     }
 
     protected void onPause() {
-        Log.i("STARTACTIVITY", "called onPause unbinding");
         super.onPause();
     }
 
     @Override
     protected void onStop() {
-        Log.i("STARTACTIVITY", "called onStop unbinding");
         super.onStop();
     }
     @Override
@@ -145,7 +145,8 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
     public void muteUser(User user, boolean mute){
         //TODO
     }
-    public void Update(){
+
+    public void update(){
         handler.update();
     }
     public ArrayList<Room> getRooms(){
@@ -170,4 +171,14 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
           }
       }
     };
+
+    public void setTheme(boolean b){
+        SpannableString str = new SpannableString(getTitle());
+        if(b) {
+            str.setSpan(new ForegroundColorSpan(Color.BLACK), 0, str.length(), 0);
+        }else{
+            str.setSpan(new ForegroundColorSpan(Color.WHITE), 0 , str.length(), 0);
+       }
+        setTitle(str);
+    }
 }

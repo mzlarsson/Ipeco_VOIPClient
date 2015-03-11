@@ -109,6 +109,8 @@ public class Router extends Thread{
 	 */
 	public void terminate(){
 		running = false;
+		inport.disconnect();
+		outport.disconnect();
 		inport.close();
 		outport.close();
 		removeAllClients();
