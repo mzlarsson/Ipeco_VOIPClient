@@ -36,11 +36,13 @@ public class TCPModifierBot extends Thread{
 		}catch(IOException ioe){
 			System.out.println("IO Exception: "+ioe.getMessage());
 		} catch (InterruptedException e) {}
+		
+		System.exit(0);
 	}
 	
 	public static void main(String[] args){
 		String name = "VoltHacker";
-		String ip = "129.16.185.58";
+		String ip = "192.168.43.36";
 		int port = 8867;
 		TCPModifierBot bot = new TCPModifierBot(name, ip, port);
 		bot.start();

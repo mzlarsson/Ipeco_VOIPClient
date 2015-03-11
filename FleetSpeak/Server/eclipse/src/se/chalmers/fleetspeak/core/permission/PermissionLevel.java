@@ -6,7 +6,8 @@ import java.util.List;
 public enum PermissionLevel {
 	ADMIN_ALL(),
 	MODIFY_ROOM(Permission.MOVE_OTHER_USER, Permission.MOVE_OWN_USER, Permission.RENAME_OTHER_USER, Permission.RENAME_OWN_USER, Permission.RENAME_ROOM),
-	MODIFY_ROOM_OWN_PROPS(Permission.MOVE_OWN_USER, Permission.RENAME_OWN_USER);
+	MODIFY_ROOM_OWN_PROPS(Permission.MOVE_OWN_USER, Permission.RENAME_OWN_USER),
+	DEFAULT(Permission.MOVE_OWN_USER, Permission.RENAME_OWN_USER);
 	
 	private List<Permission> permissions;
 	
