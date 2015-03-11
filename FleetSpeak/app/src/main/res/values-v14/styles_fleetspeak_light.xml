@@ -29,7 +29,7 @@
         <item name="android:actionModeBackground">@drawable/cab_background_top_fleetspeak_light</item>
         <item name="android:actionModeSplitBackground">@drawable/cab_background_bottom_fleetspeak_light</item>
         <item name="android:actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Fleetspeak_light</item>
-        
+
         
     </style>
 

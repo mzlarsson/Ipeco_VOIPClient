@@ -53,4 +53,24 @@ public class FragmentHandler {
            activity.finish();
        }
     }
-}
+    public void resetFragmet(FragmentName name){
+        switch (name){
+                case START:
+                    if(Utils.getCarMode()){
+                        fragments[1] = new CarStartFragment();
+                    }else {
+                        fragments[0] = new StartFragment();
+                    }
+                    break;
+                case JOIN:
+                    fragments[2] = new JoinFragment();
+                    break;
+                case CHAT:
+                    fragments[3] = new ChatFragment();
+                    break;
+                default:
+            }
+
+        }
+    }
+
