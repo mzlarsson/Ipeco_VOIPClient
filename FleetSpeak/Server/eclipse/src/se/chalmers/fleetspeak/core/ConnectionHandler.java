@@ -68,6 +68,7 @@ public class ConnectionHandler{
         
         Commands cmds = Commands.getInstance();
         cmds.execute(-1, cmds.findCommand("AddUser"), client, PermissionLevel.ADMIN_ALL); // TODO If not all clients should have ADMIN rights this is the place.
+        client.start();
     }
     
     public boolean isRunning(){
