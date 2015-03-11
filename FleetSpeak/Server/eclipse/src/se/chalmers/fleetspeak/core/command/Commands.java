@@ -47,7 +47,7 @@ public class Commands{
 	 * @param requester The id of the one requesting the command, used for permission checks.
 	 * @param cmdInfo The CommandInfo of the command to be executed.
 	 * @param params The parameters to the command in question.
-	 * @return true if successfully executed, false if denied of failed.
+	 * @return true if successfully executed, false if denied or failed.
 	 */
 	public CommandResponse execute(int requester, CommandInfo cmdInfo, Object... params) {
 		if(cmdInfo == null){
