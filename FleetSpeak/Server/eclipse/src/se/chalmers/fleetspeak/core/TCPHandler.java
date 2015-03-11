@@ -34,6 +34,11 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 	private boolean isRunning = false;
 	private Map<String, CommandInfo> cmds;
 	
+	/**
+	 * Constructs the TCPHandler for a specific client. 
+	 * @param clientSocket The socket of the client.
+	 * @param clientID The ID identifying the client.
+	 */
 	public TCPHandler(Socket clientSocket, int clientID) {
 		this.clientID = clientID;
 		this.clientSocket = clientSocket;
@@ -66,6 +71,10 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 		}
 	}
 	
+	/**
+	 * Returns the client of the TCPHandler.
+	 * @return ID of the client.
+	 */
 	public int getClientID(){
 		return this.clientID;
 	}
@@ -73,7 +82,6 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 	/**
 	 * Looks for new incoming messages 
 	 */
-
 	public void run() {
 		isRunning = true;
 		try {
@@ -119,7 +127,9 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 			Log.logException(e);
 		}
 	}
-	
+	/**
+	 * Sets up the HashMap with the commands from the Android.
+	 */
 	private void initializeAndroidCommands() {
 		cmds = new HashMap<String, CommandInfo>();
 		cmds.put("setUsername", Commands.getInstance().findCommand("setUsername"));
@@ -128,7 +138,10 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 		cmds.put("createRoom", Commands.getInstance().findCommand("createRoom"));
 		cmds.put("disconnect", Commands.getInstance().findCommand("disconnect"));
 	}
-	
+	/**
+	 * Translates the command from the client.
+	 * @param c The command which to be executed.
+	 */
 	private void runAndroidCommand(Command c){
 		//Do translation Android --> Server according to spec
 		switch(c.getCommand().toLowerCase()){
@@ -142,13 +155,24 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 		}
 	}
 	
+	/**
+	 * Executes the command from the client
+	 * @param cmd The command to be executed.
+	 * @param key First parameter for command.
+	 * @param value Second parameter for command.
+	 * @return
+	 */
 	public Object[] doCommand(CommandInfo cmd, Object key, Object value){
 		Commands com = Commands.getInstance();
 		CommandResponse r = com.execute(clientID, cmd, key, value);
 		Log.logDebug("Got command response: ["+(r.wasSuccessful()?"Success":"Failure")+": "+r.getMessage()+"]");
 		return r.getData();
 	}
-
+	
+	/**
+	 * Stops the TCPHandler. Unsubscribes the TCPHandler from the Eventbus and closes the clientSocket.
+	 * @return If the clientSocket was successfully closed returns true, else false.
+	 */
 	public boolean terminate() {
 		isRunning = false;
 		EventBus.getInstance().removeSubscriber(this);

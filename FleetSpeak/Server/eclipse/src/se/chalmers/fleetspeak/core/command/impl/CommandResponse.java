@@ -1,5 +1,9 @@
 package se.chalmers.fleetspeak.core.command.impl;
-
+/**
+ * 
+ * A class describing the result from executing a command.
+ *
+ */
 public class CommandResponse {
 
 	private boolean success;

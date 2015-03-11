@@ -36,7 +36,7 @@ import se.chalmers.fleetspeak.util.Utils;
  */
 public class ChatFragment extends Fragment {
     private PopupWindow micAndVolumePanel;
-    private ArrayList<User> userArrayList = new ArrayList<User>();
+    private ArrayList<User> users = new ArrayList<User>();
     private ArrayAdapter<User> adapter;
     private boolean isTalkActive;
     private Menu menu;
@@ -50,7 +50,8 @@ public class ChatFragment extends Fragment {
 
 
         ListView userListView = (ListView) view.findViewById(R.id.userList);
-        adapter = new ChatRoomListAdapter(getMain(), userArrayList);
+        users.addAll(getMain().getUsers(getMain().getCurrentRoom()));
+        adapter = new ChatRoomListAdapter(getMain(), users);
         userListView.setAdapter(adapter);
         userListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -109,6 +110,8 @@ public class ChatFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
     public void updateUsers(){
+        users.clear();
+        users.addAll(getMain().getUsers(getMain().getCurrentRoom()));
         adapter.notifyDataSetChanged();
     }
 
