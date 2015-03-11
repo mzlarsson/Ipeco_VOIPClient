@@ -156,19 +156,26 @@ public class Connector {
 
                     switch (msg.what) {
                         case MessageValues.CONNECT:
+                            Boolean connected = false;
                             Log.i("Connector", "Connecting...");
                             try{
                                 socket = new Socket((String)msg.obj, msg.arg1);
                                 startSocketListener();
                                 objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+                                connected = true;
                             }catch(IOException e){
                                 Log.i("Connector", "IOException" );
                                 e.printStackTrace();
                             }
                             Log.i("Connector", "Connected to" + msg.obj + ":" + msg.arg1);
                             try {
-                                msg.replyTo.send(Message.obtain(null, MessageValues.CONNECTED));
-                                messenger.send(Message.obtain(null, MessageValues.CONNECTED, new Command("connected", msg.obj, null)));
+                                if(connected) {
+                                    msg.replyTo.send(Message.obtain(null, MessageValues.CONNECTED));
+                                    messenger.send(Message.obtain(null, MessageValues.CONNECTED, new Command("connected", msg.obj, null)));
+                                }else{
+                                    msg.replyTo.send(Message.obtain(null, MessageValues.CONNECTIONFAILED));
+                                    messenger.send(Message.obtain(null, MessageValues.CONNECTIONFAILED, new Command("connection failed", msg.obj, null)));
+                                }
                             } catch (RemoteException e) {
                                 e.printStackTrace();
                             }
