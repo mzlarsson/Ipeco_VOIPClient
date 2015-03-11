@@ -34,11 +34,9 @@ public class Client{
 		this.clientID = IDFactory.getInstance().getID();
 		this.name = "UnknownUser";
 		this.tcp = new TCPHandler(socket, clientID);
-		this.tcp.start();
 
 		this.ip = socket.getInetAddress();
 		this.soundRouter = new Router();
-		this.tcp.sendData(new Command("useSoundPort", soundRouter.getReceivePort(), null));
 	}
 	
 	/**
@@ -47,7 +45,6 @@ public class Client{
 	 * @param clientList A list of clients symbolizing all clients in a room.
 	 */
 	public synchronized void moveToRoom(List<Client> clientList){
-		// FIXME Make android-client drop all incoming ports.
 		removeAllListeningClients();
 		for (Client c : clientList) {
 			requestListeningClient(c);
@@ -103,6 +100,15 @@ public class Client{
 	 */
 	public String getName() {
 		return name;
+	}
+	
+	/**
+	 * Starts the client and all services associated with it.
+	 */
+	public void start() {
+		tcp.start();
+		soundRouter.start();
+		tcp.sendData(new Command("useSoundPort", soundRouter.getReceivePort(), null));
 	}
 	
 	/**
