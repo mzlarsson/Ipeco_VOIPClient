@@ -97,11 +97,13 @@ public class ServerGUIRoomController implements IEventBusSubscriber{
 				@Override
 				public void run() {
 					TreeItem<DataContainer> room = findRoom(prevRoom);
-					room.getChildren().remove(findClient(clientID, room));
-					if(room.getChildren().size()==0){
-						room.getChildren().add(new TreeItem<DataContainer>(new DataContainer(-1, "[None]")));
+					if(room!=null){
+						room.getChildren().remove(findClient(clientID, room));
+						if(room.getChildren().size()==0){
+							room.getChildren().add(new TreeItem<DataContainer>(new DataContainer(-1, "[None]")));
+						}
 					}
-				}
+				}		
 			});
 		}
 	}
