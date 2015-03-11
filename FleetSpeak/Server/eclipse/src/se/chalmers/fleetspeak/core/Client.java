@@ -34,6 +34,7 @@ public class Client{
 		this.clientID = IDFactory.getInstance().getID();
 		this.name = "UnknownUser";
 		this.tcp = new TCPHandler(socket, clientID);
+		this.tcp.sendData(new Command("setID", clientID, null));
 
 		this.ip = socket.getInetAddress();
 		this.soundRouter = new Router();

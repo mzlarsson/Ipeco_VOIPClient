@@ -34,17 +34,18 @@ public class SoundController {
      * Starts a new send only stream that connected to ip:port
      */
     public SoundController(Context context, String ip, int port){
+        Log.d("SoundController", "Creating SoundContoller");
         this.ip = ip;
         this.port = port;
+
         audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-        Log.d("SoundControler", "getMode " + audioManager.getMode());
         audioManager.setMode(3);
         audioManager.setSpeakerphoneOn(true);
-        Log.d("SoundControler", "getMode " + audioManager.getMode());
+
         audioGroup = new AudioGroup();
         audioGroup.setMode(AudioGroup.MODE_ECHO_SUPPRESSION);
 
-        Log.d("SoundController", "Addres" + ip + ":" + port);
+        Log.d("SoundController", "Connecting upstream to " + ip + ":" + port);
 
 
         try {
@@ -52,6 +53,7 @@ public class SoundController {
             upStream.setMode(RtpStream.MODE_SEND_ONLY);
             upStream.setCodec(AudioCodec.PCMU);
             upStream.associate(InetAddress.getByName(ip), port);
+            Log.i("SoundController", "Connected to " + ip + ":" + port);
         } catch (UnknownHostException e) {
             Log.d(this.getClass().toString(), "Unknown host: " + ip);
         } catch (SocketException e) {
@@ -60,46 +62,49 @@ public class SoundController {
         upStream.join(audioGroup);
 		
         downStreams = new HashMap<Integer, AudioStream>();
+
+        Log.d("SoundController", "SoundController created");
     }
 
     /**
      * Adds a stream to the audioGroup
+     * @param userid for identifying source of stream
      */
     public int addStream(int userid){
         AudioStream stream = null;
 
-        Log.d("Add stream", "Audiogroup " + audioGroup);
+        Log.d("SoundController", "adding a stream to user with id:" + userid);
 
         try {
             String ip = fetchIP();
-            Log.d("Add steam", "ip:"+ip);
             stream = new AudioStream(InetAddress.getByName(ip));
+
             stream.setMode(RtpStream.MODE_RECEIVE_ONLY);
             stream.setCodec(AudioCodec.PCMU);
-
-            Log.d("Add stream", "The stream " + stream.getLocalAddress().toString() + ":" + stream.getLocalPort());
-            for(AudioStream a: audioGroup.getStreams())
-            Log.d("Add stream", "group" + a.getLocalAddress().toString() + ":" +  a.getLocalPort());
-            stream.associate(InetAddress.getByName(ip), port);
+            stream.associate(InetAddress.getByName(this.ip), port);
             stream.join(audioGroup);
             downStreams.put(userid, stream);
+
+            Log.d("SoundController", "Expecting audio from user " + userid + " on port " + stream.getLocalPort());
+
+            return stream.getLocalPort();
         } catch (UnknownHostException e) {
             Log.d(this.getClass().toString(), "Unknown host ");
         } catch (SocketException e) {
             Log.d(this.getClass().toString(), "Socket Error");
         }
-        if(stream != null)
-            return stream.getLocalPort();
+
         return 0;
     }
 
     /**
      * Removes the an user-stream from this client's stream
-     * @param userid The user ID identifying the downStream
+     * @param userid source of the stream
      */
     public void removeUserFromDownStream(int userid){
         downStreams.get(userid).join(null);
         downStreams.remove(userid);
+        Log.d("SoundController", "Removed stream from user with userid "+ userid);
     }
 
     /**
@@ -108,15 +113,15 @@ public class SoundController {
      */
     private String fetchIP(){
         try {
-            NetworkInterface network = null;
-            InetAddress ip = null;
+            NetworkInterface network;
+            InetAddress ip;
 
             for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
                 network = en.nextElement();
                 for (Enumeration<InetAddress> enumIp = network.getInetAddresses(); enumIp.hasMoreElements();) {
                     ip = enumIp.nextElement();
                     if (!ip.isLoopbackAddress() && InetAddressUtils.isIPv4Address(ip.getHostAddress())) {
-                        Log.d("Sound", "An IPv4 found: " + ip.getHostAddress());
+                        Log.d("fetchip", "An IPv4 found: " + ip.getHostAddress());
                         return ip.getHostAddress();
                     }
                 }
@@ -127,9 +132,13 @@ public class SoundController {
         return null;
     }
 
+
+
     public void close() {
+        Log.i("SoundController", "Closing down... ");
         downStreams.clear();
         audioGroup.clear();
         audioManager.setMode(AudioManager.MODE_NORMAL);
+        Log.i("SoundController", "Closed");
     }
 }
