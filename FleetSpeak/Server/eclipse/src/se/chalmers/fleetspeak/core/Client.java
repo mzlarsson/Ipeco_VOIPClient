@@ -37,6 +37,7 @@ public class Client{
 
 		this.ip = socket.getInetAddress();
 		this.soundRouter = new Router();
+		this.tcp.sendData(new Command("useSoundPort", soundRouter.getReceivePort(), null));
 		soundRouter.start();
 	}
 	/**
