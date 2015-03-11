@@ -33,7 +33,10 @@ public class ConnectionHandler{
 
     	this.port = port;
     }
-    
+    /**
+     * Starts the ConnectionHandler. Sets up the various sockets and connections.
+     * @throws UnknownHostException
+     */
     public void start() throws UnknownHostException{
         this.running = true;
         //Instantiate the model
@@ -59,6 +62,11 @@ public class ConnectionHandler{
         }
     }
     
+    /**
+     * Adds a client connection. 
+     * @param clientSocket The socket from which the client's traffic is coming from.
+     * @throws IOException 
+     */
     private void addClient(Socket clientSocket) throws IOException{
         //Print info in server console
         Log.log("A new person joined");
@@ -70,11 +78,16 @@ public class ConnectionHandler{
         cmds.execute(-1, cmds.findCommand("AddUser"), client, PermissionLevel.ADMIN_ALL); // TODO If not all clients should have ADMIN rights this is the place.
         client.start();
     }
-    
+    /**
+     * Returns whether ConnectionHandler is running
+     * @return
+     */
     public boolean isRunning(){
     	return this.running;
     }
-    
+    /**
+     * Stops ConnectionHandler and closes the  serversocket.
+     */
     public void terminate() {
     	try {
     		if(serverSocket != null){
