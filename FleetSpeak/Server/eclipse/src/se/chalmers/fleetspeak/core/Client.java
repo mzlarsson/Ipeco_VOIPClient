@@ -34,12 +34,17 @@ public class Client{
 		this.clientID = IDFactory.getInstance().getID();
 		this.name = "UnknownUser";
 		this.tcp = new TCPHandler(socket, clientID);
-		this.tcp.start();
-
+		
 		this.ip = socket.getInetAddress();
 		this.soundRouter = new Router();
 		this.tcp.sendData(new Command("useSoundPort", soundRouter.getReceivePort(), null));
 	}
+
+	public void start(){
+		this.tcp.start();
+		
+	}
+	
 	
 	/**
 	 * Moves this client to another room symbolized by a list of clients
