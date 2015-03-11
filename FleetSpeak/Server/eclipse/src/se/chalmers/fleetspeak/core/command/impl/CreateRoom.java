@@ -1,5 +1,6 @@
 package se.chalmers.fleetspeak.core.command.impl;
 
+import se.chalmers.fleetspeak.core.Room;
 import se.chalmers.fleetspeak.core.RoomHandler;
 import se.chalmers.fleetspeak.core.permission.Permission;
 import se.chalmers.fleetspeak.core.permission.Permissions;
@@ -7,24 +8,25 @@ import se.chalmers.fleetspeak.core.permission.Permissions;
 public class CreateRoom extends BasicCommand {
 
 	public CreateRoom(int exCode) {
-		super(new CommandInfo("CreateRoom", "CreateRoom [name]", "Creates a new room with given name", exCode));
+		super(new CommandInfo("CreateRoom", "CreateRoom [name] [permanent (optional)]", "Creates a new room with given name", exCode));
 	}
 
 	@Override
 	public CommandResponse execute(int requester, Object... params) {
 		try{
-			int roomID = params[0].getClass()==Integer.class ? (Integer)params[0] : Integer.parseInt((String)params[0]);
-			String name = (String)params[1];
+			String name = (String)params[0];
+			boolean permanent = (params.length>1 && ((params[1] instanceof Boolean && (Boolean)params[1]) || (params[1] instanceof String && ((String)params[1]).equals("true"))));
 			if(Permissions.isAllowed(requester, Permission.RENAME_ROOM)){
-				if(RoomHandler.getInstance().setRoomName(roomID, name)){
-					return new CommandResponse(true, "Renamed room to '"+name+"'");
+				Room room = new Room(name, permanent);
+				if(RoomHandler.getInstance().addRoom(room, requester != -1)){
+					return new CommandResponse(true, "Added room '"+name+"'", new Object[]{room.getId()});
 				}else{
 					return new CommandResponse(false, "Internal error occured. Failed to perform action.");
 				}
 			}else{
 				return new CommandResponse(false, "Insuffient permissions. Action denied.");
 			}
-		}catch(NumberFormatException | NullPointerException | ClassCastException e){
+		}catch(NumberFormatException | NullPointerException | ClassCastException | IndexOutOfBoundsException e){
 			return new CommandResponse(false, "Invalid command use: '"+getInfo().getFormat()+"'");
 		}
 	}

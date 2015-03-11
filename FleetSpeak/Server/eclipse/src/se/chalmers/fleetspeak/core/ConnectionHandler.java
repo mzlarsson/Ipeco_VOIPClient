@@ -36,6 +36,8 @@ public class ConnectionHandler{
     
     public void start() throws UnknownHostException{
         this.running = true;
+        //Instantiate the model
+        RoomHandler.getInstance();
     	//Start the server
         try {
         	InetAddress locIP = InetAddress.getLocalHost();
