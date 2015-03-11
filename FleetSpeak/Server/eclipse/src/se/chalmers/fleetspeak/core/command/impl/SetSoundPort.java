@@ -22,7 +22,7 @@ public class SetSoundPort extends BasicCommand {
 			Client current = handler.findClient(userID);
 			Client remote = handler.findClient(remoteUserID);
 			if(current != null && remote != null){
-				current.addListeningClient(remote, remoteUserPort);
+				remote.addListeningClient(current, remoteUserPort);
 				return new CommandResponse(true, current.getName()+" added "+remote.getName()+" on port "+remoteUserPort);
 			}else{
 				return new CommandResponse(false, "Internal error occured. Failed to perform action.");
