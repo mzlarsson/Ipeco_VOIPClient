@@ -16,7 +16,7 @@ import se.chalmers.fleetspeak.util.PortFactory;
  * A class for routing data
  *
  */
-public class Router implements Runnable{
+public class Router extends Thread{
 	private boolean running;
 	private int inportNbr;
 	private DatagramSocket inport;
