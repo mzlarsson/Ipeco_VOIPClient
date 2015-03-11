@@ -114,7 +114,12 @@ public class Connector {
      * Starts the listenerthread
      */
     private void startSocketListener(){
+        if(inThread.isAlive()){
+          closeSocket();
+
+        }
         inThread.start();
+
     }
 
 
@@ -123,6 +128,8 @@ public class Connector {
      */
     private void closeSocket(){
         try {
+            socketListener.close();
+            socketWriter.close();
             socket.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -204,6 +211,9 @@ public class Connector {
                 e.printStackTrace();
             }
         }
+        void close(){
+            Looper.myLooper().quit();
+        }
     }
 
     /**
@@ -220,7 +230,7 @@ public class Connector {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            while(socket != null){
+            while(objectInputStream != null){
                 try {
                     Object o;
                     if((o = objectInputStream.readObject()) != null){
@@ -238,6 +248,14 @@ public class Connector {
                     e.printStackTrace();
                 }
             }
+        }
+        void close(){
+            try {
+                objectInputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            objectInputStream = null;
         }
     }
 

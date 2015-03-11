@@ -28,6 +28,7 @@
             android:textSize="24dp"
             android:id="@+id/usernameField"
             android:inputType="text"
+            android:imeOptions="actionNext"
             />
 
         <EditText
@@ -39,7 +40,8 @@
             android:hint="@string/ip_adress_text"
             android:textSize="24dp"
             android:id="@+id/ipField"
-            android:inputType="text"/>
+            android:inputType="text"
+            android:imeOptions="actionDone"/>
 
         <EditText
             android:layout_width="match_parent"
@@ -49,6 +51,7 @@
             android:linksClickable="false"
             android:id="@+id/portField"
             android:hint="@string/port_number_text"
+            android:imeOptions="actionDone"
             />
 
         <CheckBox
