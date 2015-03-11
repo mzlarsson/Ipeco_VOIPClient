@@ -17,8 +17,11 @@ public class SetRoomName extends BasicCommand{
 			if(Permissions.isAllowed(requester, Permission.RENAME_ROOM)){
 				int roomID = (params[0].getClass()==Integer.class||params[0].getClass()==int.class?(Integer)params[0]:Integer.parseInt((String)params[0]));
 				String roomName = (String)params[1];
-				RoomHandler.getInstance().setRoomName(roomID, roomName);
-				return new CommandResponse(true, "Room name changed to '"+roomName+"'");
+				if(RoomHandler.getInstance().setRoomName(roomID, roomName)){
+					return new CommandResponse(true, "Renamed room to '"+roomName+"'");
+				}else{
+					return new CommandResponse(false, "Internal error occured. Failed to perform action.");
+				}
 			}else{
 				return new CommandResponse(false, "Insuffient permissions. Action denied.");
 			}

@@ -28,6 +28,7 @@ public class RoomHandler {
 		Log.logDebug("Creating a new RoomHandler");
 		rooms = new HashMap<Room,ArrayList<Client>>();
 		defaultRoom = new Room("Lobby", true);
+		addRoom(defaultRoom, true);
 	}
 	
 	/**
@@ -46,15 +47,9 @@ public class RoomHandler {
 	 * @param c The Client to add to the room
 	 * @param r The targeted Room
 	 */
-	public void addClient(Client c, Room r){
+	public boolean addClient(Client c, Room r){
 		if(c != null && r != null){
-			if (!rooms.containsKey(r) || rooms.get(r) == null) {
-	            ArrayList<Client> list = new ArrayList<Client>();
-	            c.moveToRoom(list);
-	            list.add(c);
-	            rooms.put(r,list);
-	            EventBus.postEvent("broadcast", new Command("createdRoom", r.getId(), r.getName()), this);
-			}else{
+			if (rooms.containsKey(r)){
 				 ArrayList<Client> list = rooms.get(r);
 				 if(!list.contains(c)){
 					 for (Client listeners : list) {
@@ -62,9 +57,12 @@ public class RoomHandler {
 					 }
 					 c.moveToRoom(list);
 					 list.add(c);
+					 return true;
 				 }
 			}
 		}
+		
+		return false;
 	}
 	
 	/**
@@ -72,8 +70,8 @@ public class RoomHandler {
 	 * @param c the client to be added.
 	 * @param roomID the ID of the room to add the client to.
 	 */
-	public void addClient(Client c, int roomID){
-		this.addClient(c, findRoom(roomID)); 
+	public boolean addClient(Client c, int roomID){
+		 return addClient(c, findRoom(roomID)); 
 	}
 	
 	/**
@@ -81,9 +79,29 @@ public class RoomHandler {
 	 * NOTE: Call on this only when the user connected to server, not on move actions.
 	 * @param client the client to be added.
 	 */
-	public void addClient(Client client) {
-		addClient(client, defaultRoom);
-		EventBus.postEvent("broadcast", new Command("addedUser", client.getClientID(), defaultRoom.getId()), this);
+	public boolean addClient(Client client) {
+		if(addClient(client, defaultRoom)){
+			EventBus.postEvent("broadcast", new Command("addedUser", client.getClientID(), defaultRoom.getId()), this);
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Adding an empty room to the roomhandler
+	 * @param room The room to add
+	 * @param force If the room should be added even though its permanent value is false
+	 * @return <code>true</code> if the roomhandler was changed by this action
+	 */
+	public boolean addRoom(Room room, boolean force){
+		if(rooms.get(room) == null && (force || room.isPermanent())){
+			rooms.put(room, new ArrayList<Client>());
+            EventBus.postEvent("broadcast", new Command("createdRoom", room.getId(), room.getName()), this);
+			return true;
+		}
+		
+		return false;
 	}
 
 	/**
@@ -171,13 +189,13 @@ public class RoomHandler {
 	 */
 	public boolean moveClient(Client c, Room r){
 		if(c!=null && r!=null){
-			this.removeClient(c, false);
-			this.addClient(c, r);
-			EventBus.postEvent("broadcast", new Command("movedUser", c.getClientID(), r.getId()), this);
-			return true;
-		}else{
-			return false;
+			if(removeClient(c, false) && addClient(c, r)){
+				EventBus.postEvent("broadcast", new Command("movedUser", c.getClientID(), r.getId()), this);
+				return true;
+			}
 		}
+		
+		return false;
 	}
 	
 	/**
