@@ -19,6 +19,7 @@
 
 <resources>
 
+
     <style name="Theme.Fleetspeak_light" parent="@style/Theme.AppCompat.Light">
         <item name="actionBarItemBackground">@drawable/selectable_background_fleetspeak_light</item>
         <item name="popupMenuStyle">@style/PopupMenu.Fleetspeak_light</item>
@@ -29,8 +30,7 @@
         <item name="actionModeBackground">@drawable/cab_background_top_fleetspeak_light</item>
         <item name="actionModeSplitBackground">@drawable/cab_background_bottom_fleetspeak_light</item>
         <item name="actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Fleetspeak_light</item>
-        <item name="themeName">light</item>
-        
+
     </style>
 
     <style name="ActionBar.Solid.Fleetspeak_light" parent="@style/Widget.AppCompat.Light.ActionBar.Solid">

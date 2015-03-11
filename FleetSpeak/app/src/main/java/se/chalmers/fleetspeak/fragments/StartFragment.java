@@ -8,7 +8,9 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.SpannableString;
 import android.text.TextWatcher;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.ContextThemeWrapper;
@@ -18,6 +20,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -38,7 +41,7 @@ public class StartFragment extends Fragment {
         LayoutInflater localInflater = inflater.from(contextThemeWrapper);
 
         View view = localInflater.inflate(R.layout.start_fragment, container, false);
-
+        Log.d("StartFragment:", "Changing backgroundDrawable to Light=" + (Utils.getThemeID() == R.style.Theme_Fleetspeak_light));
         getActivity().getWindow().setBackgroundDrawable(new ColorDrawable(Utils.getThemeID() == R.style.Theme_Fleetspeak_light ? Color.WHITE : Color.BLACK));
         setHasOptionsMenu(true);
 
@@ -50,8 +53,7 @@ public class StartFragment extends Fragment {
             }
         });
 
-
-        // Set up the textfield of the application
+        // Set up the edittextfield of the application
         final EditText ipTextField = (EditText) view.findViewById(R.id.ipField);
         ipTextField.addTextChangedListener(new TextWatcher() {
             @Override
@@ -110,18 +112,27 @@ public class StartFragment extends Fragment {
         ipTextField.setText(Utils.getIpAdress());
         portField.setText(String.valueOf(Utils.getPort()));
         userNameField.setText(Utils.getUsername());
-
+        // Set the container of the edittextfield clickable
+        view.findViewById(R.id.relStart_layout).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                InputMethodManager imm = (InputMethodManager) view.getContext()
+                        .getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            }
+        });
 
         return view;
     }
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater){
+    public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
         menuInflater.inflate(R.menu.day_night_menu, menu);
     }
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.day_night_toggle) {
             Utils.changeTheme((MainActivity)this.getActivity());
+            Log.d("StartFragment", "Change Theme button pressed");
             return true;
         }
         return super.onOptionsItemSelected(item);
