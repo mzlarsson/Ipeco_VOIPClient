@@ -24,6 +24,11 @@ public class ConnectionHandler{
     
     private volatile boolean running;
     
+    /**
+     * Constructs the ConnectionHandler and starts the server.
+     * @param port The port to the start server on.
+     * @throws UnknownHostException
+     */
     public ConnectionHandler(int port) throws UnknownHostException{
     	Log.log("Starting server @LAN-IP "+InetAddress.getLocalHost().getHostAddress()+" on port "+port);
     	this.running = true;
