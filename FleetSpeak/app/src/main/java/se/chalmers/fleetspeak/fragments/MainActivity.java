@@ -173,6 +173,9 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
               case MessageValues.MODELCHANGED:
                   update();
               break;
+              case MessageValues.CONNECTIONFAILED:
+                  //TODO do somehting cool here like launch fireworks from the AUX connector
+              break;
           }
       }
     };

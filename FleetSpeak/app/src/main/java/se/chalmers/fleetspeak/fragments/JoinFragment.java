@@ -24,7 +24,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import se.chalmers.fleetspeak.R;
@@ -178,10 +177,12 @@ public class JoinFragment extends Fragment{
                 if (Utils.getCarMode()) {
                     builder.append(("(" + users.size() + ")"));
                 } else {
-                    builder.append(users.get(0));
-                    int i = 1;
-                    while(i < users.size()){
-                        builder.append(users.get(i));
+                    if(users.size() > 0) {
+                        builder.append(users.get(0));
+                        int i = 1;
+                        while (i < users.size()) {
+                            builder.append(users.get(i));
+                        }
                     }
                 }
             }
