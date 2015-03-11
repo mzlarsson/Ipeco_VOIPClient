@@ -3,7 +3,6 @@ package se.chalmers.fleetspeak;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
-import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
 
@@ -39,6 +38,7 @@ public class CommandHandler extends Handler {
      */
 
     public void handleMessage(Message msg) {
+        Log.d("WTF" , "" + msg.toString());
         Command command = (Command) msg.obj;
         String sCommand = command.getCommand();
         Log.i("Commandhandler", "Got the command " + sCommand + "(" + command.getKey().getClass() + ": " + command.getKey() + ")");
@@ -75,7 +75,7 @@ public class CommandHandler extends Handler {
            case "requestsoundport":
                int port = soundController.addStream((Integer) command.getKey());
                try {
-                   new Messenger(msg.getTarget()).send(Message.obtain(null, MessageValues.SETSOUNDPORT, (Integer) command.getKey(), 0, port));
+                   msg.replyTo.send(Message.obtain(null, MessageValues.SETSOUNDPORT, (Integer) command.getKey(), 0, port));
                } catch (RemoteException e) {
                    e.printStackTrace();
                }
@@ -84,8 +84,6 @@ public class CommandHandler extends Handler {
                soundController = new SoundController(context, remoteIP, (Integer) command.getKey());
                break;
        }
-
-        Log.d(this.getClass().toString(), roomHandler.toString());
 
 
     }
