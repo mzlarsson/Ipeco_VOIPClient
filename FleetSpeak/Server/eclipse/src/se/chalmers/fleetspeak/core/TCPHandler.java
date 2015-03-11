@@ -55,14 +55,12 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 	 */
 	public void syncToClient(){
 		RoomHandler handler = RoomHandler.getInstance();
-		synchronized(handler){
-			for(Room r : handler.getRooms()){
-				sendData(new Command("createdRoom", r.getId(), r.getName()));
-				for(Client c : handler.getClients(r)){
-					if(c.getClientID() != clientID){
-						sendData(new Command("addedUser", c.getClientID(), r.getId()));
-						sendData(new Command("changedUsername", c.getClientID(), c.getName()));
-					}
+		for(Room r : handler.getRooms()){
+			sendData(new Command("createdRoom", r.getId(), r.getName()));
+			for(Client c : handler.getClients(r)){
+				if(c.getClientID() != clientID){
+					sendData(new Command("addedUser", c.getClientID(), r.getId()));
+					sendData(new Command("changedUsername", c.getClientID(), c.getName()));
 				}
 			}
 		}
