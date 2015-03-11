@@ -43,6 +43,7 @@ class MoveUser extends BasicCommand{
 				return new CommandResponse(false, "Insuffient permissions. Action denied.");
 			}
 		}catch(NumberFormatException | NullPointerException e){
+			e.printStackTrace();
 			return new CommandResponse(false, "Invalid command use: '"+getInfo().getFormat()+"'");
 		}
 	}
