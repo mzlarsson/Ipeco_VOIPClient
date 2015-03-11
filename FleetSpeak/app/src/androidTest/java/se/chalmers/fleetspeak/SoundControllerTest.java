@@ -51,7 +51,9 @@ public class SoundControllerTest extends AndroidTestCase {
         assertNotNull(soundController);
         assertEquals(AudioManager.MODE_IN_COMMUNICATION, audioManager.getMode());
         int port = soundController.addStream(2);
-        assertEquals(1, port);
+        assertNotNull(port);
+
+        soundController.removeUserFromDownStream(2);
 
     }
 
