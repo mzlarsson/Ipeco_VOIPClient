@@ -25,8 +25,7 @@ public class Router extends Thread{
 	private DatagramPacket buffer;
 	
 	/**
-	 * Creates a Router instance from a selected inport
-	 * @param inPort The port from which the data is taken from
+	 * Creates a Router instance with a port it will listen on.
 	 */
 	public Router(){
 		inportNbr = PortFactory.getInstance().getPort();
