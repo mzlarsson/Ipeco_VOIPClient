@@ -24,6 +24,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import se.chalmers.fleetspeak.R;
@@ -35,7 +36,7 @@ import se.chalmers.fleetspeak.util.Utils;
  * Created by david_000 on 22/02/2015.
  */
 public class JoinFragment extends Fragment{
-
+    private ArrayList<Room> rooms = new ArrayList<Room>();
     private ArrayAdapter<Room> adapter;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -47,7 +48,8 @@ public class JoinFragment extends Fragment{
         getActivity().getWindow().setBackgroundDrawable(new ColorDrawable(Utils.getThemeID() == R.style.Theme_Fleetspeak_light ? Color.WHITE : Color.BLACK));
 
         ListView roomView = ((ListView)view.findViewById(R.id.roomView));
-        adapter = new JoinRoomAdapter(getMain(), getMain().getRooms());
+        rooms.addAll(getMain().getRooms());
+        adapter = new JoinRoomAdapter(getMain(), rooms);
 
         Log.d("JoinFragment","Adapter" +  adapter);
         roomView.setAdapter(adapter);
@@ -96,9 +98,9 @@ public class JoinFragment extends Fragment{
         return super.onOptionsItemSelected(item);
     }
     public void updateRooms(){
-        Log.i("JoinFragment", "updateing room list");
-        //adapter.notifyDataSetChanged();
-        // this.getActivity().getWindow().getDecorView().findViewById(android.R.id.content).getRootView().invalidate();
+        rooms.clear();
+        rooms.addAll(getMain().getRooms());
+        adapter.notifyDataSetChanged();
     }
     private void createNewRoomOnClick() {
         // If the user is not driving create a dialog that promts the user to select a room name and

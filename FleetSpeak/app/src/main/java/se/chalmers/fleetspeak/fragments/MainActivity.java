@@ -155,7 +155,9 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
     public ArrayList<User> getUsers(int id){
         return  model.getUsers(id);
     }
-
+    public int getCurrentRoom(){
+        return model.getCurrentRoom();
+    }
     private Handler updateHandler = new Handler(){
       @Override
       public void handleMessage(Message msg){
@@ -181,4 +183,5 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
        }
         setTitle(str);
     }
+
 }

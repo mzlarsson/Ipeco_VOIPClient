@@ -45,7 +45,9 @@ public class Model {
     public void moveNewRoom(String roomname){
         connector.moveNewRoom(callbackHandler, roomname);
     }
-
+    public int getCurrentRoom(){
+        return roomHandler.getCurrentRoom();
+    }
 
 
 }
