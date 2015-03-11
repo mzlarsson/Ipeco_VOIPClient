@@ -149,6 +149,9 @@ public class RoomHandler{
         }
         throw new NoSuchElementException("A user with ID: \"" + id + "\" doesn't exit.");
     }
+    public int getCurrentRoom(){
+        return currentroom;
+    }
 
     /**
      * Finds the room with the specified id.
