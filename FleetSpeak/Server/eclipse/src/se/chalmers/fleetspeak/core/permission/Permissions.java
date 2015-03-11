@@ -16,6 +16,9 @@ public class Permissions {
 					return true;
 				}
 			}
+		}else{
+			//Use PermissionLevel.DEFAULT as default
+			return PermissionLevel.DEFAULT.accepts(level);
 		}
 		
 		return false;
@@ -28,6 +31,9 @@ public class Permissions {
 					return true;
 				}
 			}
+		}else{
+			//Use PermissionLevel.DEFAULT as default
+			return PermissionLevel.DEFAULT.accepts(permission);
 		}
 		
 		return false;
