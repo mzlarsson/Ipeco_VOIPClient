@@ -37,16 +37,16 @@ public class PortFactory {
 	 * @return A free port.
 	 */
 	public synchronized int getPort() {
-		if(!recycledPorts.isEmpty()){
-			int recycledPort = recycledPorts.poll();
-			portsInUse.add(recycledPort);
-			return recycledPort;
-		} else {
+//		if(!recycledPorts.isEmpty()){
+//			int recycledPort = recycledPorts.poll();
+//			portsInUse.add(recycledPort);
+//			return recycledPort;
+//		} else {
 			int port = currentPort;
 			currentPort += 2;
 			portsInUse.add(port);
 			return port;
-		}
+//		}
 	}
 
 	/**

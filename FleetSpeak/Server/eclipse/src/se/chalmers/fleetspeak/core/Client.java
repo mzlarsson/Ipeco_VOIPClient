@@ -40,7 +40,9 @@ public class Client{
 		this.soundRouter = new Router();
 		this.tcp.sendData(new Command("useSoundPort", soundRouter.getReceivePort(), null));
 		soundRouter.start();
+		System.out.println(ip.toString());
 	}
+	
 	/**
 	 * Starts the the TCPHandler
 	 */
