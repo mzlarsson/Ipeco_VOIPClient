@@ -16,7 +16,7 @@ import se.chalmers.fleetspeak.util.PortFactory;
  * A class for routing data
  *
  */
-public class Router implements Runnable{
+public class Router extends Thread{
 	private boolean running;
 	private int inportNbr;
 	private DatagramSocket inport;
@@ -25,8 +25,7 @@ public class Router implements Runnable{
 	private DatagramPacket buffer;
 	
 	/**
-	 * Creates a Router instance from a selected inport
-	 * @param inPort The port from which the data is taken from
+	 * Creates a Router instance with a port it will listen on.
 	 */
 	public Router(){
 		inportNbr = PortFactory.getInstance().getPort();
@@ -110,6 +109,8 @@ public class Router implements Runnable{
 	 */
 	public void terminate(){
 		running = false;
+		inport.disconnect();
+		outport.disconnect();
 		inport.close();
 		outport.close();
 		removeAllClients();

@@ -26,11 +26,16 @@ public class SoundController {
     private AudioGroup audioGroup;
     private AudioStream upStream;
     private HashMap<Integer, AudioStream> downStreams;
+
+    private String ip;
+    private int port;
 	
     /**
      * Starts a new send only stream that connected to ip:port
      */
     public SoundController(Context context, String ip, int port){
+        this.ip = ip;
+        this.port = port;
         audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         Log.d("SoundControler", "getMode " + audioManager.getMode());
         audioManager.setMode(3);
@@ -75,7 +80,8 @@ public class SoundController {
             Log.d("Add stream", "The stream " + stream.getLocalAddress().toString() + ":" + stream.getLocalPort());
             for(AudioStream a: audioGroup.getStreams())
             Log.d("Add stream", "group" + a.getLocalAddress().toString() + ":" +  a.getLocalPort());
-            stream.join(null);
+            stream.associate(InetAddress.getByName(ip), port);
+            stream.join(audioGroup);
             downStreams.put(userid, stream);
         } catch (UnknownHostException e) {
             Log.d(this.getClass().toString(), "Unknown host ");

@@ -34,12 +34,20 @@ public class Client{
 		this.clientID = IDFactory.getInstance().getID();
 		this.name = "UnknownUser";
 		this.tcp = new TCPHandler(socket, clientID);
-		this.tcp.start();
 
 		this.ip = socket.getInetAddress();
 		this.soundRouter = new Router();
 		this.tcp.sendData(new Command("useSoundPort", soundRouter.getReceivePort(), null));
+		soundRouter.start();
 	}
+	/**
+	 * Starts the the TCPHandler
+	 */
+	public void start(){
+		this.tcp.start();
+		
+	}
+	
 	
 	/**
 	 * Moves this client to another room symbolized by a list of clients
@@ -47,7 +55,6 @@ public class Client{
 	 * @param clientList A list of clients symbolizing all clients in a room.
 	 */
 	public synchronized void moveToRoom(List<Client> clientList){
-		// FIXME Make android-client drop all incoming ports.
 		removeAllListeningClients();
 		for (Client c : clientList) {
 			requestListeningClient(c);
@@ -104,6 +111,7 @@ public class Client{
 	public String getName() {
 		return name;
 	}
+	
 	
 	/**
 	 * Remove this client and all services associated with it.
