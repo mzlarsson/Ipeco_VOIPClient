@@ -38,7 +38,8 @@ public class ChatFragment extends Fragment {
     private PopupWindow micAndVolumePanel;
     private ArrayList<User> users = new ArrayList<User>();
     private ArrayAdapter<User> adapter;
-    private boolean isTalkActive;
+    // TODO fix set talkActive to false and call it in oncreateView
+    private boolean isTalkActive = true;
     private Menu menu;
 
     @Override
@@ -60,6 +61,13 @@ public class ChatFragment extends Fragment {
                 User user = adapter.getItem(i);
                 muteUser(user);
 
+            }
+        });
+        ImageButton button = (ImageButton) view.findViewById(R.id.pushToTalkButton);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                pushToTalk();
             }
         });
 
@@ -92,12 +100,12 @@ public class ChatFragment extends Fragment {
     /**
      * A method that toggles between enables or disables the michophone and shows the current mode in the view
      */
-    public void pushToTalk() {
+    private void pushToTalk() {
         Log.i("ChatroomActivity", "pushToTalkCalled");
         isTalkActive = !isTalkActive;
         ImageButton button = (ImageButton) this.getView().findViewById(R.id.pushToTalkButton);
         button.setBackgroundResource(isTalkActive?R.drawable.ic_mic_blue:R.drawable.ic_mic_grey);
-        //TODO and functionallity not just change image
+        getMain().pushToTalk(isTalkActive);
     }
 
 
@@ -145,7 +153,7 @@ public class ChatRoomListAdapter extends ArrayAdapter<User> {
     }
     private void muteUser(User user){
         boolean isMuted = user.getMuted();
-        //FIXME
+        getMain().muteUser(user, !isMuted);
         adapter.notifyDataSetChanged();
     }
     /**
