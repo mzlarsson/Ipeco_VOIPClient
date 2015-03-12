@@ -219,7 +219,8 @@ public class Connector {
             }
         }
         void close(){
-            Looper.myLooper().quit();
+            if(Looper.myLooper() != null)
+                Looper.myLooper().quit();
         }
     }
 
