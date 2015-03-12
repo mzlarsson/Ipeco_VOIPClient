@@ -1,8 +1,5 @@
 package se.chalmers.fleetspeak.util;
 
-import android.app.Activity;
-import android.app.Fragment;
-import android.content.Intent;
 import android.util.Log;
 
 import se.chalmers.fleetspeak.R;
@@ -84,7 +81,7 @@ public class Utils {
             appTheme = DARK;
         }
         Log.d("Utils:", "Theme changed to Dark =" +(appTheme == DARK));
-        activity.resetFragment();
+        activity.restartFragment();
         activity.setTheme((appTheme == LIGHT));
     }
 
