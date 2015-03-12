@@ -1,7 +1,9 @@
 package se.chalmers.fleetspeak.sound;
 
 import android.content.Context;
+import android.media.AudioFormat;
 import android.media.AudioManager;
+import android.media.AudioTrack;
 import android.net.rtp.AudioCodec;
 import android.net.rtp.AudioGroup;
 import android.net.rtp.AudioStream;
@@ -17,6 +19,7 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 
@@ -29,6 +32,10 @@ public class SoundController {
     private AudioGroup audioGroup;
     private AudioStream upStream;
     private HashMap<Integer, AudioStream> downStreams;
+
+    private ArrayList<AudioTrack> audioTracks;
+    private AudioTrack mainAudioTrack;
+
     private String ip;
     private int port;
     DatagramSocket ds;
@@ -41,7 +48,7 @@ public class SoundController {
         Log.d("SoundController", "Creating SoundContoller ip " + ip + ":" + port);
         this.ip = ip;
         this.port = port;
-
+        mainAudioTrack = new AudioTrack(AudioManager.STREAM_VOICE_CALL,8000, AudioFormat.CHANNEL_OUT_MONO,AudioFormat.ENCODING_PCM_8BIT,160,AudioTrack.MODE_STREAM);
         audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
         audioManager.setSpeakerphoneOn(false);
@@ -70,6 +77,10 @@ public class SoundController {
         downStreams = new HashMap<Integer, AudioStream>();
 
         Log.d("SoundController", "SoundController created. audioGroup mode: " + audioGroup.getMode() + " ,audioManager mode: " + audioManager.getMode());
+
+        audioTracks = new ArrayList<>();
+        Log.d("SoundController", "SoundController created");
+        mainAudioTrack.play();
     }
 
     public int addStream(int i){
@@ -88,6 +99,7 @@ public class SoundController {
                         time = System.currentTimeMillis();
                         ds.receive(p);
                         byte[] bytes = p.getData();
+                        mainAudioTrack.write(bytes,20,120);
                         Log.d("Datagram", "diff "+ (System.currentTimeMillis() - time));
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -117,6 +129,8 @@ public class SoundController {
             stream.associate(InetAddress.getByName(this.ip), port + 1);
             stream.join(audioGroup);
             downStreams.put(userid, stream);
+
+            setAudioTracks(userid);
             Log.d("SoundController", "Expecting audio from user " + userid + " on port " + stream.getLocalPort());
 
             return stream.getLocalPort();
@@ -128,6 +142,9 @@ public class SoundController {
         }
 
         return 0;
+    }
+    public void setAudioTracks(int userID){
+
     }
 
     /**
