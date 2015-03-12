@@ -146,7 +146,10 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 		//Do translation Android --> Server according to spec
 		switch(c.getCommand().toLowerCase()){
 			case "setname":			doCommand(cmds.get("setUsername"), clientID, c.getKey());break;
-			case "setsoundport":	doCommand(cmds.get("setSoundPort"), clientID, c.getKey()+","+c.getValue());break;
+			case "setsoundport":	doCommand(cmds.get("setSoundPort"), clientID, c.getKey()+","+c.getValue());
+									//FIXME temporary
+									RoomHandler handler = RoomHandler.getInstance();
+									handler.findClient((int)c.getKey()).sendToPort(handler.findClient(clientID), (int)c.getValue());break;
 			case "move":			doCommand(cmds.get("moveUser"), clientID, c.getKey());break;
 			case "movenewroom":		Object[] data = doCommand(cmds.get("createRoom"), c.getKey(), null);
 									int roomID = (data!=null&&data.length>0?(Integer)data[0]:-1);
