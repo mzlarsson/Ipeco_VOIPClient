@@ -42,7 +42,7 @@ public class TCPModifierBot extends Thread{
 	
 	public static void main(String[] args){
 		String name = "VoltHacker";
-		String ip = "192.168.43.36";
+		String ip = "129.16.72.50";
 		int port = 8867;
 		TCPModifierBot bot = new TCPModifierBot(name, ip, port);
 		bot.start();

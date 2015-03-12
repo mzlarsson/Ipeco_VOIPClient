@@ -99,6 +99,7 @@ public class ConnectionHandler{
     			serverSocket.close();
     		}
 		} catch (IOException e) {}
+    	RoomHandler.getInstance().terminate();
     	Commands.terminate();
     	running = false;
     }

@@ -5,5 +5,6 @@ import javafx.stage.Stage;
 public interface StageOwner {
 
 	public Stage getPrimaryStage();
+	public void terminate();
 	
 }

@@ -393,4 +393,8 @@ public class ServerGUIController implements StageOwner{
 	public Stage getPrimaryStage(){
 		return this.stage;
 	}
+	
+	public void terminate(){
+		stage.close();
+	}
 }
