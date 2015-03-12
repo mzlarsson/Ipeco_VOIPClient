@@ -49,12 +49,14 @@ public class Model {
     public int getCurrentRoom(){
         return roomHandler.getCurrentRoom();
     }
-    public void pushToTalk(boolean state){
+    public void pushToTalk(){
         Log.d("Model", "pushToTalk not implemented");
     }
-    public void muteUser(User user, boolean mute){
+    public void muteUser(User user){
         Log.d("Model", "muteUser not implemented ");
     }
-
+    public boolean isTalking(){
+        return true;
+    }
 
 }
