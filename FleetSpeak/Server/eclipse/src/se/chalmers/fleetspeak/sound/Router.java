@@ -40,6 +40,7 @@ public class Router extends Thread{
 		byte[] b = new byte[172];
 		buffer = new DatagramPacket(b, b.length);
 	}
+	
 	@Override
 	public void run() {
 			running = true;
@@ -60,7 +61,6 @@ public class Router extends Thread{
 	 * @param data The data to be transmitted
 	 */
 	private synchronized void send(byte[] data){
-		
 		for(DatagramPacket p: clients.values()){
 			p.setData(data);
 			try {
@@ -107,7 +107,7 @@ public class Router extends Thread{
 	/**
 	 * Closes this router thread
 	 */
-	public void terminate(){
+	public void terminate(){		
 		running = false;
 		inport.disconnect();
 		outport.disconnect();
