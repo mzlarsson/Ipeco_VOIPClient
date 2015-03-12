@@ -51,6 +51,11 @@ public class Client{
 		
 	}
 	
+	//FIXME temporary
+	public void sendToPort(Client c, int port){
+		tcp.sendData(new Command("sendStuffTo", c.ip.getHostAddress(), port));
+	}
+	
 	
 	/**
 	 * Moves this client to another room symbolized by a list of clients
