@@ -19,8 +19,6 @@ import javafx.stage.WindowEvent;
 
 import org.fxmisc.richtext.StyleClassedTextArea;
 
-import se.chalmers.fleetspeak.gui.Popup.Level;
-
 public class ServerGUI extends Application implements StageOwner{
 
     private Stage primaryStage;
@@ -39,15 +37,14 @@ public class ServerGUI extends Application implements StageOwner{
 			public void handle(WindowEvent event) {
 				if(controller != null && controller.hasRunningServer()){
 					event.consume();
-//					Popup.showPopup(gui, Popup.Type.YES_NO, Popup.Level.QUESTION,
-//							"The server is running. Close anyway?",
-//							new Function<GUI>(){
-//								@Override
-//								public void perform(GUI gui) {
-//									((ServerGUI_FX)gui).terminate();
-//								}
-//							});
-					Popup.alert(gui, Level.ERROR, "Din mamma är otroligt tjock enligt aftonbladet.");
+					Popup.showPopup(gui, Popup.Type.YES_NO, Popup.Level.QUESTION,
+							"The server is running. Close anyway?",
+							new Function<StageOwner>(){
+								@Override
+								public void perform(StageOwner gui) {
+									gui.terminate();
+								}
+							});
 				}
 			}
         });
