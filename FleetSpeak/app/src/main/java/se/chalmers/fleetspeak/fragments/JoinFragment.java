@@ -9,6 +9,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,6 +24,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -32,15 +34,20 @@ import se.chalmers.fleetspeak.User;
 import se.chalmers.fleetspeak.util.Utils;
 
 /**
- * Created by david_000 on 22/02/2015.
+ * A fragment that shows the information and options available to the user when the
+ * user has been connected to the server but has yet chosen a room
+ * Created by David Gustafsson on 22/02/2015.
  */
 public class JoinFragment extends Fragment{
+    // A Arraylist that stores the available rooms that the fragment shall show
     private ArrayList<Room> rooms = new ArrayList<Room>();
+    // A ArrayAdapter that enables the fragment view to show the rooms in rooms
     private ArrayAdapter<Room> adapter;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.d("Joinfragment","constructor called");
-        final Context contextThemeWrapper = new ContextThemeWrapper(getActivity(), Utils.getThemeID());
+        Log.i("Joinfragment:","view created");
+        Context contextThemeWrapper = new ContextThemeWrapper(getActivity(), Utils.getThemeID());
 
         LayoutInflater localInflater = inflater.cloneInContext(contextThemeWrapper);
         View view = localInflater.inflate(R.layout.join_fragment, container, false);
@@ -59,7 +66,7 @@ public class JoinFragment extends Fragment{
             }
         });
 
-
+        // TODO
 
         Button createRoom = (Button) view.findViewById(R.id.buttonCreateRoom);
         createRoom.setOnClickListener(new View.OnClickListener() {
@@ -70,6 +77,8 @@ public class JoinFragment extends Fragment{
         });
 
         setHasOptionsMenu(true);
+
+
 
         return view;
     }

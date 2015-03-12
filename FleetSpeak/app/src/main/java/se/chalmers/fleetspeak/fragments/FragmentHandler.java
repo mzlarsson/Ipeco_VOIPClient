@@ -53,7 +53,7 @@ public class FragmentHandler {
            activity.finish();
        }
     }
-    public void resetFragmet(FragmentName name){
+    public void recreateFragment(FragmentName name){
         switch (name){
                 case START:
                     if(Utils.getCarMode()){
