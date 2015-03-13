@@ -59,6 +59,7 @@ public class FragmentHandler {
            activity.setFragment(FragmentName.DISCONNECT);
        }else if(currentFragment == FragmentName.DISCONNECT){
            activity.setFragment(FragmentName.START);
+           activity.disconnect();
        }else{
            activity.finish();
        }
