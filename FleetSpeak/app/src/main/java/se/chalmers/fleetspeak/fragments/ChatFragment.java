@@ -39,7 +39,6 @@ public class ChatFragment extends Fragment {
     private ArrayList<User> users = new ArrayList<User>();
     private ArrayAdapter<User> adapter;
     // TODO fix set talkActive to false and call it in oncreateView
-    private boolean isTalkActive = true;
     private Menu menu;
 
     @Override
@@ -67,7 +66,7 @@ public class ChatFragment extends Fragment {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                pushToTalk();
+                getMain().pushToTalk();
             }
         });
 
@@ -91,23 +90,11 @@ public class ChatFragment extends Fragment {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                pushToTalk();
+                getMain().pushToTalk();
             }
         });
         super.onCreateOptionsMenu(menu,inflater);
     }
-
-    /**
-     * A method that toggles between enables or disables the michophone and shows the current mode in the view
-     */
-    private void pushToTalk() {
-        Log.i("ChatroomActivity", "pushToTalkCalled");
-        isTalkActive = !isTalkActive;
-        ImageButton button = (ImageButton) this.getView().findViewById(R.id.pushToTalkButton);
-        button.setBackgroundResource(isTalkActive?R.drawable.ic_mic_blue:R.drawable.ic_mic_grey);
-        getMain().pushToTalk(isTalkActive);
-    }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -117,10 +104,12 @@ public class ChatFragment extends Fragment {
         }
         return super.onOptionsItemSelected(item);
     }
-    public void updateUsers(){
+    public void update(){
         users.clear();
         users.addAll(getMain().getUsers(getMain().getCurrentRoom()));
         adapter.notifyDataSetChanged();
+        ImageButton button = (ImageButton) this.getView().findViewById(R.id.pushToTalkButton);
+        button.setBackgroundResource(getMain().isTalkActive()?R.drawable.ic_mic_blue:R.drawable.ic_mic_grey);
     }
 
 

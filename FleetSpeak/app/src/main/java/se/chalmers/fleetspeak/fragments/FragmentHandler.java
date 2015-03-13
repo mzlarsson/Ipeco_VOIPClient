@@ -1,7 +1,6 @@
 package se.chalmers.fleetspeak.fragments;
 
 import android.app.Fragment;
-import android.util.Log;
 
 import se.chalmers.fleetspeak.util.Utils;
 
@@ -11,9 +10,9 @@ import se.chalmers.fleetspeak.util.Utils;
  */
 public class FragmentHandler {
     private FragmentName currentFragment;
-    private Fragment[] fragments ={ new StartFragment(), new CarStartFragment(), new JoinFragment(), new ChatFragment()};
+    private Fragment[] fragments ={ new StartFragment(), new CarStartFragment(), new JoinFragment(), new ChatFragment(), new DisconnectFragment()};
     public enum FragmentName{
-        START, JOIN, CHAT;
+        START, JOIN, CHAT, DISCONNECT
     }
     public FragmentName getCurrentFragment(){
         return currentFragment;
@@ -27,6 +26,8 @@ public class FragmentHandler {
                 return fragments[2];
             case CHAT:
                 return fragments[3];
+            case DISCONNECT:
+                return fragments[4];
             default:
                 return  null;
         }
@@ -37,18 +38,27 @@ public class FragmentHandler {
         else
             ((StartFragment) fragments[0]).showConnectionErrorMessage();
     }
-    public void update(){
-        if(currentFragment == FragmentName.CHAT){
-            ((ChatFragment)fragments[3]).updateUsers();
-        }else if(currentFragment == FragmentName.JOIN){
-            ((JoinFragment)fragments[2]).updateRooms();
+
+    public  void update(FragmentName name){
+        if(name == currentFragment){
+            switch (name){
+                case CHAT:
+                    ((ChatFragment)fragments[3]).update();
+                    break;
+                case JOIN:
+                    ((JoinFragment) fragments[2]).update();
+                    break;
+            }
+
         }
     }
     public void backPressed(MainActivity activity){
        if(currentFragment == FragmentName.CHAT){
             activity.setFragment(FragmentName.JOIN);
-       }else if(currentFragment == FragmentName.JOIN){
-            activity.setFragment(FragmentName.START);
+       }else if(currentFragment == FragmentName.JOIN) {
+           activity.setFragment(FragmentName.DISCONNECT);
+       }else if(currentFragment == FragmentName.DISCONNECT){
+           activity.setFragment(FragmentName.START);
        }else{
            activity.finish();
        }
@@ -68,6 +78,8 @@ public class FragmentHandler {
                 case CHAT:
                     fragments[3] = new ChatFragment();
                     break;
+                case DISCONNECT:
+                    fragments[4] = new DisconnectFragment();
                 default:
             }
 
