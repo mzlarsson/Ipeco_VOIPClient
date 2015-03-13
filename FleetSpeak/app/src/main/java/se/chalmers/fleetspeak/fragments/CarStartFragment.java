@@ -62,11 +62,13 @@ public class CarStartFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater){
         menuInflater.inflate(R.menu.start_menu, menu);
-        menu.findItem(R.id.connected).setVisible(((MainActivity) getActivity()).getConnected());
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
+        if(id == R.id.home){
+            getActivity().onBackPressed();
+        }
         // Check if the menu item selected in the option menu is the day and night
         // toggle button
         if (id == R.id.day_night_toggle) {
@@ -74,9 +76,6 @@ public class CarStartFragment extends Fragment {
             Utils.changeTheme((MainActivity)this.getActivity());
             Log.d("CarStartFragment:", "Change Theme button pressed");
             return true;
-        }
-        if(id == R.id.connected){
-            ((MainActivity) getActivity()).disconnect();
         }
         return super.onOptionsItemSelected(item);
     }
