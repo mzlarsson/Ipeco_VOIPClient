@@ -8,11 +8,5 @@
             app:showAsAction="ifRoom"
             android:icon="@drawable/ic_day_night_mode"
             />
-        <item android:id="@+id/connected"
-            android:title="Connected"
-            app:showAsAction="ifRoom"
-            android:visibility="invisible"
-            android:icon="@drawable/ic_connected"
-        />
     </menu>
 </menu>

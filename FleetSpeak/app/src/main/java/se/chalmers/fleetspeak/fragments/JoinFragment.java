@@ -105,7 +105,7 @@ public class JoinFragment extends Fragment{
         }
         return super.onOptionsItemSelected(item);
     }
-    public void updateRooms(){
+    public void update(){
         rooms.clear();
         rooms.addAll(getMain().getRooms());
         adapter.notifyDataSetChanged();
