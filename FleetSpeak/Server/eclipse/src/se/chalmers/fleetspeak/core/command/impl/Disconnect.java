@@ -17,7 +17,7 @@ public class Disconnect extends BasicCommand{
 			}else{
 				return new CommandResponse(false, "Internal error occured. Failed to perform action.");
 			}
-		}catch(NumberFormatException | NullPointerException e){
+		}catch(NumberFormatException | NullPointerException | IndexOutOfBoundsException e){
 			return new CommandResponse(false, "Invalid command use: '"+getInfo().getFormat()+"'");
 		}
 	}
