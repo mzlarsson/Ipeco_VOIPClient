@@ -36,8 +36,6 @@ public class TCPModifierBot extends Thread{
 		}catch(IOException ioe){
 			System.out.println("IO Exception: "+ioe.getMessage());
 		} catch (InterruptedException e) {}
-		
-		System.exit(0);
 	}
 	
 	public static void main(String[] args){
