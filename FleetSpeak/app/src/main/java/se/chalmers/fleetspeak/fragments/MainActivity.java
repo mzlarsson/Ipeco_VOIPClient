@@ -36,7 +36,6 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
     private SharedPreferences.Editor prefEdit;
     private FragmentHandler handler = new FragmentHandler();
     private Model model;
-    private boolean isConnected = false;
 
 
     /**
@@ -52,13 +51,11 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
                     // If the user is able to be connected go to the join fragment
                     // where the user can choose which room to join
                     setFragment(FragmentHandler.FragmentName.JOIN);
-                    isConnected = true;
                     break;
                 case MessageValues.DISCONNECTED:
                     // If disconnected from the server return the to start fragment
                     // where user can try to connect again
                     setFragment(FragmentHandler.FragmentName.START);
-                    isConnected = false;
                     break;
                 case MessageValues.MODELCHANGED:
                     update();
@@ -115,12 +112,12 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
     public void setFragment(FragmentHandler.FragmentName name){
         Log.i("MainActivitiy:", "Start a new fragment transaction and replace " +
                 "the showed fragment");
-        // Create a new transaction from the fragment manager
+
+        //Start up a new fragment transaction
+        // let the transaction replace the current showed fragment with the fragment
+        // specified in the parameter name.
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        // Let the transaction replace the current showed fragment with the fragment
-        // specified the parameter name
         fragmentTransaction.replace(android.R.id.content , handler.getFragment(name));
-        // Commit the transaction
         fragmentTransaction.commit();
     }
 
@@ -168,8 +165,6 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
      */
     public void startConnection(){
         Log.i("MainActivity:", "start a connection request to the server");
-        if(isConnected)
-            disconnect();
         // Get the user setting from Utils class
         String ip = Utils.getIpAdress();
         String userName = Utils.getUsername();
@@ -246,11 +241,20 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
     }
 
     /**
-     *
-     * @param talkActive
+     * Set if the push to talk is active for the user
      */
-    public void pushToTalk(boolean talkActive){
+    public void pushToTalk(){
         //TODO
+        handler.update(FragmentHandler.FragmentName.CHAT);
+    }
+
+    /**
+     * Return the current status if talk is active
+     * @return - if talk mode is active
+     */
+    public boolean isTalkActive(){
+        //TODO
+        return false;
     }
 
     /**
@@ -259,7 +263,7 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
     private void update(){
         Log.d("MainActivity:", "update request received");
         Log.i("MainActivity:", "update request sent");
-        handler.update();
+        handler.update(handler.getCurrentFragment());
     }
 
     /**
@@ -312,9 +316,6 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
      */
     public void disconnect(){
         model.disconnect();
-    }
-    public boolean getConnected(){
-        return isConnected;
     }
 
 }
