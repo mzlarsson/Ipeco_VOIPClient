@@ -19,5 +19,6 @@
     <string name="connection_error">Connection Error</string>
     <string name="volume_mic_control">volume and mic control</string>
     <string name="save_preferences">Save preferences</string>
+    <string name="title_activity_testing_main">TestingMainActivity</string>
 
 </resources>

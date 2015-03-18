@@ -130,11 +130,11 @@ public class Connector {
         try {
             socketListener.close();
             socketWriter.close();
+            if(socket != null)
             socket.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        socket = null;
     }
 
     /**
@@ -216,6 +216,8 @@ public class Connector {
                 objectOutputStream.writeObject(new Command(command, key, value));
             } catch (IOException e) {
                 e.printStackTrace();
+            } catch (NullPointerException e){
+                Log.d("Connector", "No stream failed to send command");
             }
         }
         void close(){
@@ -258,12 +260,15 @@ public class Connector {
             }
         }
         void close(){
-            try {
-                objectInputStream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+            if(objectInputStream != null) {
+                try {
+
+                    objectInputStream.close();
+                    objectInputStream = null;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
-            objectInputStream = null;
         }
     }
 
