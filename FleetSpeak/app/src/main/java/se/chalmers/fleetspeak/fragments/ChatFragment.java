@@ -104,6 +104,7 @@ public class ChatFragment extends Fragment {
         }
         return super.onOptionsItemSelected(item);
     }
+
     public void update(){
         users.clear();
         users.addAll(getMain().getUsers(getMain().getCurrentRoom()));
