@@ -8,7 +8,7 @@ import se.chalmers.fleetspeak.test.TCPModifierBot;
 public class RunTestBot extends BasicCommand{
 	
 	public RunTestBot(int execCode){
-		super(new CommandInfo("RunTestBot", "RunTestBot [name]", "Runs a test bot that performs some room changes etc.", execCode));
+		super(new CommandInfo("RunTestBot", "RunTestBot [name] [serverPort]", "Runs a test bot that performs some room changes etc.", execCode));
 	}
 
 	@Override
