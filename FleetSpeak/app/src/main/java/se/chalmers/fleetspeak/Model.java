@@ -50,7 +50,8 @@ public class Model {
         return roomHandler.getCurrentRoom();
     }
     public void pushToTalk(){
-        Log.d("Model", "pushToTalk not implemented");
+        commandHandler.pushToTalk();
+
     }
     public void muteUser(User user){
         Log.d("Model", "muteUser not implemented ");

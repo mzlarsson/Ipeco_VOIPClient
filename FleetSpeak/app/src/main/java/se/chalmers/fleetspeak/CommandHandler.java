@@ -32,6 +32,10 @@ public class CommandHandler extends Handler {
         this.context = context;
     }
 
+    public void pushToTalk(){
+        soundController.pushToTalk();
+    }
+
      /**
      * Handles incomming messages form SocketService and changes the model
      * @param msg
