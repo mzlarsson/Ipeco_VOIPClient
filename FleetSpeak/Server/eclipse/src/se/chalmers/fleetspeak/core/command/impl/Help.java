@@ -15,15 +15,19 @@ public class Help extends BasicCommand{
 			String cmd = (String)params[0];
 			CommandInfo info = Commands.getInstance().findCommand(cmd);
 			if(info != null){
-				Log.logDebug("\t"+info.getFormat()+"\n\t\t"+info.getDescription());
+				Log.log("\t"+info.getFormat()+"\n\t\t"+info.getDescription());
 				return new CommandResponse(true, "The help information has been printed");
 			}else{
-				return new CommandResponse(false, "Unable to find command");
+				if(cmd.equalsIgnoreCase("Volt")){
+					return new CommandResponse(false, "Unable to help Volt. Hopeless case...");
+				}else{
+					return new CommandResponse(false, "Unable to find command");
+				}
 			}
 		}else{
 			CommandInfo[] cmds = Commands.getInstance().getCommands();
 			for(CommandInfo info : cmds){
-				Log.logDebug("\t"+info.getFormat()+"\n\t\t"+info.getDescription());
+				Log.log("\t"+info.getFormat()+"\n\t\t"+info.getDescription());
 			}
 			return new CommandResponse(true, "The help information has been printed");
 		}
