@@ -20,11 +20,7 @@ class MoveUser extends BasicCommand{
 	 * @param exCode The execution-code used to locate this command.
 	 */
 	public MoveUser(int exCode) {
-		super(new CommandInfo("MoveUser",
-								"MoveUser [user-id] [target-room-id]",
-								"Moves the user with the given user-ID to"
-								+ "the room with the given room-ID",
-								exCode));
+		super(new CommandInfo("MoveUser", "MoveUser [user-id] [target-room-id]", "Moves the user as given by the arguments", exCode));
 	}	
 	
 	@Override
