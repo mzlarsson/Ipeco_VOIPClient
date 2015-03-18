@@ -55,6 +55,8 @@ public class RoomHandler{
      */
 
     public void addUser(User user, int roomid) {
+        if(user.getId() == userid)
+            currentroom = roomid;
         Room room = findRoom(roomid);
         if (!rooms.containsKey(room) || rooms.get(room) == null) {
             ArrayList<User> list = new ArrayList<User>();
@@ -101,6 +103,8 @@ public class RoomHandler{
      * @param targetRoomID The ID of the destination room
      */
     public void moveUser(int userID, int targetRoomID) {
+        if(userID == userid)
+            currentroom = targetRoomID;
         User user = getUser(userid);
         removeUser(user);
         addUser(user, targetRoomID);

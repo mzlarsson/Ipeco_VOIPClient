@@ -161,6 +161,7 @@ public class SoundController {
 
         }else{
             //for(Integer i : downStreams.keySet())
+            //
             //    downStreams.get(i).join(null);
             upStream.join(audioGroup);
             Log.d("SoundController", "Mic on");
