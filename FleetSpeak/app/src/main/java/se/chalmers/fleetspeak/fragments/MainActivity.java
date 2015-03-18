@@ -63,6 +63,7 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
                 case MessageValues.CONNECTIONFAILED:
                     //TODO do somehting cool here like launch fireworks from the AUX connector
                     break;
+
             }
         }
     };
@@ -219,6 +220,7 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
     public void createAndMoveRoom(String RoomName){
         Log.i("MainActivity:", "move to new room");
         model.moveNewRoom(RoomName);
+        setFragment(FragmentHandler.FragmentName.CHAT);
     }
 
     /**
@@ -228,6 +230,7 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
     public void moveToRoom(int roomID){
         Log.i("MainActivity:", "move to existing room");
         model.move(roomID);
+        setFragment(FragmentHandler.FragmentName.CHAT);
     }
 
     /**
@@ -245,6 +248,7 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
      */
     public void pushToTalk(){
         //TODO
+        model.pushToTalk();
         handler.update(FragmentHandler.FragmentName.CHAT);
     }
 
