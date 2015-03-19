@@ -20,11 +20,6 @@ public class User {
         this.id = id;
     }
 
-    private static int tmpID;   //TODO This is a temporary solution for test purposes.
-    public User(String name) {  //TODO This is a temporary solution for test purposes.
-        this(name, tmpID++);    //TODO This is a temporary solution for test purposes.
-    }                           //TODO This is a temporary solution for test purposes.
-
     public int getId() {
         return id;
     }
@@ -67,6 +62,6 @@ public class User {
 
     @Override
     public String toString() {
-        return name + ", " + id;
+        return "(name= "+ name + ", id=" + id + ")";
     }
 }
