@@ -47,7 +47,9 @@ public class Router extends Thread{
 		while(running){
 			try {
 				inport.receive(buffer);
-			} catch (IOException e) {
+			} catch(SocketException e){
+				this.terminate();
+			}catch (IOException e) {
 				Log.log("Error while reading packet");
 				e.printStackTrace();
 			}
@@ -61,6 +63,10 @@ public class Router extends Thread{
 	 * @param data The data to be transmitted
 	 */
 	private synchronized void send(byte[] data){
+//		for(int i = 0; i<12; i++){
+//			System.out.print(data[i]+" ");
+//		}
+//		System.out.println();
 		for(DatagramPacket p: clients.values()){
 			p.setData(data);
 			try {
@@ -107,10 +113,8 @@ public class Router extends Thread{
 	/**
 	 * Closes this router thread
 	 */
-	public void terminate(){		
+	public void terminate(){
 		running = false;
-		inport.disconnect();
-		outport.disconnect();
 		inport.close();
 		outport.close();
 		removeAllClients();
