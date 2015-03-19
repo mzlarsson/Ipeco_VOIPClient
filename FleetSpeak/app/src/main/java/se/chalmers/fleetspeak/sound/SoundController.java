@@ -87,6 +87,7 @@ public class SoundController {
             Log.d("SoundController", stream.getCodec().toString() + " " );
             stream.associate(InetAddress.getByName(this.ip), port + 1);
             stream.join(audioGroup);
+            //MicSender.startPlayBack(ip, port);
             downStreams.put(userid, stream);
 
             Log.d("SoundController", "Expecting audio from user " + userid + " on port " + stream.getLocalPort());
@@ -144,6 +145,7 @@ public class SoundController {
         downStreams.clear();
         audioGroup.clear();
         audioManager.setMode(AudioManager.MODE_NORMAL);
+        MicSender.stopPlayback();
         Log.i("SoundController", "Closed");
     }
 

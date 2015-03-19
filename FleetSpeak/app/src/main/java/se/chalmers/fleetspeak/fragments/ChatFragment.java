@@ -36,7 +36,7 @@ import se.chalmers.fleetspeak.util.Utils;
  */
 public class ChatFragment extends Fragment {
     private PopupWindow micAndVolumePanel;
-    private ArrayList<User> users = new ArrayList<User>();
+    private ArrayList<User> users;
     private ArrayAdapter<User> adapter;
     // TODO fix set talkActive to false and call it in oncreateView
     private Menu menu;
@@ -50,7 +50,7 @@ public class ChatFragment extends Fragment {
 
 
         ListView userListView = (ListView) view.findViewById(R.id.userList);
-        users.addAll(getMain().getUsers(getMain().getCurrentRoom()));
+        users = new ArrayList<>(getMain().getUsers(getMain().getCurrentRoom()));
         adapter = new ChatRoomListAdapter(getMain(), users);
         userListView.setAdapter(adapter);
         userListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -106,8 +106,12 @@ public class ChatFragment extends Fragment {
     }
 
     public void update(){
+        Log.d("chatfrag", "update 1"+ users);
         users.clear();
+        Log.d("chatfrag", "update 2" + users);
+        Object o = getMain().getUsers(1);
         users.addAll(getMain().getUsers(getMain().getCurrentRoom()));
+        Log.d("chatfrag", "update 3" + users);
         adapter.notifyDataSetChanged();
         ImageButton button = (ImageButton) this.getView().findViewById(R.id.pushToTalkButton);
         button.setBackgroundResource(getMain().isTalkActive()?R.drawable.ic_mic_blue:R.drawable.ic_mic_grey);

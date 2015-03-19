@@ -20,20 +20,13 @@ public class RoomHandler{
 
     private HashMap<Room,ArrayList<User>> rooms;
 
-    private Room lobby;
-
-
     private int userid;
-
-    private int currentroom;
 
     private Messenger updateMessenger;
 
 
     public RoomHandler(Handler updateListener) {
-        rooms = new HashMap<Room,ArrayList<User>>();
-        lobby = new Room("Lobby",0);
-
+        rooms = new HashMap<>();
         updateMessenger = new Messenger(updateListener);
 
     }
@@ -44,6 +37,7 @@ public class RoomHandler{
 
     public void setUserid(int userid) {
         this.userid = userid;
+
         postUpdate(MessageValues.MODELCHANGED);
     }
 
@@ -55,19 +49,8 @@ public class RoomHandler{
      */
 
     public void addUser(User user, int roomid) {
-        if(user.getId() == userid)
-            currentroom = roomid;
         Room room = findRoom(roomid);
-        if (!rooms.containsKey(room) || rooms.get(room) == null) {
-            ArrayList<User> list = new ArrayList<User>();
-            list.add(user);
-            rooms.put(room,list);
-        } else {
-            ArrayList<User> list = rooms.get(room);
-            if (!list.contains(user)) {
-                list.add(user);
-            }
-        }
+        rooms.get(room).add(user);
         postUpdate(MessageValues.MODELCHANGED);
     }
 
@@ -99,12 +82,10 @@ public class RoomHandler{
 
     /**
      * Moves a user to a specified
-     * @param userID ID of the user to be moved
+     * @param userid ID of the user to be moved
      * @param targetRoomID The ID of the destination room
      */
-    public void moveUser(int userID, int targetRoomID) {
-        if(userID == userid)
-            currentroom = targetRoomID;
+    public void moveUser(int userid, int targetRoomID) {
         User user = getUser(userid);
         removeUser(user);
         addUser(user, targetRoomID);
@@ -115,7 +96,7 @@ public class RoomHandler{
      * @return An arrayList containing all the rooms
      */
     public ArrayList<Room> getRooms() {
-        return new ArrayList<Room>(rooms.keySet());
+        return new ArrayList<>(rooms.keySet());
     }
 
     /**
@@ -126,7 +107,7 @@ public class RoomHandler{
     public ArrayList<User> getUsers(Room room) {
         if(rooms.get(room) != null)
             return rooms.get(room);
-        return null;
+        return new ArrayList<>();
     }
 
     /**
@@ -135,6 +116,7 @@ public class RoomHandler{
      *
      */
     public ArrayList<User>getUsers(int id) {
+        Log.d("RoomHandeler", getUsers(findRoom(id)) + "");
         return getUsers(findRoom(id));
     }
 
@@ -154,7 +136,13 @@ public class RoomHandler{
         throw new NoSuchElementException("A user with ID: \"" + id + "\" doesn't exit.");
     }
     public int getCurrentRoom(){
-        return currentroom;
+        for(Room r : rooms.keySet()){
+            for(User u : rooms.get(r)){
+                if(u.getId() == userid)
+                    return r.getId();
+            }
+        }
+        return 0;
     }
 
     /**
@@ -164,6 +152,7 @@ public class RoomHandler{
      */
     private Room findRoom(int id)  {
         for (Room room : rooms.keySet()) {
+
             if (room.getId()==id) {
                 return room;
             }
@@ -175,15 +164,19 @@ public class RoomHandler{
     public String toString() {
         String outPrint = "";
         for (Room room : rooms.keySet()) {
-            outPrint += (room.toString()+"\n");
+            outPrint += "Room: " + (room.toString()+"\n");
             for (User user : rooms.get(room)) {
-                outPrint += ("\t" + user.toString() + "\n");
+                outPrint += "User: " + ("\t" + user.toString() + "\n");
             }
         }
         return outPrint;
     }
 
-
+    public void changeUsername(int userid, String name){
+        Log.d("changeusername", userid + " to " + name);
+        getUser(userid).setName(name);
+        postUpdate(MessageValues.MODELCHANGED);
+    }
 
 
     public void addRoom(int roomid, String roomname) {
@@ -204,6 +197,7 @@ public class RoomHandler{
 
     private void postUpdate(int what){
         try {
+            Log.d("RoomHandler", ""+ rooms);
             updateMessenger.send(Message.obtain(null, what));
         } catch (RemoteException e) {
             e.printStackTrace();
