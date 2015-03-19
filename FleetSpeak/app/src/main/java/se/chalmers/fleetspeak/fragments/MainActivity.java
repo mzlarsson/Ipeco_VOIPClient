@@ -187,6 +187,7 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
     protected void onStop() {
         Log.i("MainActivity:", "resuming activity");
         super.onStop();
+        model.disconnect();
     }
     @Override
     protected void onDestroy() {

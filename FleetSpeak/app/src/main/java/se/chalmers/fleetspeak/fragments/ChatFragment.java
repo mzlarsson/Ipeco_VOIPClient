@@ -2,10 +2,13 @@ package se.chalmers.fleetspeak.fragments;
 
 import android.app.Fragment;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.media.Image;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -63,6 +66,11 @@ public class ChatFragment extends Fragment {
             }
         });
         ImageButton button = (ImageButton) view.findViewById(R.id.pushToTalkButton);
+
+        Bitmap image = BitmapFactory.decodeResource(this.getResources(),
+                getMain().isTalkActive() ? R.drawable.ic_mic_blue : R.drawable.ic_mic_grey);
+        button.setImageBitmap(Bitmap.createScaledBitmap(image , 100  , 100, true ));
+
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -114,7 +122,9 @@ public class ChatFragment extends Fragment {
         Log.d("chatfrag", "update 3" + users);
         adapter.notifyDataSetChanged();
         ImageButton button = (ImageButton) this.getView().findViewById(R.id.pushToTalkButton);
-        button.setBackgroundResource(getMain().isTalkActive()?R.drawable.ic_mic_blue:R.drawable.ic_mic_grey);
+        Bitmap image = BitmapFactory.decodeResource(this.getResources(),
+                getMain().isTalkActive() ? R.drawable.ic_mic_blue : R.drawable.ic_mic_grey);
+        button.setImageBitmap(Bitmap.createScaledBitmap(image , 100  , 100, true ));
     }
 
 
