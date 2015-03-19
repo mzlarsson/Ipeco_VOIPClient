@@ -258,8 +258,7 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
      * @return - if talk mode is active
      */
     public boolean isTalkActive(){
-        //TODO
-        return false;
+        return model.isTalking();
     }
 
     /**
