@@ -60,7 +60,7 @@ public class CommandHandler extends Handler {
                roomHandler.addUser(new User((Integer)command.getKey()), (Integer) command.getValue());
                break;
            case "changedusername":
-               roomHandler.changeUsername((Integer) command.getKey(),(String) command.getValue());
+               roomHandler.changeUsername((Integer) command.getKey(), (String) command.getValue());
                break;
            case "changedroomname":
                roomHandler.changeRoomName((Integer) command.getKey(), (String) command.getValue());
@@ -92,5 +92,9 @@ public class CommandHandler extends Handler {
        //Log.d("CommandHandler", "Rooms " + roomHandler.toString());
 
 
+    }
+
+    public boolean isTalking() {
+        return soundController.isTalking();
     }
 }
