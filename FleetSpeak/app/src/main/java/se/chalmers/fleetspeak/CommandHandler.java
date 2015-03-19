@@ -42,10 +42,10 @@ public class CommandHandler extends Handler {
      */
 
     public void handleMessage(Message msg) {
-        Log.d("WTF" , "" + msg.toString());
+
         Command command = (Command) msg.obj;
         String sCommand = command.getCommand();
-        Log.i("Commandhandler", "Got the command " + sCommand + "(" + command.getKey().getClass() + ": " + command.getKey() + ")");
+        Log.i("Commandhandler", "Got the command " + sCommand + "(" + command.getKey() + "," + command.getValue() + ")");
         //TODO way to send info to activity
 
         //TODO implement  spec
@@ -60,7 +60,7 @@ public class CommandHandler extends Handler {
                roomHandler.addUser(new User((Integer)command.getKey()), (Integer) command.getValue());
                break;
            case "changedusername":
-               roomHandler.getUser((Integer) command.getKey()).setName((String) command.getValue());
+               roomHandler.changeUsername((Integer) command.getKey(),(String) command.getValue());
                break;
            case "changedroomname":
                roomHandler.changeRoomName((Integer) command.getKey(), (String) command.getValue());
@@ -88,6 +88,8 @@ public class CommandHandler extends Handler {
                soundController = new SoundController(context, remoteIP, (Integer) command.getKey());
                break;
        }
+
+       //Log.d("CommandHandler", "Rooms " + roomHandler.toString());
 
 
     }

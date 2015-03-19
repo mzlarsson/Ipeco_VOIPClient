@@ -118,7 +118,8 @@ public class Connector {
           closeSocket();
 
         }
-        inThread.start();
+        if(!inThread.isAlive())
+            inThread.start();
 
     }
 

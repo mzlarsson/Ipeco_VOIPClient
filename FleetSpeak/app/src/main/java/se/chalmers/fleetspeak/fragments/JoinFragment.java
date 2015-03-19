@@ -9,7 +9,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,7 +23,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -40,7 +38,7 @@ import se.chalmers.fleetspeak.util.Utils;
  */
 public class JoinFragment extends Fragment{
     // A Arraylist that stores the available rooms that the fragment shall show
-    private ArrayList<Room> rooms = new ArrayList<Room>();
+    private ArrayList<Room> rooms;
     // A ArrayAdapter that enables the fragment view to show the rooms in rooms
     private ArrayAdapter<Room> adapter;
 
@@ -54,7 +52,8 @@ public class JoinFragment extends Fragment{
         getActivity().getWindow().setBackgroundDrawable(new ColorDrawable(Utils.getThemeID() == R.style.Theme_Fleetspeak_light ? Color.WHITE : Color.BLACK));
 
         ListView roomView = ((ListView)view.findViewById(R.id.roomView));
-        rooms.addAll(getMain().getRooms());
+
+        rooms = new ArrayList<>(getMain().getRooms());
         adapter = new JoinRoomAdapter(getMain(), rooms);
 
         Log.d("JoinFragment","Adapter" +  adapter);
@@ -186,13 +185,10 @@ public class JoinFragment extends Fragment{
                 if (Utils.getCarMode()) {
                     builder.append(("(" + users.size() + ")"));
                 } else {
-                    if(users.size() > 0) {
-                        builder.append(users.get(0));
-                        int i = 1;
-                        while (i < users.size()) {
-                            builder.append(users.get(i));
-                        }
+                    for(int i = 0; i < users.size(); i++) {
+                        builder.append(users.get(i).getName() + ",");
                     }
+                    builder.deleteCharAt(builder.lastIndexOf(","));
                 }
             }
             userView.setText(builder.toString());
