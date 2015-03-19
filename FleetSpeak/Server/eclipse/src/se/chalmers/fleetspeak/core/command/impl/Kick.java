@@ -14,7 +14,7 @@ public class Kick extends BasicCommand{
 	@Override
 	public CommandResponse execute(int requester, Object... params){
 		try{
-			int userID = params[0].getClass()==Integer.class ? (Integer)params[0] : Integer.parseInt((String)params[0]);
+			int userID = (params[0].getClass()==Integer.class||params[0].getClass()==int.class ? (Integer)params[0] : Integer.parseInt((String)params[0]));
 			if(Permissions.isAllowed(requester, Permission.KICK)){
 				return Commands.getInstance().execute(requester, Commands.getInstance().findCommand("Disconnect"), userID);
 			}else{
