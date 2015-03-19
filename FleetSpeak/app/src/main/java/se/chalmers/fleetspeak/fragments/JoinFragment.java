@@ -64,9 +64,6 @@ public class JoinFragment extends Fragment{
                 joinRoom(((Room) adapterView.getItemAtPosition(position)).getId());
             }
         });
-
-        // TODO
-
         Button createRoom = (Button) view.findViewById(R.id.buttonCreateRoom);
         createRoom.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -99,8 +96,8 @@ public class JoinFragment extends Fragment{
 
                 return true;
             case android.R.id.home:
-                getMain().setFragment(FragmentHandler.FragmentName.START);
-                return true;
+                getMain().onBackPressed();
+               return true;
         }
         return super.onOptionsItemSelected(item);
     }

@@ -67,9 +67,8 @@ public class ChatFragment extends Fragment {
         });
         ImageButton button = (ImageButton) view.findViewById(R.id.pushToTalkButton);
 
-        Bitmap image = BitmapFactory.decodeResource(this.getResources(),
-                getMain().isTalkActive() ? R.drawable.ic_mic_blue : R.drawable.ic_mic_grey);
-        button.setImageBitmap(Bitmap.createScaledBitmap(image , 100  , 100, true ));
+
+        button.setBackgroundResource(getMain().isTalkActive() ? R.drawable.ic_mic_blue : R.drawable.ic_mic_grey);
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -122,9 +121,7 @@ public class ChatFragment extends Fragment {
         Log.d("chatfrag", "update 3" + users);
         adapter.notifyDataSetChanged();
         ImageButton button = (ImageButton) this.getView().findViewById(R.id.pushToTalkButton);
-        Bitmap image = BitmapFactory.decodeResource(this.getResources(),
-                getMain().isTalkActive() ? R.drawable.ic_mic_blue : R.drawable.ic_mic_grey);
-        button.setImageBitmap(Bitmap.createScaledBitmap(image , 100  , 100, true ));
+        button.setBackgroundResource(getMain().isTalkActive() ? R.drawable.ic_mic_blue : R.drawable.ic_mic_grey);
     }
 
 
