@@ -41,7 +41,10 @@ public class Model {
         connector.setName(callbackHandler, name);
     }
     public void move(int roomid){
+        if(roomid != roomHandler.getCurrentRoom()){
         connector.move(callbackHandler, roomid);
+        roomHandler.moveUser(roomHandler.getUserid(), roomid);
+        }
     }
     public void moveNewRoom(String roomname){
         connector.moveNewRoom(callbackHandler, roomname);
