@@ -60,7 +60,7 @@ public class Model {
         Log.d("Model", "muteUser not implemented ");
     }
     public boolean isTalking(){
-        return true;
+        return commandHandler.isTalking();
     }
 
 }
