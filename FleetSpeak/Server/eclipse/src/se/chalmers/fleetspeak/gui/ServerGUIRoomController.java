@@ -184,7 +184,6 @@ public class ServerGUIRoomController implements IEventBusSubscriber{
 	@Override
 	public void eventPerformed(EventBusEvent event) {
 		if(event.getReciever().equals("broadcast")){
-			System.out.println("SERVERGUIROOMCONTROLLER:\n\t"+event.getCommand().getCommand());
 			String cmd = event.getCommand().getCommand();
 			if(cmd.equals("addedUser")){
 				registerClient((Integer)event.getCommand().getKey(), (Integer)event.getCommand().getValue());

@@ -1,5 +1,7 @@
 package se.chalmers.fleetspeak.core.command.impl;
 
+import java.util.List;
+
 import se.chalmers.fleetspeak.core.Client;
 import se.chalmers.fleetspeak.core.Room;
 import se.chalmers.fleetspeak.core.RoomHandler;
@@ -20,10 +22,11 @@ public class Cleanse extends BasicCommand{
 			if(Permissions.isAllowed(requester, Permission.KICK)){
 				RoomHandler handler = RoomHandler.getInstance();
 				Commands cmds = Commands.getInstance();
-				CommandInfo info = cmds.findCommand("kick");
+				CommandInfo info = cmds.findCommand("disconnect");
 				for(Room r : handler.getRooms()){
-					for(Client c : handler.getClients(r)){
-						cmds.execute(requester, info, c.getClientID());
+					List<Client> clients = handler.getClients(r);
+					for(int i = 0; i<clients.size(); i++){
+						cmds.execute(requester, info, clients.get(i).getClientID());
 					}
 				}
 				return new CommandResponse(true, "Successfully cleared server");
