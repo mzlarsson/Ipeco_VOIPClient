@@ -27,6 +27,7 @@ import se.chalmers.fleetspeak.util.Log;
 
 public class TCPHandler extends Thread implements IEventBusSubscriber {
 
+	private boolean synced = false;
 	private int clientID;
 	private Socket clientSocket;
 	private ObjectOutputStream objectOutputStream;
@@ -52,7 +53,6 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 		}
 		EventBus.getInstance().addSubscriber(this);
 		initializeAndroidCommands();
-		syncToClient();
 	}
 	
 	/**
@@ -60,15 +60,17 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 	 */
 	public void syncToClient(){
 		RoomHandler handler = RoomHandler.getInstance();
+		System.out.println("SYNICING");
 		for(Room r : handler.getRooms()){
+			System.out.println("ROOM "+r.getName());
 			sendData(new Command("createdRoom", r.getId(), r.getName()));
 			for(Client c : handler.getClients(r)){
-				if(c.getClientID() != clientID){
-					sendData(new Command("addedUser", c.getClientID(), r.getId()));
-					sendData(new Command("changedUsername", c.getClientID(), c.getName()));
-				}
+				System.out.println("CLIENT "+c.getName());
+				sendData(new Command("addedUser", c.getClientID(), r.getId()));
+				sendData(new Command("changedUsername", c.getClientID(), c.getName()));
 			}
 		}
+		synced = true;
 	}
 	
 	/**
@@ -84,6 +86,7 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 	 */
 	public void run() {
 		isRunning = true;
+		syncToClient();
 		try {
 			while (isRunning && objectInputStream != null) {
 				Log.log("[TCPHandler] trying to read");
@@ -117,6 +120,7 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 	public void sendData(Command command){
 		try{
 			Log.log("[TCPHandler]Trying to send " + command.getCommand());
+			System.out.println("Sent "+command.getCommand()+" "+command.getKey()+" "+command.getValue());
 			objectOutputStream.writeObject(command);
 			Log.log("[TCPHandler] <i>Command sent: "+command.getCommand()+"</i>");
 		} catch(SocketException e){
@@ -155,6 +159,7 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 									int roomID = (data!=null&&data.length>0?(Integer)data[0]:-1);
 									doCommand(cmds.get("moveUser"), clientID, roomID);break;
 			case "disconnect":		doCommand(cmds.get("disconnect"), clientID, null);break;
+			default:				doCommand(Commands.getInstance().findCommand((c.getCommand())), c.getKey(), c.getValue());break;
 		}
 	}
 	
@@ -166,10 +171,15 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 	 * @return
 	 */
 	public Object[] doCommand(CommandInfo cmd, Object key, Object value){
-		Commands com = Commands.getInstance();
-		CommandResponse r = com.execute(clientID, cmd, key, value);
-		Log.logDebug("Got command response: ["+(r.wasSuccessful()?"Success":"Failure")+": "+r.getMessage()+"]");
-		return r.getData();
+		if(cmd != null){
+			Commands com = Commands.getInstance();
+			CommandResponse r = com.execute(clientID, cmd, key, value);
+			Log.logDebug("Got command response: ["+(r.wasSuccessful()?"Success":"Failure")+": "+r.getMessage()+"]");
+			return r.getData();
+		}else{
+			Log.logError("Could not find command");
+			return null;
+		}
 	}
 	
 	/**
@@ -194,7 +204,7 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 	public void eventPerformed(EventBusEvent event) {
 		// Will forward the command to its client if this event starts with broadcast and the actor is this class or null.
 		if (event.getReciever().startsWith("broadcast")) {
-			if (event.getActor()==null || event.getActor()==this) {
+			if(synced){
 				sendData(event.getCommand());
 			}
 		}
