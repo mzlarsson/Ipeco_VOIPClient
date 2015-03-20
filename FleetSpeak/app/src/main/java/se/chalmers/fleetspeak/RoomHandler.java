@@ -203,4 +203,7 @@ public class RoomHandler{
             e.printStackTrace();
         }
     }
+    public void clear(){
+        rooms.clear();
+    }
 }

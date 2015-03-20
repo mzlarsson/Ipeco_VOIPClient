@@ -24,25 +24,24 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:19.1.0'
-    compile files('libs/Automotive-API-1.0-SNAPSHOT.jar')
-    compile files('libs/SDP-1.0-SNAPSHOT.jar')
-    compile files('libs/VIL-1.0-SNAPSHOT.jar')
+    compile files('libs/Automotive-API-1.3-SNAPSHOT.jar')
+    compile files('libs/SDP-1.3-SNAPSHOT.jar')
+    compile files('libs/VIL-1.3-SNAPSHOT.jar')
     compile 'org.slf4j:slf4j-android:1.7.7'
 }
 
 task downloadSDP(type: MyDownload) {
-    sourceUrl = 'http://developer.lindholmen.se/repo/artifacts/SDP/1.0/SDP-1.0.jar'
-    target = file('libs/SDP-1.0-SNAPSHOT.jar')
+    sourceUrl = 'http://developer.lindholmen.se/repo/artifacts/SDP/SNAPSHOT/SDP-1.3-SNAPSHOT.jar'
+    target = file('libs/SDP-1.3-SNAPSHOT.jar')
 }
 task downloadVilConfig(type: MyDownload) {
-    sourceUrl = 'http://developer.lindholmen.se/repo/artifacts/VIL/1.0/VIL-1.0.jar'
-    target = file('libs/VIL-1.0-SNAPSHOT.jar')
+    sourceUrl = 'http://developer.lindholmen.se/repo/artifacts/VIL/SNAPSHOT/VIL-1.3-SNAPSHOT.jar'
+    target = file('libs/VIL-1.3-SNAPSHOT.jar')
 }
 task downloadAutomotiveAPI(type: MyDownload) {
-    sourceUrl = 'http://developer.lindholmen.se/repo/artifacts/Automotive-API/1.0/Automotive-API-1.0.jar'
-    target = file('libs/Automotive-API-1.0-SNAPSHOT.jar')
+    sourceUrl = 'http://developer.lindholmen.se/repo/artifacts/Automotive-API/SNAPSHOT/Automotive-API-1.3-SNAPSHOT.jar'
+    target = file('libs/Automotive-API-1.3-SNAPSHOT.jar')
 }
 
 class MyDownload extends DefaultTask {

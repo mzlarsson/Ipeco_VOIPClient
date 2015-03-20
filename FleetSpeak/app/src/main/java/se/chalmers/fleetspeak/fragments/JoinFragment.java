@@ -42,6 +42,8 @@ public class JoinFragment extends Fragment{
     // A ArrayAdapter that enables the fragment view to show the rooms in rooms
     private ArrayAdapter<Room> adapter;
 
+    private AlertDialog dialog;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.i("Joinfragment:","view created");
@@ -65,6 +67,10 @@ public class JoinFragment extends Fragment{
             }
         });
         Button createRoom = (Button) view.findViewById(R.id.buttonCreateRoom);
+
+        if(Utils.getCarMode()) {
+            createRoom.setText("+");
+        }
         createRoom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -74,8 +80,6 @@ public class JoinFragment extends Fragment{
 
         setHasOptionsMenu(true);
 
-
-
         return view;
     }
     private MainActivity getMain(){
@@ -83,7 +87,7 @@ public class JoinFragment extends Fragment{
     }
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.day_night_menu, menu);
+        inflater.inflate(R.menu.join_room_menu, menu);
         super.onCreateOptionsMenu(menu, inflater);
 
     }
@@ -93,11 +97,14 @@ public class JoinFragment extends Fragment{
         switch(item.getItemId()){
             case  R.id.day_night_toggle:
                 Utils.changeTheme(getMain());
-
                 return true;
             case android.R.id.home:
                 getMain().onBackPressed();
                return true;
+            case R.id.request:
+                getMain().setFragment(FragmentHandler.FragmentName.REQUEST);
+                return true;
+
         }
         return super.onOptionsItemSelected(item);
     }
@@ -138,7 +145,8 @@ public class JoinFragment extends Fragment{
                     dialog.cancel();
                 }
             });
-            alertDialog.show();
+            dialog = alertDialog.show();
+
         } else{ //When the car is driving and the user have selected "Create room" the user won't be
             //allowed to pick a name since it will take to much time.
             String newRoomName = (Utils.getUsername() + "'s room");
@@ -164,7 +172,6 @@ public class JoinFragment extends Fragment{
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             LayoutInflater inflater = LayoutInflater.from(getContext());
-
             View view = inflater.inflate(Utils.getCarMode()?R.layout.list_item_rooms_while_driving:
                     R.layout.list_item_rooms, parent, false);
             TextView roomView = (TextView) view.findViewById(R.id.roomName);
@@ -185,12 +192,18 @@ public class JoinFragment extends Fragment{
                     for(int i = 0; i < users.size(); i++) {
                         builder.append(users.get(i).getName() + ",");
                     }
-                    builder.deleteCharAt(builder.lastIndexOf(","));
+                    if(builder.lastIndexOf(",") > 0)
+                        builder.deleteCharAt(builder.lastIndexOf(","));
                 }
             }
             userView.setText(builder.toString());
 
             return view;
+        }
+    }
+    public void closeDialog(){
+        if(dialog != null){
+            dialog.cancel();
         }
     }
 }

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_centerInParent="true"
+    android:id="@+id/table">
+
+    <TableRow
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <Button
+            android:id="@+id/requestFleet"
+            android:text="Fleet Manager \n Position in queue: 2"
+            android:layout_height="fill_parent"
+            android:layout_width="0dp"
+            android:layout_weight="1"/>
+
+        <Button
+            android:id="@+id/requestTraffic"
+            android:text="Traffic Manager \n Position in queue: 4"
+            android:layout_height="fill_parent"
+            android:layout_width="0dp"
+            android:layout_weight="1"/>
+    </TableRow>
+
+    <TableRow
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <Button
+            android:id="@+id/requestVechile"
+            android:text="Vehicle Manager \n Position in queue: 3"
+            android:layout_height="fill_parent"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            />
+
+        <Button
+            android:id="@+id/requestMechanic"
+            android:text="Mechanic \n Position in queue: 5"
+            android:layout_height="fill_parent"
+            android:layout_width="0dp"
+            android:layout_weight="1"/>
+    </TableRow>
+</TableLayout>
