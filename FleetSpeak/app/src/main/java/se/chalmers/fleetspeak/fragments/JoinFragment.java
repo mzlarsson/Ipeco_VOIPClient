@@ -187,7 +187,7 @@ public class JoinFragment extends Fragment{
 
             ArrayList<User> users =  getMain().getUsers(getItem(position).getId());
             StringBuilder builder = new StringBuilder();
-            if(users != null) {
+            if(users != null && users.size() > 0) {
                 if (Utils.getCarMode()) {
                     builder.append(("(" + users.size() + ")"));
                 } else {
