@@ -22,5 +22,13 @@
         android:layout_gravity="center"
         />
 
+    <TextView
+        android:id="@+id/distance"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        />
+
 
 </LinearLayout>
