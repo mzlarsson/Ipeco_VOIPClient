@@ -3,6 +3,7 @@ package se.chalmers.fleetspeak.fragments;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -106,6 +107,11 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
         // Set the start fragment
         setFragment(FragmentHandler.FragmentName.START);
         setTheme(Utils.getThemeID() == R.style.Theme_Fleetspeak_light);
+    }
+
+    @Override
+     public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
     }
 
 
