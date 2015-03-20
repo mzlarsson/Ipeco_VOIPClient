@@ -35,14 +35,14 @@ import se.chalmers.fleetspeak.User;
 import se.chalmers.fleetspeak.util.Utils;
 
 /**
- * Created by david_000 on 22/02/2015.
+ * A fragment
+ * Created by David Gustafsson on 22/02/2015.
  */
 public class ChatFragment extends Fragment {
     private PopupWindow micAndVolumePanel;
     private ArrayList<User> users;
     private ArrayAdapter<User> adapter;
-    // TODO fix set talkActive to false and call it in oncreateView
-    private Menu menu;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -80,18 +80,12 @@ public class ChatFragment extends Fragment {
         setHasOptionsMenu(true);
         return view;
     }
-    public void seCarMode(boolean b){
-        adapter.notifyDataSetChanged();
-        if(this.menu != null){
-            ((MenuItem) menu.findItem(R.id.volume_mic_control)).setVisible(b);
-        }
-
-    }
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        this.menu = menu;
         inflater.inflate(R.menu.chatroommenu, menu);
+
         ImageButton locButton = (ImageButton) menu.findItem(R.id.volume_mic_control).getActionView();
         setUpVolumeAndMicControl(getMain(), locButton);
+        locButton.setVisibility(Utils.getCarMode() ? View.INVISIBLE: View.VISIBLE);
 
         ImageButton button = (ImageButton) this.getView().findViewById(R.id.pushToTalkButton);
         button.setOnClickListener(new View.OnClickListener() {

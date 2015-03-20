@@ -93,7 +93,6 @@ public class JoinFragment extends Fragment{
         switch(item.getItemId()){
             case  R.id.day_night_toggle:
                 Utils.changeTheme(getMain());
-
                 return true;
             case android.R.id.home:
                 getMain().onBackPressed();

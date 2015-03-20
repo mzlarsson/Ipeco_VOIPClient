@@ -78,6 +78,7 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
         // Create a new Model with this activity and the updatehandler
         model = new Model(this, updateHandler);
 
+
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         prefEdit = prefs.edit();
         // Get the theme saved in shared preferences with key "Theme" if no value is accessed returns 1
@@ -103,6 +104,7 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
         findViewById(R.id.loadingPanel).setVisibility(View.INVISIBLE);
         // Set the start fragment
         setFragment(FragmentHandler.FragmentName.START);
+        setTheme(Utils.getThemeID() == R.style.Theme_Fleetspeak_light);
     }
 
 
@@ -148,9 +150,12 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
     }
     @Override
     public void truckModeChanged(boolean mode){
-        Log.d("MainActivity:", "truck mode changed to " + mode);
-        // Save the car state in the Utils
-        Utils.setCarmode(mode);
+        if(mode != Utils.getCarMode()) {
+            Log.d("MainActivity:", "truck mode changed to " + mode);
+            // Save the car state in the Utils
+            Utils.setCarmode(mode);
+            restartFragment();
+        }
     }
 
     /**
