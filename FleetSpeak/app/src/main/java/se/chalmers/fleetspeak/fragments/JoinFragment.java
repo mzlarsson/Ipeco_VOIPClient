@@ -175,8 +175,10 @@ public class JoinFragment extends Fragment{
             View view = inflater.inflate(Utils.getCarMode()?R.layout.list_item_rooms_while_driving:
                     R.layout.list_item_rooms, parent, false);
             TextView roomView = (TextView) view.findViewById(R.id.roomName);
+            roomView.setTextColor(Utils.getThemeID() == R.style.Theme_Fleetspeak_light? Color.BLACK: Color.WHITE);
             ImageView imageView = (ImageView) view.findViewById(R.id.roomIcon);
             TextView userView = (TextView) view.findViewById(R.id.list_item_users);
+            userView.setTextColor(Utils.getThemeID() == R.style.Theme_Fleetspeak_light? Color.BLACK: Color.WHITE);
 
             String whatRoom = getItem(position).getName();
 

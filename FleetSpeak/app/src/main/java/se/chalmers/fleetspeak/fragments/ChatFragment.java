@@ -138,6 +138,7 @@ public class ChatRoomListAdapter extends ArrayAdapter<User> {
             String userName = user.getName();
 
             TextView textView = (TextView) view.findViewById(R.id.userName);
+            textView.setTextColor(Utils.getThemeID() == R.style.Theme_Fleetspeak_light? Color.BLACK: Color.WHITE);
             ImageView imageView = (ImageView) view.findViewById(R.id.userTalkImage);
 
             textView.setText(userName); //Sets the names in the list
