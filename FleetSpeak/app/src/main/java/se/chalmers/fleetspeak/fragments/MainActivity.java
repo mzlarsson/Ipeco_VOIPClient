@@ -116,13 +116,15 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
     public void setFragment(FragmentHandler.FragmentName name){
         Log.i("MainActivitiy:", "Start a new fragment transaction and replace " +
                 "the showed fragment");
-
+        Log.d("FragHandler", "ChatFragment ?"  + (name == FragmentHandler.FragmentName.CHAT));
         //Start up a new fragment transaction
         // let the transaction replace the current showed fragment with the fragment
         // specified in the parameter name.
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(android.R.id.content , handler.getFragment(name));
         fragmentTransaction.commit();
+        Log.d("FragHandler", " setting new Fragment done");
+
     }
 
     /**
