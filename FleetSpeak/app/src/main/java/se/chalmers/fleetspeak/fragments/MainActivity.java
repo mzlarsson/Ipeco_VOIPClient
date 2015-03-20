@@ -111,6 +111,7 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
     @Override
      public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
+        restartFragment();
     }
 
 
