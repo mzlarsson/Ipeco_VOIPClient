@@ -10,6 +10,7 @@ import android.util.Log;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 
 import se.chalmers.fleetspeak.util.Command;
@@ -55,6 +56,10 @@ public class Connector {
      * @param port
      */
     public void connect(Handler callbackHandler, String ip, int port){
+        if(outThread.getState() == Thread.State.TERMINATED){
+            outThread = new Thread(socketWriter);
+            outThread.start();
+        }
         sendMessage(callbackHandler, MessageValues.CONNECT, ip, port);
     }
 
@@ -106,7 +111,7 @@ public class Connector {
             m.replyTo = new Messenger(callbackHandler);
             threadMessenger.send(m);
         }catch(RemoteException e){
-            e.printStackTrace();
+            Log.d("Connector", "Failed to send message");
         }
     }
 
@@ -118,8 +123,12 @@ public class Connector {
           closeSocket();
 
         }
+        if(Thread.State.TERMINATED == inThread.getState())
+            inThread = new Thread(socketListener);
+        Log.d("Threadstate", inThread.getState() + "");
         if(!inThread.isAlive())
             inThread.start();
+
 
     }
 
@@ -132,9 +141,9 @@ public class Connector {
             socketListener.close();
             socketWriter.close();
             if(socket != null)
-            socket.close();
+                socket.close();
         } catch (IOException e) {
-            e.printStackTrace();
+
         }
     }
 
@@ -157,37 +166,42 @@ public class Connector {
 
                     switch (msg.what) {
                         case MessageValues.CONNECT:
+                            if(socket != null){
+                                closeSocket();
+                            }
                             Boolean connected = false;
                             Log.i("Connector", "Connecting...");
                             try{
-                                socket = new Socket((String)msg.obj, msg.arg1);
+                                socket = new Socket();
+                                socket.connect(new InetSocketAddress((String)msg.obj, msg.arg1), 10000);
                                 startSocketListener();
                                 objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
                                 connected = true;
                             }catch(IOException e){
-                                Log.i("Connector", "IOException" );
-                                e.printStackTrace();
+                                Log.d("Connector", "IOException connection failed");
                             }
-                            Log.i("Connector", "Connected to" + msg.obj + ":" + msg.arg1);
+
                             try {
                                 if(connected) {
+                                    Log.i("Connector", "Connected to" + msg.obj + ":" + msg.arg1);
                                     msg.replyTo.send(Message.obtain(null, MessageValues.CONNECTED));
                                     messenger.send(Message.obtain(null, MessageValues.CONNECTED, new Command("connected", msg.obj, null)));
                                 }else{
+                                    Log.i("Connector", "Failed to connect");
                                     msg.replyTo.send(Message.obtain(null, MessageValues.CONNECTIONFAILED));
-                                    messenger.send(Message.obtain(null, MessageValues.CONNECTIONFAILED, new Command("connection failed", msg.obj, null)));
+                                    messenger.send(Message.obtain(null, MessageValues.CONNECTIONFAILED, new Command("connectionfailed", msg.obj, null)));
                                 }
                             } catch (RemoteException e) {
                                 e.printStackTrace();
                             }
                             break;
                         case MessageValues.DISCONNECT:
-                            sendCommand("closeSocket", null ,null);
+                            sendCommand("disconnect", null ,null);
                             closeSocket();
                             try {
                                 new Messenger(msg.getTarget()).send(Message.obtain(null, MessageValues.DISCONNECTED));
                             } catch (RemoteException e) {
-                                e.printStackTrace();
+                                Log.d("Connector","failed to close socket");
                             }
                             break;
                         case MessageValues.SETNAME:
@@ -216,14 +230,18 @@ public class Connector {
             try {
                 objectOutputStream.writeObject(new Command(command, key, value));
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.d("Connector", "IOException while trying to send command");
             } catch (NullPointerException e){
                 Log.d("Connector", "No stream failed to send command");
             }
         }
         void close(){
-            if(Looper.myLooper() != null)
-                Looper.myLooper().quit();
+            try {
+                if(objectOutputStream != null)
+                    objectOutputStream.close();
+            } catch (IOException e) {
+                Log.d("Connector", "Error while closing stream");
+            }
         }
     }
 

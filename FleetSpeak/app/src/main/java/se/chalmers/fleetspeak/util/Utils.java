@@ -7,7 +7,7 @@ import se.chalmers.fleetspeak.fragments.MainActivity;
 
 /**
  * A util class that saves and get temporary settings
- * Created by david_000 on 21/10/2014.
+ * Created by David Gustafsson on 21/10/2014.
  */
 public class Utils {
     private static boolean firstRun = true;
@@ -24,9 +24,8 @@ public class Utils {
      * @param i - the theme to set
      */
     public static void setTheme(int i){
-        if((i == DARK || i == LIGHT) && firstRun) {
+        if((i == DARK || i == LIGHT) && firstRun)
             appTheme = i;
-        }
     }
     public static void setCarmode(boolean b){carmode = b;}
     public static boolean getCarMode(){return carmode;}

@@ -36,17 +36,18 @@ import se.chalmers.fleetspeak.User;
 import se.chalmers.fleetspeak.util.Utils;
 
 /**
- * Created by david_000 on 22/02/2015.
+ * A fragment
+ * Created by David Gustafsson on 22/02/2015.
  */
 public class ChatFragment extends Fragment {
     private PopupWindow micAndVolumePanel;
     private ArrayList<User> users;
     private ArrayAdapter<User> adapter;
-    // TODO fix set talkActive to false and call it in oncreateView
-    private Menu menu;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.d("FragHandler", "Creating new view");
         final Context contextThemeWrapper = new ContextThemeWrapper(getActivity(), Utils.getThemeID());
         LayoutInflater localInflater = inflater.cloneInContext(contextThemeWrapper);
         View view = localInflater.inflate(R.layout.chat_fragment, container, false);
@@ -55,6 +56,8 @@ public class ChatFragment extends Fragment {
 
         GridView userListView = (GridView) view.findViewById(R.id.userList);
         users = new ArrayList<>(getMain().getUsers(getMain().getCurrentRoom()));
+
+        Log.d("Chat", "users == null ?" + (users == null));
         adapter = new ChatRoomListAdapter(getMain(), users);
         userListView.setAdapter(adapter);
         userListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -81,18 +84,12 @@ public class ChatFragment extends Fragment {
         setHasOptionsMenu(true);
         return view;
     }
-    public void seCarMode(boolean b){
-        adapter.notifyDataSetChanged();
-        if(this.menu != null){
-            ((MenuItem) menu.findItem(R.id.volume_mic_control)).setVisible(b);
-        }
-
-    }
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        this.menu = menu;
         inflater.inflate(R.menu.chatroommenu, menu);
+
         ImageButton locButton = (ImageButton) menu.findItem(R.id.volume_mic_control).getActionView();
         setUpVolumeAndMicControl(getMain(), locButton);
+        locButton.setVisibility(Utils.getCarMode() ? View.INVISIBLE: View.VISIBLE);
 
         ImageButton button = (ImageButton) this.getView().findViewById(R.id.pushToTalkButton);
         button.setOnClickListener(new View.OnClickListener() {
@@ -114,15 +111,13 @@ public class ChatFragment extends Fragment {
     }
 
     public void update(){
-        Log.d("chatfrag", "update 1"+ users);
-        users.clear();
-        Log.d("chatfrag", "update 2" + users);
-        Object o = getMain().getUsers(1);
-        users.addAll(getMain().getUsers(getMain().getCurrentRoom()));
-        Log.d("chatfrag", "update 3" + users);
-        adapter.notifyDataSetChanged();
-        ImageButton button = (ImageButton) this.getView().findViewById(R.id.pushToTalkButton);
-        button.setBackgroundResource(getMain().isTalkActive() ? R.drawable.ic_mic_blue : R.drawable.ic_mic_grey);
+        if(this.getMain() != null) {
+            users.clear();
+            users.addAll(getMain().getUsers(getMain().getCurrentRoom()));
+            adapter.notifyDataSetChanged();
+            ImageButton button = (ImageButton) this.getView().findViewById(R.id.pushToTalkButton);
+            button.setBackgroundResource(getMain().isTalkActive() ? R.drawable.ic_mic_blue : R.drawable.ic_mic_grey);
+        }
     }
 
 
@@ -149,7 +144,10 @@ public class ChatRoomListAdapter extends ArrayAdapter<User> {
             textView.setText(userName); //Sets the names in the list
 
             imageView.setImageResource(user.getMuted()?R.drawable.ic_mute:R.drawable.ic_user); //Sets icon in the list
-
+            TextView distance = (TextView) view.findViewById(R.id.distance);
+            int rand = ((int) (100 * Math.random()));
+            distance.setText(rand + "");
+            distance.setTextColor(10 >= rand ? Color.GREEN : (50 > rand? Color.YELLOW: Color.RED) );
             return view;
         }
     }

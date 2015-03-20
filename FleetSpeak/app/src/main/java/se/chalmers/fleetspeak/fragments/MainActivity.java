@@ -62,6 +62,7 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
                     break;
                 case MessageValues.CONNECTIONFAILED:
                     //TODO do somehting cool here like launch fireworks from the AUX connector
+                    handler.showConnectionErrorMessage();
                     break;
 
             }
@@ -77,6 +78,7 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         // Create a new Model with this activity and the updatehandler
         model = new Model(this, updateHandler);
+
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         prefEdit = prefs.edit();
@@ -103,6 +105,7 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
         findViewById(R.id.loadingPanel).setVisibility(View.INVISIBLE);
         // Set the start fragment
         setFragment(FragmentHandler.FragmentName.START);
+        setTheme(Utils.getThemeID() == R.style.Theme_Fleetspeak_light);
     }
 
 
@@ -113,13 +116,15 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
     public void setFragment(FragmentHandler.FragmentName name){
         Log.i("MainActivitiy:", "Start a new fragment transaction and replace " +
                 "the showed fragment");
-
+        Log.d("FragHandler", "ChatFragment ?"  + (name == FragmentHandler.FragmentName.CHAT));
         //Start up a new fragment transaction
         // let the transaction replace the current showed fragment with the fragment
         // specified in the parameter name.
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(android.R.id.content , handler.getFragment(name));
         fragmentTransaction.commit();
+        Log.d("FragHandler", " setting new Fragment done");
+
     }
 
     /**
@@ -148,9 +153,12 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
     }
     @Override
     public void truckModeChanged(boolean mode){
-        Log.d("MainActivity:", "truck mode changed to " + mode);
-        // Save the car state in the Utils
-        Utils.setCarmode(mode);
+        if(mode != Utils.getCarMode()) {
+            Log.d("MainActivity:", "truck mode changed TO " + mode);
+            // Save the car state in the Utils
+            Utils.setCarmode(mode);
+            restartFragment();
+        }
     }
 
     /**
@@ -322,4 +330,22 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
         model.disconnect();
     }
 
+    public void requestAssistance(int i){
+        //TODO Request assitance should send commands to server
+        switch (i){
+            case 0:
+            break;
+            case 1:
+            break;
+            case 2:
+            break;
+            case 3:
+            break;
+            default:
+        }
+
+    }
+    public void buildAlertDialog(){
+
+    }
 }

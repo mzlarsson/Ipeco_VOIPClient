@@ -12,6 +12,8 @@ import com.swedspot.automotiveapi.AutomotiveListener;
 import com.swedspot.automotiveapi.AutomotiveManager;
 import com.swedspot.vil.distraction.DriverDistractionLevel;
 import com.swedspot.vil.distraction.DriverDistractionListener;
+import com.swedspot.vil.distraction.LightMode;
+import com.swedspot.vil.distraction.StealthMode;
 import com.swedspot.vil.policy.AutomotiveCertificate;
 
 import java.util.ArrayList;
@@ -99,6 +101,16 @@ class TruckCommunicator extends AsyncTask<Void, Void, Object> {
             @Override
             public void levelChanged(DriverDistractionLevel driverDistractionLevel) {
                 Log.d(TAG, "Driver level changed: "+driverDistractionLevel.getLevel());
+            }
+
+            @Override
+            public void lightModeChanged(LightMode lightMode) {
+                Log.d(TAG, "Light mode changed: "+lightMode.name());
+            }
+
+            @Override
+            public void stealthModeChanged(StealthMode stealthMode) {
+                Log.d(TAG, "Stealth mode changed: "+stealthMode.name());
             }
         };
     }

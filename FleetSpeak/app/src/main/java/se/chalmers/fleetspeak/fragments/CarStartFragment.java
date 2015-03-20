@@ -56,7 +56,8 @@ public class CarStartFragment extends Fragment {
         // Find the textview in the created view and set the text of the textview
         // to correspond to the userssetting in utils
         ((TextView) view.findViewById(R.id.IpAdress)).setText(Utils.getIpAdress());
-        ((TextView) view.findViewById(R.id.userName)).setText(Utils.getPort());
+        Log.d("DOESITWORK", view.findViewById(R.id.userName)==null?"nope":"yes");
+        ((TextView) view.findViewById(R.id.userName)).setText(Utils.getUsername());
         return view;
     }
     @Override
@@ -66,7 +67,7 @@ public class CarStartFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if(id == R.id.home){
+        if(id == android.R.id.home){
             getActivity().onBackPressed();
         }
         // Check if the menu item selected in the option menu is the day and night
