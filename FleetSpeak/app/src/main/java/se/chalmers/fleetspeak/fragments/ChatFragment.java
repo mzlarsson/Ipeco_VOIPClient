@@ -46,6 +46,7 @@ public class ChatFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.d("FragHandler", "Creating new view");
         final Context contextThemeWrapper = new ContextThemeWrapper(getActivity(), Utils.getThemeID());
         LayoutInflater localInflater = inflater.cloneInContext(contextThemeWrapper);
         View view = localInflater.inflate(R.layout.chat_fragment, container, false);
@@ -54,6 +55,8 @@ public class ChatFragment extends Fragment {
 
         ListView userListView = (ListView) view.findViewById(R.id.userList);
         users = new ArrayList<>(getMain().getUsers(getMain().getCurrentRoom()));
+
+        Log.d("Chat", "users == null ?" + (users == null));
         adapter = new ChatRoomListAdapter(getMain(), users);
         userListView.setAdapter(adapter);
         userListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -107,11 +110,13 @@ public class ChatFragment extends Fragment {
     }
 
     public void update(){
-        users.clear();
-        users.addAll(getMain().getUsers(getMain().getCurrentRoom()));
-        adapter.notifyDataSetChanged();
-        ImageButton button = (ImageButton) this.getView().findViewById(R.id.pushToTalkButton);
-        button.setBackgroundResource(getMain().isTalkActive() ? R.drawable.ic_mic_blue : R.drawable.ic_mic_grey);
+        if(this.getMain() != null) {
+            users.clear();
+            users.addAll(getMain().getUsers(getMain().getCurrentRoom()));
+            adapter.notifyDataSetChanged();
+            ImageButton button = (ImageButton) this.getView().findViewById(R.id.pushToTalkButton);
+            button.setBackgroundResource(getMain().isTalkActive() ? R.drawable.ic_mic_blue : R.drawable.ic_mic_grey);
+        }
     }
 
 
