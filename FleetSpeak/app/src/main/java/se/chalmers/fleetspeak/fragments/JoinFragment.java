@@ -83,7 +83,7 @@ public class JoinFragment extends Fragment{
     }
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.day_night_menu, menu);
+        inflater.inflate(R.menu.join_room_menu, menu);
         super.onCreateOptionsMenu(menu, inflater);
 
     }
@@ -97,6 +97,10 @@ public class JoinFragment extends Fragment{
             case android.R.id.home:
                 getMain().onBackPressed();
                return true;
+            case R.id.request:
+                getMain().setFragment(FragmentHandler.FragmentName.REQUEST);
+                return true;
+
         }
         return super.onOptionsItemSelected(item);
     }
@@ -163,7 +167,6 @@ public class JoinFragment extends Fragment{
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             LayoutInflater inflater = LayoutInflater.from(getContext());
-
             View view = inflater.inflate(Utils.getCarMode()?R.layout.list_item_rooms_while_driving:
                     R.layout.list_item_rooms, parent, false);
             TextView roomView = (TextView) view.findViewById(R.id.roomName);

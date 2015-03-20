@@ -62,6 +62,7 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
                     break;
                 case MessageValues.CONNECTIONFAILED:
                     //TODO do somehting cool here like launch fireworks from the AUX connector
+                    handler.showConnectionErrorMessage();
                     break;
 
             }
@@ -327,4 +328,19 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
         model.disconnect();
     }
 
+    public void requestAssistance(int i){
+        //TODO Request assitance should send commands to server
+        switch (i){
+            case 0:
+            break;
+            case 1:
+            break;
+            case 2:
+            break;
+            case 3:
+            break;
+            default:
+        }
+
+    }
 }
