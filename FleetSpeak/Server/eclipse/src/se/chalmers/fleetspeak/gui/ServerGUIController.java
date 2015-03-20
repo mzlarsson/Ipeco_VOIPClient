@@ -129,7 +129,7 @@ public class ServerGUIController implements StageOwner{
 		portNumber.getStyleClass().remove(valid?"tferror":"tfvalid");
 		
 		//Set startable or not
-		startButton.setDisable(!valid);
+		startButton.setDisable(false);
 	}
 	
 	public void closeServer(){
