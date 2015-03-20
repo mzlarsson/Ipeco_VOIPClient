@@ -39,7 +39,7 @@ public class SoundController {
 
         audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
-        audioManager.setSpeakerphoneOn(false);
+        audioManager.setSpeakerphoneOn(true);
         Log.d("SoundController", audioManager.getProperty(audioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER) + "Frames per buffer. "  + audioManager.getProperty(audioManager.PROPERTY_OUTPUT_SAMPLE_RATE) + " sample rate" );
         audioGroup = new AudioGroup();
         audioGroup.setMode(AudioGroup.MODE_ECHO_SUPPRESSION);
