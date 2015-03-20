@@ -43,7 +43,7 @@ public class Model {
 
     public void connect(String ip, int port){
         if(state == State.not_connected){
-            roomHandler = new RoomHandler(callbackHandler);
+            roomHandler.clear();
             state = State.connecting;
             connector.connect(callbackHandler, ip, port);
         }else{
