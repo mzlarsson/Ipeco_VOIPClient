@@ -10,9 +10,10 @@ import se.chalmers.fleetspeak.util.Utils;
  */
 public class FragmentHandler {
     private FragmentName currentFragment;
-    private Fragment[] fragments ={ new StartFragment(), new CarStartFragment(), new JoinFragment(), new ChatFragment(), new DisconnectFragment()};
+    private Fragment[] fragments ={ new StartFragment(), new CarStartFragment(), new JoinFragment(),
+            new ChatFragment(), new DisconnectFragment() , new RequestAssistanceFragment()};
     public enum FragmentName{
-        START, JOIN, CHAT, DISCONNECT
+        START, JOIN, CHAT, DISCONNECT , REQUEST
     }
     public FragmentName getCurrentFragment(){
         return currentFragment;
@@ -28,10 +29,20 @@ public class FragmentHandler {
                 return fragments[3];
             case DISCONNECT:
                 return fragments[4];
+            case REQUEST:
+                return fragments[5];
             default:
                 return  null;
         }
     }
+    public void showConnectionErrorMessage(){
+        if(Utils.getCarMode() && currentFragment == FragmentName.START)
+            ((CarStartFragment)fragments[1]).showConnectionErrorMessage();
+        else
+            ((StartFragment) fragments[0]).
+                    showConnectionErrorMessage();
+    }
+
     public  void update(FragmentName name){
         if(name == currentFragment){
             switch (name){
@@ -41,6 +52,8 @@ public class FragmentHandler {
                 case JOIN:
                     ((JoinFragment) fragments[2]).update();
                     break;
+                case REQUEST:
+                    ((RequestAssistanceFragment) fragments[5]).update();
             }
 
         }
@@ -50,9 +63,11 @@ public class FragmentHandler {
             activity.setFragment(FragmentName.JOIN);
        }else if(currentFragment == FragmentName.JOIN) {
            activity.setFragment(FragmentName.DISCONNECT);
-       }else if(currentFragment == FragmentName.DISCONNECT){
+       }else if(currentFragment == FragmentName.DISCONNECT) {
            activity.setFragment(FragmentName.START);
            activity.disconnect();
+       }else if(currentFragment == FragmentName.REQUEST){
+           activity.setFragment(FragmentName.JOIN);
        }else{
            activity.finish();
        }
@@ -74,6 +89,9 @@ public class FragmentHandler {
                     break;
                 case DISCONNECT:
                     fragments[4] = new DisconnectFragment();
+                    break;
+                case REQUEST:
+                    fragments[5] = new RequestAssistanceFragment();
                 default:
             }
 
