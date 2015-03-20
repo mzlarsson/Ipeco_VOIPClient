@@ -123,8 +123,12 @@ public class Connector {
           closeSocket();
 
         }
+        if(Thread.State.TERMINATED == inThread.getState())
+            inThread = new Thread(socketListener);
+        Log.d("Threadstate", inThread.getState() + "");
         if(!inThread.isAlive())
             inThread.start();
+
 
     }
 
@@ -174,7 +178,7 @@ public class Connector {
                                 objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
                                 connected = true;
                             }catch(IOException e){
-                                Log.d("Connector", "IOException connection failed" );
+                                Log.d("Connector", "IOException connection failed");
                             }
 
                             try {
@@ -226,14 +230,18 @@ public class Connector {
             try {
                 objectOutputStream.writeObject(new Command(command, key, value));
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.d("Connector", "IOException while trying to send command");
             } catch (NullPointerException e){
                 Log.d("Connector", "No stream failed to send command");
             }
         }
         void close(){
-            if(Looper.myLooper() != null)
-                Looper.myLooper().quit();
+            try {
+                if(objectOutputStream != null)
+                    objectOutputStream.close();
+            } catch (IOException e) {
+                Log.d("Connector", "Error while closing stream");
+            }
         }
     }
 
