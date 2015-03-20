@@ -76,9 +76,11 @@ public class RequestAssistanceFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
         switch (item.getItemId()){
-            case R.id.home:
+            case android.R.id.home:
                 getMain().onBackPressed();
+                Log.d("Request", "back");
                 return true;
             case R.id.day_night_toggle:
                 Utils.changeTheme(getMain());

@@ -67,6 +67,10 @@ public class JoinFragment extends Fragment{
             }
         });
         Button createRoom = (Button) view.findViewById(R.id.buttonCreateRoom);
+
+        if(Utils.getCarMode()) {
+            createRoom.setText("+");
+        }
         createRoom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -75,8 +79,6 @@ public class JoinFragment extends Fragment{
         });
 
         setHasOptionsMenu(true);
-
-
 
         return view;
     }

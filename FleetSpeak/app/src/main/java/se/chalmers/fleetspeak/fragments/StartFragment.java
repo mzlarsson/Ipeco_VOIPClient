@@ -145,7 +145,7 @@ public class StartFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if(id == R.id.home){
+        if(id == android.R.id.home){
             this.getActivity().onBackPressed();
         }
         // Check if the menu item selected in the option menu is the day and night
