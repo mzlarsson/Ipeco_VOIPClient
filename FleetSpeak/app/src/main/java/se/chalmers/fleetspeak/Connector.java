@@ -196,7 +196,7 @@ public class Connector {
                             }
                             break;
                         case MessageValues.DISCONNECT:
-                            sendCommand("closeSocket", null ,null);
+                            sendCommand("disconnect", null ,null);
                             closeSocket();
                             try {
                                 new Messenger(msg.getTarget()).send(Message.obtain(null, MessageValues.DISCONNECTED));
