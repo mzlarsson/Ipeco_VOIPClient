@@ -88,6 +88,11 @@ public class Model {
         return false;
     }
 
+    public void getAssistance(int who){
+        //TODO signal server
+        Log.i("Model", "getAssistance is not implemented");
+    }
+
     class CommandHandler extends Handler {
         public void handleMessage(Message msg) {
 
@@ -102,6 +107,10 @@ public class Model {
                     break;
                 case "connectionfailed":
                     state = State.not_connected;
+                    break;
+                case "disconnected":
+                    state = State.not_connected;
+                    roomHandler.clear();
                     break;
                 case "setid":
                     roomHandler.setUserid((Integer) command.getKey());
