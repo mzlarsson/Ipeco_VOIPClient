@@ -82,6 +82,7 @@ public class FragmentHandler {
                     }
                     break;
                 case JOIN:
+                    ((JoinFragment)fragments[2]).closeDialog();
                     fragments[2] = new JoinFragment();
                     break;
                 case CHAT:

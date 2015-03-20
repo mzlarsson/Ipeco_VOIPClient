@@ -343,4 +343,7 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
         }
 
     }
+    public void buildAlertDialog(){
+
+    }
 }
