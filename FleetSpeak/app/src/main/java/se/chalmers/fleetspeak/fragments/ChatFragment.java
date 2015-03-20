@@ -143,7 +143,10 @@ public class ChatRoomListAdapter extends ArrayAdapter<User> {
             textView.setText(userName); //Sets the names in the list
 
             imageView.setImageResource(user.getMuted()?R.drawable.ic_mute:R.drawable.ic_user); //Sets icon in the list
-
+            TextView distance = (TextView) view.findViewById(R.id.distance);
+            int rand = ((int) (100 * Math.random()));
+            distance.setText(rand + "");
+            distance.setTextColor(10 >= rand ? Color.GREEN : (50 > rand? Color.YELLOW: Color.RED) );
             return view;
         }
     }
