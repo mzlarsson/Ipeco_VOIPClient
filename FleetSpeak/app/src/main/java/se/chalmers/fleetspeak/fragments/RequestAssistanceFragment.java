@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ import se.chalmers.fleetspeak.util.Utils;
  * Created by David Gustafsson on 20/03/2015.
  */
 public class RequestAssistanceFragment extends Fragment {
+    private boolean wrenchActive;
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.i("RequestAssistanceFragment:", "view created");
         Context contextThemeWrapper = new ContextThemeWrapper(getActivity(), Utils.getThemeID());
@@ -36,29 +38,34 @@ public class RequestAssistanceFragment extends Fragment {
         getActivity().getWindow().setBackgroundDrawable(new ColorDrawable(Utils.getThemeID() == R.style.Theme_Fleetspeak_light ? Color.WHITE : Color.BLACK));
 
         setHasOptionsMenu(true);
-
-        Button requestFleet =(Button) view.findViewById(R.id.requestFleet);
+        wrenchActive = true;
+        ImageButton requestFleet =(ImageButton) view.findViewById(R.id.requestFleet);
+        requestFleet.setImageResource(R.drawable.ic_action_work);
         requestFleet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 getMain().requestAssistance(0);
             }
         });
-        Button requestMechanic = (Button) view.findViewById(R.id.requestFleet);
+        ImageButton requestMechanic = (ImageButton) view.findViewById(R.id.requestMechanic);
+        requestMechanic.setImageResource(R.drawable.ic_wrench_green);
         requestMechanic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                switchColorWrench();
                 getMain().requestAssistance(1);
             }
         });
-        Button requestVechile = (Button) view.findViewById(R.id.requestVechile);
+        ImageButton requestVechile = (ImageButton) view.findViewById(R.id.requestVechile);
+        requestVechile.setImageResource(R.drawable.ic_vehicle);
         requestVechile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 getMain().requestAssistance(2);
             }
         });
-        Button requestTraffic = (Button) view.findViewById(R.id.requestTraffic);
+        ImageButton requestTraffic = (ImageButton) view.findViewById(R.id.requestTraffic);
+        requestTraffic.setImageResource(R.drawable.ic_pen_green);
         requestTraffic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -73,12 +80,18 @@ public class RequestAssistanceFragment extends Fragment {
         inflater.inflate(R.menu.day_night_menu, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
+    public void switchColorWrench(){
+        wrenchActive = !wrenchActive;
+        ((ImageButton) this.getView().findViewById(R.id.requestMechanic)).setImageResource(wrenchActive? R.drawable.ic_wrench_green: R.drawable.ic_wrench_red);
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
         switch (item.getItemId()){
-            case R.id.home:
+            case android.R.id.home:
                 getMain().onBackPressed();
+                Log.d("Request", "back");
                 return true;
             case R.id.day_night_toggle:
                 Utils.changeTheme(getMain());

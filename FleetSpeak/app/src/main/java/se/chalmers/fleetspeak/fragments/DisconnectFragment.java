@@ -62,6 +62,9 @@ public class DisconnectFragment extends Fragment {
             case  R.id.day_night_toggle:
                 Utils.changeTheme((MainActivity) this.getActivity());
                 return true;
+            case android.R.id.home:
+                this.getActivity().onBackPressed();
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }

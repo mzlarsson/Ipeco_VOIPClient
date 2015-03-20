@@ -43,6 +43,7 @@ public class Model {
 
     public void connect(String ip, int port){
         if(state == State.not_connected){
+            roomHandler.clear();
             state = State.connecting;
             connector.connect(callbackHandler, ip, port);
         }else{
@@ -64,8 +65,8 @@ public class Model {
     }
     public void move(int roomid){
         if(roomid != roomHandler.getCurrentRoom()){
-            connector.move(callbackHandler, roomid);
             roomHandler.moveUser(roomHandler.getUserid(), roomid);
+            connector.move(callbackHandler, roomid);
         }
     }
     public void moveNewRoom(String roomname){
