@@ -184,7 +184,8 @@ public class JoinFragment extends Fragment{
                     for(int i = 0; i < users.size(); i++) {
                         builder.append(users.get(i).getName() + ",");
                     }
-                    builder.deleteCharAt(builder.lastIndexOf(","));
+                    if(builder.lastIndexOf(",") > 0)
+                        builder.deleteCharAt(builder.lastIndexOf(","));
                 }
             }
             userView.setText(builder.toString());
