@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -52,7 +53,7 @@ public class ChatFragment extends Fragment {
         getActivity().getWindow().setBackgroundDrawable(new ColorDrawable(Utils.getThemeID() == R.style.Theme_Fleetspeak_light ? Color.WHITE : Color.BLACK));
 
 
-        ListView userListView = (ListView) view.findViewById(R.id.userList);
+        GridView userListView = (GridView) view.findViewById(R.id.userList);
         users = new ArrayList<>(getMain().getUsers(getMain().getCurrentRoom()));
         adapter = new ChatRoomListAdapter(getMain(), users);
         userListView.setAdapter(adapter);
