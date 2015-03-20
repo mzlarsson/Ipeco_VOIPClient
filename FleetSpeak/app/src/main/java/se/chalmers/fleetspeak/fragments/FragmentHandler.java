@@ -32,13 +32,6 @@ public class FragmentHandler {
                 return  null;
         }
     }
-    public void showConnectionErrorMessage(){
-        if(Utils.getCarMode())
-            ((CarStartFragment)fragments[1]).showConnectionErrorMessage();
-        else
-            ((StartFragment) fragments[0]).showConnectionErrorMessage();
-    }
-
     public  void update(FragmentName name){
         if(name == currentFragment){
             switch (name){

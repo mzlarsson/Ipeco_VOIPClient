@@ -7,10 +7,9 @@ import se.chalmers.fleetspeak.fragments.MainActivity;
 
 /**
  * A util class that saves and get temporary settings
- * Created by david_000 on 21/10/2014.
+ * Created by David Gustafsson on 21/10/2014.
  */
 public class Utils {
-    private static boolean firstRun = true;
     public static final int DARK = R.style.Theme_Fleetspeak_dark;
     public static final int LIGHT = R.style.Theme_Fleetspeak_light;
     private static int appTheme = DARK;
@@ -24,9 +23,7 @@ public class Utils {
      * @param i - the theme to set
      */
     public static void setTheme(int i){
-        if((i == DARK || i == LIGHT) && firstRun) {
             appTheme = i;
-        }
     }
     public static void setCarmode(boolean b){carmode = b;}
     public static boolean getCarMode(){return carmode;}
@@ -74,7 +71,6 @@ public class Utils {
     public static int getPort(){return currentPort;}
 
     public static void changeTheme(MainActivity activity){
-        firstRun = false;
         if(appTheme == DARK){
             appTheme = LIGHT;
         }else{
