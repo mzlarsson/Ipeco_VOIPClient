@@ -113,12 +113,8 @@ public class ChatFragment extends Fragment {
     }
 
     public void update(){
-        Log.d("chatfrag", "update 1"+ users);
         users.clear();
-        Log.d("chatfrag", "update 2" + users);
-        Object o = getMain().getUsers(1);
         users.addAll(getMain().getUsers(getMain().getCurrentRoom()));
-        Log.d("chatfrag", "update 3" + users);
         adapter.notifyDataSetChanged();
         ImageButton button = (ImageButton) this.getView().findViewById(R.id.pushToTalkButton);
         button.setBackgroundResource(getMain().isTalkActive() ? R.drawable.ic_mic_blue : R.drawable.ic_mic_grey);
