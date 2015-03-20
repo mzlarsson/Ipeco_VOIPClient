@@ -42,6 +42,8 @@ public class JoinFragment extends Fragment{
     // A ArrayAdapter that enables the fragment view to show the rooms in rooms
     private ArrayAdapter<Room> adapter;
 
+    private AlertDialog dialog;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.i("Joinfragment:","view created");
@@ -141,7 +143,8 @@ public class JoinFragment extends Fragment{
                     dialog.cancel();
                 }
             });
-            alertDialog.show();
+            dialog = alertDialog.show();
+
         } else{ //When the car is driving and the user have selected "Create room" the user won't be
             //allowed to pick a name since it will take to much time.
             String newRoomName = (Utils.getUsername() + "'s room");
@@ -194,6 +197,11 @@ public class JoinFragment extends Fragment{
             userView.setText(builder.toString());
 
             return view;
+        }
+    }
+    public void closeDialog(){
+        if(dialog != null){
+            dialog.cancel();
         }
     }
 }
