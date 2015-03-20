@@ -91,10 +91,14 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 			while (isRunning && objectInputStream != null) {
 				Log.log("[TCPHandler] trying to read");
 				Object o = objectInputStream.readObject();
-				Log.log("[TCPHandler] Found: " + o.getClass().toString());
-				Command c = (Command) o ;//objectInputStream.readObject();
-				Log.log("[TCPHandler] Got command " + c.getCommand());
-				runAndroidCommand(c);
+				
+				if (o.getClass() == Command.class) {
+					Command c = (Command) o ;//objectInputStream.readObject();					
+					Log.log("[TCPHandler]userid: "+ clientID + "s Got command " + c.getCommand() + " key "+ c.getKey());
+					runAndroidCommand(c);
+				} else {
+					Log.logError("[TCPHandler] Found a non-Command object: " + o.getClass().toString());
+				}
 			}
 		} catch(EOFException eofe){
 			doCommand(cmds.get("disconnect"), clientID, null);
@@ -120,7 +124,6 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 	public void sendData(Command command){
 		try{
 			Log.log("[TCPHandler]Trying to send " + command.getCommand());
-			System.out.println("Sent "+command.getCommand()+" "+command.getKey()+" "+command.getValue());
 			objectOutputStream.writeObject(command);
 			Log.log("[TCPHandler] <i>Command sent: "+command.getCommand()+"</i>");
 		} catch(SocketException e){
