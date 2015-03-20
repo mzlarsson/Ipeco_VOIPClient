@@ -152,7 +152,7 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
     @Override
     public void truckModeChanged(boolean mode){
         if(mode != Utils.getCarMode()) {
-            Log.d("MainActivity:", "truck mode changed to " + mode);
+            Log.d("MainActivity:", "truck mode changed TO " + mode);
             // Save the car state in the Utils
             Utils.setCarmode(mode);
             restartFragment();
