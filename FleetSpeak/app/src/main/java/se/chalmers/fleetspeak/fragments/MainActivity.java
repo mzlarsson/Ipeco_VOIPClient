@@ -3,6 +3,7 @@ package se.chalmers.fleetspeak.fragments;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -61,7 +62,6 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
                     update();
                     break;
                 case MessageValues.CONNECTIONFAILED:
-                    //TODO do somehting cool here like launch fireworks from the AUX connector
                     handler.showConnectionErrorMessage();
                     break;
 
@@ -108,6 +108,12 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
         setTheme(Utils.getThemeID() == R.style.Theme_Fleetspeak_light);
     }
 
+    @Override
+     public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        restartFragment();
+    }
+
 
     /**
     Set the currently showed fragment in the activity
@@ -116,13 +122,15 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
     public void setFragment(FragmentHandler.FragmentName name){
         Log.i("MainActivitiy:", "Start a new fragment transaction and replace " +
                 "the showed fragment");
-
+        Log.d("FragHandler", "ChatFragment ?"  + (name == FragmentHandler.FragmentName.CHAT));
         //Start up a new fragment transaction
         // let the transaction replace the current showed fragment with the fragment
         // specified in the parameter name.
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(android.R.id.content , handler.getFragment(name));
         fragmentTransaction.commit();
+        Log.d("FragHandler", " setting new Fragment done");
+
     }
 
     /**
@@ -341,6 +349,9 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
             break;
             default:
         }
+
+    }
+    public void buildAlertDialog(){
 
     }
 }

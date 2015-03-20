@@ -8,6 +8,7 @@
         android:layout_width="wrap_content"
         android:textSize="38sp"
         android:id="@+id/userName"
+        android:text="@string/username_text"
         android:layout_marginTop="60dp"
         android:layout_centerHorizontal="true"
         android:layout_height="wrap_content"
@@ -15,6 +16,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_below="@+id/userName"
+        android:text="@string/ip_adress_text"
         android:textSize="38sp"
         android:id="@+id/IpAdress"
         android:layout_marginTop="60dp"

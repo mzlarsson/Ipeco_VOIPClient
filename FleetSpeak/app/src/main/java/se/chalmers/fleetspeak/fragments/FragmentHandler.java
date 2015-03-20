@@ -1,6 +1,7 @@
 package se.chalmers.fleetspeak.fragments;
 
 import android.app.Fragment;
+import android.util.Log;
 
 import se.chalmers.fleetspeak.util.Utils;
 
@@ -26,6 +27,8 @@ public class FragmentHandler {
             case JOIN:
                 return fragments[2];
             case CHAT:
+                Log.d("FragHandler" , " recreating chatfragment");
+                fragments[3] = new ChatFragment();
                 return fragments[3];
             case DISCONNECT:
                 return fragments[4];
@@ -44,6 +47,7 @@ public class FragmentHandler {
     }
 
     public  void update(FragmentName name){
+        Log.d("FragHandler", "update called");
         if(name == currentFragment){
             switch (name){
                 case CHAT:
@@ -82,6 +86,7 @@ public class FragmentHandler {
                     }
                     break;
                 case JOIN:
+                    ((JoinFragment)fragments[2]).closeDialog();
                     fragments[2] = new JoinFragment();
                     break;
                 case CHAT:

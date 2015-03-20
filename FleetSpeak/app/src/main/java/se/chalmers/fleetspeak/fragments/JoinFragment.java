@@ -42,6 +42,8 @@ public class JoinFragment extends Fragment{
     // A ArrayAdapter that enables the fragment view to show the rooms in rooms
     private ArrayAdapter<Room> adapter;
 
+    private AlertDialog dialog;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.i("Joinfragment:","view created");
@@ -65,6 +67,10 @@ public class JoinFragment extends Fragment{
             }
         });
         Button createRoom = (Button) view.findViewById(R.id.buttonCreateRoom);
+
+        if(Utils.getCarMode()) {
+            createRoom.setText("+");
+        }
         createRoom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -73,8 +79,6 @@ public class JoinFragment extends Fragment{
         });
 
         setHasOptionsMenu(true);
-
-
 
         return view;
     }
@@ -141,7 +145,8 @@ public class JoinFragment extends Fragment{
                     dialog.cancel();
                 }
             });
-            alertDialog.show();
+            dialog = alertDialog.show();
+
         } else{ //When the car is driving and the user have selected "Create room" the user won't be
             //allowed to pick a name since it will take to much time.
             String newRoomName = (Utils.getUsername() + "'s room");
@@ -170,8 +175,10 @@ public class JoinFragment extends Fragment{
             View view = inflater.inflate(Utils.getCarMode()?R.layout.list_item_rooms_while_driving:
                     R.layout.list_item_rooms, parent, false);
             TextView roomView = (TextView) view.findViewById(R.id.roomName);
+            roomView.setTextColor(Utils.getThemeID() == R.style.Theme_Fleetspeak_light? Color.BLACK: Color.WHITE);
             ImageView imageView = (ImageView) view.findViewById(R.id.roomIcon);
             TextView userView = (TextView) view.findViewById(R.id.list_item_users);
+            userView.setTextColor(Utils.getThemeID() == R.style.Theme_Fleetspeak_light? Color.BLACK: Color.WHITE);
 
             String whatRoom = getItem(position).getName();
 
@@ -180,7 +187,7 @@ public class JoinFragment extends Fragment{
 
             ArrayList<User> users =  getMain().getUsers(getItem(position).getId());
             StringBuilder builder = new StringBuilder();
-            if(users != null) {
+            if(users != null && users.size() > 0) {
                 if (Utils.getCarMode()) {
                     builder.append(("(" + users.size() + ")"));
                 } else {
@@ -194,6 +201,11 @@ public class JoinFragment extends Fragment{
             userView.setText(builder.toString());
 
             return view;
+        }
+    }
+    public void closeDialog(){
+        if(dialog != null){
+            dialog.cancel();
         }
     }
 }

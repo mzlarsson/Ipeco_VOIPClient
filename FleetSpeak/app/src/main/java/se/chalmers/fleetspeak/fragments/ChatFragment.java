@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -46,14 +47,17 @@ public class ChatFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.d("FragHandler", "Creating new view");
         final Context contextThemeWrapper = new ContextThemeWrapper(getActivity(), Utils.getThemeID());
         LayoutInflater localInflater = inflater.cloneInContext(contextThemeWrapper);
         View view = localInflater.inflate(R.layout.chat_fragment, container, false);
         getActivity().getWindow().setBackgroundDrawable(new ColorDrawable(Utils.getThemeID() == R.style.Theme_Fleetspeak_light ? Color.WHITE : Color.BLACK));
 
 
-        ListView userListView = (ListView) view.findViewById(R.id.userList);
+        GridView userListView = (GridView) view.findViewById(R.id.userList);
         users = new ArrayList<>(getMain().getUsers(getMain().getCurrentRoom()));
+
+        Log.d("Chat", "users == null ?" + (users == null));
         adapter = new ChatRoomListAdapter(getMain(), users);
         userListView.setAdapter(adapter);
         userListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -107,11 +111,13 @@ public class ChatFragment extends Fragment {
     }
 
     public void update(){
-        users.clear();
-        users.addAll(getMain().getUsers(getMain().getCurrentRoom()));
-        adapter.notifyDataSetChanged();
-        ImageButton button = (ImageButton) this.getView().findViewById(R.id.pushToTalkButton);
-        button.setBackgroundResource(getMain().isTalkActive() ? R.drawable.ic_mic_blue : R.drawable.ic_mic_grey);
+        if(this.getMain() != null) {
+            users.clear();
+            users.addAll(getMain().getUsers(getMain().getCurrentRoom()));
+            adapter.notifyDataSetChanged();
+            ImageButton button = (ImageButton) this.getView().findViewById(R.id.pushToTalkButton);
+            button.setBackgroundResource(getMain().isTalkActive() ? R.drawable.ic_mic_blue : R.drawable.ic_mic_grey);
+        }
     }
 
 
@@ -133,12 +139,16 @@ public class ChatRoomListAdapter extends ArrayAdapter<User> {
             String userName = user.getName();
 
             TextView textView = (TextView) view.findViewById(R.id.userName);
+            textView.setTextColor(Utils.getThemeID() == R.style.Theme_Fleetspeak_light? Color.BLACK: Color.WHITE);
             ImageView imageView = (ImageView) view.findViewById(R.id.userTalkImage);
 
             textView.setText(userName); //Sets the names in the list
 
             imageView.setImageResource(user.getMuted()?R.drawable.ic_mute:R.drawable.ic_user); //Sets icon in the list
-
+            TextView distance = (TextView) view.findViewById(R.id.distance);
+            int rand = ((int) (100 * Math.random()));
+            distance.setText(rand + "");
+            distance.setTextColor(10 >= rand ? Color.GREEN : (50 > rand? Color.YELLOW: Color.RED) );
             return view;
         }
     }
