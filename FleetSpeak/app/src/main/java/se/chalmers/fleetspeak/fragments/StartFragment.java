@@ -22,6 +22,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 
+import se.chalmers.fleetspeak.MainActivity;
 import se.chalmers.fleetspeak.R;
 import se.chalmers.fleetspeak.util.Utils;
 

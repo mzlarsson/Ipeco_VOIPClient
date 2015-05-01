@@ -2,13 +2,10 @@ package se.chalmers.fleetspeak.fragments;
 
 import android.app.Fragment;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.media.Image;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -24,15 +21,15 @@ import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import se.chalmers.fleetspeak.MainActivity;
 import se.chalmers.fleetspeak.R;
-import se.chalmers.fleetspeak.User;
+import se.chalmers.fleetspeak.Rooms.User;
 import se.chalmers.fleetspeak.util.Utils;
 
 /**

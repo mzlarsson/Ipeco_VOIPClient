@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak;
+package se.chalmers.fleetspeak.Rooms;
 
 /**
  * A class for representing a room.
@@ -12,11 +12,6 @@ public class Room {
         this.name = name;
         this.id = id;
     }
-
-    private static int tmpID;   //TODO This is a temporary solution for test purposes.
-    public Room(String name) {  //TODO This is a temporary solution for test purposes.
-        this(name, tmpID++);    //TODO This is a temporary solution for test purposes.
-    }                           //TODO This is a temporary solution for test purposes.
 
     public int getId() {
         return id;

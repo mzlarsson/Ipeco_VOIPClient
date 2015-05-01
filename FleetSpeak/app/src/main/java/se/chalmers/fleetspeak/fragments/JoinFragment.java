@@ -26,9 +26,10 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import se.chalmers.fleetspeak.MainActivity;
 import se.chalmers.fleetspeak.R;
-import se.chalmers.fleetspeak.Room;
-import se.chalmers.fleetspeak.User;
+import se.chalmers.fleetspeak.Rooms.Room;
+import se.chalmers.fleetspeak.Rooms.User;
 import se.chalmers.fleetspeak.util.Utils;
 
 /**

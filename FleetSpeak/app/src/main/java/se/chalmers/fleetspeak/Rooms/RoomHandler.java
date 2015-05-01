@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak;
+package se.chalmers.fleetspeak.Rooms;
 
 import android.os.Handler;
 import android.os.Message;
@@ -38,7 +38,7 @@ public class RoomHandler{
     public void setUserid(int userid) {
         this.userid = userid;
 
-        postUpdate(MessageValues.MODELCHANGED);
+        postUpdate();
     }
 
 
@@ -51,7 +51,7 @@ public class RoomHandler{
     public void addUser(User user, int roomid) {
         Room room = findRoom(roomid);
         rooms.get(room).add(user);
-        postUpdate(MessageValues.MODELCHANGED);
+        postUpdate();
     }
 
     /**
@@ -64,7 +64,7 @@ public class RoomHandler{
             if (userList.contains(user)) {
                 userList.remove(user);
                 Log.i(this.getClass().toString(), "user removed");
-                postUpdate(MessageValues.MODELCHANGED);
+                postUpdate();
                 break;
             }
         }
@@ -175,7 +175,7 @@ public class RoomHandler{
     public void changeUsername(int userid, String name){
         Log.d("changeusername", userid + " to " + name);
         getUser(userid).setName(name);
-        postUpdate(MessageValues.MODELCHANGED);
+        postUpdate();
     }
 
 
@@ -183,7 +183,7 @@ public class RoomHandler{
         Room room = new Room(roomname, roomid);
         ArrayList<User> list = new ArrayList<User>();
         rooms.put(room, list);
-        postUpdate(MessageValues.MODELCHANGED);
+        postUpdate();
     }
 
     public void removeRoom(int roomid) {
@@ -192,13 +192,13 @@ public class RoomHandler{
 
     public void changeRoomName(int roomid, String roomname) {
         findRoom(roomid).setName(roomname);
-        postUpdate(MessageValues.MODELCHANGED);
+        postUpdate();
     }
 
-    private void postUpdate(int what){
+    private void postUpdate(){
         try {
             Log.d("RoomHandler", ""+ rooms);
-            updateMessenger.send(Message.obtain(null, what));
+            updateMessenger.send(Message.obtain(null, MessageValues.MODELCHANGED));
         } catch (RemoteException e) {
             e.printStackTrace();
         }

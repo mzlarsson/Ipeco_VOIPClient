@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import se.chalmers.fleetspeak.MainActivity;
 import se.chalmers.fleetspeak.R;
 import se.chalmers.fleetspeak.util.Utils;
 

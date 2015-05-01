@@ -3,7 +3,7 @@ package se.chalmers.fleetspeak.util;
 import android.util.Log;
 
 import se.chalmers.fleetspeak.R;
-import se.chalmers.fleetspeak.fragments.MainActivity;
+import se.chalmers.fleetspeak.MainActivity;
 
 /**
  * A util class that saves and get temporary settings

@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak;
+package se.chalmers.fleetspeak.Rooms;
 
 /**
  * A class for representing a user.

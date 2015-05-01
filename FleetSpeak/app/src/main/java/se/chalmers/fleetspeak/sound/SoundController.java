@@ -38,7 +38,7 @@ public class SoundController {
         this.port = port;
 
         audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-        audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
+      //  audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
         audioManager.setSpeakerphoneOn(true);
         Log.d("SoundController", audioManager.getProperty(audioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER) + "Frames per buffer. "  + audioManager.getProperty(audioManager.PROPERTY_OUTPUT_SAMPLE_RATE) + " sample rate" );
         audioGroup = new AudioGroup();
@@ -51,7 +51,7 @@ public class SoundController {
             upStream = new AudioStream(InetAddress.getByName(fetchIP()));
             upStream.setMode(RtpStream.MODE_SEND_ONLY);
             upStream.setCodec(AudioCodec.PCMU);
-            upStream.associate(InetAddress.getByName(ip), port);
+          //  upStream.associate(InetAddress.getByName(ip), port);
           //  upStream.join(audioGroup);
             Log.i("SoundController", "Connected to " + ip + ":" + port);
         } catch (UnknownHostException e) {
@@ -85,8 +85,8 @@ public class SoundController {
             stream.setMode(RtpStream.MODE_RECEIVE_ONLY);
             stream.setCodec(AudioCodec.PCMU);
             Log.d("SoundController", stream.getCodec().toString() + " " );
-            stream.associate(InetAddress.getByName(this.ip), port + 1);
-            stream.join(audioGroup);
+//            stream.associate(InetAddress.getByName(this.ip), port + 1);
+//            stream.join(audioGroup);
             downStreams.put(userid, stream);
 
             Log.d("SoundController", "Expecting audio from user " + userid + " on port " + stream.getLocalPort());
@@ -116,7 +116,7 @@ public class SoundController {
      * Fetches the IPv4 address of the client device
      * @return A String containing the IPV4 address
      */
-    private String fetchIP(){
+    public static String fetchIP(){
         try {
             NetworkInterface network;
             InetAddress ip;

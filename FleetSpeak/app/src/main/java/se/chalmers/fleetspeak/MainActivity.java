@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.fragments;
+package se.chalmers.fleetspeak;
 
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -17,10 +17,9 @@ import android.view.View;
 
 import java.util.ArrayList;
 
-import se.chalmers.fleetspeak.Model;
-import se.chalmers.fleetspeak.R;
-import se.chalmers.fleetspeak.Room;
-import se.chalmers.fleetspeak.User;
+import se.chalmers.fleetspeak.Rooms.Room;
+import se.chalmers.fleetspeak.Rooms.User;
+import se.chalmers.fleetspeak.fragments.FragmentHandler;
 import se.chalmers.fleetspeak.truck.TruckDataHandler;
 import se.chalmers.fleetspeak.truck.TruckStateListener;
 import se.chalmers.fleetspeak.util.MessageValues;
@@ -49,6 +48,7 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
             switch (msg.what){
                 case MessageValues.CONNECTED:
                     showConnecting(false);
+                    model.setName("I HAVE A NAME");
                     // If the user is able to be connected go to the join fragment
                     // where the user can choose which room to join
                     setFragment(FragmentHandler.FragmentName.JOIN);
