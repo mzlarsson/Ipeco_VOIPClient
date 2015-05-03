@@ -29,9 +29,9 @@ import javafx.stage.Stage;
 
 import org.fxmisc.richtext.StyleClassedTextArea;
 
-import se.chalmers.fleetspeak.core.ConnectionHandler;
 import se.chalmers.fleetspeak.core.command.Commands;
 import se.chalmers.fleetspeak.core.command.impl.CommandResponse;
+import se.chalmers.fleetspeak.tcp.ConnectionHandler;
 import se.chalmers.fleetspeak.util.Log;
 
 public class ServerGUIController implements StageOwner{

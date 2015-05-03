@@ -36,11 +36,11 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
-import se.chalmers.fleetspeak.core.ConnectionHandler;
 import se.chalmers.fleetspeak.eventbus.EventBus;
 import se.chalmers.fleetspeak.eventbus.EventBusEvent;
 import se.chalmers.fleetspeak.eventbus.IEventBusSubscriber;
 import se.chalmers.fleetspeak.gui.CommandSearcher;
+import se.chalmers.fleetspeak.tcp.ConnectionHandler;
 import se.chalmers.fleetspeak.util.Command;
 import se.chalmers.fleetspeak.util.Log;
 import sun.awt.WindowClosingListener;
