@@ -22,10 +22,12 @@ public class StreamReader implements Runnable{
     private Thread myThread;
     private Messenger myMessenger;
     private Boolean reading = false;
+    private Connector.ErrorHandler myErrorHandler;
 
-    public StreamReader(InputStream stream, Messenger messenger){
+    public StreamReader(InputStream stream, Messenger messenger, Connector.ErrorHandler errorHandler){
         myStream = stream;
         myMessenger = messenger;
+        myErrorHandler = errorHandler;
         myThread = new Thread(this);
         myThread.start();
     }
@@ -51,6 +53,7 @@ public class StreamReader implements Runnable{
                 e.printStackTrace();
             } catch (IOException e) {
                 reading = false;
+                myErrorHandler.fix();
                 e.printStackTrace();
             } catch (RemoteException e) {
                 e.printStackTrace();
@@ -61,5 +64,10 @@ public class StreamReader implements Runnable{
     }
     public void stop(){
         reading = false;
+        try {
+            myObjectStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

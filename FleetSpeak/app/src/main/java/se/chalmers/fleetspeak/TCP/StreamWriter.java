@@ -18,9 +18,11 @@ public class StreamWriter implements Runnable {
     private Thread myThread;
     private Handler myHandler;
     private OutputStream myStream;
+    private Connector.ErrorHandler myErrorHandler;
 
-    public StreamWriter(OutputStream stream){
+    public StreamWriter(OutputStream stream, Connector.ErrorHandler errorHandler){
         myStream = stream;
+        myErrorHandler = errorHandler;
         myThread = new Thread(this);
         myThread.start();
     }
@@ -40,7 +42,8 @@ public class StreamWriter implements Runnable {
                         try {
                             myObjectStream.writeObject(msg.obj);
                         } catch (IOException e) {
-                            e.printStackTrace();
+
+                            myErrorHandler.fix();
                         }
                         break;
                     case 1:

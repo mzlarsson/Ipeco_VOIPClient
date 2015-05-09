@@ -17,7 +17,7 @@ import se.chalmers.fleetspeak.util.Command;
  * Created by Nieo on 07/03/15.
  * Handles data connection with the server.
  */
-public class Connector  implements IConnector{
+public class Connector implements IConnector{
 
 
 
@@ -64,8 +64,8 @@ public class Connector  implements IConnector{
             if(socket != null) {
                 mySocket =  socket;
                 try {
-                    streamReader = new StreamReader(socket.getInputStream(), responseMessenger);
-                    streamWriter = new StreamWriter(socket.getOutputStream());
+                    streamReader = new StreamReader(socket.getInputStream(), responseMessenger, connectionErrorHandler);
+                    streamWriter = new StreamWriter(socket.getOutputStream(), connectionErrorHandler);
                     synchronized (streamWriter) {
                         streamWriter.wait();
                     }
@@ -85,6 +85,7 @@ public class Connector  implements IConnector{
         }
 
     }
+
 
     /**
      * For closing the socket in a separate thread
@@ -138,4 +139,12 @@ public class Connector  implements IConnector{
             Log.d("Connector", "Failed to send message");
         }
     }
+
+    private ErrorHandler connectionErrorHandler = () -> {Log.i("Connector", "Can handle errors");};
+
+
+    public interface ErrorHandler{
+        public void fix();
+    }
+
 }

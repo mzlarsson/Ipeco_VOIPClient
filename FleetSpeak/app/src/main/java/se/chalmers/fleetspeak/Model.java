@@ -13,7 +13,6 @@ import se.chalmers.fleetspeak.Rooms.Room;
 import se.chalmers.fleetspeak.Rooms.RoomHandler;
 import se.chalmers.fleetspeak.Rooms.User;
 import se.chalmers.fleetspeak.TCP.Connector;
-import se.chalmers.fleetspeak.TCP.IConnector;
 import se.chalmers.fleetspeak.sound.SoundController;
 import se.chalmers.fleetspeak.util.Command;
 import se.chalmers.fleetspeak.util.MessageValues;
@@ -24,7 +23,7 @@ import se.chalmers.fleetspeak.util.MessageValues;
 public class Model {
     private RoomHandler roomHandler;
     private CommandHandler commandHandler;
-    private IConnector connector;
+    private Connector connector;
     private Messenger guiMessenger;
     private String remoteIP;
     private Context context;
@@ -51,7 +50,7 @@ public class Model {
         if(state == State.not_connected){
             roomHandler.clear();
             state = State.connecting;
-            connector.connect( ip, port);
+            connector.connect(ip, port);
         }else{
             Log.d("Model", "Already connected or trying to connect");
         }
