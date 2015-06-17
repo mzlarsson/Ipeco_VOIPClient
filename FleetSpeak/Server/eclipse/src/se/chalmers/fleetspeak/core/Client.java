@@ -3,11 +3,13 @@ package se.chalmers.fleetspeak.core;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.List;
+import java.util.logging.Level;
 
 import se.chalmers.fleetspeak.sound.Router;
 import se.chalmers.fleetspeak.util.Command;
 import se.chalmers.fleetspeak.util.IDFactory;
 import se.chalmers.fleetspeak.util.Log;
+import se.chalmers.fleetspeak.util.Log2;
 
 /**
  * A class that handles all connectors with the app
@@ -40,7 +42,6 @@ public class Client{
 		this.soundRouter = new Router();
 		this.tcp.sendData(new Command("useSoundPort", soundRouter.getReceivePort(), null));
 		soundRouter.start();
-		System.out.println(ip.toString());
 	}
 	
 	/**
@@ -138,7 +139,7 @@ public class Client{
 	 * Logs an error-message and terminates the client.
 	 */
 	public void connectionLost() {
-		Log.log("Client disconnected - closing streams");
+		Log2.log(Level.INFO, "Client disconnected - closing streams");
 		this.terminate();
 	}
 

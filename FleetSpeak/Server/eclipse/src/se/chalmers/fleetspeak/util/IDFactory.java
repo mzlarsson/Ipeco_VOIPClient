@@ -2,6 +2,7 @@ package se.chalmers.fleetspeak.util;
 
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.logging.Level;
 
 /**
  * A Class for creating a new unique ID.
@@ -52,7 +53,7 @@ public class IDFactory {
 		if (idsInUse.remove(id)) {
 			recycledIDs.add(id);
 		} else {
-			Log.logError("Tried to free a ID that was not in use.");
+			Log2.log(Level.FINE,"Tried to free a ID that was not in use.");
 		}
 	}
 }

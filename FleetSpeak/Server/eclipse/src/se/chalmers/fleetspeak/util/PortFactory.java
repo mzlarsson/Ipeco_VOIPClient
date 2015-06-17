@@ -2,6 +2,7 @@ package se.chalmers.fleetspeak.util;
 
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.logging.Level;
 
 /**
  * A Class for creating a new unique Ports.
@@ -57,7 +58,7 @@ public class PortFactory {
 		if (portsInUse.remove(portNbr)) {
 			recycledPorts.add(portNbr);
 		} else {
-			Log.logError("Tried to free a port that was not in use.");
+			Log2.log(Level.FINE,"Tried to free a port that was not in use.");
 		}
 	}
 }

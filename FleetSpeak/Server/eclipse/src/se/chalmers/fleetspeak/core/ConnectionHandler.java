@@ -5,11 +5,14 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.logging.Level;
 
 import se.chalmers.fleetspeak.core.command.Commands;
 import se.chalmers.fleetspeak.core.permission.PermissionLevel;
 import se.chalmers.fleetspeak.sound.Constants;
 import se.chalmers.fleetspeak.util.Log;
+import se.chalmers.fleetspeak.util.Log2;
+
 /**
  * Listen for connections form the app
  * Creates new clients and put them on the eventbus
@@ -30,7 +33,7 @@ public class ConnectionHandler{
      * @throws UnknownHostException
      */
     public ConnectionHandler(int port) throws UnknownHostException{
-    	Log.log("Starting server @LAN-IP "+InetAddress.getLocalHost().getHostAddress()+" on port "+port);
+    	Log2.log(Level.INFO,"Starting server @LAN-IP "+InetAddress.getLocalHost().getHostAddress()+" on port "+port);
     	this.running = true;
     	//TODO fix this?
     	Constants.setServerIP(InetAddress.getLocalHost().getHostAddress());
@@ -62,7 +65,7 @@ public class ConnectionHandler{
             	serverSocket.close();
             }
         }catch(IOException e){
-            Log.log("[SERVER] "+e.getMessage());
+            Log2.log(Level.SEVERE, "[SERVER] "+e.getMessage());
             terminate();
         }
     }
@@ -74,7 +77,7 @@ public class ConnectionHandler{
      */
     private void addClient(Socket clientSocket) throws IOException{
         //Print info in server console
-        Log.log("A new person joined");
+        Log2.log(Level.INFO, "A new person joined");
         
         //Create and forward client
         Client client = new Client(clientSocket);

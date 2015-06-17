@@ -7,8 +7,10 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 
 import se.chalmers.fleetspeak.util.Log;
+import se.chalmers.fleetspeak.util.Log2;
 import se.chalmers.fleetspeak.util.PortFactory;
 
 /**
@@ -33,8 +35,7 @@ public class Router extends Thread{
 			inport = new DatagramSocket(inportNbr);
 			outport = new DatagramSocket();
 		} catch (SocketException e) {
-			Log.log("Failed to create datagram sockets");
-			e.printStackTrace();
+			Log2.log(Level.WARNING, "Failed to create datagram sockets: " +e.getMessage());
 		}
 		clients = new HashMap<Integer, DatagramPacket>();
 		byte[] b = new byte[172];
@@ -50,8 +51,7 @@ public class Router extends Thread{
 			} catch(SocketException e){
 				this.terminate();
 			}catch (IOException e) {
-				Log.log("Error while reading packet");
-				e.printStackTrace();
+				Log2.log(Level.WARNING,"Error while reading packet: " +e.getMessage());
 			}
 			send(buffer.getData());
 		}
@@ -72,8 +72,7 @@ public class Router extends Thread{
 			try {
 				outport.send(p);
 			} catch (IOException e) {
-				Log.log("Failed sending packet");
-				e.printStackTrace();
+				Log2.log(Level.WARNING, "Failed sending packet: " +e.getMessage());
 			}
 		}
 	}
