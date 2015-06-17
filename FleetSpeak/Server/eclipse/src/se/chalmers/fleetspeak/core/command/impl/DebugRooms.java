@@ -3,7 +3,11 @@ package se.chalmers.fleetspeak.core.command.impl;
 import se.chalmers.fleetspeak.core.Client;
 import se.chalmers.fleetspeak.core.Room;
 import se.chalmers.fleetspeak.core.RoomHandler;
+import se.chalmers.fleetspeak.gui.Popup;
 import se.chalmers.fleetspeak.util.Log;
+import se.chalmers.fleetspeak.util.Log2;
+
+import java.util.logging.Level;
 
 public class DebugRooms extends BasicCommand{
 	
@@ -15,15 +19,15 @@ public class DebugRooms extends BasicCommand{
 	public CommandResponse execute(int requester, Object... params){
 		RoomHandler handler = RoomHandler.getInstance();
 		for(Room room : handler.getRooms()){
-			Log.log("\t"+room.getName()+" ["+room.getId()+"]");
+			Log2.log(Level.FINE, "\t" + room.getName() + " [" + room.getId() + "]");
 			boolean empty = true;
 			for(Client client : handler.getClients(room)){
-				Log.log("\t\t"+client.getName()+" ["+client.getClientID()+"]");
+				Log2.log(Level.FINE,"\t\t"+client.getName()+" ["+client.getClientID()+"]");
 				empty = false;
 			}
 			
 			if(empty){
-				Log.log("\t\t-- empty --");
+				Log2.log(Level.FINE,"\t\t-- empty --");
 			}
 		}
 		return new CommandResponse(true, "Printed the room tree");

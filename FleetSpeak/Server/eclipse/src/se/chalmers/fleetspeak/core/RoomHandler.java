@@ -4,10 +4,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
 
 import se.chalmers.fleetspeak.eventbus.EventBus;
+import se.chalmers.fleetspeak.gui.Popup;
 import se.chalmers.fleetspeak.util.Command;
 import se.chalmers.fleetspeak.util.Log;
+import se.chalmers.fleetspeak.util.Log2;
+
 /**
  * A Singleton class for handling the rooms and client on the server side.
  * Based on the RoomHandler on the client side.
@@ -27,7 +31,7 @@ public class RoomHandler {
 	 * Only used internally in getInstance() due to it being a singleton. 
 	 */
 	private RoomHandler(){
-		Log.logDebug("Creating a new RoomHandler");
+		Log2.log(Level.FINE,"Creating a new RoomHandler");
 		rooms = new HashMap<Room,ArrayList<Client>>();
 		defaultRoom = new Room("Lobby", true);
 		addRoom(defaultRoom, true);
@@ -164,7 +168,7 @@ public class RoomHandler {
 	 */
 	public boolean removeRoom(Room room){
 		if(room != null){
-			Log.logDebug("Removing room");
+			Log2.log(Level.FINE,"Removing room");
 			rooms.remove(room);
 			room.terminate();
 			EventBus.postEvent("broadcast", new Command("removedRoom", room.getId(), null), this);
@@ -281,7 +285,7 @@ public class RoomHandler {
 			}
 		}
 		
-		Log.logError("\tDid not find client with ID </error><b>"+clientID+"</b>");
+		Log2.log(Level.WARNING, "\tDid not find client with ID " + clientID );
 		return null;
 	}
 
@@ -297,7 +301,7 @@ public class RoomHandler {
 			}
 		}
 
-		Log.logError("\tDid not find room with ID </error><b>"+roomID+"</b>");
+		Log2.log(Level.WARNING, "\tDid not find room with ID " + roomID);
 		return null;
 	}
 

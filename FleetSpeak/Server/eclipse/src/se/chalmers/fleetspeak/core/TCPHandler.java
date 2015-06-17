@@ -9,6 +9,7 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 
 import se.chalmers.fleetspeak.core.command.Commands;
 import se.chalmers.fleetspeak.core.command.impl.CommandInfo;
@@ -18,6 +19,7 @@ import se.chalmers.fleetspeak.eventbus.EventBusEvent;
 import se.chalmers.fleetspeak.eventbus.IEventBusSubscriber;
 import se.chalmers.fleetspeak.util.Command;
 import se.chalmers.fleetspeak.util.Log;
+import se.chalmers.fleetspeak.util.Log2;
 
 /**
  * For handling of TCP connections with the andriod app
@@ -44,12 +46,12 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 		this.clientID = clientID;
 		this.clientSocket = clientSocket;
 		try {
-			Log.log("[TCPHandler]Trying to get streams");
+			Log2.log(Level.FINE,"[TCPHandler]Trying to get streams");
 			objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
 			objectInputStream = new ObjectInputStream(clientSocket.getInputStream());
-			Log.log("[TCPHandler]Got streams");
+			Log2.log(Level.FINE,"[TCPHandler]Got streams");
 		} catch (IOException e) {
-			Log.logException(e);
+			Log2.log(Level.WARNING,e.getMessage());
 		}
 		EventBus.getInstance().addSubscriber(this);
 		initializeAndroidCommands();
@@ -60,12 +62,12 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 	 */
 	public void syncToClient(){
 		RoomHandler handler = RoomHandler.getInstance();
-		System.out.println("SYNICING");
+
 		for(Room r : handler.getRooms()){
-			System.out.println("ROOM "+r.getName());
+
 			sendData(new Command("createdRoom", r.getId(), r.getName()));
 			for(Client c : handler.getClients(r)){
-				System.out.println("CLIENT "+c.getName());
+
 				sendData(new Command("addedUser", c.getClientID(), r.getId()));
 				sendData(new Command("changedUsername", c.getClientID(), c.getName()));
 			}
@@ -89,31 +91,31 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 		syncToClient();
 		try {
 			while (isRunning && objectInputStream != null) {
-				Log.log("[TCPHandler] trying to read");
+				Log2.log(Level.FINER,"[TCPHandler] trying to read");
 				Object o = objectInputStream.readObject();
 				
 				if (o.getClass() == Command.class) {
 					Command c = (Command) o ;//objectInputStream.readObject();					
-					Log.log("[TCPHandler]userid: "+ clientID + "s Got command " + c.getCommand() + " key "+ c.getKey());
+					Log2.log(Level.FINER,"[TCPHandler]userid: "+ clientID + "s Got command " + c.getCommand() + " key "+ c.getKey());
 					runAndroidCommand(c);
 				} else {
-					Log.logError("[TCPHandler] Found a non-Command object: " + o.getClass().toString());
+					Log2.log(Level.SEVERE, "[TCPHandler] Found a non-Command object: " + o.getClass().toString());
 				}
 			}
 		} catch(EOFException eofe){
 			doCommand(cmds.get("disconnect"), clientID, null);
 		} catch(SocketTimeoutException e){
-			Log.logError("Got Socket Timeout. Removing client");
+			Log2.log(Level.SEVERE, "Got Socket Timeout. Removing client");
 			doCommand(cmds.get("disconnect"), clientID, null);
 		} catch(SocketException e){
 			//Only log if the handler is not terminated
 			if(isRunning){
-				Log.logException(e);
+				Log2.log(Level.SEVERE, e.getMessage());
 			}
 		}catch (IOException e) {
-			Log.logException(e);
+			Log2.log(Level.SEVERE,e.getMessage());
 		} catch (ClassNotFoundException e) {
-			Log.log("[TCPHandler]" + e.getMessage());
+			Log2.log(Level.FINE,"[TCPHandler]" + e.getMessage());
 		}
 	}
 
@@ -123,15 +125,15 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 	 */
 	public void sendData(Command command){
 		try{
-			Log.log("[TCPHandler]Trying to send " + command.getCommand());
+			Log2.log(Level.FINER,"[TCPHandler]Trying to send " + command.getCommand());
 			objectOutputStream.writeObject(command);
-			Log.log("[TCPHandler] <i>Command sent: "+command.getCommand()+"</i>");
+			Log2.log(Level.FINER,"[TCPHandler] Command sent: "+command.getCommand());
 		} catch(SocketException e){
 			if(command==null || !command.getCommand().equals("userDisconnected")){
 				doCommand(cmds.get("disconnect"), clientID, null);
 			}
 		} catch(IOException e){
-			Log.logException(e);
+			Log2.log(Level.SEVERE, e.getMessage());
 		}
 	}
 	/**
@@ -150,6 +152,7 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 	 * @param c The command which to be executed.
 	 */
 	private void runAndroidCommand(Command c){
+
 		//Do translation Android --> Server according to spec
 		switch(c.getCommand().toLowerCase()){
 			case "setname":			doCommand(cmds.get("setUsername"), clientID, c.getKey());break;
@@ -177,10 +180,10 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 		if(cmd != null){
 			Commands com = Commands.getInstance();
 			CommandResponse r = com.execute(clientID, cmd, key, value);
-			Log.logDebug("Got command response: ["+(r.wasSuccessful()?"Success":"Failure")+": "+r.getMessage()+"]");
+			Log2.log(Level.FINER,"Got command response: ["+(r.wasSuccessful()?"Success":"Failure")+": "+r.getMessage()+"]");
 			return r.getData();
 		}else{
-			Log.logError("Could not find command");
+			Log2.log(Level.WARNING, "Could not find command");
 			return null;
 		}
 	}
