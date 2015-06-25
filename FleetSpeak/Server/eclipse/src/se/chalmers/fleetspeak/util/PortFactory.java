@@ -3,6 +3,7 @@ package se.chalmers.fleetspeak.util;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A Class for creating a new unique Ports.
@@ -15,7 +16,8 @@ public class PortFactory {
 	private static PortFactory instance;
 	private LinkedList<Integer> portsInUse = new LinkedList<Integer>();
 	private Queue<Integer> recycledPorts = new LinkedList<Integer>();
-	
+
+	private Logger logger = Logger.getLogger("Debug");;
 	/**
 	 * Creates a new PortFactory
 	 */
@@ -29,6 +31,7 @@ public class PortFactory {
 	public static PortFactory getInstance() {
 		if (instance == null) {
 			instance = new PortFactory();
+
 		}
 		return instance;
 	}
@@ -58,7 +61,7 @@ public class PortFactory {
 		if (portsInUse.remove(portNbr)) {
 			recycledPorts.add(portNbr);
 		} else {
-			Log2.log(Level.FINE,"Tried to free a port that was not in use.");
+			logger.log(Level.FINE,"Tried to free a port that was not in use.");
 		}
 	}
 }
