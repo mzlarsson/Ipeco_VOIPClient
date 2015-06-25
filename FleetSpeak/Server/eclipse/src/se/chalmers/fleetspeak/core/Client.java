@@ -4,12 +4,12 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import se.chalmers.fleetspeak.sound.Router;
 import se.chalmers.fleetspeak.util.Command;
 import se.chalmers.fleetspeak.util.IDFactory;
-import se.chalmers.fleetspeak.util.Log;
-import se.chalmers.fleetspeak.util.Log2;
+
 
 /**
  * A class that handles all connectors with the app
@@ -27,12 +27,15 @@ public class Client{
 	private InetAddress ip;
 	private Router soundRouter;
 
+	private Logger logger;
+
 	/**
 	 * Creates a client with the functionality for sending and receiving
 	 * commands and sound-streams.
 	 * @param socket The socket for the tcp-connection to this client.
 	 */
 	public Client(Socket socket) {
+		logger = Logger.getLogger("Debug");
 		this.clientID = IDFactory.getInstance().getID();
 		this.name = "UnknownUser";
 		this.tcp = new TCPHandler(socket, clientID);
@@ -139,7 +142,7 @@ public class Client{
 	 * Logs an error-message and terminates the client.
 	 */
 	public void connectionLost() {
-		Log2.log(Level.INFO, "Client disconnected - closing streams");
+		logger.log(Level.INFO, "Client disconnected - closing streams");
 		this.terminate();
 	}
 

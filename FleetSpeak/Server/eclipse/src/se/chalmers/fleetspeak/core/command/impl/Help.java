@@ -1,13 +1,14 @@
 package se.chalmers.fleetspeak.core.command.impl;
 
 import se.chalmers.fleetspeak.core.command.Commands;
-import se.chalmers.fleetspeak.util.Log;
-import se.chalmers.fleetspeak.util.Log2;
 
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Help extends BasicCommand{
-	
+
+	Logger logger = Logger.getLogger("Debug");
+
 	public Help(int execCode){
 		super(new CommandInfo("Help", "Help | Help [name]", "Shows help about all/a certain command", execCode));
 	}
@@ -18,7 +19,7 @@ public class Help extends BasicCommand{
 			String cmd = (String)params[0];
 			CommandInfo info = Commands.getInstance().findCommand(cmd);
 			if(info != null){
-				Log2.log(Level.FINE, "\t" + info.getFormat() + "\n\t\t" + info.getDescription());
+				logger.log(Level.FINE, "\t" + info.getFormat() + "\n\t\t" + info.getDescription());
 				return new CommandResponse(true, "The help information has been printed");
 			}else{
 				if(cmd.equalsIgnoreCase("Volt")){
@@ -30,7 +31,7 @@ public class Help extends BasicCommand{
 		}else{
 			CommandInfo[] cmds = Commands.getInstance().getCommands();
 			for(CommandInfo info : cmds){
-				Log2.log(Level.FINE,"\t"+info.getFormat()+"\n\t\t"+info.getDescription());
+				logger.log(Level.FINE,"\t"+info.getFormat()+"\n\t\t"+info.getDescription());
 			}
 			return new CommandResponse(true, "The help information has been printed");
 		}
