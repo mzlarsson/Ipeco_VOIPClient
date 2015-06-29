@@ -1,11 +1,10 @@
 package se.chalmers.fleetspeak.sound;
 
-import android.media.AudioFormat;
-import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.os.Process;
-
 import java.nio.ByteBuffer;
+
+import static se.chalmers.fleetspeak.sound.SoundConstants.*;
 
 /**
  * A class for playing PCMU sound from a buffer
@@ -23,14 +22,14 @@ public class SoundOutputController implements Runnable {
 
     public SoundOutputController(){
 
-        audioPlayBuffer = ByteBuffer.allocateDirect(AudioTrack.getMinBufferSize(44100, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT));
+        audioPlayBuffer = ByteBuffer.allocateDirect(BYTEBUFFER_SIZE.value());
         audioTrack = new AudioTrack(
-                AudioManager.STREAM_VOICE_CALL,
-                44100,
-                AudioFormat.CHANNEL_OUT_MONO,
-                AudioFormat.ENCODING_PCM_16BIT,
-                AudioTrack.getMinBufferSize(44100, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT),
-                AudioTrack.MODE_STREAM
+                STREAM_TYPE.value(),
+                SAMPLING_RATE.value(),
+                OUTPUT_CHANNEL_CONFIG.value(),
+                AUDIO_ENCODING.value(),
+                AUDIO_BUFFER_SIZE.value(),
+                SESSION_ID.value()
         );
 
         if( audioTrack.getState() == AudioTrack.STATE_UNINITIALIZED) {

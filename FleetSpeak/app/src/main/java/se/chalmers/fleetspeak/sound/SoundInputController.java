@@ -1,12 +1,11 @@
 package se.chalmers.fleetspeak.sound;
 
-import android.media.AudioFormat;
 import android.media.AudioRecord;
-import android.media.MediaRecorder;
 import android.util.Log;
 
-import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
+
+import static se.chalmers.fleetspeak.sound.SoundConstants.*;
 
 /**
  * A class for recording audio from the microphone to a bytebuffer.
@@ -25,14 +24,14 @@ public class SoundInputController implements Runnable {
 
     public SoundInputController(){
 
-        audioRecBuffer = ByteBuffer.allocateDirect(AudioRecord.getMinBufferSize(44100,AudioFormat.CHANNEL_IN_MONO,AudioFormat.ENCODING_PCM_16BIT)*4);
+        audioRecBuffer = ByteBuffer.allocateDirect(BYTEBUFFER_SIZE.value());
         try {
             audioRecord = new AudioRecord(
-                    MediaRecorder.AudioSource.MIC,
-                    44100,
-                    AudioFormat.CHANNEL_IN_MONO,
-                    AudioFormat.ENCODING_PCM_16BIT,
-                    AudioRecord.getMinBufferSize(44100,AudioFormat.CHANNEL_IN_MONO,AudioFormat.ENCODING_PCM_16BIT)    //TODO Unsure if this is a correct buffer size //FIXME Export to some constants class
+                    INPUT_SOURCE.value(),
+                    SAMPLING_RATE.value(),
+                    INPUT_CHANNEL_CONFIG.value(),
+                    AUDIO_ENCODING.value(),
+                    AUDIO_BUFFER_SIZE.value()
             );
         }catch (IllegalArgumentException e) {
             Log.e("SoundRecord", e.getMessage());//TODO Remove or replace this snippet
@@ -46,8 +45,8 @@ public class SoundInputController implements Runnable {
 
     //Write
     public synchronized void fillAudioBuffer(){
-        if(audioRecBuffer.remaining()>= 2000) {// TODO Find a good Array-size when grabbing sound data
-            bytesRead = audioRecord.read(audioRecBuffer, 2000);
+        if(audioRecBuffer.remaining()>= INPUT_ARRAY_SIZE.value()) {
+            bytesRead = audioRecord.read(audioRecBuffer, INPUT_ARRAY_SIZE.value());
             audioRecBuffer.limit(bytesRead);
             audioRecBuffer.position(bytesRead);
         }
@@ -57,11 +56,8 @@ public class SoundInputController implements Runnable {
     public synchronized byte[] readBuffer(){
         audioRecBuffer.flip();
         audioArray = new byte[audioRecBuffer.remaining()];
-        try {//FIXME Remove try/catch
             audioRecBuffer.get(audioArray);
-        }catch(BufferUnderflowException e){
-                e.printStackTrace();
-            }
+
         audioRecBuffer.compact();
         return audioArray;
     }
