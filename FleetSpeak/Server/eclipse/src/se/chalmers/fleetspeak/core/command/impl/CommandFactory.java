@@ -76,7 +76,7 @@ public class CommandFactory {
 							Class<?> searchClass = cls;
 							while(searchClass != null){
 								for(Type type : searchClass.getGenericInterfaces()){
-									if(((Class<?>)type).getCanonicalName().equals(packageName+".ICommand")){		//FIXME use type.getTypeName() on Java 8
+									if(type instanceof Class<?> && ((Class<?>)type).getCanonicalName().equals(packageName+".ICommand")){		//FIXME use type.getTypeName() on Java 8
 										classes.add(cls);
 										break;
 									}
