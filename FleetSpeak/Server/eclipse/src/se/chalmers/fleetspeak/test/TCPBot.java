@@ -3,6 +3,7 @@ package se.chalmers.fleetspeak.test;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.HashMap;
@@ -19,21 +20,24 @@ class TCPBot extends Thread{
 	private Socket socket;
 	private boolean isRunning;
 	
+	private Map<String, Integer> rooms;
 	private Map<Integer, Integer> inPorts;
 	private int soundPort;
 	
-	public TCPBot(String name, String ip, int port){
+	public TCPBot(String name, String serverIP, int serverPort){
 		this.name = name;
+		this.rooms = new HashMap<String, Integer>();
 		this.inPorts = new HashMap<Integer, Integer>();
 		this.soundPort = -1;
 		try {
-			socket = new Socket(ip, port);
+			socket = new Socket(serverIP, serverPort);
 			in = new ObjectInputStream(socket.getInputStream());
 			out = new ObjectOutputStream(socket.getOutputStream());
 		} catch (UnknownHostException e) {
-			System.out.println("Invalid IP: "+ip);
+			System.out.println("Invalid IP: "+serverIP);
 		} catch (IOException e) {
 			System.out.println("Unknown IO Error: "+e.getMessage());
+			e.printStackTrace();
 		}
 	}
 	
@@ -63,9 +67,18 @@ class TCPBot extends Thread{
 			case "changedusername":	System.out.println(name+":\n\tUPDATE: Changed username");break;
 			case "changedroomname":	System.out.println(name+":\n\tUPDATE: Changed room name");break;
 			case "moveduser":		System.out.println(name+":\n\tUPDATE: Moved user");break;
-			case "createdroom":		System.out.println(name+":\n\tUPDATE: Created room");break;
+			case "createdroom":		rooms.put((String)c.getValue(), (Integer)c.getKey());
+									System.out.println(name+":\n\tUPDATE: Created room");break;
 			case "removeduser":		System.out.println(name+":\n\tUPDATE: Removed user");break;
-			case "removedroom":		System.out.println(name+":\n\tUPDATE: Removed room");break;
+			case "removedroom":		String roomName = null;
+									int id = (Integer)c.getKey();
+									for(String key : rooms.keySet()){
+										if(rooms.get(key) == id){
+											roomName = key;break;
+										}
+									}
+									rooms.remove(roomName);
+									System.out.println(name+":\n\tUPDATE: Removed room");break;
 			case "requestsoundport":int port = ((int)(Math.random()*5000))+1024;
 									inPorts.put((Integer)c.getKey(), port);
 									System.out.println(name+":\n\tOpening port "+port);
@@ -82,8 +95,16 @@ class TCPBot extends Thread{
 		return inPorts;
 	}
 	
+	protected InetAddress getServerIP(){
+		return socket.getInetAddress();
+	}
+	
 	protected int getSoundPort(){
 		return soundPort;
+	}
+	
+	protected Integer getRoomID(String name){
+		return rooms.get(name);
 	}
 	
 	protected void send(Command com){
