@@ -38,7 +38,7 @@ public class ServerGUI extends Application implements StageOwner{
 				if(controller != null && controller.hasRunningServer()){
 					event.consume();
 					Popup.showPopup(gui, Popup.Type.YES_NO, Popup.Level.QUESTION,
-							"The server is running. Close anyway?",
+							"Do you really want to close?", "The server is running. Close anyway?",
 							new Function<StageOwner>(){
 								@Override
 								public void perform(StageOwner gui) {
