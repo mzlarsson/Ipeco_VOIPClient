@@ -17,13 +17,15 @@ public class SoundOutputController implements Runnable {
     private ByteBuffer audioPlayBuffer;
     private volatile boolean soundIsPlaying;
 
+    //Local variable export
+    private byte[] audioArray;
 
 
     public SoundOutputController(){
 
         audioPlayBuffer = ByteBuffer.allocateDirect(AudioTrack.getMinBufferSize(44100, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT));
         audioTrack = new AudioTrack(
-                AudioManager.STREAM_MUSIC,
+                AudioManager.STREAM_VOICE_CALL,
                 44100,
                 AudioFormat.CHANNEL_OUT_MONO,
                 AudioFormat.ENCODING_PCM_16BIT,
@@ -41,7 +43,7 @@ public class SoundOutputController implements Runnable {
     public synchronized void playFromBuffer(){
         if(audioPlayBuffer.hasRemaining()) {
             audioPlayBuffer.flip();
-            byte[] audioArray = new byte[audioPlayBuffer.remaining()];
+            audioArray = new byte[audioPlayBuffer.remaining()];
             audioPlayBuffer.get(audioArray);
             audioPlayBuffer.compact();
             audioTrack.write(audioArray, 0, audioArray.length);
