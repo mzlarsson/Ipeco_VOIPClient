@@ -18,14 +18,22 @@ import javafx.stage.WindowEvent;
 public class Popup {
 	
 	public static void alert(StageOwner gui, Level level, String msg){
-		showPopup(gui, Type.OK, level, msg, null, null);
+		showPopup(gui, Type.OK, level, msg, null);
 	}
 
 	public static void showPopup(StageOwner gui, Type type, Level level, String msg, Function<StageOwner> onAccept){
 		showPopup(gui, type, level, msg, onAccept, null);
 	}
 	
+	public static void showPopup(StageOwner gui, Type type, Level level, String header, String msg, Function<StageOwner> onAccept){
+		showPopup(gui, type, level, header, msg, onAccept, null);
+	}
+	
 	public static void showPopup(final StageOwner gui, Type type, Level level, String msg, final Function<StageOwner> onAccept, final Function<StageOwner> onDecline){
+		showPopup(gui, type, level, level.getTextualRepresentation(), onAccept, onDecline);
+	}
+	
+	public static void showPopup(final StageOwner gui, Type type, Level level, String header, String msg, final Function<StageOwner> onAccept, final Function<StageOwner> onDecline){
         try {
         	final Stage dialog = new Stage();
         	dialog.setTitle(level.name());
@@ -48,9 +56,9 @@ public class Popup {
             if(levelLabelIcon != null){
             	levelLabelIcon.setImage(new Image(gui.getClass().getClassLoader().getResourceAsStream("popup_"+level.name()+".png")));
             }
-            Label levelLabel = (Label)popup.lookup("#levelLabel");
-            if(levelLabel != null){
-            	levelLabel.setText(level.getTextualRepresentation());
+            Label headerLabel = (Label)popup.lookup("#headerLabel");
+            if(headerLabel != null){
+            	headerLabel.setText(header);
             }
             Label msgLabel = (Label)popup.lookup("#messageLabel");
             if(msgLabel != null){

@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.logging.Handler;
@@ -20,6 +21,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -32,7 +34,6 @@ import org.fxmisc.richtext.StyleClassedTextArea;
 import se.chalmers.fleetspeak.core.ConnectionHandler;
 import se.chalmers.fleetspeak.core.command.Commands;
 import se.chalmers.fleetspeak.core.command.impl.CommandResponse;
-import se.chalmers.fleetspeak.util.Log;
 
 public class ServerGUIController implements StageOwner{
 
@@ -42,6 +43,8 @@ public class ServerGUIController implements StageOwner{
 	private Button startButton;
 	@FXML
 	private TextField commandInput;
+	@FXML
+	private ComboBox<String> logLevelChooser;
 	
 	private StyleClassedTextArea terminal;
 	
@@ -50,10 +53,20 @@ public class ServerGUIController implements StageOwner{
 	private Stage stage;
 	
 	private CommandLog commandLog;
+	private Logger logger = Logger.getLogger("Debug");
+	private Handler logHandler;
+	private List<LogRecord> logRecords;
+	private int nbrOfCharsInTerminal = 0;
 	
 	public ServerGUIController(){
 		setupLogger();
 		commandLog = new CommandLog();
+		logRecords = new LinkedList<LogRecord>();
+	}
+	
+	public void initialize(){
+		logLevelChooser.getItems().addAll("ALL", "FINE", "INFO", "SEVERE", "WARNING");
+		logLevelChooser.getSelectionModel().select(0);
 	}
 	
 	public void setTerminal(StyleClassedTextArea terminal){
@@ -132,9 +145,20 @@ public class ServerGUIController implements StageOwner{
 		startButton.setDisable(false);
 	}
 	
+	public void changeLogLevel(){
+		logger.setLevel(Level.parse(logLevelChooser.getValue()));
+		clearConsole();
+		int loggerLevelValue = logger.getLevel().intValue();
+		for(LogRecord record : logRecords){
+			if(record.getLevel().intValue() >= loggerLevelValue){
+				displayLog(record);
+			}
+		}
+	}
+	
 	public void closeServer(){
 		//Notify
-		Log.logInfo("Shutting down server...");
+		logger.info("Shutting down server...");
 		
 		//Fix UI components
 		startButton.setText("Start");
@@ -155,57 +179,19 @@ public class ServerGUIController implements StageOwner{
 			serverThread.interrupt();
 		}
 		
-		Log.logInfo("Server closed");
+		logger.info("Server closed");
 	}
 
 	private void setupLogger() {
-		Logger log = Logger.getGlobal();
-		log.setLevel(Level.ALL);
-		Handler logHandler = new Handler() {
-			//Terminal char size
-			private int size = 0;
-			
+		logHandler = new Handler() {			
 			@Override
 			public synchronized void publish(LogRecord record) {
-				String msg = record.getMessage();
-				int start = 0, end = 0;
-				String tmp = "";
-				final List<Tag> tags = new ArrayList<Tag>();
-				while((start = msg.indexOf("<"))>=0){
-					end = msg.indexOf(">", start);
-					tmp = msg.substring(start+1, end);
-					tags.add(new Tag(size+start, tmp));
-					msg = msg.substring(0, start)+msg.substring(end+1, msg.length());
-				}
-
-				final String message = msg;
-				size += message.length()+1;
-				
-				Platform.runLater(new Runnable(){
-					@Override
-					public void run() {
-						terminal.appendText(message+"\n");
-						
-						Tag tmpTag = null;
-						while(!tags.isEmpty()){
-							tmpTag = tags.remove(0);
-							if(tmpTag.isStart()){
-								for(int i = 0; i<tags.size(); i++){
-									if(tmpTag.getName().equals(tags.get(i).getName()) && !tags.get(i).isStart()){
-										terminal.setStyleClass(tmpTag.getIndex(), tags.get(i).getIndex(), "tag_"+tmpTag.getName());
-										tags.remove(i);
-										break;
-									}
-								}
-							}
-						}
-					}
-				});
+				logRecords.add(record);
+				displayLog(record);
 			}
 			
 			@Override
 			public void flush() {
-				size = 0;
 				Platform.runLater(new Runnable(){
 					@Override
 					public void run() {
@@ -217,8 +203,45 @@ public class ServerGUIController implements StageOwner{
 			@Override
 			public void close() throws SecurityException {}
 		};
-		log.addHandler(logHandler);
-		Log.setupLogger(log);
+
+		Logger.getLogger("Debug").addHandler(logHandler);
+	}
+	
+	private void displayLog(LogRecord record){
+		String msg = record.getMessage();
+		int start = 0, end = 0;
+		String tmp = "";
+		final List<Tag> tags = new ArrayList<Tag>();
+		while((start = msg.indexOf("<"))>=0){
+			end = msg.indexOf(">", start);
+			tmp = msg.substring(start+1, end);
+			tags.add(new Tag(nbrOfCharsInTerminal+start, tmp));
+			msg = msg.substring(0, start)+msg.substring(end+1, msg.length());
+		}
+
+		final String message = msg;
+		nbrOfCharsInTerminal += message.length()+1;
+		
+		Platform.runLater(new Runnable(){
+			@Override
+			public void run() {
+				terminal.appendText(message+"\n");
+				
+				Tag tmpTag = null;
+				while(!tags.isEmpty()){
+					tmpTag = tags.remove(0);
+					if(tmpTag.isStart()){
+						for(int i = 0; i<tags.size(); i++){
+							if(tmpTag.getName().equals(tags.get(i).getName()) && !tags.get(i).isStart()){
+								terminal.setStyleClass(tmpTag.getIndex(), tags.get(i).getIndex(), "tag_"+tmpTag.getName());
+								tags.remove(i);
+								break;
+							}
+						}
+					}
+				}
+			}
+		});
 	}
 	
 	public void commandEntered(){
@@ -260,7 +283,7 @@ public class ServerGUIController implements StageOwner{
 	}
 	
 	private void runCommand(String cmd){
-		Log.log("<b> > "+cmd+"</b>");
+		logger.info("<b> > "+cmd+"</b>");
 		if (cmd.equals("party")) {
 			startTheParty();
 		} else {
@@ -275,12 +298,16 @@ public class ServerGUIController implements StageOwner{
 				}
 	
 				if(response != null){
-					Log.logDebug("\t"+(response.wasSuccessful()?"[Success]":"[Failure]")+" "+response.getMessage());
+					if(response.wasSuccessful()){
+						logger.info("[Success] "+response.getMessage());
+					}else{
+						logger.warning("[Failure] "+response.getMessage());
+					}
 				}else{
-					Log.logDebug("Command not found. Please try again.");
+					logger.warning("Command not found. Please try again.");
 				}
 			}else{
-				Log.logError("Commands disabled when server is not running");
+				logger.warning("Commands are disabled when server is not running");
 			}
 		}
 	}
@@ -346,7 +373,7 @@ public class ServerGUIController implements StageOwner{
 				clearConsole();
 				Scanner sc = new Scanner(file);
 				while(sc.hasNextLine()){
-					Log.log(sc.nextLine());
+					logger.info(sc.nextLine());
 				}
 				sc.close();
 			} catch (FileNotFoundException e) {
@@ -376,7 +403,8 @@ public class ServerGUIController implements StageOwner{
 	}
 	
 	public void clearConsole(){
-		Log.flushLog();
+		terminal.clear();
+		nbrOfCharsInTerminal = 0;
 	}
 	
 	public void sendErrorMessage(String msg){
