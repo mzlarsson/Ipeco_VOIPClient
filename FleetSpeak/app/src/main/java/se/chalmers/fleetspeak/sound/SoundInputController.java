@@ -18,6 +18,11 @@ public class SoundInputController implements Runnable {
     private ByteBuffer audioRecBuffer;
     private volatile boolean isRecording;
 
+    //Local variable export
+    private byte[] audioArray;
+    private int bytesRead;
+
+
     public SoundInputController(){
 
         audioRecBuffer = ByteBuffer.allocateDirect(AudioRecord.getMinBufferSize(44100,AudioFormat.CHANNEL_IN_MONO,AudioFormat.ENCODING_PCM_16BIT)*4);
@@ -41,17 +46,17 @@ public class SoundInputController implements Runnable {
 
     //Write
     public synchronized void fillAudioBuffer(){
-        if(audioRecBuffer.remaining()>= 512) {
-            int read = audioRecord.read(audioRecBuffer, 512);
-            audioRecBuffer.limit(read);
-            audioRecBuffer.position(read);
+        if(audioRecBuffer.remaining()>= 2000) {// TODO Find a good Array-size when grabbing sound data
+            bytesRead = audioRecord.read(audioRecBuffer, 2000);
+            audioRecBuffer.limit(bytesRead);
+            audioRecBuffer.position(bytesRead);
         }
     }
 
     //Read
     public synchronized byte[] readBuffer(){
         audioRecBuffer.flip();
-        byte[] audioArray = new byte[audioRecBuffer.remaining()];
+        audioArray = new byte[audioRecBuffer.remaining()];
         try {//FIXME Remove try/catch
             audioRecBuffer.get(audioArray);
         }catch(BufferUnderflowException e){
