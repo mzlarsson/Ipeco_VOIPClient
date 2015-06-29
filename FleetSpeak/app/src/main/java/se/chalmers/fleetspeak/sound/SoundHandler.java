@@ -6,17 +6,17 @@ package se.chalmers.fleetspeak.sound;
  */
 public class SoundHandler implements Runnable {
 
-    private SoundPlaybackController soundPlaybackController;
-    private SoundRecordController soundRecordController;
+    private SoundOutputController soundOutputController;
+    private SoundInputController soundInputController;
     Thread playThread, recThread;
 
     private boolean soundIsRunning;
 
     public SoundHandler(){
-        soundPlaybackController = new SoundPlaybackController();
-        soundRecordController = new SoundRecordController();
-        recThread = new Thread(soundRecordController);
-        playThread = new Thread(soundPlaybackController);
+        soundOutputController = new SoundOutputController();
+        soundInputController = new SoundInputController();
+        recThread = new Thread(soundInputController,"SoundInputController");
+        playThread = new Thread(soundOutputController,"SoundRecordController");
         startControllers();
         soundIsRunning = true;
     }
@@ -29,12 +29,12 @@ public class SoundHandler implements Runnable {
     }
 
     public synchronized void transferAudio(){
-        soundPlaybackController.fillAudioBuffer(soundRecordController.getByteBuffer());
+        soundOutputController.fillAudioBuffer(soundInputController.readBuffer());
     }
 
     public void killControllers(){
-        soundPlaybackController.kill();
-        soundRecordController.kill();
+        soundOutputController.kill();
+        soundInputController.kill();
     }
 
     public void kill(){
@@ -44,8 +44,8 @@ public class SoundHandler implements Runnable {
 
     @Override
     public void run() {
-        while(!soundIsRunning) {
-            //transferAudio();
+        while(soundIsRunning) {
+            transferAudio();
         }
         }
 }
