@@ -11,19 +11,19 @@ import java.nio.ByteBuffer;
  * A class for playing PCMU sound from a buffer
  * Created by Fridgeridge on 2015-06-20.
  */
-public class SoundPlaybackController implements Runnable {
+public class SoundOutputController implements Runnable {
 
     private AudioTrack audioTrack;
     private ByteBuffer audioPlayBuffer;
-    private boolean soundIsPlaying;
+    private volatile boolean soundIsPlaying;
 
 
 
-    public SoundPlaybackController(){
+    public SoundOutputController(){
 
-        audioPlayBuffer = ByteBuffer.allocateDirect(512*4);
+        audioPlayBuffer = ByteBuffer.allocateDirect(AudioTrack.getMinBufferSize(44100, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT));
         audioTrack = new AudioTrack(
-                AudioManager.STREAM_VOICE_CALL,
+                AudioManager.STREAM_MUSIC,
                 44100,
                 AudioFormat.CHANNEL_OUT_MONO,
                 AudioFormat.ENCODING_PCM_16BIT,
@@ -37,19 +37,23 @@ public class SoundPlaybackController implements Runnable {
         init();
     }
 
-    public void playAudio(byte[] b){
-        audioTrack.write(b,0,b.length);
-    }
-
-    public void playFromBuffer(){
-        if(audioPlayBuffer.hasArray()){
-            playAudio(audioPlayBuffer.array());//TODO Really ugly way of handling this
-            audioPlayBuffer.reset();
+    //Read
+    public synchronized void playFromBuffer(){
+        if(audioPlayBuffer.hasRemaining()) {
+            audioPlayBuffer.flip();
+            byte[] audioArray = new byte[audioPlayBuffer.remaining()];
+            audioPlayBuffer.get(audioArray);
+            audioPlayBuffer.compact();
+            audioTrack.write(audioArray, 0, audioArray.length);
         }
     }
 
-    public synchronized void fillAudioBuffer(ByteBuffer b){
-        audioPlayBuffer.put(b);
+
+    //Write
+    public synchronized void fillAudioBuffer(byte[] b){
+        if(audioPlayBuffer.remaining() > b.length) {
+            audioPlayBuffer.put(b);
+        }
     }
 
     public synchronized void kill(){
@@ -68,8 +72,7 @@ public class SoundPlaybackController implements Runnable {
     @Override
     public void run() {
         android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_AUDIO);
-
-        while(!soundIsPlaying){
+        while(soundIsPlaying){
             playFromBuffer();
         }
     }

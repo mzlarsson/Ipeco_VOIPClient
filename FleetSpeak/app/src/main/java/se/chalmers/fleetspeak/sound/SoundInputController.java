@@ -5,28 +5,29 @@ import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.util.Log;
 
+import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 
 /**
  * A class for recording audio from the microphone to a bytebuffer.
  * Created by Fridgeridge on 2015-06-18.
  */
-public class SoundRecordController implements Runnable {
+public class SoundInputController implements Runnable {
 
     private AudioRecord audioRecord;
     private ByteBuffer audioRecBuffer;
     private volatile boolean isRecording;
 
-    public SoundRecordController(){
+    public SoundInputController(){
 
-        audioRecBuffer = ByteBuffer.allocateDirect(512 * 4);
+        audioRecBuffer = ByteBuffer.allocateDirect(AudioRecord.getMinBufferSize(44100,AudioFormat.CHANNEL_IN_MONO,AudioFormat.ENCODING_PCM_16BIT)*4);
         try {
             audioRecord = new AudioRecord(
                     MediaRecorder.AudioSource.MIC,
                     44100,
                     AudioFormat.CHANNEL_IN_MONO,
                     AudioFormat.ENCODING_PCM_16BIT,
-                    AudioRecord.getMinBufferSize(44100,AudioFormat.CHANNEL_IN_MONO,AudioFormat.ENCODING_PCM_16BIT)*4    //TODO Unsure if this is a correct buffer size //FIXME Export to some constants class
+                    AudioRecord.getMinBufferSize(44100,AudioFormat.CHANNEL_IN_MONO,AudioFormat.ENCODING_PCM_16BIT)    //TODO Unsure if this is a correct buffer size //FIXME Export to some constants class
             );
         }catch (IllegalArgumentException e) {
             Log.e("SoundRecord", e.getMessage());//TODO Remove or replace this snippet
@@ -38,23 +39,26 @@ public class SoundRecordController implements Runnable {
     }
 
 
-
-    public void fillAudioBuffer(){
-        if(audioRecBuffer.hasRemaining())
-            audioRecord.read(audioRecBuffer,512);
-        else{
-            audioRecBuffer.flip();
+    //Write
+    public synchronized void fillAudioBuffer(){
+        if(audioRecBuffer.remaining()>= 512) {
+            int read = audioRecord.read(audioRecBuffer, 512);
+            audioRecBuffer.limit(read);
+            audioRecBuffer.position(read);
         }
     }
 
+    //Read
     public synchronized byte[] readBuffer(){
-        byte[] audioField = new byte[120];
-        audioRecBuffer.get(audioField);
-        return audioField;
-    }
-
-    public synchronized ByteBuffer getByteBuffer(){
-        return audioRecBuffer.slice();
+        audioRecBuffer.flip();
+        byte[] audioArray = new byte[audioRecBuffer.remaining()];
+        try {//FIXME Remove try/catch
+            audioRecBuffer.get(audioArray);
+        }catch(BufferUnderflowException e){
+                e.printStackTrace();
+            }
+        audioRecBuffer.compact();
+        return audioArray;
     }
 
     public void init(){
