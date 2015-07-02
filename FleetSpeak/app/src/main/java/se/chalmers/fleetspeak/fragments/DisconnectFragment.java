@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import se.chalmers.fleetspeak.R;
-import se.chalmers.fleetspeak.util.Utils;
 
 /**
  * A fragments that models the interaction for the user when user tries to disconnect from the
@@ -26,11 +25,7 @@ public class DisconnectFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Set up the theme for the fragment with the contextThemeWrapper
-        Context contextThemeWrapper = new ContextThemeWrapper(getActivity(), Utils.getThemeID());
-        LayoutInflater localInflater = inflater.cloneInContext(contextThemeWrapper);
-        View view = localInflater.inflate(R.layout.disconnect_confirm_fragment, container, false);
-        getActivity().getWindow().setBackgroundDrawable(new ColorDrawable(Utils.getThemeID() ==
-                R.style.Theme_Fleetspeak_light ? Color.WHITE : Color.BLACK));
+        View view = inflater.inflate(R.layout.disconnect_confirm_fragment, container, false);
 
 
         Button proceed = (Button) view.findViewById(R.id.proceed);
@@ -59,9 +54,6 @@ public class DisconnectFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()){
-            case  R.id.day_night_toggle:
-                Utils.changeTheme((MainActivity) this.getActivity());
-                return true;
             case android.R.id.home:
                 this.getActivity().onBackPressed();
                 return true;

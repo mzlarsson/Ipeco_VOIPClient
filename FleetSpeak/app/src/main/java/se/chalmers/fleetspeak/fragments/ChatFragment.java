@@ -2,17 +2,12 @@ package se.chalmers.fleetspeak.fragments;
 
 import android.app.Fragment;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Rect;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.media.Image;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,7 +19,6 @@ import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -33,7 +27,6 @@ import java.util.ArrayList;
 
 import se.chalmers.fleetspeak.R;
 import se.chalmers.fleetspeak.User;
-import se.chalmers.fleetspeak.util.Utils;
 
 /**
  * A fragment
@@ -48,10 +41,7 @@ public class ChatFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d("FragHandler", "Creating new view");
-        final Context contextThemeWrapper = new ContextThemeWrapper(getActivity(), Utils.getThemeID());
-        LayoutInflater localInflater = inflater.cloneInContext(contextThemeWrapper);
-        View view = localInflater.inflate(R.layout.chat_fragment, container, false);
-        getActivity().getWindow().setBackgroundDrawable(new ColorDrawable(Utils.getThemeID() == R.style.Theme_Fleetspeak_light ? Color.WHITE : Color.BLACK));
+        View view = inflater.inflate(R.layout.chat_fragment, container, false);
 
 
         GridView userListView = (GridView) view.findViewById(R.id.userList);
@@ -89,7 +79,7 @@ public class ChatFragment extends Fragment {
 
         ImageButton locButton = (ImageButton) menu.findItem(R.id.volume_mic_control).getActionView();
         setUpVolumeAndMicControl(getMain(), locButton);
-        locButton.setVisibility(Utils.getCarMode() ? View.INVISIBLE: View.VISIBLE);
+        locButton.setVisibility(getMain().getCarMode() ? View.INVISIBLE: View.VISIBLE);
 
         ImageButton button = (ImageButton) this.getView().findViewById(R.id.pushToTalkButton);
         button.setOnClickListener(new View.OnClickListener() {
@@ -132,14 +122,13 @@ public class ChatRoomListAdapter extends ArrayAdapter<User> {
         public View getView(int position, View convertView, ViewGroup parent) {
             LayoutInflater inflater = LayoutInflater.from(getContext());
 
-            View view = inflater.inflate(Utils.getCarMode()?R.layout.list_item_users_while_driving:
+            View view = inflater.inflate(getMain().getCarMode()?R.layout.list_item_users_while_driving:
                     R.layout.list_item_users, parent, false);
 
             User user = getItem(position);
             String userName = user.getName();
 
             TextView textView = (TextView) view.findViewById(R.id.userName);
-            textView.setTextColor(Utils.getThemeID() == R.style.Theme_Fleetspeak_light? Color.BLACK: Color.WHITE);
             ImageView imageView = (ImageView) view.findViewById(R.id.userTalkImage);
 
             textView.setText(userName); //Sets the names in the list

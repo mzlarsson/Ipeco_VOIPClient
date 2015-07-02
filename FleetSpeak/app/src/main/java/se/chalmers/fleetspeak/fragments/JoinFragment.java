@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import se.chalmers.fleetspeak.R;
 import se.chalmers.fleetspeak.Room;
 import se.chalmers.fleetspeak.User;
-import se.chalmers.fleetspeak.util.Utils;
 
 /**
  * A fragment that shows the information and options available to the user when the
@@ -47,11 +46,8 @@ public class JoinFragment extends Fragment{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.i("Joinfragment:","view created");
-        Context contextThemeWrapper = new ContextThemeWrapper(getActivity(), Utils.getThemeID());
 
-        LayoutInflater localInflater = inflater.cloneInContext(contextThemeWrapper);
-        View view = localInflater.inflate(R.layout.join_fragment, container, false);
-        getActivity().getWindow().setBackgroundDrawable(new ColorDrawable(Utils.getThemeID() == R.style.Theme_Fleetspeak_light ? Color.WHITE : Color.BLACK));
+        View view = inflater.inflate(R.layout.join_fragment, container, false);
 
         ListView roomView = ((ListView)view.findViewById(R.id.roomView));
 
@@ -68,7 +64,7 @@ public class JoinFragment extends Fragment{
         });
         Button createRoom = (Button) view.findViewById(R.id.buttonCreateRoom);
 
-        if(Utils.getCarMode()) {
+        if(getMain().getCarMode()) {
             createRoom.setText("+");
         }
         createRoom.setOnClickListener(new View.OnClickListener() {
@@ -95,9 +91,6 @@ public class JoinFragment extends Fragment{
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch(item.getItemId()){
-            case  R.id.day_night_toggle:
-                Utils.changeTheme(getMain());
-                return true;
             case android.R.id.home:
                 getMain().onBackPressed();
                return true;
@@ -116,11 +109,11 @@ public class JoinFragment extends Fragment{
     private void createNewRoomOnClick() {
         // If the user is not driving create a dialog that promts the user to select a room name and
         // create a room with that name if the user don't put in a room name default to the users name + "'s room"
-        if(!Utils.getCarMode()){
+        if(!getMain().getCarMode()){
             AlertDialog.Builder alertDialog = new AlertDialog.Builder(getMain());
             alertDialog.setTitle("Choose a name for your room");
             final EditText input = new EditText(getMain());
-            input.setHint(Utils.getUsername() + "'s room");
+            input.setHint(getMain().getUsername() + "'s room");
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.MATCH_PARENT);
@@ -149,7 +142,7 @@ public class JoinFragment extends Fragment{
 
         } else{ //When the car is driving and the user have selected "Create room" the user won't be
             //allowed to pick a name since it will take to much time.
-            String newRoomName = (Utils.getUsername() + "'s room");
+            String newRoomName = (getMain().getUsername() + "'s room");
             createAndMoveRoom(newRoomName);
         }
     }
@@ -172,13 +165,11 @@ public class JoinFragment extends Fragment{
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             LayoutInflater inflater = LayoutInflater.from(getContext());
-            View view = inflater.inflate(Utils.getCarMode()?R.layout.list_item_rooms_while_driving:
+            View view = inflater.inflate(getMain().getCarMode()?R.layout.list_item_rooms_while_driving:
                     R.layout.list_item_rooms, parent, false);
             TextView roomView = (TextView) view.findViewById(R.id.roomName);
-            roomView.setTextColor(Utils.getThemeID() == R.style.Theme_Fleetspeak_light? Color.BLACK: Color.WHITE);
             ImageView imageView = (ImageView) view.findViewById(R.id.roomIcon);
             TextView userView = (TextView) view.findViewById(R.id.list_item_users);
-            userView.setTextColor(Utils.getThemeID() == R.style.Theme_Fleetspeak_light? Color.BLACK: Color.WHITE);
 
             String whatRoom = getItem(position).getName();
 
@@ -188,7 +179,7 @@ public class JoinFragment extends Fragment{
             ArrayList<User> users =  getMain().getUsers(getItem(position).getId());
             StringBuilder builder = new StringBuilder();
             if(users != null && users.size() > 0) {
-                if (Utils.getCarMode()) {
+                if (getMain().getCarMode()) {
                     builder.append(("(" + users.size() + ")"));
                 } else {
                     for(int i = 0; i < users.size(); i++) {

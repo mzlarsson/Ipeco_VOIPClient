@@ -16,13 +16,9 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ListView;
 
-import java.util.ArrayList;
 
 import se.chalmers.fleetspeak.R;
-import se.chalmers.fleetspeak.Room;
-import se.chalmers.fleetspeak.util.Utils;
 
 /**
  * Created by David Gustafsson on 20/03/2015.
@@ -30,12 +26,8 @@ import se.chalmers.fleetspeak.util.Utils;
 public class RequestAssistanceFragment extends Fragment {
     private boolean wrenchActive;
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.i("RequestAssistanceFragment:", "view created");
-        Context contextThemeWrapper = new ContextThemeWrapper(getActivity(), Utils.getThemeID());
 
-        LayoutInflater localInflater = inflater.cloneInContext(contextThemeWrapper);
-        View view = localInflater.inflate(R.layout.request_assistance_fragment, container, false);
-        getActivity().getWindow().setBackgroundDrawable(new ColorDrawable(Utils.getThemeID() == R.style.Theme_Fleetspeak_light ? Color.WHITE : Color.BLACK));
+        View view = inflater.inflate(R.layout.request_assistance_fragment, container, false);
 
         setHasOptionsMenu(true);
         wrenchActive = true;
@@ -93,9 +85,7 @@ public class RequestAssistanceFragment extends Fragment {
                 getMain().onBackPressed();
                 Log.d("Request", "back");
                 return true;
-            case R.id.day_night_toggle:
-                Utils.changeTheme(getMain());
-                return true;
+
         }
         return super.onOptionsItemSelected(item);
     }

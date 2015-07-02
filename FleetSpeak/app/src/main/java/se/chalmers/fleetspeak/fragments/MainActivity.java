@@ -24,7 +24,7 @@ import se.chalmers.fleetspeak.User;
 import se.chalmers.fleetspeak.truck.TruckDataHandler;
 import se.chalmers.fleetspeak.truck.TruckStateListener;
 import se.chalmers.fleetspeak.util.MessageValues;
-import se.chalmers.fleetspeak.util.Utils;
+import se.chalmers.fleetspeak.util.appSettings;
 
 /**
  * The activity that  enables the user to interact with the model
@@ -37,6 +37,7 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
     private SharedPreferences.Editor prefEdit;
     private FragmentHandler handler = new FragmentHandler();
     private Model model;
+    private boolean carMode = false;
 
 
     /**
@@ -83,12 +84,11 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         prefEdit = prefs.edit();
         // Get the theme saved in shared preferences with key "Theme" if no value is accessed returns 1
-        // and set it in Utils
-        Utils.setTheme(prefs.getInt("theme", 1));
-        // Get the username, ip adress and the port number in shared preferences and set them in Utils
-        Utils.setUsername(prefs.getString("username", "username"));
-        Utils.setIpAdress(prefs.getString("ipAdress", "46.239.103.195"));
-        Utils.setPortNumber(prefs.getInt("portNumber", 8867));
+        // and set it in appSettings
+        // Get the username, ip adress and the port number in shared preferences and set them in local setttings
+        appSettings.setUsername(prefs.getString("username", "username"));
+        appSettings.setIpAdress(prefs.getString("ipAdress", "46.239.103.195"));
+        appSettings.setPortNumber(prefs.getInt("portNumber", 8867));
 
         // Create fragment manager that will create fragment transactions for the activity
         fragmentManager = getFragmentManager();
@@ -97,15 +97,16 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
         // when the truck changes state
         TruckDataHandler.addListener(this);
 
-        // Set the state of the car in Utils
-        Utils.setCarmode(TruckDataHandler.getInstance().getTruckMode());
+        // Set the state of the car in appSettings
+        carMode = TruckDataHandler.getInstance().getTruckMode();
 
         // Set the main layout
         setContentView(R.layout.activity_main);
         findViewById(R.id.loadingPanel).setVisibility(View.INVISIBLE);
+
         // Set the start fragment
+        FragmentHandler.setMain(this);
         setFragment(FragmentHandler.FragmentName.START);
-        setTheme(Utils.getThemeID() == R.style.Theme_Fleetspeak_light);
     }
 
     @Override
@@ -148,21 +149,19 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
      */
     public void setUserSettings(){
         Log.i("MainActivity:", "save the currently used user settings");
-        // Put the currently used user settings from Utils
+        // Put the currently used user settings from appSettings
         // in the saved preferences
-        prefEdit.putString("username", Utils.getUsername());
-        prefEdit.putString("ipAdress", Utils.getIpAdress());
-        prefEdit.putInt("portNumber", Utils.getPort());
-        prefEdit.putInt("theme", Utils.getThemeID());
+        prefEdit.putString("username", appSettings.getUsername());
+        prefEdit.putString("ipAdress", appSettings.getIpAdress());
+        prefEdit.putInt("portNumber", appSettings.getPort());
         // Commit the changes
         prefEdit.commit();
     }
     @Override
     public void truckModeChanged(boolean mode){
-        if(mode != Utils.getCarMode()) {
+        if(mode != carMode) {
             Log.d("MainActivity:", "truck mode changed TO " + mode);
-            // Save the car state in the Utils
-            Utils.setCarmode(mode);
+            carMode = mode;
             restartFragment();
         }
     }
@@ -180,15 +179,15 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
      */
     public void startConnection(){
         Log.i("MainActivity:", "start a connection request to the server");
-        // Get the user setting from Utils class
-        String ip = Utils.getIpAdress();
-        String userName = Utils.getUsername();
-        int port = Utils.getPort();
+        // Get the user setting from appSettings class
+        String ip = appSettings.getIpAdress();
+        String userName = appSettings.getUsername();
+        int port = appSettings.getPort();
         // Show the loadingPanel panel
         showConnecting(true);
-        // Send the model a connection request with the ip adress and port number from Utils
+        // Send the model a connection request with the ip adress and port number from appSettings
         model.connect(ip, port);
-        // Set the username the model shall use from with the name from Utils
+        // Set the username the model shall use from with the name from appSettings
         model.setName(userName);
     }
     @Override
@@ -354,4 +353,27 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
     public void buildAlertDialog(){
 
     }
+
+    public String getUsername(){
+        return appSettings.getUsername();
+    }
+    public int getPortNumber(){
+        return appSettings.getPort();
+    }
+    public String getIpAdress(){
+        return appSettings.getIpAdress();
+    }
+    public boolean getCarMode(){
+    return carMode;
+    }
+    public void setPortNumber(int i){
+        appSettings.setPortNumber(i);
+    }
+    public void setUsername(String s){
+        appSettings.setUsername(s);
+    }
+    public void setIpAdress(String s){
+        appSettings.setIpAdress(s);
+    }
+
 }

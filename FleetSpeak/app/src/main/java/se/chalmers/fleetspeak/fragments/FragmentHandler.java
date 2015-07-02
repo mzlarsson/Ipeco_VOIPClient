@@ -3,13 +3,16 @@ package se.chalmers.fleetspeak.fragments;
 import android.app.Fragment;
 import android.util.Log;
 
-import se.chalmers.fleetspeak.util.Utils;
+import java.util.MissingFormatArgumentException;
+
+import se.chalmers.fleetspeak.util.appSettings;
 
 /**
  * A class that handles the fragment of MainActivity
  * Created by david_000 on 01/03/2015.
  */
 public class FragmentHandler {
+    private static MainActivity main;
     private FragmentName currentFragment;
     private Fragment[] fragments ={ new StartFragment(), new CarStartFragment(), new JoinFragment(),
             new ChatFragment(), new DisconnectFragment() , new RequestAssistanceFragment()};
@@ -23,7 +26,7 @@ public class FragmentHandler {
         currentFragment = name;
         switch (name) {
             case START:
-                return Utils.getCarMode()?fragments[1]:fragments[0];
+                return main.getCarMode()?fragments[1]:fragments[0];
             case JOIN:
                 return fragments[2];
             case CHAT:
@@ -39,7 +42,7 @@ public class FragmentHandler {
         }
     }
     public void showConnectionErrorMessage(){
-        if(Utils.getCarMode() && currentFragment == FragmentName.START)
+        if(main.getCarMode() && currentFragment == FragmentName.START)
             ((CarStartFragment)fragments[1]).showConnectionErrorMessage();
         else
             ((StartFragment) fragments[0]).
@@ -79,7 +82,7 @@ public class FragmentHandler {
     public void recreateFragment(FragmentName name){
         switch (name){
                 case START:
-                    if(Utils.getCarMode()){
+                    if(main.getCarMode()){
                         fragments[1] = new CarStartFragment();
                     }else {
                         fragments[0] = new StartFragment();
@@ -101,5 +104,9 @@ public class FragmentHandler {
             }
 
         }
+    public static void setMain(MainActivity activity){
+        main = activity;
     }
+    }
+
 

@@ -4,13 +4,10 @@ import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,7 +20,6 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 
 import se.chalmers.fleetspeak.R;
-import se.chalmers.fleetspeak.util.Utils;
 
 /**
  * A fragment shows the information and option available to the user in the start up of the
@@ -34,17 +30,9 @@ public class StartFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.i("StartFragment:", "Created view for the fragment");
-        // Create a new contextThemeWrapper that will set the theme of the application
-        Context contextThemeWrapper = new ContextThemeWrapper(getActivity(), Utils.getThemeID());
-        // Create the inflater from the contextThemeWrapper and the parameter inflater
-        LayoutInflater localInflater = inflater.from(contextThemeWrapper);
         // Create a new view with the inflater with the layout start fragment
-        View view = localInflater.inflate(R.layout.start_fragment, container, false);
-        // Set the background of the activity so that it matches the color of the theme used
-        // in the fragment
-        getActivity().getWindow().setBackgroundDrawable(new ColorDrawable(Utils.getThemeID()
-                == R.style.Theme_Fleetspeak_light ? Color.WHITE : Color.BLACK));
-        // enable the fragment to create it's own option menu
+        View view = inflater.inflate(R.layout.start_fragment, container, false);
+
         setHasOptionsMenu(true);
 
         // Find the connection button in the created view
@@ -59,7 +47,6 @@ public class StartFragment extends Fragment {
         });
 
         // Find the edittexts in the created view and set text to correspond to the currently
-        // used user setting from utils.
         // Create new TextWatchers for all the editext in the view that will
         // change the currently used user settings to match the content of the edittexts
         // after text is changed
@@ -77,7 +64,7 @@ public class StartFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable editable) {
-            Utils.setIpAdress(String.valueOf(ipTextField.getText()));
+            getMain().setIpAdress(String.valueOf(ipTextField.getText()));
             }
         });
         final EditText portField = (EditText) view.findViewById(R.id.portField);
@@ -95,7 +82,7 @@ public class StartFragment extends Fragment {
             @Override
             public void afterTextChanged(Editable editable) {
                 try {
-                    Utils.setPortNumber(Integer.parseInt(String.valueOf(portField.getText())));
+                    getMain().setPortNumber(Integer.parseInt(String.valueOf(portField.getText())));
                 }catch (NumberFormatException e){
 
                 }
@@ -115,14 +102,14 @@ public class StartFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                Utils.setUsername(String.valueOf(userNameField.getText()));
+                getMain().setUsername(String.valueOf(userNameField.getText()));
             }
         });
         // Get the currently used user setting and set the text in the editext to correspond
         // to them
-        ipTextField.setText(Utils.getIpAdress());
-        portField.setText(String.valueOf(Utils.getPort()));
-        userNameField.setText(Utils.getUsername());
+        ipTextField.setText(getMain().getIpAdress());
+        portField.setText(String.valueOf(getMain().getPortNumber()));
+        userNameField.setText(getMain().getUsername());
         // Set the container of the edittextfield clickable so that user can unfocus the
         // application if they press outside the edittextfields
         view.findViewById(R.id.relStart_layout).setOnClickListener(new View.OnClickListener() {
@@ -147,14 +134,6 @@ public class StartFragment extends Fragment {
         int id = item.getItemId();
         if(id == android.R.id.home){
             this.getActivity().onBackPressed();
-        }
-        // Check if the menu item selected in the option menu is the day and night
-        // toggle button
-        if (id == R.id.day_night_toggle) {
-            // Change the theme currently used in the activity
-            Utils.changeTheme((MainActivity)this.getActivity());
-            Log.d("StartFragment", "Change Theme button pressed");
-            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -193,5 +172,8 @@ public class StartFragment extends Fragment {
         });
         AlertDialog connectionError = builder.create();
         connectionError.show();
+    }
+    private MainActivity getMain(){
+        return (MainActivity) this.getActivity();
     }
 }

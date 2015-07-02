@@ -4,11 +4,8 @@ import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,7 +16,6 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import se.chalmers.fleetspeak.R;
-import se.chalmers.fleetspeak.util.Utils;
 
 /**
  * A fragment shows the information and option available to the user in the start up of the
@@ -30,15 +26,8 @@ public class CarStartFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         Log.i("CarStartFragment:", "fragment created");
-        // Create a new contextThemeWrapper that will set the theme of the application
-        final Context contextThemeWrapper = new ContextThemeWrapper(getActivity(), Utils.getThemeID());
-        // Create the inflater from the contextThemeWrapper and the parameter inflater
-        LayoutInflater localInflater = inflater.cloneInContext(contextThemeWrapper);
         // Create a new view with the inflater with the layout start fragment
-        View view = localInflater.inflate(R.layout.car_start_fragment, container, false);
-        // Set the background of the activity so that it matches the color of the theme used
-        // in the fragment
-        getActivity().getWindow().setBackgroundDrawable(new ColorDrawable(Utils.getThemeID() == R.style.Theme_Fleetspeak_light ? Color.WHITE : Color.BLACK));
+        View view = inflater.inflate(R.layout.car_start_fragment, container, false);
         // enable the fragment to create it's own option menu
         setHasOptionsMenu(true);
 
@@ -54,10 +43,10 @@ public class CarStartFragment extends Fragment {
         });
 
         // Find the textview in the created view and set the text of the textview
-        // to correspond to the userssetting in utils
-        ((TextView) view.findViewById(R.id.IpAdress)).setText(Utils.getIpAdress());
+        // to correspond to the userssetting in main activity
+        ((TextView) view.findViewById(R.id.IpAdress)).setText(getMain().getIpAdress());
         Log.d("DOESITWORK", view.findViewById(R.id.userName)==null?"nope":"yes");
-        ((TextView) view.findViewById(R.id.userName)).setText(Utils.getUsername());
+        ((TextView) view.findViewById(R.id.userName)).setText(getMain().getUsername());
         return view;
     }
     @Override
@@ -69,14 +58,6 @@ public class CarStartFragment extends Fragment {
         int id = item.getItemId();
         if(id == android.R.id.home){
             getActivity().onBackPressed();
-        }
-        // Check if the menu item selected in the option menu is the day and night
-        // toggle button
-        if (id == R.id.day_night_toggle) {
-            // Change the theme currently used in the activity
-            Utils.changeTheme((MainActivity)this.getActivity());
-            Log.d("CarStartFragment:", "Change Theme button pressed");
-            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -108,5 +89,8 @@ public class CarStartFragment extends Fragment {
         });
         AlertDialog connectionError = builder.create();
         connectionError.show();
+    }
+    private MainActivity getMain(){
+        return (MainActivity)getActivity();
     }
 }

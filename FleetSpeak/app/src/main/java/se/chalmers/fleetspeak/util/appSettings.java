@@ -14,11 +14,6 @@ public class appSettings {
     private static String currentUsername = "";
     private static String currentIpAdress = "";
     private static int currentPort = 1;
-    private static boolean carmode = false;
-
-
-    public static void setCarmode(boolean b){carmode = b;}
-    public static boolean getCarMode(){return carmode;}
 
     /**
      * Set the temporary username

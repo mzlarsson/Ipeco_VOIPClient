@@ -9,9 +9,5 @@
         android:icon="@drawable/ic_communication_quick_contacts_dialer"
 
     />
-    <item android:id="@+id/day_night_toggle"
-        android:title="day and night toggle"
-        app:showAsAction="ifRoom"
-        android:icon="@drawable/ic_day_night_mode"
-        />
+
 </menu>
