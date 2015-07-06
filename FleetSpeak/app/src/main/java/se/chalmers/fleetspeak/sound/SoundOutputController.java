@@ -16,19 +16,15 @@ public class SoundOutputController implements Runnable {
     private ByteBuffer audioPlayBuffer;
     private volatile boolean soundIsPlaying;
 
-    //Local variable export
-    private byte[] audioArray;
-
-
     public SoundOutputController(){
 
-        audioPlayBuffer = ByteBuffer.allocateDirect(BYTEBUFFER_SIZE.value());
+        audioPlayBuffer = ByteBuffer.allocateDirect(BYTEBUFFER_OUT_SIZE.value());
         audioTrack = new AudioTrack(
                 STREAM_TYPE.value(),
                 SAMPLING_RATE.value(),
                 OUTPUT_CHANNEL_CONFIG.value(),
                 AUDIO_ENCODING.value(),
-                AUDIO_BUFFER_SIZE.value(),
+                AUDIO_OUT_BUFFER_SIZE.value(),
                 SESSION_ID.value()
         );
 
@@ -40,13 +36,17 @@ public class SoundOutputController implements Runnable {
 
     //Read
     public synchronized void playFromBuffer(){
-        if(audioPlayBuffer.hasRemaining()) {
             audioPlayBuffer.flip();
-            audioArray = new byte[audioPlayBuffer.remaining()];
+            byte[] audioArray = new byte[audioPlayBuffer.remaining()];
             audioPlayBuffer.get(audioArray);
-            audioPlayBuffer.compact();
             audioTrack.write(audioArray, 0, audioArray.length);
-        }
+
+            if(audioPlayBuffer.hasRemaining()){
+                audioPlayBuffer.compact();
+            }else{
+                audioPlayBuffer.clear();
+            }
+
     }
 
 
@@ -57,7 +57,7 @@ public class SoundOutputController implements Runnable {
         }
     }
 
-    public synchronized void kill(){
+    public synchronized void destroy(){
         soundIsPlaying = false;
         if(audioTrack != null){
             audioTrack.release();
@@ -74,7 +74,25 @@ public class SoundOutputController implements Runnable {
     public void run() {
         android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_AUDIO);
         while(soundIsPlaying){
-            playFromBuffer();
+
+            if(audioPlayBuffer.hasRemaining()) {
+                playFromBuffer();
+            }
         }
     }
+
+
+    public boolean equals(Object o) {
+
+        if (o == null || this.getClass() != o.getClass()) {
+            return false;
+        }
+        SoundOutputController soc = (SoundOutputController) o;
+        return this.audioPlayBuffer.equals(soc.audioPlayBuffer) &&
+                this.audioTrack.equals(soc.audioTrack) &&
+                this.soundIsPlaying == soc.soundIsPlaying;
+
+    }
+
+
 }

@@ -16,6 +16,8 @@ public class SoundHandler implements Runnable {
     private boolean soundIsRunning;
 
     public SoundHandler(){
+        SoundConstants.printValues();
+
         soundOutputController = new SoundOutputController();
         soundInputController = new SoundInputController();
         recThread = new Thread(soundInputController,"SoundInputController");
@@ -36,8 +38,8 @@ public class SoundHandler implements Runnable {
     }
 
     public void killControllers(){
-        soundOutputController.kill();
-        soundInputController.kill();
+        soundOutputController.destroy();
+        soundInputController.destroy();
     }
 
     public void kill(){
