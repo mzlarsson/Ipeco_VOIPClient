@@ -87,7 +87,6 @@ public class SoundInputController implements Runnable {
         android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_AUDIO);
         while(isRecording) {
             fillAudioBuffer();
-
         }
     }
 
