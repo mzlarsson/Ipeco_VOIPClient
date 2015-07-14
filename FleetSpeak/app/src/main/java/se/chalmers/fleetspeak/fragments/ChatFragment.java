@@ -29,7 +29,8 @@ import se.chalmers.fleetspeak.R;
 import se.chalmers.fleetspeak.User;
 
 /**
- * A fragment
+ * A fragment that shows the information shows the information and option available to the user when it
+ * chat with other users
  * Created by David Gustafsson on 22/02/2015.
  */
 public class ChatFragment extends Fragment {
@@ -40,14 +41,11 @@ public class ChatFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.d("FragHandler", "Creating new view");
-        View view = inflater.inflate(R.layout.chat_fragment, container, false);
+       View view = inflater.inflate(R.layout.chat_fragment, container, false);
 
-
+        // Set upp the list of users that is in the same room as the user
         GridView userListView = (GridView) view.findViewById(R.id.userList);
         users = new ArrayList<>(getMain().getUsers(getMain().getCurrentRoom()));
-
-        Log.d("Chat", "users == null ?" + (users == null));
         adapter = new ChatRoomListAdapter(getMain(), users);
         userListView.setAdapter(adapter);
         userListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -59,35 +57,25 @@ public class ChatFragment extends Fragment {
 
             }
         });
+
+        // Set upp the mic button
         ImageButton button = (ImageButton) view.findViewById(R.id.pushToTalkButton);
-
-
         button.setBackgroundResource(getMain().isTalkActive() ? R.drawable.ic_mic_blue : R.drawable.ic_mic_grey);
-
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 getMain().pushToTalk();
             }
         });
-
         setHasOptionsMenu(true);
         return view;
     }
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.chatroommenu, menu);
-
+        // Set up the volume options button
         ImageButton locButton = (ImageButton) menu.findItem(R.id.volume_mic_control).getActionView();
         setUpVolumeAndMicControl(getMain(), locButton);
         locButton.setVisibility(getMain().getCarMode() ? View.INVISIBLE: View.VISIBLE);
-
-        ImageButton button = (ImageButton) this.getView().findViewById(R.id.pushToTalkButton);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getMain().pushToTalk();
-            }
-        });
         super.onCreateOptionsMenu(menu,inflater);
     }
 

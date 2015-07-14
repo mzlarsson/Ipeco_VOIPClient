@@ -48,7 +48,6 @@ public class JoinFragment extends Fragment{
         Log.i("Joinfragment:","view created");
 
         View view = inflater.inflate(R.layout.join_fragment, container, false);
-
         ListView roomView = ((ListView)view.findViewById(R.id.roomView));
 
         rooms = new ArrayList<>(getMain().getRooms());
@@ -94,10 +93,6 @@ public class JoinFragment extends Fragment{
             case android.R.id.home:
                 getMain().onBackPressed();
                return true;
-            case R.id.request:
-                getMain().setFragment(FragmentHandler.FragmentName.REQUEST);
-                return true;
-
         }
         return super.onOptionsItemSelected(item);
     }

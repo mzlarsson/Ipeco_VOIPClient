@@ -8,8 +8,8 @@
         android:layout_height="100dp"
         android:id="@+id/pushToTalkButton"
         android:layout_gravity="bottom"
-        android:layout_centerVertical="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
 
     <GridView
         android:layout_width="wrap_content"
@@ -19,8 +19,9 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignParentBottom="true"
-        android:layout_toStartOf="@+id/pushToTalkButton" />
+        android:layout_toStartOf="@+id/pushToTalkButton"
+        android:layout_alignParentEnd="true"
+        android:layout_above="@+id/pushToTalkButton" />
 
 
 </RelativeLayout>

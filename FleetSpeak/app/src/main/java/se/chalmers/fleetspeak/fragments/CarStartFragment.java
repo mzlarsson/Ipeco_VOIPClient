@@ -18,7 +18,7 @@ import android.widget.TextView;
 import se.chalmers.fleetspeak.R;
 
 /**
- * A fragment shows the information and option available to the user in the start up of the
+ * A fragment that shows the information and option available to the user in the start up of the
  * activity when the car is in driving mode
  * Created by David Gustafsson on 22/02/2015.
  */
@@ -31,10 +31,9 @@ public class CarStartFragment extends Fragment {
         // enable the fragment to create it's own option menu
         setHasOptionsMenu(true);
 
-        // Find the connection button in the created view
-        Button connect = (Button)view.findViewById(R.id.connectionButton);
         // Set the onclick logic of the connection button so that it send
         // connect request onclick
+        Button connect = (Button)view.findViewById(R.id.connectionButton);
         connect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

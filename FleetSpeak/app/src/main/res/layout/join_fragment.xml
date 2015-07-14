@@ -8,7 +8,7 @@
         android:id="@+id/buttonCreateRoom"
         android:textColor="#FFFFFF"
         android:textSize="30sp"
-        android:layout_width="match_parent"
+        android:layout_width="400dp"
         android:layout_height="80dp"
         android:background="@drawable/button_shape"
         android:shadowColor="#A8A8A8"
