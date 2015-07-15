@@ -1,4 +1,1 @@
-
-APP_ABI :=  ALL
-
-
+APP_ABI := armeabi 
