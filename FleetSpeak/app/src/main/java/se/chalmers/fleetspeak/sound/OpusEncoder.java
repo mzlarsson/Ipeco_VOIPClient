@@ -5,12 +5,26 @@ package se.chalmers.fleetspeak.sound;
  */
 public class OpusEncoder {
 
-public native int getSize(int i);
+    private int opus;
+
+    static{
+        System.loadLibrary("libOpus");
+    }
 
 
-public native short encode(float f);
+    public OpusEncoder(){
 
-public native void destroy();
+    }
+
+    public native static int opus_encoder_create();
+
+    public native static void opus_encoder_destroy();
+
+    public native int getSize(int i);
+
+    public native short encode(float f);
+
+    public native void destroy();
 
 
 
