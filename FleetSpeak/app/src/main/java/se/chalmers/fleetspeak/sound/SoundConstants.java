@@ -23,7 +23,7 @@ public enum SoundConstants {
     AUDIO_OUT_BUFFER_SIZE(AudioRecord.getMinBufferSize(SAMPLING_RATE.value(), AudioFormat.CHANNEL_IN_MONO, AUDIO_ENCODING.value())*10 ),
     BYTEBUFFER_IN_SIZE(AUDIO_IN_BUFFER_SIZE.value()),
     BYTEBUFFER_OUT_SIZE(AUDIO_OUT_BUFFER_SIZE.value()),
-    INPUT_ARRAY_SIZE(500);
+    INPUT_ARRAY_SIZE(5000);//Higher value (To a limit...) degrades sound quality but eases on the performance.
 
     private int value;
 
