@@ -1,10 +1,12 @@
 package se.chalmers.fleetspeak.util;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
 
 /**
  * Created by Nieo on 17/06/15.
@@ -13,7 +15,6 @@ public class Log2 {
 
 	private FileHandler fileHandler;
 	private Logger logger;
-	private final String LOG_NAME = "fleetspeak.log";
 
 	/**
 	 * Creates a new filehandler and add it to the Logger 'Debug'
@@ -22,15 +23,23 @@ public class Log2 {
 	 */
 
 	public Log2(){
+		System.out.println("starting logging");
 		logger= Logger.getLogger("Debug");
 		logger.setLevel(Level.ALL);
+
+
 		try {
-			fileHandler = new FileHandler(LOG_NAME);
-			fileHandler.setFormatter(new SimpleFormatter());
-			logger.addHandler(fileHandler);
+			FileInputStream configFile = new FileInputStream("log/logging.properties");
+
+			LogManager.getLogManager().readConfiguration(configFile);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		System.out.println("logging strted");
 	};
 
 	/**
