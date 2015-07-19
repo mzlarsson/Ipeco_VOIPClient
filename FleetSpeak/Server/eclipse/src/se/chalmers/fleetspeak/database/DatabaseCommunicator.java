@@ -1,13 +1,10 @@
 package se.chalmers.fleetspeak.database;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.Properties;
 import java.util.Scanner;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import se.chalmers.fleetspeak.util.Log2;
 
@@ -20,7 +17,9 @@ public class DatabaseCommunicator {
 
 	private Connection conn;
 	private static DatabaseCommunicator instance;
-	
+	private Logger logger = Logger.getLogger("Debug");
+
+
 	private DatabaseCommunicator(){
 		conn = DatabaseConnector.initiateConnection();
 	}
@@ -136,12 +135,12 @@ public class DatabaseCommunicator {
 				user = new UserInfo(rs.getInt(1), rs.getString(2), rs.getString(3));
 			}
 			else {
-				Log2.log(Level.INFO, ("[DatabaseCommunicator]: User with username '"
+				logger.log(Level.INFO, ("[DatabaseCommunicator]: User with username '"
 						+ username + "' was not found in the database."));
 			}
 			rs.close();
 		} catch (SQLException e) {
-			Log2.log(Level.SEVERE, ("[DatabaseCommunicator]: Failed to read result from the found user in .findUser()."));
+			logger.log(Level.SEVERE, ("[DatabaseCommunicator]: Failed to read result from the found user in .findUser()."));
 			e.printStackTrace();
 		}
 		try {
@@ -196,7 +195,7 @@ public class DatabaseCommunicator {
 			}
 			instance = null;
 		} catch (SQLException e) {
-			Log2.log(Level.SEVERE, "[DatabaseCommunicator]: Failed to close the connection to the database.");
+			logger.log(Level.SEVERE, "[DatabaseCommunicator]: Failed to close the connection to the database.");
 			e.printStackTrace();
 		}
 	}
@@ -218,7 +217,7 @@ public class DatabaseCommunicator {
 			try {
 				connection = DriverManager.getConnection(url, props);
 			} catch (SQLException e) {
-				Log2.log(Level.SEVERE, "[DatabaseConnector]: Failed to establish a connection to the database.");
+				Logger.getLogger("Debug").log(Level.SEVERE, "[DatabaseConnector]: Failed to establish a connection to the database.");
 				e.printStackTrace();
 			}
 			return connection;

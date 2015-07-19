@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import se.chalmers.fleetspeak.core.command.Commands;
 import se.chalmers.fleetspeak.core.permission.PermissionLevel;
@@ -22,11 +23,13 @@ import se.chalmers.fleetspeak.util.Log2;
 public class ClientCreator implements AuthenticatorListener{
 
 	private List<ClientAuthenticator> authenticators;
+	private Logger logger;
 	
 	/**
 	 * Constructor for a ClientCreator.
 	 */
 	public ClientCreator() {
+		logger = Logger.getLogger("Debug");
 		authenticators = Collections.synchronizedList(new ArrayList<ClientAuthenticator>());
 	}
 	
@@ -64,19 +67,19 @@ public class ClientCreator implements AuthenticatorListener{
 					if (cmds.execute(-1, cmds.findCommand("AddUser"), client, PermissionLevel.ADMIN_ALL).wasSuccessful()) { // TODO If not all clients should have ADMIN rights this is the place.
 						tcph.sendData(new Command("authorizationResult", true, "Successful authorization"));
 						client.start();
-						Log2.log(Level.INFO, "A new person joined");
+						logger.log(Level.INFO, "A new person joined");
 					} else {
 						tcph.sendData(new Command("authorizationResult", false, "Access denied"));
 					}
 				} else {
-					Log2.log(Level.INFO, "User with id: " + ui.getID() + " allready exists on the server and was denied access.");
+					logger.log(Level.INFO, "User with id: " + ui.getID() + " allready exists on the server and was denied access.");
 				}
 			} else {
-				Log2.log(Level.WARNING, "ClientAuthenticator: " + ca + " accepted a user not in the database.");
+				logger.log(Level.WARNING, "ClientAuthenticator: " + ca + " accepted a user not in the database.");
 			}
 			authenticators.remove(ca);
 		} else {
-			Log2.log(Level.WARNING, "Unknown '" + authenticator.getClass() + "' was found when '" + ClientAuthenticator.class + "' was expected.");
+			logger.log(Level.WARNING, "Unknown '" + authenticator.getClass() + "' was found when '" + ClientAuthenticator.class + "' was expected.");
 		}
 	}
 
@@ -86,10 +89,10 @@ public class ClientCreator implements AuthenticatorListener{
 			ClientAuthenticator ca = (ClientAuthenticator)authenticator;
 			ca.getTCPHandler().sendData(new Command("authorizationResult", false, errorMsg));
 			ca.terminate();
-			Log2.log(Level.FINER, errorMsg);
+			logger.log(Level.FINER, errorMsg);
 			authenticators.remove(ca);
 		} else {
-			Log2.log(Level.WARNING, "Unknown '" + authenticator.getClass() + "' was found when '" + ClientAuthenticator.class + "' was expected.");
+			logger.log(Level.WARNING, "Unknown '" + authenticator.getClass() + "' was found when '" + ClientAuthenticator.class + "' was expected.");
 		}
 	}
 }
