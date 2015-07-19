@@ -38,7 +38,6 @@ public class RoomHandler{
 
     public void setUserInfo(UserInfoPacket user) {
         activeUser = new User(user.getName(), user.getID());
-        postUpdate(MessageValues.MODELCHANGED);
     }
 
     /**
