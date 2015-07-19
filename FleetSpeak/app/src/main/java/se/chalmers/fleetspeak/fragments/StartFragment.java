@@ -194,4 +194,27 @@ public class StartFragment extends Fragment {
         AlertDialog connectionError = builder.create();
         connectionError.show();
     }
+
+    /**
+     * A method that creates and shows an authorization error message in the fragment
+     */
+    public void showAuthenticationErrorMessage() {
+        Log.i("StartFragment:", "showing connection error message");
+        // Create a Alert dialog that will show the a connect error message
+        Context context = this.getActivity();
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("Authentication Error");
+        builder.setMessage("Unknown username and password combination " +
+                "or you are not unauthorized to connect");
+        // Set the button in the Alertdialog that enables the user to close down
+        // the Alert dialog
+        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.cancel();
+            }
+        });
+        AlertDialog connectionError = builder.create();
+        connectionError.show();
+    }
 }

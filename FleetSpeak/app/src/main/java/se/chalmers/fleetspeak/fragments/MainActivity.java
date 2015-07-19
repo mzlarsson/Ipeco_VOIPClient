@@ -48,8 +48,11 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
             Log.d("updateHandler", "Got Message=" + msg.what);
             switch (msg.what){
                 case MessageValues.CONNECTED:
+                    //TODO We might want to show a distinction between connecting to the server and authorizing with it.
+                    break;
+                case MessageValues.AUTHORIZED:
                     showConnecting(false);
-                    // If the user is able to be connected go to the join fragment
+                    // If the user authorized go to the join fragment
                     // where the user can choose which room to join
                     setFragment(FragmentHandler.FragmentName.JOIN);
                     break;
@@ -61,7 +64,13 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
                 case MessageValues.MODELCHANGED:
                     update();
                     break;
+                case MessageValues.AUTHENTICATIONFAILED:
+                    showConnecting(false);
+                    handler.showAuthenticationErrorMessage();
+                    //TODO msg.getValue() gives the reason for the failure as a string, could be used to show a more detailed error.
+                    break;
                 case MessageValues.CONNECTIONFAILED:
+                    showConnecting(false);
                     handler.showConnectionErrorMessage();
                     break;
 
@@ -186,10 +195,8 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
         int port = Utils.getPort();
         // Show the loadingPanel panel
         showConnecting(true);
-        // Send the model a connection request with the ip adress and port number from Utils
+        // Send the model a connection request with the ip address and port number from Utils
         model.connect(ip, port);
-        // Set the username the model shall use from with the name from Utils
-        model.setName(userName);
     }
     @Override
     protected void onPause() {
