@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.util;
+package se.chalmers.fleetspeak.database;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -8,6 +8,8 @@ import java.sql.Statement;
 import java.util.Properties;
 import java.util.Scanner;
 import java.util.logging.Level;
+
+import se.chalmers.fleetspeak.util.Log2;
 
 /**
  * A singleton that handles communication with the database.

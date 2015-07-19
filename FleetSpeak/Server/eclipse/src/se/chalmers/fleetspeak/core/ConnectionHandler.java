@@ -8,9 +8,7 @@ import java.net.UnknownHostException;
 import java.util.logging.Level;
 
 import se.chalmers.fleetspeak.core.command.Commands;
-import se.chalmers.fleetspeak.core.permission.PermissionLevel;
 import se.chalmers.fleetspeak.sound.Constants;
-import se.chalmers.fleetspeak.util.Log;
 import se.chalmers.fleetspeak.util.Log2;
 
 /**
@@ -22,6 +20,7 @@ import se.chalmers.fleetspeak.util.Log2;
 public class ConnectionHandler{
     
     private int port;
+    private ClientCreator clientCreator;
     
     private static ServerSocket serverSocket = null;
     
@@ -34,12 +33,14 @@ public class ConnectionHandler{
      */
     public ConnectionHandler(int port) throws UnknownHostException{
     	Log2.log(Level.INFO,"Starting server @LAN-IP "+InetAddress.getLocalHost().getHostAddress()+" on port "+port);
-    	this.running = true;
+
     	//TODO fix this?
     	Constants.setServerIP(InetAddress.getLocalHost().getHostAddress());
     	Commands.getInstance();
-
+    	
     	this.port = port;
+    	this.clientCreator = new ClientCreator();
+    	this.running = true;
     }
     /**
      * Starts the ConnectionHandler. Sets up the various sockets and connections.
@@ -73,19 +74,11 @@ public class ConnectionHandler{
     /**
      * Adds a client connection. 
      * @param clientSocket The socket from which the client's traffic is coming from.
-     * @throws IOException 
      */
-    private void addClient(Socket clientSocket) throws IOException{
-        //Print info in server console
-        Log2.log(Level.INFO, "A new person joined");
-        
-        //Create and forward client
-        Client client = new Client(clientSocket);
-        
-        Commands cmds = Commands.getInstance();
-        cmds.execute(-1, cmds.findCommand("AddUser"), client, PermissionLevel.ADMIN_ALL); // TODO If not all clients should have ADMIN rights this is the place.
-        client.start();
+    private void addClient(Socket clientSocket){
+        clientCreator.addNewClient(clientSocket);
     }
+    
     /**
      * Returns whether ConnectionHandler is running
      * @return
@@ -93,8 +86,9 @@ public class ConnectionHandler{
     public boolean isRunning(){
     	return this.running;
     }
+    
     /**
-     * Stops ConnectionHandler and closes the  serversocket.
+     * Stops ConnectionHandler and closes all connected resources.
      */
     public void terminate() {
     	try {
@@ -102,6 +96,7 @@ public class ConnectionHandler{
     			serverSocket.close();
     		}
 		} catch (IOException e) {}
+    	clientCreator.terminate();
     	RoomHandler.getInstance().terminate();
     	Commands.terminate();
     	running = false;
