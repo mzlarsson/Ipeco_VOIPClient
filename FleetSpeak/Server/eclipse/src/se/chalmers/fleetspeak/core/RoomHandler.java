@@ -7,10 +7,9 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import se.chalmers.fleetspeak.eventbus.EventBus;
-import se.chalmers.fleetspeak.gui.Popup;
 import se.chalmers.fleetspeak.util.Command;
-import se.chalmers.fleetspeak.util.Log;
 import se.chalmers.fleetspeak.util.Log2;
+import se.chalmers.fleetspeak.util.UserInfoPacket;
 
 /**
  * A Singleton class for handling the rooms and client on the server side.
@@ -87,7 +86,8 @@ public class RoomHandler {
 	 */
 	public boolean addClient(Client client) {
 		if(addClient(client, defaultRoom)){
-			EventBus.postEvent("broadcast", new Command("addedUser", client.getClientID(), defaultRoom.getId()), this);
+			UserInfoPacket user = client.getInfoPacket().setRoomID(defaultRoom.getId());
+			EventBus.postEvent("broadcast", new Command("addedUser", user, null), this);
 			return true;
 		}
 		
