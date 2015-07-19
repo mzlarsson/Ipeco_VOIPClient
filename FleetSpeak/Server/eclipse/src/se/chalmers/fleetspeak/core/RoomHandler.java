@@ -1,15 +1,15 @@
 package se.chalmers.fleetspeak.core;
 
+import se.chalmers.fleetspeak.eventbus.EventBus;
+import se.chalmers.fleetspeak.util.Command;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
-
-import se.chalmers.fleetspeak.eventbus.EventBus;
-import se.chalmers.fleetspeak.util.Command;
-import se.chalmers.fleetspeak.util.Log2;
 import se.chalmers.fleetspeak.util.UserInfoPacket;
+import java.util.logging.Logger;
 
 /**
  * A Singleton class for handling the rooms and client on the server side.
@@ -19,18 +19,21 @@ import se.chalmers.fleetspeak.util.UserInfoPacket;
  * @author Matz Larsson
  */
 public class RoomHandler {
-	
+
 	private static RoomHandler instance;
 	
     private HashMap<Room,ArrayList<Client>> rooms;
 	private Room defaultRoom;
+
+	private Logger logger;
 	
 	/**
 	 * Constructor for the RoomHandler, creates the room-structure and the default lobby-
 	 * Only used internally in getInstance() due to it being a singleton. 
 	 */
 	private RoomHandler(){
-		Log2.log(Level.FINE,"Creating a new RoomHandler");
+		logger = Logger.getLogger("Debug");
+		logger.log(Level.FINE,"Creating a new RoomHandler");
 		rooms = new HashMap<Room,ArrayList<Client>>();
 		defaultRoom = new Room("Lobby", true);
 		addRoom(defaultRoom, true);
@@ -168,7 +171,7 @@ public class RoomHandler {
 	 */
 	public boolean removeRoom(Room room){
 		if(room != null){
-			Log2.log(Level.FINE,"Removing room");
+			logger.log(Level.FINE,"Removing room");
 			rooms.remove(room);
 			room.terminate();
 			EventBus.postEvent("broadcast", new Command("removedRoom", room.getId(), null), this);
@@ -207,7 +210,7 @@ public class RoomHandler {
 	/**
 	 * Moves the Client from its current room to the room specified
 	 * @param clientID The ID of the Client to be moved.
-	 * @param r The targeted Room.
+	 * @param room The targeted Room.
 	 */
 	public boolean moveClient(int clientID, Room room){
 		return moveClient(this.findClient(clientID), room);
@@ -285,7 +288,7 @@ public class RoomHandler {
 			}
 		}
 		
-		Log2.log(Level.WARNING, "\tDid not find client with ID " + clientID );
+		logger.log(Level.WARNING, "\tDid not find client with ID " + clientID );
 		return null;
 	}
 
@@ -301,7 +304,7 @@ public class RoomHandler {
 			}
 		}
 
-		Log2.log(Level.WARNING, "\tDid not find room with ID " + roomID);
+		logger.log(Level.WARNING, "\tDid not find room with ID " + roomID);
 		return null;
 	}
 

@@ -9,12 +9,12 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import se.chalmers.fleetspeak.eventbus.EventBus;
 import se.chalmers.fleetspeak.eventbus.EventBusEvent;
 import se.chalmers.fleetspeak.eventbus.IEventBusSubscriber;
 import se.chalmers.fleetspeak.util.Command;
-import se.chalmers.fleetspeak.util.Log2;
 
 /**
  * For handling of TCP connections with the andriod app
@@ -30,6 +30,7 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 	private ObjectInputStream objectInputStream;
 	private boolean isRunning = false;
 	private CommandHandler ch;
+	private Logger logger;
 	
 	/**
 	 * Constructs the TCPHandler for a specific client. 
@@ -37,14 +38,15 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 	 * @param clientID The ID identifying the client.
 	 */
 	public TCPHandler(Socket clientSocket) {
+		logger = Logger.getLogger("Debug");
 		this.clientSocket = clientSocket;
 		try {
-			Log2.log(Level.FINE,"[TCPHandler]Trying to get streams");
+			logger.log(Level.FINE,"[TCPHandler]Trying to get streams");
 			objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
 			objectInputStream = new ObjectInputStream(clientSocket.getInputStream());
-			Log2.log(Level.FINE,"[TCPHandler]Got streams");
+			logger.log(Level.FINE,"[TCPHandler]Got streams");
 		} catch (IOException e) {
-			Log2.log(Level.WARNING,e.getMessage());
+			logger.log(Level.WARNING,e.getMessage());
 		}
 		EventBus.getInstance().addSubscriber(this);
 	}
@@ -71,29 +73,29 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 		isRunning = true;
 		try {
 			while (isRunning && objectInputStream != null) {
-				Log2.log(Level.FINER,"[TCPHandler] trying to read");
+				logger.log(Level.FINER,"[TCPHandler] trying to read");
 				Object o = objectInputStream.readObject();
 				
 				if (o.getClass() == Command.class) {
 					receivedCommand((Command) o);
 				} else {
-					Log2.log(Level.SEVERE, "[TCPHandler] Found a non-Command object: " + o.getClass().toString());
+					logger.log(Level.SEVERE, "[TCPHandler] Found a non-Command object: " + o.getClass().toString());
 				}
 			}
 		} catch(EOFException eofe){
 			receivedCommand(new Command("disconnect", null, null));
 		} catch(SocketTimeoutException e){
-			Log2.log(Level.SEVERE, "Got Socket Timeout. Removing client");
+			logger.log(Level.SEVERE, "Got Socket Timeout. Removing client");
 			receivedCommand(new Command("disconnect", null, null));
 		} catch(SocketException e){
 			//Only log if the handler is not terminated
 			if(isRunning){
-				Log2.log(Level.SEVERE, e.getMessage());
+				logger.log(Level.SEVERE, e.getMessage());
 			}
 		}catch (IOException e) {
-			Log2.log(Level.SEVERE,e.getMessage());
+			logger.log(Level.SEVERE,e.getMessage());
 		} catch (ClassNotFoundException e) {
-			Log2.log(Level.FINE,"[TCPHandler]" + e.getMessage());
+			logger.log(Level.FINE,"[TCPHandler]" + e.getMessage());
 		}
 	}
 
@@ -101,7 +103,7 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 		if (ch != null) {
 			ch.handleCommand(c);
 		} else {
-			Log2.log(Level.SEVERE, "[TCPHandler] Received a Command without a set CommandHandler");
+			logger.log(Level.SEVERE, "[TCPHandler] Received a Command without a set CommandHandler");
 		}
 	}
 	
@@ -111,14 +113,14 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 	 */
 	public void sendData(Command command){
 		try{
-			Log2.log(Level.FINER,"[TCPHandler]Sending Command: [ " + command.getCommand()+" | "+command.getKey()+" | "+command.getValue()+" ]");
+			logger.log(Level.FINER,"[TCPHandler]Sending Command: [ " + command.getCommand()+" | "+command.getKey()+" | "+command.getValue()+" ]");
 			objectOutputStream.writeObject(command);
 		} catch(SocketException e){
 			if(command==null || !command.getCommand().equals("userDisconnected")){
 				receivedCommand(new Command("disconnect", null, null));
 			}
 		} catch(IOException e){
-			Log2.log(Level.SEVERE, e.getMessage());
+			logger.log(Level.SEVERE, e.getMessage());
 		}
 	}
 

@@ -3,6 +3,7 @@ package se.chalmers.fleetspeak.util;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A Class for creating a new unique ID.
@@ -15,6 +16,8 @@ public class IDFactory {
 	private static IDFactory instance;
 	private LinkedList<Integer> idsInUse = new LinkedList<Integer>();
 	private Queue<Integer> recycledIDs = new LinkedList<Integer>();
+
+	private Logger logger = Logger.getLogger("Debug");;
 	/**
 	 * Creates a new IDFactory
 	 */
@@ -53,7 +56,7 @@ public class IDFactory {
 		if (idsInUse.remove(id)) {
 			recycledIDs.add(id);
 		} else {
-			Log2.log(Level.FINE,"Tried to free a ID that was not in use.");
+			logger.log(Level.FINE,"Tried to free a ID that was not in use.");
 		}
 	}
 }

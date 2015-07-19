@@ -79,7 +79,7 @@
 				 <center>
 					<AnchorPane id="contentPane" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
 					   <children>
-						  <TextField fx:id="commandInput" focusTraversable="false" layoutX="26.0" layoutY="654.0" onAction="#commandEntered" onKeyPressed="#commandInputPressed" onKeyReleased="#commandInputChanged" prefHeight="35.0" prefWidth="706.0" promptText="Command" />
+						  <TextField fx:id="commandInput" focusTraversable="false" layoutX="26.0" layoutY="654.0" onAction="#commandEntered" onKeyPressed="#commandInputPressed" onKeyReleased="#commandInputChanged" prefHeight="35.0" prefWidth="544.0" promptText="Command" />
 						  <Separator layoutX="-5.0" layoutY="-1.0" orientation="VERTICAL" prefHeight="700.0" prefWidth="8.0" />
                         <AnchorPane layoutX="-2.0" prefHeight="37.0" prefWidth="760.0">
                            <children>
@@ -91,6 +91,7 @@
                               <Insets />
                            </opaqueInsets>
                         </AnchorPane>
+                        <ComboBox fx:id="logLevelChooser" layoutX="581.0" layoutY="654.0" onAction="#changeLogLevel" prefHeight="35.0" prefWidth="150.0" />
 					   </children>
 					</AnchorPane>
 				 </center>

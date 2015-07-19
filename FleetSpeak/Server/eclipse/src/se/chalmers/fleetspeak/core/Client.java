@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import se.chalmers.fleetspeak.core.command.Commands;
 import se.chalmers.fleetspeak.core.command.impl.CommandInfo;
@@ -12,7 +13,6 @@ import se.chalmers.fleetspeak.core.command.impl.CommandResponse;
 import se.chalmers.fleetspeak.sound.Router;
 import se.chalmers.fleetspeak.util.Command;
 import se.chalmers.fleetspeak.util.IDFactory;
-import se.chalmers.fleetspeak.util.Log2;
 import se.chalmers.fleetspeak.util.UserInfoPacket;
 
 /**
@@ -33,12 +33,15 @@ public class Client implements CommandHandler {
 
 	private Map<String, CommandInfo> cmds;
 	
+	private Logger logger;
+
 	/**
 	 * Creates a client with the functionality for sending and receiving
 	 * commands and sound-streams.
 	 * @param socket The socket for the tcp-connection to this client.
 	 */
 	public Client(int id, String alias, InetAddress ip, TCPHandler tcph) {
+		logger = Logger.getLogger("Debug");
 		this.clientID = id;
 		this.alias = alias;
 		this.ip = ip;
@@ -122,10 +125,10 @@ public class Client implements CommandHandler {
 		if(cmd != null){
 			Commands com = Commands.getInstance();
 			CommandResponse r = com.execute(clientID, cmd, key, value);
-			Log2.log(Level.FINER,"Got command response: ["+(r.wasSuccessful()?"Success":"Failure")+": "+r.getMessage()+"]");
+			logger.log(Level.FINER,"Got command response: ["+(r.wasSuccessful()?"Success":"Failure")+": "+r.getMessage()+"]");
 			return r.getData();
 		}else{
-			Log2.log(Level.WARNING, "Could not find command");
+			logger.log(Level.WARNING, "Could not find command");
 			return null;
 		}
 	}
@@ -226,13 +229,13 @@ public class Client implements CommandHandler {
 	 * Logs an error-message and terminates the client.
 	 */
 	public void connectionLost() {
-		Log2.log(Level.INFO, "Client disconnected - closing streams");
+		logger.log(Level.INFO, "Client disconnected - closing streams");
 		this.terminate();
 	}
 
 	@Override
 	public void handleCommand(Command c) {
-		Log2.log(Level.FINER,"[Client]userid: "+ clientID + "s Got command " + c.getCommand() + " key "+ c.getKey() + " value "+ c.getValue());
+		logger.log(Level.FINER,"[Client]userid: "+ clientID + "s Got command " + c.getCommand() + " key "+ c.getKey() + " value "+ c.getValue());
 		runAndroidCommand(c);
 	}
 
