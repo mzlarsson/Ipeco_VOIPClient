@@ -44,16 +44,18 @@ public class JoinFragment extends Fragment{
     private AlertDialog dialog;
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        rooms = new ArrayList<>(getMain().getRooms());
+        adapter = new JoinRoomAdapter(getMain(), rooms);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.i("Joinfragment:","view created");
 
         View view = inflater.inflate(R.layout.join_fragment, container, false);
         ListView roomView = ((ListView)view.findViewById(R.id.roomView));
-
-        rooms = new ArrayList<>(getMain().getRooms());
-        adapter = new JoinRoomAdapter(getMain(), rooms);
-
-        Log.d("JoinFragment","Adapter" +  adapter);
         roomView.setAdapter(adapter);
         roomView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -62,7 +64,6 @@ public class JoinFragment extends Fragment{
             }
         });
         Button createRoom = (Button) view.findViewById(R.id.buttonCreateRoom);
-
         if(getMain().getCarMode()) {
             createRoom.setText("+");
         }
@@ -88,7 +89,6 @@ public class JoinFragment extends Fragment{
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         switch(item.getItemId()){
             case android.R.id.home:
                 getMain().onBackPressed();

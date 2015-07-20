@@ -24,6 +24,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import se.chalmers.fleetspeak.R;
 import se.chalmers.fleetspeak.User;
@@ -33,20 +34,23 @@ import se.chalmers.fleetspeak.User;
  * chat with other users
  * Created by David Gustafsson on 22/02/2015.
  */
-public class ChatFragment extends Fragment {
+public class ChatFragment extends AppFragment {
     private PopupWindow micAndVolumePanel;
-    private ArrayList<User> users;
     private ArrayAdapter<User> adapter;
+    private List<User> users;
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        users = getMain().getUsers(getMain().getCurrentRoom());
+        adapter = new ChatRoomListAdapter(getMain(), users);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
        View view = inflater.inflate(R.layout.chat_fragment, container, false);
-
         // Set upp the list of users that is in the same room as the user
         GridView userListView = (GridView) view.findViewById(R.id.userList);
-        users = new ArrayList<>(getMain().getUsers(getMain().getCurrentRoom()));
-        adapter = new ChatRoomListAdapter(getMain(), users);
         userListView.setAdapter(adapter);
         userListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -101,7 +105,7 @@ public class ChatFragment extends Fragment {
 
 
 public class ChatRoomListAdapter extends ArrayAdapter<User> {
-        public ChatRoomListAdapter(Context context, ArrayList<User> values) {
+        public ChatRoomListAdapter(Context context, List<User> values) {
             super(context, R.layout.list_item_users, values);
             Log.d("ChatRoom Userlistsize: ", String.valueOf(values.size()));
         }
@@ -199,9 +203,4 @@ public class ChatRoomListAdapter extends ArrayAdapter<User> {
         popupWindow.setWidth(width);
         popupWindow.setHeight(height);
     }
-    private MainActivity getMain(){
-        return (MainActivity) this.getActivity();
-    }
-
-
 }

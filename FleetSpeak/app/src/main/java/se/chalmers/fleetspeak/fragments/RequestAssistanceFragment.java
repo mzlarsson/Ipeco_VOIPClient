@@ -79,7 +79,6 @@ public class RequestAssistanceFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         switch (item.getItemId()){
             case android.R.id.home:
                 getMain().onBackPressed();

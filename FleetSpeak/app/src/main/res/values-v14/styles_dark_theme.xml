@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.Dark_theme" parent="@style/Theme.AppCompat">
+        <item name="android:actionBarItemBackground">@drawable/selectable_background_dark_theme</item>
+        <item name="android:popupMenuStyle">@style/PopupMenu.Dark_theme</item>
+        <item name="android:dropDownListViewStyle">@style/DropDownListView.Dark_theme</item>
+        <item name="android:actionBarTabStyle">@style/ActionBarTabStyle.Dark_theme</item>
+        <item name="android:actionDropDownStyle">@style/DropDownNav.Dark_theme</item>
+        <item name="android:actionBarStyle">@style/ActionBar.Transparent.Dark_theme</item>
+        <item name="android:actionModeBackground">@drawable/cab_background_top_dark_theme</item>
+        <item name="android:actionModeSplitBackground">@drawable/background_bottom_dark_theme</item>
+        <item name="android:actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Dark_theme</item>
+        
+        
+    </style>
+
+    <style name="ActionBar.Solid.Dark_theme" parent="@style/Widget.AppCompat.ActionBar.Solid">
+        <item name="android:background">@drawable/solid_dark_theme</item>
+        <item name="android:backgroundStacked">@drawable/stacked_solid_dark_theme</item>
+        <item name="android:backgroundSplit">@drawable/bottom_solid_dark_theme</item>
+        <item name="android:progressBarStyle">@style/ProgressBar.Dark_theme</item>
+    </style>
+
+    <style name="ActionBar.Transparent.Dark_theme" parent="@style/Widget.AppCompat.ActionBar">
+        <item name="android:background">@drawable/transparent_dark_theme</item>
+        <item name="android:progressBarStyle">@style/ProgressBar.Dark_theme</item>
+    </style>
+    
+    <!-- this style is only referenced in a Light.DarkActionBar based theme -->
+    <style name="Theme.Dark_theme.Widget" parent="@style/Theme.AppCompat">
+        <item name="android:popupMenuStyle">@style/PopupMenu.Dark_theme</item>
+        <item name="android:dropDownListViewStyle">@style/DropDownListView.Dark_theme</item>
+    </style>
+
+</resources>

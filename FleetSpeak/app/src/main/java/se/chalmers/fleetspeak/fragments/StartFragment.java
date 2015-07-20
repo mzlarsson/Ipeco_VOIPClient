@@ -26,7 +26,7 @@ import se.chalmers.fleetspeak.R;
  * activity when car is not in driving mode
  * Created by David Gustafsson on 22/02/2015.
  */
-public class StartFragment extends Fragment {
+public class StartFragment extends AppStartFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.i("StartFragment:", "Created view for the fragment");
@@ -125,19 +125,6 @@ public class StartFragment extends Fragment {
 
         return view;
     }
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
-        menuInflater.inflate(R.menu.start_menu, menu);
-    }
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if(id == android.R.id.home){
-            this.getActivity().onBackPressed();
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
     /**
      * A method that sends a connect request to the main activity
      */
@@ -150,30 +137,5 @@ public class StartFragment extends Fragment {
         }
         // Tell the main activity to start a connection
         ((MainActivity) this.getActivity()).startConnection();
-    }
-
-    /**
-     * A method that creates and shows a connection error message in the fragment
-     */
-    public void showConnectionErrorMessage() {
-        Log.i("StartFragment:", "showing connection error message");
-        // Create a Alert dialog that will show the a connect error message
-        Context context = this.getActivity();
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Connection Error");
-        builder.setMessage("Connection to Server failed");
-        // Set the button in the Alertdialog that enables the user to close down
-        // the Alert dialog
-        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                dialogInterface.cancel();
-            }
-        });
-        AlertDialog connectionError = builder.create();
-        connectionError.show();
-    }
-    private MainActivity getMain(){
-        return (MainActivity) this.getActivity();
     }
 }
