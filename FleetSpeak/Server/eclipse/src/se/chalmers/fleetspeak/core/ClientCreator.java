@@ -11,7 +11,6 @@ import se.chalmers.fleetspeak.core.command.Commands;
 import se.chalmers.fleetspeak.core.permission.PermissionLevel;
 import se.chalmers.fleetspeak.database.UserInfo;
 import se.chalmers.fleetspeak.util.Command;
-import se.chalmers.fleetspeak.util.Log2;
 
 /**
  * A sort of instantiated factory for the client creation process.
