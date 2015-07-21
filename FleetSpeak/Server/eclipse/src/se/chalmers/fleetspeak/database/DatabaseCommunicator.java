@@ -6,8 +6,6 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import se.chalmers.fleetspeak.util.Log2;
-
 /**
  * A singleton that handles communication with the database.
  *
