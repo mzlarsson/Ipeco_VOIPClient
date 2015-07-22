@@ -26,18 +26,24 @@ public class LoginActivity extends ActionBarActivity implements TruckStateListen
     private boolean carmode = false;
     private String username;
     private String password;
+    private String error;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        if(this.getIntent().hasExtra("error")){
+                error = this.getIntent().getStringExtra("error");
+        }else{
+                error = null;
+        }
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         prefEdit = prefs.edit();
-        username = prefs.getString("username", "username");
-        password = prefs.getString("password", "password");
+        String defaultUsername = this.getApplicationContext().getString(R.string.username_text);
+        username = prefs.getString("username", defaultUsername);
+        password = prefs.getString("password", "");
         fragmentManager = getFragmentManager();
-
         TruckDataHandler.addListener(this);
         carmode = TruckDataHandler.getInstance().getTruckMode();
         setStartFragment(carmode);
@@ -53,6 +59,9 @@ public class LoginActivity extends ActionBarActivity implements TruckStateListen
             Bundle bundle = new Bundle();
             bundle.putString("username", username);
             bundle.putString("password", password);
+            if(error!= null) {
+                bundle.putString("error", error);
+            }
             fragment = new CarStartLogin();
             fragment.setArguments(bundle);
             fragmentTransaction.add(R.id.fragment_container, fragment, "CarStartLogin");
@@ -60,6 +69,9 @@ public class LoginActivity extends ActionBarActivity implements TruckStateListen
             fragment = fragmentManager.findFragmentByTag("Start");
             if( fragment == null);
             Bundle bundle = new Bundle();
+            if(error!= null) {
+                bundle.putString("error", error);
+            }
             bundle.putString("username", username);
             bundle.putString("password", password);
             fragment = new StartFragment();

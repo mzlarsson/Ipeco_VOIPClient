@@ -32,6 +32,13 @@ public class CarStartLogin extends AppStartFragment {
         ((TextView) view.findViewById(R.id.userName)).setText(username);
         String password = savedInstanceState.getString("password");
         ((TextView) view.findViewById(R.id.IpAdress)).setText(password);
+        TextView errorView = (TextView) view.findViewById(R.id.error_text);
+        String errorText = savedInstanceState.getString("error");
+        if(errorText != null){
+            errorView.setText(errorText);
+        }else{
+            errorView.setVisibility(View.INVISIBLE);
+        }
         return view;
     }
     public void changeUsername(String username){

@@ -22,6 +22,17 @@
         android:layout_height="wrap_content"
         android:singleLine="true" android:layout_below="@+id/userName"
         android:layout_centerHorizontal="true" />
+    <TextView
+        android:layout_width="310dp"
+        android:layout_height="wrap_content"
+        android:text="@string/error_code"
+        android:id="@+id/error_text"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="0.15"
+        android:textColor="#fffff5ff"
+        android:layout_marginTop="116dp"
+        android:layout_below="@+id/passwordField"
+        android:layout_centerHorizontal="true" />
     <Button
         android:text="@string/connect_text"
         android:id="@+id/connectionButton"

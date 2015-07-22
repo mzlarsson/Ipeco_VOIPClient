@@ -15,6 +15,9 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 import se.chalmers.fleetspeak.R;
 
@@ -92,7 +95,13 @@ public class StartLogin extends AppStartFragment {
                 imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
             }
         });
-
+        TextView errorView = (TextView) view.findViewById(R.id.error_text);
+        String errorText = savedInstanceState.getString("error");
+        if(errorText != null){
+            errorView.setText(errorText);
+        }else{
+            errorView.setVisibility(View.INVISIBLE);
+        }
         return view;
     }
     private void connect(){
