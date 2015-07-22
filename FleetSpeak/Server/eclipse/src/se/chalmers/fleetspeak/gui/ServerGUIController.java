@@ -65,8 +65,13 @@ public class ServerGUIController implements StageOwner{
 	}
 	
 	public void initialize(){
-		logLevelChooser.getItems().addAll("ALL", "FINE", "INFO", "SEVERE", "WARNING");
-		logLevelChooser.getSelectionModel().select(0);
+		Platform.runLater(new Runnable(){
+			@Override
+			public void run() {
+				logLevelChooser.getItems().addAll("ALL", "FINE", "INFO", "SEVERE", "WARNING");
+				logLevelChooser.getSelectionModel().select(0);
+			}
+		});
 	}
 	
 	public void setTerminal(StyleClassedTextArea terminal){
