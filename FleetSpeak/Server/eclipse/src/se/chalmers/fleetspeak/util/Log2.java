@@ -12,6 +12,8 @@ import java.util.logging.Logger;
  * Created by Nieo on 17/06/15.
  */
 public class Log2 {
+	
+	private static Log2 log = null;
 
 	private FileHandler fileHandler;
 	private Logger logger;
@@ -22,7 +24,7 @@ public class Log2 {
 	 *	-Djava.util.logging.SimpleFormatter.format='%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS %4$s %2$s %5$s%6$s%n'
 	 */
 
-	public Log2(){
+	private Log2(){
 		System.out.println("starting logging");
 		logger= Logger.getLogger("Debug");
 		logger.setLevel(Level.ALL);
@@ -41,12 +43,33 @@ public class Log2 {
 		}
 		System.out.println("logging strted");
 	};
+	
+	/**
+	 * Start the log handler
+	 */
+	public static void start(){
+		//Start if not started.
+		if(log == null){
+			log = new Log2();
+		}
+	}
+	
+	/**
+	 * Stops the handler
+	 */
+	public static void stop(){
+		//Stop if started
+		if(log != null){
+			log.close();
+			log = null;
+		}
+	}
 
 	/**
 	 * Closes logfile
 	 * Needs to be called before shutdown
 	 */
-	public void close(){
+	private void close(){
 		fileHandler.flush();
 		fileHandler.close();
 	}

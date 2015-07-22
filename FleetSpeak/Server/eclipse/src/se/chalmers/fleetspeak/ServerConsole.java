@@ -18,7 +18,7 @@ public class ServerConsole {
 	private static Scanner scanner;
 
 	public static void main(String[] args) {
-		Log2 log = new Log2();
+		Log2.start();
 		int port = args!=null&&args.length>0?Integer.parseInt(args[0]):DEFAULT_PORT;
 
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
@@ -29,7 +29,7 @@ public class ServerConsole {
 					serverThread.join();
 					server = null;
 					scanner.close();
-					log.close();
+					Log2.stop();
 				} catch (InterruptedException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
