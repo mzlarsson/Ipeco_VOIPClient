@@ -1,0 +1,143 @@
+package se.chalmers.fleetspeak.fragments.NewStructure.LoginProcess;
+
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+import android.support.v7.app.ActionBarActivity;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import se.chalmers.fleetspeak.R;
+import se.chalmers.fleetspeak.fragments.NewStructure.ConnectedProcess.ConnectionActivity;
+import se.chalmers.fleetspeak.fragments.StartFragment;
+import se.chalmers.fleetspeak.truck.TruckDataHandler;
+import se.chalmers.fleetspeak.truck.TruckStateListener;
+
+public class LoginActivity extends ActionBarActivity implements TruckStateListener, StartCommunicator {
+    private FragmentManager fragmentManager;
+    private SharedPreferences prefs;
+    private SharedPreferences.Editor prefEdit;
+    private boolean carmode = false;
+    private String username;
+    private String password;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_login);
+
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        prefEdit = prefs.edit();
+        username = prefs.getString("username", "username");
+        password = prefs.getString("password", "password");
+        fragmentManager = getFragmentManager();
+
+        TruckDataHandler.addListener(this);
+        carmode = TruckDataHandler.getInstance().getTruckMode();
+        setStartFragment(carmode);
+
+    }
+    private void setStartFragment(boolean b){
+        Fragment fragment;
+
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        if(b){
+            fragment = fragmentManager.findFragmentByTag("CarStartLogin");
+            if( fragment == null);
+            Bundle bundle = new Bundle();
+            bundle.putString("username", username);
+            bundle.putString("password", password);
+            fragment = new CarStartLogin();
+            fragment.setArguments(bundle);
+            fragmentTransaction.add(R.id.fragment_container, fragment, "CarStartLogin");
+        }else{
+            fragment = fragmentManager.findFragmentByTag("Start");
+            if( fragment == null);
+            Bundle bundle = new Bundle();
+            bundle.putString("username", username);
+            bundle.putString("password", password);
+            fragment = new StartFragment();
+            fragment.setArguments(bundle);
+            fragmentTransaction.add(R.id.fragment_container, fragment, "Start");
+        }
+        fragmentTransaction.commit();
+    }
+    public void saveUserSettings(){
+        Fragment fragment = fragmentManager.findFragmentByTag("Start");
+        if(fragment != null && fragment.isVisible()){
+            EditText usernameField = (EditText)findViewById(R.id.usernameField);
+            prefEdit.putString("username", usernameField.getText().toString());
+
+            EditText passwordField = (EditText)findViewById(R.id.passwordField);
+            prefEdit.putString("password", passwordField.getText().toString());
+        }else{
+            fragment = fragmentManager.findFragmentByTag("Start");
+            if(fragment == null && fragment.isVisible()){
+                TextView usernameField = (TextView)findViewById(R.id.usernameField);
+                prefEdit.putString("username", usernameField.getText().toString());
+                TextView passwordField = (TextView) findViewById(R.id.passwordField);
+                prefEdit.putString("password", passwordField.getText().toString());
+            }
+        }
+
+    }
+    public void startConnectionProcess(){
+        Intent newIntent = new Intent(this, ConnectionActivity.class);
+        newIntent.putExtra("username", username);
+        newIntent.putExtra("password", password);
+        startActivity(newIntent);
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_login, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void truckModeChanged(boolean mode) {
+        carmode = mode;
+        setStartFragment(carmode);
+    }
+
+    @Override
+    public void changePassword(String b) {
+        password = b;
+        CarStartLogin fragment = (CarStartLogin) fragmentManager.findFragmentByTag("CarStartLogin");
+        if(fragment != null){
+            fragment.changePassword(b);
+        }
+    }
+
+    @Override
+    public void changeUsername(String a) {
+        username = a;
+        CarStartLogin fragment = (CarStartLogin) fragmentManager.findFragmentByTag("CarStartLogin");
+        if(fragment != null){
+            fragment.changeUsername(a);
+        }
+    }
+}

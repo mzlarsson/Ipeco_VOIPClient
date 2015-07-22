@@ -37,22 +37,11 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.1"
             android:linksClickable="false"
-            android:hint="@string/ip_adress_text"
+            android:hint="@string/password"
             android:textSize="24dp"
-            android:id="@+id/ipField"
+            android:id="@+id/passwordField"
             android:inputType="text"
             android:imeOptions="actionDone"/>
-
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="number"
-            android:layout_weight="0.1"
-            android:linksClickable="false"
-            android:id="@+id/portField"
-            android:hint="@string/port_number_text"
-            android:imeOptions="actionDone"
-            />
 
         <CheckBox
             android:layout_width="wrap_content"
@@ -60,6 +49,15 @@
             android:text="@string/save_preferences"
             android:id="@+id/saveUserPref"
             android:layout_weight="0.5" />
+
+        <TextView
+            android:layout_width="310dp"
+            android:layout_height="wrap_content"
+            android:text="@string"
+            android:id="@+id/textView2"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="0.15"
+            android:textColor="#fffff5ff" />
 
     </LinearLayout>
 
@@ -79,3 +77,4 @@
         android:layout_centerHorizontal="true" />
 
 </RelativeLayout>
+

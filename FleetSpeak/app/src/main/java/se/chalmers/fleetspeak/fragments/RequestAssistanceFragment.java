@@ -69,7 +69,7 @@ public class RequestAssistanceFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.day_night_menu, menu);
+        inflater.inflate(R.menu.start_menu, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
     public void switchColorWrench(){
