@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.util;
+package se.chalmers.fleetspeak.database;
 
 import java.sql.*;
 import java.util.Properties;

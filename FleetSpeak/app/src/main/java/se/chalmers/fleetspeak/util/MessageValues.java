@@ -15,6 +15,9 @@ public class MessageValues {
     public static final int CONNECTED = 10;
     public static final int DISCONNECTED = 11;
     public static final int CONNECTIONFAILED = 12;
+    public static final int AUTHORIZED = 13;
+    public static final int AUTHENTICATIONDETAILS = 14;
+    public static final int AUTHENTICATIONFAILED = 15;
 
     public static final int MODELCHANGED = 20;
 }

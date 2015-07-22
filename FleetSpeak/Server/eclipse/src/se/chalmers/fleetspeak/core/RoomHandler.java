@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
+import se.chalmers.fleetspeak.util.UserInfoPacket;
 import java.util.logging.Logger;
 
 /**
@@ -88,7 +89,8 @@ public class RoomHandler {
 	 */
 	public boolean addClient(Client client) {
 		if(addClient(client, defaultRoom)){
-			EventBus.postEvent("broadcast", new Command("addedUser", client.getClientID(), defaultRoom.getId()), this);
+			UserInfoPacket user = client.getInfoPacket().setRoomID(defaultRoom.getId());
+			EventBus.postEvent("broadcast", new Command("addedUser", user, null), this);
 			return true;
 		}
 		
