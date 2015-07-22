@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.util;
+package se.chalmers.fleetspeak.database;
 
 /**
  * An object holding the information of a user for easier handling
@@ -10,6 +10,7 @@ public class UserInfo {
 
 	private int id;
 	private String username, alias;
+	private String[] permissions;
 	
 	/**
 	 * Create an object contain the information of a user.
@@ -17,10 +18,11 @@ public class UserInfo {
 	 * @param username The unique username of the user.
 	 * @param alias The alias of the user.
 	 */
-	public UserInfo(int id, String username, String alias) {
+	public UserInfo(int id, String username, String alias, String... permissions) {
 		this.id = id;
 		this.username = username;
 		this.alias = alias;
+		this.permissions = permissions;
 	}
 	
 	/**
@@ -45,6 +47,14 @@ public class UserInfo {
 	 */
 	public String getAlias() {
 		return alias;
+	}
+	
+	/**
+	 * Returns the users permissions.
+	 * @return The users permissions.
+	 */
+	public String[] getPermissions() {
+		return permissions;
 	}
 	
 	@Override

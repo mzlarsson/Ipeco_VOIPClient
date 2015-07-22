@@ -46,6 +46,14 @@ public class FragmentHandler {
                     showConnectionErrorMessage();
     }
 
+    public void showAuthenticationErrorMessage(){
+        if(Utils.getCarMode() && currentFragment == FragmentName.START)
+            ((CarStartFragment)fragments[1]).showAuthenticationErrorMessage();
+        else
+            ((StartFragment) fragments[0]).
+                    showAuthenticationErrorMessage();
+    }
+
     public  void update(FragmentName name){
         Log.d("FragHandler", "update called");
         if(name == currentFragment){

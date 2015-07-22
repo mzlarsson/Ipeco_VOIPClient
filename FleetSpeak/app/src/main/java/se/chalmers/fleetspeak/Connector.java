@@ -169,7 +169,7 @@ public class Connector {
                             if(socket != null){
                                 closeSocket();
                             }
-                            Boolean connected = false;
+                            boolean connected = false;
                             Log.i("Connector", "Connecting...");
                             try{
                                 socket = new Socket();
@@ -201,7 +201,7 @@ public class Connector {
                             try {
                                 new Messenger(msg.getTarget()).send(Message.obtain(null, MessageValues.DISCONNECTED));
                             } catch (RemoteException e) {
-                                Log.d("Connector","failed to close socket");
+                                Log.d("Connector", "failed to close socket");
                             }
                             break;
                         case MessageValues.SETNAME:
@@ -215,6 +215,9 @@ public class Connector {
                             break;
                         case MessageValues.SETSOUNDPORT:
                             sendCommand("setsoundport", msg.obj, msg.arg1);
+                            break;
+                        case MessageValues.AUTHENTICATIONDETAILS:
+                            sendCommand("authenticationdetails", msg.obj, null);
                             break;
                         default:
                             break;
@@ -271,7 +274,8 @@ public class Connector {
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
-                    Log.d("SocketListener", "EOF exception");
+                    e.printStackTrace();
+                    Log.d("SocketListener", e.getClass()+": "+e.getMessage());
                     closeSocket();
                 } catch (RemoteException e) {
                     e.printStackTrace();

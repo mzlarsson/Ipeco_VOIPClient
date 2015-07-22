@@ -3,6 +3,7 @@ package se.chalmers.fleetspeak;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
 
@@ -11,6 +12,8 @@ import java.util.ArrayList;
 import se.chalmers.fleetspeak.sound.SoundController;
 import se.chalmers.fleetspeak.util.Command;
 import se.chalmers.fleetspeak.util.MessageValues;
+import se.chalmers.fleetspeak.util.UserInfoPacket;
+import se.chalmers.fleetspeak.util.Utils;
 
 /**
  * Created by Nieo on 08/03/15.
@@ -52,11 +55,11 @@ public class Model {
     }
 
     public void disconnect(){
-        if(state == State.connected){
+        if(state == State.authorized || state == State.connected){
             state = State.not_connected;
             connector.disconnect(callbackHandler);
         }else{
-            Log.d("Model","Not connected, cannot send setName");
+            Log.d("Model","Not connected, cannot send disconnect");
         }
 
     }
@@ -113,11 +116,12 @@ public class Model {
                     state = State.not_connected;
                     roomHandler.clear();
                     break;
-                case "setid":
-                    roomHandler.setUserid((Integer) command.getKey());
+                case "setinfo":
+                    roomHandler.setUserInfo((UserInfoPacket) command.getKey());
                     break;
                 case "addeduser":
-                    roomHandler.addUser(new User((Integer)command.getKey()), (Integer) command.getValue());
+                    UserInfoPacket user = (UserInfoPacket)command.getKey();
+                    roomHandler.addUser(new User(user.getName(), user.getID()), user.getRoomID());
                     break;
                 case "changedusername":
                     roomHandler.changeUsername((Integer) command.getKey(), (String) command.getValue());
@@ -147,6 +151,30 @@ public class Model {
                 case "usesoundport":
                     soundController = new SoundController(context, remoteIP, (Integer) command.getKey());
                     break;
+                case "sendauthenticationdetails":
+                    try {
+                        msg.replyTo.send(Message.obtain(null, MessageValues.AUTHENTICATIONDETAILS, Utils.getUsername()));
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case "authorizationresult":
+                    if ((boolean) command.getKey()) { // true if successfully authorized
+                        state = State.authorized;
+                        try {
+                            new Messenger(callbackHandler).send(Message.obtain(null, MessageValues.AUTHORIZED));
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        state = State.not_connected;
+                        try {
+                            new Messenger(callbackHandler).send(Message.obtain(null, MessageValues.AUTHENTICATIONFAILED, command.getValue())); // .getValue contains the reason for rejection
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    break;
             }
 
             //Log.d("CommandHandler", "Rooms " + roomHandler.toString());
@@ -155,7 +183,7 @@ public class Model {
         }
     }
     private enum State{
-        not_connected, connecting, connected;
+        not_connected, connecting, connected, authorized;
     }
 
 

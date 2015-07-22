@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.NoSuchElementException;
 
 import se.chalmers.fleetspeak.util.MessageValues;
+import se.chalmers.fleetspeak.util.UserInfoPacket;
 
 /**
  * A class for keeping tracks of which room the different users are in.
@@ -20,7 +21,7 @@ public class RoomHandler{
 
     private HashMap<Room,ArrayList<User>> rooms;
 
-    private int userid;
+    private User activeUser;
 
     private Messenger updateMessenger;
 
@@ -32,15 +33,12 @@ public class RoomHandler{
     }
 
     public int getUserid() {
-        return userid;
+        return activeUser.getId();
     }
 
-    public void setUserid(int userid) {
-        this.userid = userid;
-
-        postUpdate(MessageValues.MODELCHANGED);
+    public void setUserInfo(UserInfoPacket user) {
+        activeUser = new User(user.getName(), user.getID());
     }
-
 
     /**
      * Adds an user to a room
@@ -126,6 +124,9 @@ public class RoomHandler{
      * @return The User if found.
      */
     public User getUser(int id) throws NoSuchElementException{
+        if (id == activeUser.getId()) {
+            return activeUser;
+        }
         for (ArrayList<User> users : rooms.values()) {
             for (User user : users) {
                 if (user.getId()==id) {
@@ -138,7 +139,7 @@ public class RoomHandler{
     public int getCurrentRoom(){
         for(Room r : rooms.keySet()){
             for(User u : rooms.get(r)){
-                if(u.getId() == userid)
+                if(u.getId() == activeUser.getId())
                     return r.getId();
             }
         }

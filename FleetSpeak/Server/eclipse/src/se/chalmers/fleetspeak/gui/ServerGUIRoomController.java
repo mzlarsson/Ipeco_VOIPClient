@@ -14,6 +14,7 @@ import javafx.scene.layout.VBox;
 import se.chalmers.fleetspeak.eventbus.EventBus;
 import se.chalmers.fleetspeak.eventbus.EventBusEvent;
 import se.chalmers.fleetspeak.eventbus.IEventBusSubscriber;
+import se.chalmers.fleetspeak.util.UserInfoPacket;
 
 public class ServerGUIRoomController implements IEventBusSubscriber{
 
@@ -186,7 +187,8 @@ public class ServerGUIRoomController implements IEventBusSubscriber{
 		if(event.getReciever().equals("broadcast")){
 			String cmd = event.getCommand().getCommand();
 			if(cmd.equals("addedUser")){
-				registerClient((Integer)event.getCommand().getKey(), (Integer)event.getCommand().getValue());
+				UserInfoPacket user = (UserInfoPacket)event.getCommand().getKey();
+				registerClient(user.getID(), user.getRoomID());
 			}else if(cmd.equals("changedUsername")){
 				renameClient((Integer)event.getCommand().getKey(), (String)event.getCommand().getValue());
 			}else if(cmd.equals("changedRoomName")){

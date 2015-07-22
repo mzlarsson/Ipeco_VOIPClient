@@ -80,6 +80,8 @@ public class JoinFragment extends Fragment{
 
         setHasOptionsMenu(true);
 
+        update();
+
         return view;
     }
     private MainActivity getMain(){
@@ -109,9 +111,11 @@ public class JoinFragment extends Fragment{
         return super.onOptionsItemSelected(item);
     }
     public void update(){
-        rooms.clear();
-        rooms.addAll(getMain().getRooms());
-        adapter.notifyDataSetChanged();
+        if (rooms != null && getMain() != null) {   //TODO This is a temporary fix and could be avoided by improving the way fragments are created and handled.
+            rooms.clear();
+            rooms.addAll(getMain().getRooms());
+            adapter.notifyDataSetChanged();
+        }
     }
     private void createNewRoomOnClick() {
         // If the user is not driving create a dialog that promts the user to select a room name and
