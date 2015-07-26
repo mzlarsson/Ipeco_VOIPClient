@@ -1,0 +1,8 @@
+FLEETSPEAK_SOURCES = native_fleetspeak/se_chalmers_fleetspeak_audio_codec_opus_jniopus_OpusEncoderWrapper.c \
+native_fleetspeak/se_chalmers_fleetspeak_audio_codec_opus_jniopus_OpusDecoderWrapper.c
+
+
+FLEETSPEAK_HEADERS = native_fleetspeak/se_chalmers_fleetspeak_audio_codec_opus_jniopus_OpusEncoderWrapper.h \
+native_fleetspeak/se_chalmers_fleetspeak_audio_codec_opus_jniopus_OpusDecoderWrapper.h
+
+
