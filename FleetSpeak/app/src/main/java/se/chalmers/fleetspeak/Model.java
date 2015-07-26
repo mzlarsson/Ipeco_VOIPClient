@@ -8,8 +8,8 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
-import se.chalmers.fleetspeak.sound.SoundController;
-import se.chalmers.fleetspeak.sound.SoundHandler;
+import se.chalmers.fleetspeak.audio.sound.SoundController;
+import se.chalmers.fleetspeak.audio.sound.SoundHandler;
 import se.chalmers.fleetspeak.util.Command;
 import se.chalmers.fleetspeak.util.MessageValues;
 

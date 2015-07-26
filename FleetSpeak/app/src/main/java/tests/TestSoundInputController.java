@@ -3,7 +3,7 @@ package tests;
 import android.test.AndroidTestCase;
 import android.util.Log;
 
-import se.chalmers.fleetspeak.sound.SoundInputController;
+import se.chalmers.fleetspeak.audio.sound.SoundInputController;
 
 /**
  * Created by Fridgeridge on 2015-07-02.

@@ -9,7 +9,7 @@ import java.util.logging.Level;
 
 import se.chalmers.fleetspeak.core.command.Commands;
 import se.chalmers.fleetspeak.core.permission.PermissionLevel;
-import se.chalmers.fleetspeak.sound.Constants;
+import se.chalmers.fleetspeak.audio.sound.Constants;
 import se.chalmers.fleetspeak.util.Log;
 import se.chalmers.fleetspeak.util.Log2;
 
