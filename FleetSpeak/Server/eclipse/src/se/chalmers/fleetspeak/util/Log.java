@@ -11,9 +11,9 @@ import java.util.logging.Logger;
 /**
  * Created by Nieo on 17/06/15.
  */
-public class Log2 {
-	
-	private static Log2 log = null;
+public class Log {
+
+	private static Log log = null;
 
 	private FileHandler fileHandler;
 	private Logger logger;
@@ -24,11 +24,9 @@ public class Log2 {
 	 *	-Djava.util.logging.SimpleFormatter.format='%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS %4$s %2$s %5$s%6$s%n'
 	 */
 
-	private Log2(){
-		System.out.println("starting logging");
+	private Log(){
 		logger= Logger.getLogger("Debug");
 		logger.setLevel(Level.ALL);
-
 
 		try {
 			FileInputStream configFile = new FileInputStream("log/logging.properties");
@@ -41,19 +39,19 @@ public class Log2 {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("logging strted");
+
 	};
-	
+
 	/**
 	 * Start the log handler
 	 */
 	public static void start(){
 		//Start if not started.
 		if(log == null){
-			log = new Log2();
+			log = new Log();
 		}
 	}
-	
+
 	/**
 	 * Stops the handler
 	 */

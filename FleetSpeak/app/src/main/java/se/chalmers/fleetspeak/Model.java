@@ -121,7 +121,8 @@ public class Model {
                     break;
                 case "addeduser":
                     UserInfoPacket user = (UserInfoPacket)command.getKey();
-                    roomHandler.addUser(new User(user.getName(), user.getID()), user.getRoomID());
+                    int roomid = (int)command.getValue();
+                    roomHandler.addUser(new User(user.getName(), user.getID()), roomid);
                     break;
                 case "changedusername":
                     roomHandler.changeUsername((Integer) command.getKey(), (String) command.getValue());
