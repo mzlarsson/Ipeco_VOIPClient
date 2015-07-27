@@ -34,7 +34,7 @@ public class ClientAuthenticator implements Authenticator, CommandHandler{
 	 * Starts the authentication process.
 	 */
 	public void start() {
-		tcp.sendData(new Command("sendAuthenticationDetails", null, null));		
+		tcp.sendCommand(new Command("sendAuthenticationDetails", null, null));		
 	}
 	/**
 	 * Checks if the response from the connection matches with the information in the database.

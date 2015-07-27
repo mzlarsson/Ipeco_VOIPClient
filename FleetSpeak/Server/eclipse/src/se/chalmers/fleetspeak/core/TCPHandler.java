@@ -18,7 +18,7 @@ import se.chalmers.fleetspeak.util.Command;
 
 /**
  * For handling of TCP connections with the andriod app
- * 
+ *
  * @author Nieo, Patrik Haar
  */
 
@@ -31,9 +31,9 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 	private boolean isRunning = false;
 	private CommandHandler ch;
 	private Logger logger;
-	
+
 	/**
-	 * Constructs the TCPHandler for a specific client. 
+	 * Constructs the TCPHandler for a specific client.
 	 * @param clientSocket The socket of the client.
 	 * @param clientID The ID identifying the client.
 	 */
@@ -50,32 +50,35 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 		}
 		EventBus.getInstance().addSubscriber(this);
 	}
-	
+
 	/**
 	 * Syncs the current model to the client so it is fully updated
 	 */
 	public void syncToClient(){
-		RoomHandler handler = RoomHandler.getInstance();
+		logger.log(Level.WARNING, "this does not work anymore");
+		//TODO doesnt work anymore needs to be placed somewhere else
+		/*RoomHandler handler = RoomHandler.getInstance();
 
 		for(Room r : handler.getRooms()){
-			sendData(new Command("createdRoom", r.getId(), r.getName()));
+			sendCommand(new Command("createdRoom", r.getId(), r.getName()));
 			for(Client c : handler.getClients(r)){
-				sendData(new Command("addedUser", c.getInfoPacket().setRoomID(r.getId()), null));
+				sendCommand(new Command("addedUser", c.getInfoPacket().setRoomID(r.getId()), null));
 			}
 		}
-		synced = true;
+		synced = true;*/
 	}
-	
+
 	/**
-	 * Looks for new incoming messages 
+	 * Looks for new incoming messages
 	 */
+	@Override
 	public void run() {
 		isRunning = true;
 		try {
 			while (isRunning && objectInputStream != null) {
 				logger.log(Level.FINER,"[TCPHandler] trying to read");
 				Object o = objectInputStream.readObject();
-				
+
 				if (o.getClass() == Command.class) {
 					receivedCommand((Command) o);
 				} else {
@@ -106,12 +109,12 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 			logger.log(Level.SEVERE, "[TCPHandler] Received a Command without a set CommandHandler");
 		}
 	}
-	
+
 	/**
 	 * Tries to send a command to the socket.
 	 * @param command The Command to be sent.
 	 */
-	public void sendData(Command command){
+	public void sendCommand(Command command){
 		try{
 			logger.log(Level.FINER,"[TCPHandler]Sending Command: [ " + command.getCommand()+" | "+command.getKey()+" | "+command.getValue()+" ]");
 			objectOutputStream.writeObject(command);
@@ -131,7 +134,7 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 	public InetAddress getInetAddress() {
 		return clientSocket.getInetAddress();
 	}
-	
+
 	/**
 	 * Sets the CommandHandler which will handle the incoming Commands.
 	 * @param ch The CommandHandler to be used.
@@ -155,14 +158,14 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 			return false;
 		}
 	}
-	
+
 
 	@Override
 	public void eventPerformed(EventBusEvent event) {
 		// Will forward the command to its client if this event starts with broadcast and the actor is this class or null.
 		if (event.getReciever().startsWith("broadcast")) {
 			if(synced){
-				sendData(event.getCommand());
+				sendCommand(event.getCommand());
 			}
 		}
 	}

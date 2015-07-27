@@ -19,7 +19,7 @@ import javafx.stage.WindowEvent;
 
 import org.fxmisc.richtext.StyleClassedTextArea;
 
-import se.chalmers.fleetspeak.util.Log2;
+import se.chalmers.fleetspeak.util.Log;
 
 public class ServerGUI extends Application implements StageOwner{
 
@@ -45,7 +45,7 @@ public class ServerGUI extends Application implements StageOwner{
 								@Override
 								public void perform(StageOwner gui) {
 									gui.terminate();
-									Log2.stop();
+									Log.stop();
 								}
 							});
 				}
@@ -127,7 +127,7 @@ public class ServerGUI extends Application implements StageOwner{
     }
 
     public static void main(String[] args) {
-    	Log2.start();
+    	Log.start();
     	launch();
     }
 }
