@@ -11,7 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Listen for connections form the app
+ * Listen for connections
  * @author Nieo
  *
  */
@@ -21,13 +21,14 @@ public class ConnectionHandler{
 	private ClientCreator clientCreator;
 	private Executor executor;
 	private Logger logger;
-	private static ServerSocket serverSocket = null;
+	private ServerSocket serverSocket = null;
 
 	private volatile boolean running;
 
 	/**
 	 * Constructs the ConnectionHandler and starts the server.
 	 * @param port The port to the start server on.
+	 * @param cc ClientCreator to pass connections to
 	 * @throws UnknownHostException
 	 */
 	public ConnectionHandler(int port, ClientCreator cc){
@@ -38,9 +39,6 @@ public class ConnectionHandler{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-
-
 		this.port = port;
 		this.clientCreator = cc;
 		executor = Executors.newSingleThreadExecutor();
@@ -49,35 +47,25 @@ public class ConnectionHandler{
 
 	Runnable connectionListener = () -> {
 		this.running = true;
-		//Start the server
 		try {
 			InetAddress locIP = InetAddress.getLocalHost();
 			serverSocket = new ServerSocket(port, 0, locIP);
 			Socket clientSocket = null;
-			while(running){
-				//Create connection
-				clientSocket = serverSocket.accept();
-				//Add to client list
-				addClient(clientSocket);
-			}
 
+			while(running){
+				clientSocket = serverSocket.accept();
+				clientCreator.addNewClient(clientSocket);
+			}
 			if(serverSocket != null){
 				serverSocket.close();
 			}
 		}catch(IOException e){
-			logger.log(Level.SEVERE, "[SERVER] "+e.getMessage());
+			logger.log(Level.SEVERE, e.getMessage());
 			terminate();
 		}
 	};
 
 
-	/**
-	 * Adds a client connection.
-	 * @param clientSocket The socket from which the client's traffic is coming from.
-	 */
-	private void addClient(Socket clientSocket){
-		clientCreator.addNewClient(clientSocket);
-	}
 
 	/**
 	 * Returns whether ConnectionHandler is running

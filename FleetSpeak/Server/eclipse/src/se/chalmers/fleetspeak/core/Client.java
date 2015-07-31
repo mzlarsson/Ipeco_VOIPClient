@@ -2,14 +2,11 @@ package se.chalmers.fleetspeak.core;
 
 import java.net.InetAddress;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import se.chalmers.fleetspeak.core.command.impl.CommandInfo;
 import se.chalmers.fleetspeak.sound.Router;
 import se.chalmers.fleetspeak.util.Command;
-import se.chalmers.fleetspeak.util.IDFactory;
 import se.chalmers.fleetspeak.util.UserInfoPacket;
 
 /**
@@ -27,8 +24,6 @@ public class Client implements CommandHandler {
 
 	private InetAddress ip;	//TODO Is it necessary for the client to hold it IP?
 	private Router soundRouter;
-
-	private Map<String, CommandInfo> cmds;
 
 	private Logger logger;
 
@@ -61,14 +56,6 @@ public class Client implements CommandHandler {
 
 	public void setCommandHandler(CommandHandler ch){
 		room = ch;
-	}
-
-	/**
-	 * Starts the the TCPHandler
-	 */
-	public void start(){
-		this.tcp.syncToClient();
-
 	}
 
 	//FIXME temporary
@@ -166,7 +153,6 @@ public class Client implements CommandHandler {
 		if (tcp != null) {
 			tcp.terminate();
 		}
-		IDFactory.getInstance().freeID(clientID);
 	}
 
 	/**

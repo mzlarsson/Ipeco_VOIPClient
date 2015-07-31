@@ -36,6 +36,11 @@ public class Room implements CommandHandler{
 		client.setCommandHandler(this);
 		logger.log(Level.FINER, "Room:" + id + " Added user with id: " + client.getClientID());
 	}
+	/**
+	 * Removes a Client from the Room and returns that client
+	 * @param clientid Client to remove
+	 * @return Client with clientid
+	 */
 	public Client removeClient(int clientid){
 		logger.log(Level.FINER, "Room:" + id + " Removing user with id: " + clientid);
 		Client c = clients.get(clientid);
@@ -57,7 +62,10 @@ public class Room implements CommandHandler{
 	public void setName(String name) {
 		this.name = name;
 	}
-
+	/**
+	 * Sends a command to every Client in the room
+	 * @param c Command to send
+	 */
 	public void postUpdate(Command c){
 		clients.forEach((id, client) -> client.sendCommand(c));
 	}
