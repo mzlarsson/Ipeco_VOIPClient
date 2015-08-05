@@ -47,6 +47,7 @@ public class Room implements CommandHandler{
 		clients.remove(clientid);
 		if(clients.isEmpty() && !permanent) {
 			buildingManager.handleCommand(new Command("roomempty",null,null), this.id);
+			c.sendCommand(new Command("removedroom",this.id,null));
 		}
 		return c;
 	}
