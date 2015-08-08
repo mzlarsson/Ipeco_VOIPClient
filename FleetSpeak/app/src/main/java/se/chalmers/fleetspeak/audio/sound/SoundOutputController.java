@@ -75,7 +75,7 @@ public class SoundOutputController implements Runnable {
         android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_AUDIO);
         while(soundIsPlaying){
 
-            if(audioPlayBuffer.hasRemaining()) {
+            if(audioPlayBuffer.remaining() > 500) {
                 playFromBuffer();
             }
         }

@@ -15,15 +15,16 @@ public enum SoundConstants {
     AUDIO_ENCODING(AudioFormat.ENCODING_PCM_16BIT),
     INPUT_CHANNEL_CONFIG(AudioFormat.CHANNEL_IN_MONO),
     INPUT_SOURCE(MediaRecorder.AudioSource.MIC),
-    SAMPLE_RATE(16000), //Recommended sample rate for VoIP
+    SAMPLE_RATE(16000), //Recommended sample rate for VoIP TODO Implement support for more sample rates.
     OUTPUT_CHANNEL_CONFIG(AudioFormat.CHANNEL_OUT_MONO),
     SESSION_ID(AudioTrack.MODE_STREAM),
     STREAM_TYPE(AudioManager.STREAM_VOICE_CALL),
-    AUDIO_IN_BUFFER_SIZE(AudioRecord.getMinBufferSize(SAMPLE_RATE.value(), AudioFormat.CHANNEL_IN_MONO, AUDIO_ENCODING.value())*10 ),
-    AUDIO_OUT_BUFFER_SIZE(AudioRecord.getMinBufferSize(SAMPLE_RATE.value(), AudioFormat.CHANNEL_IN_MONO, AUDIO_ENCODING.value())*10 ),
-    BYTEBUFFER_IN_SIZE(AUDIO_IN_BUFFER_SIZE.value()),
-    BYTEBUFFER_OUT_SIZE(AUDIO_OUT_BUFFER_SIZE.value()),
-    INPUT_ARRAY_SIZE(5000);//Higher value (To a limit...) degrades sound quality and latency but eases on the performance.
+    AUDIO_IN_BUFFER_SIZE(AudioRecord.getMinBufferSize(SAMPLE_RATE.value(), AudioFormat.CHANNEL_IN_MONO, AUDIO_ENCODING.value()) ),
+    AUDIO_OUT_BUFFER_SIZE(AudioRecord.getMinBufferSize(SAMPLE_RATE.value(), AudioFormat.CHANNEL_IN_MONO, AUDIO_ENCODING.value())),
+    BYTEBUFFER_IN_SIZE(AUDIO_IN_BUFFER_SIZE.value()*10),
+    BYTEBUFFER_OUT_SIZE(AUDIO_OUT_BUFFER_SIZE.value()*10),
+    FRAME_SIZE_MS(60),
+    INPUT_FRAME_SIZE(AudioRecord.getMinBufferSize(SAMPLE_RATE.value(),INPUT_CHANNEL_CONFIG.value(),AUDIO_ENCODING.value()));//Higher value (To a limit...) degrades sound quality and latency but eases on the performance.
 
     private final int value;
 
