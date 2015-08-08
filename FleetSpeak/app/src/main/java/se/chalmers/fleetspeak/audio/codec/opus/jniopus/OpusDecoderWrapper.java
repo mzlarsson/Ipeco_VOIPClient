@@ -21,6 +21,15 @@ public class OpusDecoderWrapper {
     public native static long create(int sampleRate, int channels);
 
     /**
+     * Gets the number of frames in an Opus packet.
+     * @param opusInData Opus packet
+     * @param offset Offset of packet
+     * @param length Length of packet
+     * @return The number of frames
+     */
+    public native static int getPacketFrames(byte[] opusInData, int offset, int length);
+
+    /**
      *
      * @param opusInstance Opus decoder instance
      * @param opusInData The encoded Opus data

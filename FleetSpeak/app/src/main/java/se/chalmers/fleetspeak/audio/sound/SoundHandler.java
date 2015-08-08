@@ -1,5 +1,6 @@
 package se.chalmers.fleetspeak.audio.sound;
 
+import se.chalmers.fleetspeak.audio.codec.opus.collection.OpusDecoder;
 import se.chalmers.fleetspeak.audio.codec.opus.collection.OpusEncoder;
 import se.chalmers.fleetspeak.audio.codec.opus.jniopus.OpusEncoderWrapper;
 
@@ -18,6 +19,7 @@ public class SoundHandler implements Runnable {
     private SoundInputController soundInputController;
 
     private OpusEncoder oe;
+    private OpusDecoder od;
 
     Thread playThread, recThread;
 
@@ -27,6 +29,8 @@ public class SoundHandler implements Runnable {
         SoundConstants.printValues();
 
         oe= new OpusEncoder();
+        od = new OpusDecoder();
+
         soundOutputController = new SoundOutputController();
         soundInputController = new SoundInputController();
         recThread = new Thread(soundInputController,"SoundInputController");
@@ -59,12 +63,11 @@ public class SoundHandler implements Runnable {
     @Override
     public void run() {
         while(soundIsRunning) {
-         //   transferAudio();
-            byte[] ass = soundInputController.readBuffer();
-            if(ass.length > 0 && ass[2]!=0) {
-                byte[] bb = oe.encode(ass, 0);
-                boolean a = ass.equals(bb);
-            }
+           //transferAudio();
+            byte[] b = soundInputController.readBuffer();
+            byte [] e = oe.encode(b,0);
+            soundOutputController.fillAudioBuffer(od.decode(e,0));
+
         }
         }
 }

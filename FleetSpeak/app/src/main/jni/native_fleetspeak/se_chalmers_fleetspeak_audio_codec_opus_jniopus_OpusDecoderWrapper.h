@@ -25,6 +25,14 @@ JNIEXPORT jlong JNICALL Java_se_chalmers_fleetspeak_audio_codec_opus_jniopus_Opu
 
 /*
  * Class:     se_chalmers_fleetspeak_audio_codec_opus_jniopus_OpusDecoderWrapper
+ * Method:    getPacketFrames
+ * Signature: ([BII)I
+ */
+JNIEXPORT jint JNICALL Java_se_chalmers_fleetspeak_audio_codec_opus_jniopus_OpusDecoderWrapper_getPacketFrames
+  (JNIEnv *, jclass, jbyteArray, jint, jint);
+
+/*
+ * Class:     se_chalmers_fleetspeak_audio_codec_opus_jniopus_OpusDecoderWrapper
  * Method:    decode
  * Signature: (J[BII[BIII)I
  */

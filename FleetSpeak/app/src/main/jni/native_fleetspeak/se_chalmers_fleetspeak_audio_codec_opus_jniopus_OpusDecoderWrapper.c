@@ -60,6 +60,25 @@ JNIEXPORT jint JNICALL Java_se_chalmers_fleetspeak_audio_codec_opus_jniopus_Opus
 
 /*
  * Class:     se_chalmers_fleetspeak_audio_codec_opus_jniopus_OpusDecoderWrapper
+ * Method:    getPacketFrames
+ * Signature: ([BII)I
+ */
+JNIEXPORT jint JNICALL Java_se_chalmers_fleetspeak_audio_codec_opus_jniopus_OpusDecoderWrapper_getPacketFrames
+        (JNIEnv *env, jclass jc, jbyteArray opusInData, jint offset, jint length){
+    int status;
+    if(opusInData){
+        jbyte *encodedData = (*env)->GetPrimitiveArrayCritical(env, opusInData, NULL);
+        if(encodedData){
+            status = opus_packet_get_nb_frames( (unsigned char *) (encodedData + offset), (opus_int32) length);
+            (*env)->ReleasePrimitiveArrayCritical(env, opusInData, encodedData, JNI_ABORT);
+        }
+
+    }
+    return status;
+}
+
+/*
+ * Class:     se_chalmers_fleetspeak_audio_codec_opus_jniopus_OpusDecoderWrapper
  * Method:    destroy
  * Signature: (J)V
  */

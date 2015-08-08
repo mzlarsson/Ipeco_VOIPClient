@@ -1,5 +1,6 @@
 package se.chalmers.fleetspeak.audio.sound;
 
+import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.util.Log;
 
@@ -16,7 +17,6 @@ public class SoundInputController implements Runnable {
     private AudioRecord audioRecord;
     private ByteBuffer audioRecBuffer;
     private volatile boolean isRecording;
-
 
     public SoundInputController(){
 
@@ -46,8 +46,8 @@ public class SoundInputController implements Runnable {
     //Write
     public synchronized int fillAudioBuffer() {
         int bytesRead=0;
-        if (audioRecBuffer.remaining() >= INPUT_ARRAY_SIZE.value()) {
-            bytesRead = audioRecord.read(audioRecBuffer, INPUT_ARRAY_SIZE.value());
+        if (audioRecBuffer.remaining() >= INPUT_FRAME_SIZE.value()) {
+            bytesRead = audioRecord.read(audioRecBuffer, INPUT_FRAME_SIZE.value());
             if (bytesRead > 0) {
                 audioRecBuffer.limit(bytesRead);
                 audioRecBuffer.position(bytesRead);

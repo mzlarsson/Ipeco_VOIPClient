@@ -36,16 +36,20 @@ public class OpusEncoder implements EncoderInterface {
     }
 
     public byte[] encode(byte[] pcmInData, int offset){
-        byte[] opusEncoded = new byte[ 3*1276];
-
-        int read = OpusEncoderWrapper.encode(this.opusEncoder, pcmInData, 0, 1000, opusEncoded, 0, 3*1276);
-
+        byte[] opusEncoded = new byte[320];//FIXME Find a non-constant value
+        int read = encode(pcmInData,offset,opusEncoded,0);
         if(read <= 0){
             Log.d("OPUS", "Failed to encode with :"+read);
+        }else {
+            System.arraycopy(opusEncoded, 0, opusEncoded, 0, read);
         }
-
         return opusEncoded;
     }
+
+    private int encode(byte[] pcmInData, int inOffset, byte[] opusEncoded, int outOffset){
+        return OpusEncoderWrapper.encode(this.opusEncoder, pcmInData, inOffset, OpusConstants.FRAME_SIZE.value(), opusEncoded, outOffset, opusEncoded.length);
+    }
+
 
     public void destroy(){
         OpusEncoderWrapper.destroy(this.opusEncoder);
