@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import se.chalmers.fleetspeak.sound.Router;
+import se.chalmers.fleetspeak.audio.sound.Router;
 import se.chalmers.fleetspeak.util.Command;
 import se.chalmers.fleetspeak.util.UserInfoPacket;
 
