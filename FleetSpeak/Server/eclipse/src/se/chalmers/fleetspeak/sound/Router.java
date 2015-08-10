@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.sound;
+package se.chalmers.fleetspeak.audio.sound;
 
 import se.chalmers.fleetspeak.util.PortFactory;
 
