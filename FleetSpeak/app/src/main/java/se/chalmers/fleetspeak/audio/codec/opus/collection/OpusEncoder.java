@@ -23,12 +23,12 @@ public class OpusEncoder implements EncoderInterface {
         try {
             create(OpusConstants.SAMPLE_RATE.value(),
                     OpusConstants.CHANNELS.value());
-        } catch (Exception e) {
+        } catch (FleetspeakAudioException e) {
             e.printStackTrace();
         }
     }
 
-    private void create(int sampleRate, int channels) throws Exception {
+    private void create(int sampleRate, int channels) throws FleetspeakAudioException {
         opusEncoder = OpusEncoderWrapper.create(sampleRate,channels);
         if(opusEncoder == 0){//TODO Not sure if pointer can assume this value while casting in the c wrapper code
             throw new FleetspeakAudioException("Encoder failed to initialize with :"+opusEncoder);

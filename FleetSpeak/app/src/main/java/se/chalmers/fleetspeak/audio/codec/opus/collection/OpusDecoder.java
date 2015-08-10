@@ -13,8 +13,8 @@ import se.chalmers.fleetspeak.audio.sound.SoundConstants;
  * Created by Fridgeridge on 2015-07-25.
  */
 public class OpusDecoder implements DecoderInterface {
-    private long opusDecoder;
 
+    private long opusDecoder;
 
     public OpusDecoder(){
         try{

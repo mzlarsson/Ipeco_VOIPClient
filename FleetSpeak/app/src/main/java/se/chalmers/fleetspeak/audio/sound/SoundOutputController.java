@@ -75,7 +75,7 @@ public class SoundOutputController implements Runnable {
         android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_AUDIO);
         while(soundIsPlaying){
 
-            if(audioPlayBuffer.remaining() > 500) {
+            if(audioPlayBuffer.remaining() > 500) {//FIXME Remove constants
                 playFromBuffer();
             }
         }
