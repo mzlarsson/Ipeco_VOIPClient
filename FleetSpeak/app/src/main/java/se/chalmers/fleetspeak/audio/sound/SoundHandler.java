@@ -66,7 +66,7 @@ public class SoundHandler implements Runnable {
            //transferAudio();
             byte[] b = soundInputController.readBuffer();
             byte [] e = oe.encode(b,0);
-            soundOutputController.fillAudioBuffer(od.decode(e,0));
+                soundOutputController.fillAudioBuffer(od.decode(e,0));
 
         }
         }
