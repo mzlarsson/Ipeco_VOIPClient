@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.audio.sound;
+package se.chalmers.fleetspeak.sound;
 
 public class Constants {
 

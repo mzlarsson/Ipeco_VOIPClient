@@ -13,7 +13,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import se.chalmers.fleetspeak.audio.sound.Router;
+import se.chalmers.fleetspeak.sound.Router;
 
 /**
  * @author Nieo

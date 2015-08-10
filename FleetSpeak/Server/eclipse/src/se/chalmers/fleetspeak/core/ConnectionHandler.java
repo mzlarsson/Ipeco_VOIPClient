@@ -9,11 +9,6 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import se.chalmers.fleetspeak.core.command.Commands;
-import se.chalmers.fleetspeak.core.permission.PermissionLevel;
-import se.chalmers.fleetspeak.audio.sound.Constants;
-import se.chalmers.fleetspeak.util.Log;
-import se.chalmers.fleetspeak.util.Log2;
 
 /**
  * Listen for connections
