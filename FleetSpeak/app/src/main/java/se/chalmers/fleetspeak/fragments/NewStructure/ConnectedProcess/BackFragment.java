@@ -12,7 +12,7 @@ import se.chalmers.fleetspeak.R;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class BackFragment extends Fragment {
+public class BackFragment extends AppConnectFragment {
 
 
     public BackFragment() {
