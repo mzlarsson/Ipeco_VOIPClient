@@ -1,8 +1,8 @@
 package se.chalmers.fleetspeak.fragments.NewStructure.LoginProcess;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -43,7 +43,7 @@ public class LoginActivity extends ActionBarActivity implements TruckStateListen
         String defaultUsername = this.getApplicationContext().getString(R.string.username_text);
         username = prefs.getString("username", defaultUsername);
         password = prefs.getString("password", "");
-        fragmentManager = getFragmentManager();
+        fragmentManager = getSupportFragmentManager();
         TruckDataHandler.addListener(this);
         carmode = TruckDataHandler.getInstance().getTruckMode();
         setStartFragment(carmode);
@@ -74,7 +74,7 @@ public class LoginActivity extends ActionBarActivity implements TruckStateListen
             }
             bundle.putString("username", username);
             bundle.putString("password", password);
-            fragment = new StartFragment();
+            fragment = new StartLogin();
             fragment.setArguments(bundle);
             fragmentTransaction.add(R.id.fragment_container, fragment, "Start");
         }

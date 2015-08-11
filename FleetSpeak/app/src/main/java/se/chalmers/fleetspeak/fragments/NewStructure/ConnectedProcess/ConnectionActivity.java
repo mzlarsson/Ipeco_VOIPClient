@@ -66,8 +66,10 @@
         @Override
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
+            Bundle extras = this.getIntent().getExtras();
             setContentView(R.layout.activity_connection);
-            viewPager = (ViewPager)findViewById(R.id.pager);
+            viewPager = new ViewPager(this);
+            viewPager.setId(R.id.pager);
             viewPager.setAdapter(new PagerAdapter(getSupportFragmentManager()));
             viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
                 @Override
@@ -85,8 +87,8 @@
                 }
             });
             model = new DummyModel(this, updateHandler);
-            model.connect((String) savedInstanceState.get("password"), 8867);
-            username = (String)savedInstanceState.get("username");
+            model.connect((String) extras.get("password"), 8867);
+            username = (String)extras.get("username");
 
             TruckDataHandler.addListener(this);
             carMode = TruckDataHandler.getInstance().getTruckMode();
@@ -99,8 +101,8 @@
             ActionBar.Tab rooms = actionBar.newTab();
             rooms.setIcon(R.drawable.ic_room);
             rooms.setText("Looby");
-            actionBar.addTab(rooms);
             rooms.setTabListener(this);
+            actionBar.addTab(rooms);
 
             ActionBar.Tab inRoom = actionBar.newTab();
             inRoom.setIcon(R.drawable.ic_house);

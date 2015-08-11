@@ -4,7 +4,7 @@ package se.chalmers.fleetspeak.fragments.NewStructure.LoginProcess;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -40,11 +40,24 @@ public class StartLogin extends AppStartFragment {
         connectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Log.d("StartLogin", "connection request sent");
                 connect();
             }
         });
         final EditText userNameField = (EditText) view.findViewById(R.id.usernameField);
-        String username = savedInstanceState.getString("username");
+        String username;
+        String password;
+        String errorText = null;
+        Bundle savedInformation = this.getArguments();
+        if(savedInformation != null){
+            username = savedInformation.getString("username");
+            password = savedInformation.getString("password");
+            errorText = savedInformation.getString("error");
+        }else{
+            Log.d("StartLogin","SavedInformation is null" );
+            username = "username";
+            password = "password";
+        }
         userNameField.setText(username);
         userNameField.addTextChangedListener(new TextWatcher() {
             @Override
@@ -60,11 +73,11 @@ public class StartLogin extends AppStartFragment {
             @Override
             public void afterTextChanged(Editable editable) {
                 com.changeUsername(String.valueOf(userNameField.getText()));
+                Log.d("StartLogin", "Changed Username");
             }
         });
 
         final EditText passwordField = (EditText) view.findViewById(R.id.passwordField);
-        String password = savedInstanceState.getString("password");
         passwordField.setText(password);
         passwordField.addTextChangedListener(new TextWatcher() {
             @Override
@@ -80,11 +93,16 @@ public class StartLogin extends AppStartFragment {
             @Override
             public void afterTextChanged(Editable editable) {
                 com.changePassword(String.valueOf(passwordField.getText()));
+                Log.d("StartLogin", "Changed password");
+
             }
         });
 
         // Set the container of the edittextfield clickable so that user can unfocus the
         // application if they press outside the edittextfields
+        if(view.findViewById(R.id.relStart_layout) == null) {
+            Log.d("StartLogin", "relStartLayout cant be found");
+        }
         view.findViewById(R.id.relStart_layout).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -96,17 +114,19 @@ public class StartLogin extends AppStartFragment {
             }
         });
         TextView errorView = (TextView) view.findViewById(R.id.error_text);
-        String errorText = savedInstanceState.getString("error");
         if(errorText != null){
             errorView.setText(errorText);
+            Log.d("StartLogin", "error panel visible");
         }else{
             errorView.setVisibility(View.INVISIBLE);
+            Log.d("StartLogin","error panel invis");
         }
         return view;
     }
     private void connect(){
         if(((CheckBox) this.getView().findViewById(R.id.saveUserPref)).isChecked()){
             com.saveUserSettings();
+            Log.d("StartLogin" , " Saving user settings");
         }
         startConnection();
     }

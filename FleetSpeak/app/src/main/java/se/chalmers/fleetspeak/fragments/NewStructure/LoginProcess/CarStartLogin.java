@@ -28,12 +28,15 @@ public class CarStartLogin extends AppStartFragment {
                 startConnection();
             }
         });
-        String username = savedInstanceState.getString("username");
+
+
+        Bundle savedInformation = this.getArguments();
+        String username = savedInformation.getString("username");
         ((TextView) view.findViewById(R.id.userName)).setText(username);
-        String password = savedInstanceState.getString("password");
+        String password = savedInformation.getString("password");
         ((TextView) view.findViewById(R.id.IpAdress)).setText(password);
         TextView errorView = (TextView) view.findViewById(R.id.error_text);
-        String errorText = savedInstanceState.getString("error");
+        String errorText = savedInformation.getString("error");
         if(errorText != null){
             errorView.setText(errorText);
         }else{

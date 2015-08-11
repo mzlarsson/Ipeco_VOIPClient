@@ -12,25 +12,10 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/Theme.Dark_theme" >
-        <activity
-            android:name=".fragments.MainActivity"
-            android:configChanges="orientation|layoutDirection|screenSize|screenLayout"
-            android:label="@string/app_name" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-
         <service
             android:name=".SocketService"
             android:enabled="true" />
 
-        <activity
-            android:name=".fragments.NewStructure.LoginProcess.MainFragmentActivity"
-            android:label="@string/title_activity_main_fragment" >
-        </activity>
         <activity
             android:name=".fragments.NewStructure.LoginProcess.LoginActivity"
             android:label="@string/title_activity_login" >
