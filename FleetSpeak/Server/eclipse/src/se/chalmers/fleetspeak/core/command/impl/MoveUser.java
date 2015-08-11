@@ -1,7 +1,7 @@
 package se.chalmers.fleetspeak.core.command.impl;
 
 import se.chalmers.fleetspeak.core.RoomHandler;
-import se.chalmers.fleetspeak.core.permission.Permission;
+import se.chalmers.fleetspeak.core.permission.PermissionType;
 import se.chalmers.fleetspeak.core.permission.Permissions;
 
 
@@ -28,8 +28,8 @@ class MoveUser extends BasicCommand{
 		try{
 			int userID = params[0].getClass()==Integer.class ? (Integer)params[0] : Integer.parseInt((String)params[0]);
 			int roomID = params[1].getClass()==Integer.class ? (Integer)params[1] : Integer.parseInt((String)params[1]);
-			if((userID == requester && Permissions.isAllowed(requester, Permission.MOVE_OWN_USER)) ||
-			  (userID != requester && Permissions.isAllowed(requester, Permission.MOVE_OTHER_USER))){
+			if((userID == requester && Permissions.isAllowed(requester, PermissionType.MOVE_OWN_USER)) ||
+			  (userID != requester && Permissions.isAllowed(requester, PermissionType.MOVE_OTHER_USER))){
 				if(RoomHandler.getInstance().moveClient(userID, roomID)){
 					return new CommandResponse(true, "Moved user to room");
 				}else{

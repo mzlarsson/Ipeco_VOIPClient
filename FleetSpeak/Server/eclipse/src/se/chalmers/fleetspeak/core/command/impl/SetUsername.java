@@ -1,7 +1,7 @@
 package se.chalmers.fleetspeak.core.command.impl;
 
 import se.chalmers.fleetspeak.core.RoomHandler;
-import se.chalmers.fleetspeak.core.permission.Permission;
+import se.chalmers.fleetspeak.core.permission.PermissionType;
 import se.chalmers.fleetspeak.core.permission.Permissions;
 
 
@@ -16,8 +16,8 @@ public class SetUsername extends BasicCommand{
 		try{
 			int userID = (params[0].getClass()==Integer.class||params[0].getClass()==int.class?(Integer)params[0]:Integer.parseInt((String)params[0]));
 			String username = (String)params[1];
-			if((userID == requester && Permissions.isAllowed(requester, Permission.RENAME_OWN_USER)) ||
-			  (userID != requester && Permissions.isAllowed(requester, Permission.RENAME_OTHER_USER))){
+			if((userID == requester && Permissions.isAllowed(requester, PermissionType.RENAME_OWN_USER)) ||
+			  (userID != requester && Permissions.isAllowed(requester, PermissionType.RENAME_OTHER_USER))){
 				if(RoomHandler.getInstance().setUsername(userID, username)){
 					return new CommandResponse(true, "Renamed user to '"+username+"'");
 				}else{
