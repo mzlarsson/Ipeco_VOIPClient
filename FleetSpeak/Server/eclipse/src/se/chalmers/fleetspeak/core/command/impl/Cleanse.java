@@ -6,7 +6,7 @@ import se.chalmers.fleetspeak.core.Client;
 import se.chalmers.fleetspeak.core.Room;
 import se.chalmers.fleetspeak.core.RoomHandler;
 import se.chalmers.fleetspeak.core.command.Commands;
-import se.chalmers.fleetspeak.core.permission.Permission;
+import se.chalmers.fleetspeak.core.permission.PermissionType;
 import se.chalmers.fleetspeak.core.permission.Permissions;
 
 
@@ -19,7 +19,7 @@ public class Cleanse extends BasicCommand{
 	@Override
 	public CommandResponse execute(int requester, Object... params){
 		try{
-			if(Permissions.isAllowed(requester, Permission.KICK)){
+			if(Permissions.isAllowed(requester, PermissionType.KICK)){
 				RoomHandler handler = RoomHandler.getInstance();
 				Commands cmds = Commands.getInstance();
 				CommandInfo info = cmds.findCommand("disconnect");

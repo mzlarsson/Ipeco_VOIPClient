@@ -24,7 +24,7 @@ public class Permissions {
 		return false;
 	}
 	
-	public static boolean isAllowed(int requester, Permission permission){
+	public static boolean isAllowed(int requester, PermissionType permission){
 		if(data.containsKey(requester)){
 			for(PermissionLevel permLevel : data.get(requester)){
 				if(permLevel.accepts(permission)){
