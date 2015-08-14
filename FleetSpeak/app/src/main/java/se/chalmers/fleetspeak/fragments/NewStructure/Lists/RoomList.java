@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -25,7 +26,7 @@ public class RoomList extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_room_list,container, false);
         RecyclerView rv = (RecyclerView)view.findViewById(R.id.rvRooms);
-        LinearLayoutManager lm = new LinearLayoutManager(this.getActivity().getApplicationContext());
+        GridLayoutManager lm = new GridLayoutManager(this.getActivity().getApplicationContext(), 1);
         rv.setLayoutManager(lm);
         ConnectedCommunicator communicator = (ConnectedCommunicator)this.getActivity();
         roomAdapter = new RoomAdapter(this.getActivity(), communicator);
@@ -61,5 +62,8 @@ public class RoomList extends Fragment {
     }
     public void addItem(Room room){
         roomAdapter.addItem(room);
+    }
+    public void hightLightItem(int roomId){
+        roomAdapter.highlightRoom(roomId);
     }
 }

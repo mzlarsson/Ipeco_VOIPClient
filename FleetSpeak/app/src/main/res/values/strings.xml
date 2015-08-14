@@ -20,15 +20,17 @@
     <string name="connection_error">Connection Error</string>
     <string name="volume_mic_control">volume and mic control</string>
     <string name="save_preferences">Save preferences</string>
-    <string name="title_activity_testing_main">TestingMainActivity</string>
-    <string name="title_activity_main_fragment">MainFragmentActivity</string>
-    <string name="title_activity_login">LoginActivity</string>
-
-    <string name="title_activity_connection">ConnectionActivity</string>
+    <string name="title_activity_main_fragment">FleetSpeaky</string>
+    <string name="title_activity_login">Fleetspeak</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="title_activity_connection">FleetSpeak</string>
     <string name="error_code">Error Code</string>
     <string name="EmptyRoomList">There are no rooms available</string>
 
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="AboutToDisconnect">You are about to leave, are you sure?</string>
+    <string name="title_activity_establish_connection">EstablishConnectionActivity</string>
 
 </resources>

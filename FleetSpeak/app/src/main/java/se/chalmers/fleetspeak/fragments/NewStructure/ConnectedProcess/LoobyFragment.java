@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -85,6 +86,7 @@ public class LoobyFragment extends AppConnectFragment {
                     } else {
                         newRoomName = input.getText().toString();
                     }
+                    Log.d("LobbyFragment","Create and move new room");
                     createAndMoveRoom(newRoomName);
                 }
             });
@@ -109,6 +111,9 @@ public class LoobyFragment extends AppConnectFragment {
         if(dialog != null){
             dialog.cancel();
         }
+    }
+    public void movedToRoom(int roomID){
+        roomList.hightLightItem(roomID);
     }
     public void roomAdded(Room room){
         roomList.addItem(room);

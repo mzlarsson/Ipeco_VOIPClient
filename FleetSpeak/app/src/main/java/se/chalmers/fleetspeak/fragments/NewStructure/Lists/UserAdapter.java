@@ -1,7 +1,9 @@
 package se.chalmers.fleetspeak.fragments.NewStructure.Lists;
 
+import android.app.ActionBar;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,10 +30,13 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
         this.inflater = LayoutInflater.from(context);
         this.communicator = communicator;
         this.truckstate = communicator.getTruckState();
-        this.userList = communicator.getCurrentRoomsUsers();
+        if(communicator.getCurrentRoomsUsers() != null) {
+            this.userList = communicator.getCurrentRoomsUsers();
+        }
     }
     public void UserClicked(int position){
         if(userList.get(position) != null) {
+            Log.d("UserAdapter", " User clicked");
             communicator.sendUserClicked(userList.get(position));
         }
     }
@@ -45,7 +50,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     @Override
     public UserViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view;
-        view = inflater.inflate(R.layout.room_item_row, parent, false);
+        view = inflater.inflate(R.layout.user_item_row, parent, false);
         UserViewHolder viewHolder = new UserViewHolder(view, truckstate);
         return viewHolder;
     }
@@ -55,6 +60,14 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
         User current = userList.get(position);
         holder.iv.setImageResource(R.drawable.ic_user);
         holder.username.setText(current.getName());
+        ViewGroup.LayoutParams params;
+        if(truckstate){
+
+            holder.username.setTextSize(20);
+        }else{
+
+            holder.username.setTextSize(15);
+        }
     }
 
     @Override
@@ -103,16 +116,8 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
             super(itemView);
             itemView.setOnClickListener(this);
             iv = (ImageView)itemView.findViewById(R.id.userItemIcon);
-            username = (TextView) itemView.findViewById(R.id.userName);
-            truckModeChanged(b);
-        }
-        public  void truckModeChanged(boolean b){
-            if(b) {
-                username.setTextSize(30);
-            }else{
-                username.setTextSize(20);
-            }
 
+            username = (TextView) itemView.findViewById(R.id.userName);
         }
         @Override
         public void onClick(View view) {

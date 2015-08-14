@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -15,7 +16,6 @@ import android.widget.TextView;
 
 import se.chalmers.fleetspeak.R;
 import se.chalmers.fleetspeak.fragments.NewStructure.ConnectedProcess.ConnectionActivity;
-import se.chalmers.fleetspeak.fragments.StartFragment;
 import se.chalmers.fleetspeak.truck.TruckDataHandler;
 import se.chalmers.fleetspeak.truck.TruckStateListener;
 
@@ -23,7 +23,7 @@ public class LoginActivity extends ActionBarActivity implements TruckStateListen
     private FragmentManager fragmentManager;
     private SharedPreferences prefs;
     private SharedPreferences.Editor prefEdit;
-    private boolean carmode = false;
+    private boolean carmode = true;
     private String username;
     private String password;
     private String error;
@@ -37,7 +37,6 @@ public class LoginActivity extends ActionBarActivity implements TruckStateListen
         }else{
                 error = null;
         }
-
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         prefEdit = prefs.edit();
         String defaultUsername = this.getApplicationContext().getString(R.string.username_text);
@@ -49,6 +48,9 @@ public class LoginActivity extends ActionBarActivity implements TruckStateListen
         setStartFragment(carmode);
 
     }
+
+
+
     private void setStartFragment(boolean b){
         Fragment fragment;
 
@@ -64,7 +66,7 @@ public class LoginActivity extends ActionBarActivity implements TruckStateListen
             }
             fragment = new CarStartLogin();
             fragment.setArguments(bundle);
-            fragmentTransaction.add(R.id.fragment_container, fragment, "CarStartLogin");
+            fragmentTransaction.replace(R.id.fragment_container, fragment, "CarStartLogin");
         }else{
             fragment = fragmentManager.findFragmentByTag("Start");
             if( fragment == null);
@@ -76,7 +78,7 @@ public class LoginActivity extends ActionBarActivity implements TruckStateListen
             bundle.putString("password", password);
             fragment = new StartLogin();
             fragment.setArguments(bundle);
-            fragmentTransaction.add(R.id.fragment_container, fragment, "Start");
+            fragmentTransaction.replace(R.id.fragment_container, fragment, "Start");
         }
         fragmentTransaction.commit();
     }
@@ -97,7 +99,7 @@ public class LoginActivity extends ActionBarActivity implements TruckStateListen
                 prefEdit.putString("password", passwordField.getText().toString());
             }
         }
-
+        prefEdit.commit();
     }
     public void startConnectionProcess(){
         Intent newIntent = new Intent(this, ConnectionActivity.class);
@@ -110,7 +112,7 @@ public class LoginActivity extends ActionBarActivity implements TruckStateListen
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_login, menu);
+        getMenuInflater().inflate(R.menu.menu_truck_change, menu);
         return true;
     }
 
@@ -121,9 +123,8 @@ public class LoginActivity extends ActionBarActivity implements TruckStateListen
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if (id == R.id.changeTruck) {
+            truckModeChanged(!carmode);
         }
 
         return super.onOptionsItemSelected(item);
@@ -151,5 +152,10 @@ public class LoginActivity extends ActionBarActivity implements TruckStateListen
         if(fragment != null){
             fragment.changeUsername(a);
         }
+    }
+    @Override
+    public void onBackPressed(){
+        Log.d("LoginActivity", " back pressed");
+        this.finish();
     }
 }

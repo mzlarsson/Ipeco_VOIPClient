@@ -1,5 +1,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="se.chalmers.fleetspeak.fragments.NewStructure.ConnectedProcess.LoobyFragment">
     <FrameLayout
@@ -8,14 +9,15 @@
         android:name="se.chalmers.fleetspeak.fragments.NewStructure.ConnectedProcess.InRoomFragment"
         android:id="@+id/fragment_holder_room"
         android:layout_gravity="center_vertical"
-        android:layout_alignParentEnd="true" />
+        android:layout_above="@+id/buttonCreateRoom"
+        android:layout_alignParentTop="true" />
 
     <Button
         android:text="@string/create_room_text"
         android:id="@+id/buttonCreateRoom"
         android:textColor="#FFFFFF"
         android:textSize="30sp"
-        android:layout_width="400dp"
+        android:layout_width="match_parent"
         android:layout_height="80dp"
         android:background="@drawable/special_button_shape"
         android:shadowColor="#A8A8A8"
@@ -23,7 +25,6 @@
         android:shadowDy="0"
         android:shadowRadius="5"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
-
-
+        android:layout_centerHorizontal="true"
+        />
 </RelativeLayout>

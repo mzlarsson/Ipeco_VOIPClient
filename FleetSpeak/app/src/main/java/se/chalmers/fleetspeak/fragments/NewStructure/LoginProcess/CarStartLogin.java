@@ -33,8 +33,6 @@ public class CarStartLogin extends AppStartFragment {
         Bundle savedInformation = this.getArguments();
         String username = savedInformation.getString("username");
         ((TextView) view.findViewById(R.id.userName)).setText(username);
-        String password = savedInformation.getString("password");
-        ((TextView) view.findViewById(R.id.IpAdress)).setText(password);
         TextView errorView = (TextView) view.findViewById(R.id.error_text);
         String errorText = savedInformation.getString("error");
         if(errorText != null){

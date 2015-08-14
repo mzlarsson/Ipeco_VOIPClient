@@ -25,8 +25,8 @@ public class DummyModel extends Model {
     private ArrayList<Room> rooms = new ArrayList<Room>();
     public DummyModel(Context context, Handler callbackHandler) {
         super(context, callbackHandler);
-        Room room1 = new Room("First", 1);
-        Room room2 = new Room("Second", 2);
+        Room room1 = new Room("First", 0);
+        Room room2 = new Room("Second", 1);
         users1.add(new User("Henrik", 1));
 
         users1.add(new User("Bob", 2));
@@ -46,8 +46,12 @@ public class DummyModel extends Model {
 
     @Override
     public ArrayList<Room> getRooms() {
-        Log.d("DummyModel", "Room called");
-        return rooms;
+        if(connected) {
+            Log.d("DummyModel", "Room called");
+            return rooms;
+        }else {
+            return null;
+        }
     }
 
     @Override
@@ -79,6 +83,7 @@ public class DummyModel extends Model {
     @Override
     public void moveNewRoom(String roomname) {
         if(connected) {
+            Log.d("DummyModel", " new room and move");
             Room newRoom = new Room("roomname" + rooms.size() + 1, 40 + rooms.size());
             rooms.add(newRoom);
             currentRoom = rooms.indexOf(newRoom);
@@ -88,9 +93,9 @@ public class DummyModel extends Model {
     @Override
     public ArrayList<User> getUsers(int roomid) {
        if(connected) {
-           if (roomid == 1) {
+           if (roomid == 0) {
                return users1;
-           } else if (roomid == 2) {
+           } else if (roomid == 1) {
                return users2;
            } else {
                return users3;
@@ -103,4 +108,7 @@ public class DummyModel extends Model {
         return connected;
     }
 
+    public void createAndMoveRoom() {
+
+    }
 }

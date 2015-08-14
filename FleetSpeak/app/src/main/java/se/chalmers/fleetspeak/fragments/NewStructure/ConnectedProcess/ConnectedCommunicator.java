@@ -15,9 +15,12 @@ public interface ConnectedCommunicator {
     public boolean getTruckState();
     public String getUsername();
     public void createAndMoveRoom(String newRoomName);
-
+    public int getCurrentRoomId();
     public List<User> getCurrentRoomsUsers();
 
     void sendUserClicked(User user);
     void roomClicked(Room room);
+    void onBackNo();
+    void onBackYes();
+
 }
