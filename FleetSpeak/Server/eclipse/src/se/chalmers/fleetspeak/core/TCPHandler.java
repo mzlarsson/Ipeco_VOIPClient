@@ -51,22 +51,6 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 		EventBus.getInstance().addSubscriber(this);
 	}
 
-	/**
-	 * Syncs the current model to the client so it is fully updated
-	 */
-	public void syncToClient(){
-		logger.log(Level.WARNING, "this does not work anymore");
-		//TODO doesnt work anymore needs to be placed somewhere else
-		/*RoomHandler handler = RoomHandler.getInstance();
-
-		for(Room r : handler.getRooms()){
-			sendCommand(new Command("createdRoom", r.getId(), r.getName()));
-			for(Client c : handler.getClients(r)){
-				sendCommand(new Command("addedUser", c.getInfoPacket().setRoomID(r.getId()), null));
-			}
-		}
-		synced = true;*/
-	}
 
 	/**
 	 * Looks for new incoming messages
