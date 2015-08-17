@@ -1,6 +1,10 @@
 package se.chalmers.fleetspeak.database;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Properties;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -21,7 +25,7 @@ public class DatabaseCommunicator {
 	private DatabaseCommunicator(){
 		conn = DatabaseConnector.initiateConnection();
 	}
-	
+
 	/**
 	 * Returns an instance of the DatabaseCommunicator.
 	 * @return An instance of the DatabaseCommunicator.
@@ -32,7 +36,7 @@ public class DatabaseCommunicator {
 		}
 		return instance;
 	}
-	
+
 	/**
 	 * Adds a user to the database.
 	 * @param username The unique username of the user.
@@ -66,7 +70,7 @@ public class DatabaseCommunicator {
 		}
 		return error;
 	}
-	
+
 	/**
 	 * Deletes the user with the given ID.
 	 * @param id The ID of the user to be deleted.
@@ -75,7 +79,7 @@ public class DatabaseCommunicator {
 	public String deleteUser(int id) {
 		return deleteUser(Integer.toString(id), true);
 	}
-	
+
 	/**
 	 * Deletes the user with the given username.
 	 * @param username The username of the user to be deleted.
@@ -84,7 +88,7 @@ public class DatabaseCommunicator {
 	public String deleteUser(String username) {
 		return deleteUser(username, false);
 	}
-	
+
 	/**
 	 * Deletes a user from the database.
 	 * @param idOrUsername The identifier of the user to be removed.
@@ -116,7 +120,7 @@ public class DatabaseCommunicator {
 		}
 		return error;
 	}
-	
+
 	/**
 	 * Finds the information of the user from the database.
 	 * @param username The unique username of the user.
@@ -133,12 +137,12 @@ public class DatabaseCommunicator {
 				user = new UserInfo(rs.getInt(1), rs.getString(2), rs.getString(3));
 			}
 			else {
-				logger.log(Level.INFO, ("[DatabaseCommunicator]: User with username '"
-						+ username + "' was not found in the database."));
+				logger.log(Level.INFO, "[DatabaseCommunicator]: User with username '"
+						+ username + "' was not found in the database.");
 			}
 			rs.close();
 		} catch (SQLException e) {
-			logger.log(Level.SEVERE, ("[DatabaseCommunicator]: Failed to read result from the found user in .findUser()."));
+			logger.log(Level.SEVERE, "[DatabaseCommunicator]: Failed to read result from the found user in .findUser().");
 			e.printStackTrace();
 		}
 		try {
@@ -148,7 +152,7 @@ public class DatabaseCommunicator {
 		}
 		return user;
 	}
-	
+
 	/**
 	 * A query method to reduce code redundancy.
 	 * @param query The SQL-query to be sent to the server.
@@ -165,7 +169,7 @@ public class DatabaseCommunicator {
 		}
 		return rs;
 	}
-	
+
 	/**
 	 * An update method to reduce code redundancy.
 	 * @param query The SQL-query containing INSERT, UPDATE or DELETE to be sent to the server.
@@ -182,7 +186,7 @@ public class DatabaseCommunicator {
 		}
 		return affectedRows;
 	}
-	
+
 	/**
 	 * Closes all connections and frees all resources used.
 	 */
@@ -197,21 +201,21 @@ public class DatabaseCommunicator {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Inner class for establishing the initial connection to the server.
 	 *
 	 * @author Patrik Haar
 	 */
 	private static class DatabaseConnector {
-		
+
 		private static Connection initiateConnection() {
 			Connection connection = null;
 			String url = "jdbc:postgresql://localhost/postgres";
 			Properties props = new Properties();
 			props.setProperty("user","postgres");
-			props.setProperty("password","FleetElit");
-//			props.setProperty("ssl","true");	//TODO When we change it to ssl.
+			props.setProperty("password","FleetElite");
+			//			props.setProperty("ssl","true");	//TODO When we change it to ssl.
 			try {
 				connection = DriverManager.getConnection(url, props);
 			} catch (SQLException e) {
@@ -221,7 +225,7 @@ public class DatabaseCommunicator {
 			return connection;
 		}
 	}
-	
+
 	//FIXME temporary main method to easily test the class.
 	public static void main(String[] args) {
 		DatabaseCommunicator dc = DatabaseCommunicator.getInstance();
