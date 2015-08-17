@@ -5,22 +5,22 @@ import java.util.List;
 
 public enum PermissionLevel {
 	ADMIN_ALL(),
-	MODIFY_ROOM(Permission.MOVE_OTHER_USER, Permission.MOVE_OWN_USER, Permission.RENAME_OTHER_USER, Permission.RENAME_OWN_USER, Permission.RENAME_ROOM),
-	MODIFY_ROOM_OWN_PROPS(Permission.MOVE_OWN_USER, Permission.RENAME_OWN_USER),
-	DEFAULT(Permission.MOVE_OWN_USER, Permission.RENAME_OWN_USER);
+	MODIFY_ROOM(PermissionType.MOVE_OTHER_USER, PermissionType.MOVE_OWN_USER, PermissionType.RENAME_OTHER_USER, PermissionType.RENAME_OWN_USER, PermissionType.RENAME_ROOM),
+	MODIFY_ROOM_OWN_PROPS(PermissionType.MOVE_OWN_USER, PermissionType.RENAME_OWN_USER),
+	DEFAULT(PermissionType.MOVE_OWN_USER, PermissionType.RENAME_OWN_USER);
 	
-	private List<Permission> permissions;
+	private List<PermissionType> permissions;
 	
-	private PermissionLevel(Permission... permissions){
+	private PermissionLevel(PermissionType... permissions){
 		this.permissions = Arrays.asList(permissions);
 	}
 	
-	public boolean accepts(Permission permission){
+	public boolean accepts(PermissionType permission){
 		return permissions.contains(permission) || this==ADMIN_ALL;
 	}
 	
 	public boolean accepts(PermissionLevel level){
-		for(Permission permission : this.permissions){
+		for(PermissionType permission : this.permissions){
 			if(!level.accepts(permission)){
 				return false;
 			}

@@ -6,7 +6,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * A Class for creating a new unique Ports.
+ * A Class for requesting an available port.
  * @author Patrik Haar
  * @version 1.0
  */
@@ -41,16 +41,16 @@ public class PortFactory {
 	 * @return A free port.
 	 */
 	public synchronized int getPort() {
-//		if(!recycledPorts.isEmpty()){
-//			int recycledPort = recycledPorts.poll();
-//			portsInUse.add(recycledPort);
-//			return recycledPort;
-//		} else {
+		if(!recycledPorts.isEmpty()){
+			int recycledPort = recycledPorts.poll();
+			portsInUse.add(recycledPort);
+			return recycledPort;
+		} else {
 			int port = currentPort;
 			currentPort += 2;
 			portsInUse.add(port);
 			return port;
-//		}
+		}
 	}
 
 	/**

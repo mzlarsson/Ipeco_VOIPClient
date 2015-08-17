@@ -9,17 +9,17 @@ public interface AuthenticatorListener {
 
 	/**
 	 * This method will be called by subscribed Authenticators on
-	 * a successful authorization.
-	 * @param authorizedObject The object that has been authorized
+	 * a successful authentication.
+	 * @param authenticatedObject The object that has been authenticated
 	 * @param authenticator The authenticator that tested the object
 	 */
-	public void authorizationSuccessful(Object authorizedObject, Authenticator authenticator);
-	
+	public void authenticationSuccessful(Object authenticatedObject, Authenticator authenticator);
+
 	/**
 	 * This method will be called by subscribed Authenticators on
-	 * a failed authorization.
+	 * a failed authentication.
 	 * @param errorMsg The reason for the failure
 	 * @param authenticator The authenticator that tested the object
 	 */
-	public void authorizationFailed(String errorMsg, Authenticator authenticator);
+	public void authenticationFailed(String errorMsg, Authenticator authenticator);
 }

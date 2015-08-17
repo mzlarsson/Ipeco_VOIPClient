@@ -1,7 +1,7 @@
 package se.chalmers.fleetspeak.core.command.impl;
 
 import se.chalmers.fleetspeak.core.RoomHandler;
-import se.chalmers.fleetspeak.core.permission.Permission;
+import se.chalmers.fleetspeak.core.permission.PermissionType;
 import se.chalmers.fleetspeak.core.permission.Permissions;
 
 
@@ -14,7 +14,7 @@ public class SetRoomName extends BasicCommand{
 	@Override
 	public CommandResponse execute(int requester, Object... params){
 		try{
-			if(Permissions.isAllowed(requester, Permission.RENAME_ROOM)){
+			if(Permissions.isAllowed(requester, PermissionType.RENAME_ROOM)){
 				int roomID = (params[0].getClass()==Integer.class||params[0].getClass()==int.class?(Integer)params[0]:Integer.parseInt((String)params[0]));
 				String roomName = (String)params[1];
 				if(RoomHandler.getInstance().setRoomName(roomID, roomName)){

@@ -34,21 +34,21 @@ public class ClientAuthenticator implements Authenticator, CommandHandler{
 	 * Starts the authentication process.
 	 */
 	public void start() {
-		tcp.sendData(new Command("sendAuthenticationDetails", null, null));		
+		tcp.sendCommand(new Command("sendAuthenticationDetails", null, null));		
 	}
 	/**
 	 * Checks if the response from the connection matches with the information in the database.
 	 * @param authCommand The response from the connection.
 	 * @return true if accepted, false if not.
 	 */
-	private boolean authorize(Command authCommand) {
+	private boolean authenticate(Command authCommand) {
 		if (authCommand.getCommand().toLowerCase().equals("authenticationdetails")
 				&& authCommand.getKey().getClass() == String.class) {
 			String username = (String)authCommand.getKey();
 			UserInfo user = DatabaseCommunicator.getInstance().findUser(username);
 			if (user != null) {
 				for (AuthenticatorListener al : listeners) {
-					al.authorizationSuccessful(user, this);
+					al.authenticationSuccessful(user, this);
 				}
 				return true;
 			} else {
@@ -63,7 +63,7 @@ public class ClientAuthenticator implements Authenticator, CommandHandler{
 
 	private void failedAuthentication(String errorMsg) {
 		for (AuthenticatorListener al : listeners) {
-			al.authorizationFailed(errorMsg, this);
+			al.authenticationFailed(errorMsg, this);
 		}
 	}
 	
@@ -94,6 +94,6 @@ public class ClientAuthenticator implements Authenticator, CommandHandler{
 
 	@Override
 	public void handleCommand(Command c) {
-		authorize(c);
+		authenticate(c);
 	}
 }
