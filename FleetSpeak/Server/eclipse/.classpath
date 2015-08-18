@@ -9,5 +9,6 @@
 	<classpathentry kind="lib" path="libs/postgresql-9.4-1201.jdbc41.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="lib" path="libs/richtextfx-fat-0.6.3.jar"/>
+	<classpathentry kind="lib" path="libs/jna.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
