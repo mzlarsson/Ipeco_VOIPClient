@@ -38,6 +38,7 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 	 * @param clientID The ID identifying the client.
 	 */
 	public TCPHandler(Socket clientSocket) {
+		super("TCPHandler:port"+clientSocket.getPort());
 		logger = Logger.getLogger("Debug");
 		this.clientSocket = clientSocket;
 		try {

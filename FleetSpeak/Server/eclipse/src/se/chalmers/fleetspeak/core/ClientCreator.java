@@ -57,6 +57,10 @@ public class ClientCreator implements AuthenticatorListener{
 		authenticators.clear();
 	}
 
+	private void establishUDPConnection() {
+		
+	}
+	
 	@Override
 	public void authenticationSuccessful(Object authorizedObject, Authenticator authenticator) {
 		if (authenticator.getClass() == ClientAuthenticator.class) {
