@@ -24,7 +24,6 @@
     import se.chalmers.fleetspeak.R;
     import se.chalmers.fleetspeak.Room;
     import se.chalmers.fleetspeak.User;
-    import se.chalmers.fleetspeak.fragments.NewStructure.DummyModel.DummyModel;
     import se.chalmers.fleetspeak.fragments.NewStructure.EstablishConnection.BackFragment;
     import se.chalmers.fleetspeak.fragments.NewStructure.LoginProcess.LoginActivity;
     import se.chalmers.fleetspeak.truck.TruckDataHandler;
@@ -41,7 +40,7 @@
             private BackFragment backFragment;
             private View loadingView;
             private String username;
-            private boolean isConnected = false;
+            private boolean isAutherized = false;
 
 
             /**
@@ -53,18 +52,22 @@
                     Log.d("updateHandler", "Got Message=" + msg.what);
                     switch (msg.what){
                         case MessageValues.CONNECTED:
-                            // If the user is able to be connected go to the join fragment
-                            // where the user can choose which room to join
                             break;
                         case MessageValues.DISCONNECTED:
-                            // If disconnected from the server return the to start fragment
-                            // where user can try to connect again
+                            isAutherized = false;
+                            updateView();
                             break;
                         case MessageValues.MODELCHANGED:
+                            updateView();
                             break;
-
                         case MessageValues.CONNECTIONFAILED:
-
+                            break;
+                        case MessageValues.AUTHORIZED:
+                            isAutherized = true;
+                            break;
+                        case MessageValues.AUTHENTICATIONFAILED:
+                            isAutherized = false;
+                            returnToLogin("Authentication failed");
                             break;
                     }
                 }
@@ -88,14 +91,15 @@
                 viewPager = (CViewPager)findViewById(R.id.pager);
                 viewPager.setId(R.id.pager);
                 viewPager.setAdapter(new PagerAdapter(getSupportFragmentManager()));
-                viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+
+                viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
                     @Override
                     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                     }
 
                     @Override
                     public void onPageSelected(int position) {
-                        if(position != 2) {
+                        if (position != 2) {
                             actionBar.setSelectedNavigationItem(position);
                         }
                     }
@@ -104,8 +108,8 @@
                     public void onPageScrollStateChanged(int state) {
                     }
                 });
-                model = new DummyModel(this, updateHandler);
-                //model.connect((String) extras.get("password"), 8867);
+                model = new Model(updateHandler);
+                model.connect((String) extras.get("password"), 8867);
                 username = (String)extras.get("username");
 
                 TruckDataHandler.addListener(this);
@@ -144,14 +148,6 @@
                 if (id == R.id.changeTruck) {
                     truckModeChanged(!carMode);
                     return true;
-                }else if(id == R.id.menuCon){
-                    if(isConnected) {
-                        model.disconnect();
-                    }else{
-                        model.connect("lalal", 88867);
-                        updateRoomView();
-                    }
-                    isConnected = !isConnected;
                     // home id seems overwritten write out number
                 }else if(id == 16908332){
                     if(viewPager.getCurrentItem() == 2){
@@ -262,6 +258,9 @@
 
         @Override
         public void onBackYes() {
+            if(isAutherized){
+                model.disconnect();
+            }
             returnToLogin(null);
         }
 

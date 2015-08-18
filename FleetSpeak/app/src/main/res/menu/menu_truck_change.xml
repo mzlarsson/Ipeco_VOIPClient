@@ -7,10 +7,5 @@
       android:icon="@drawable/ic_communication_quick_contacts_dialer"
       app:showAsAction="always">
 </item>
-<item
-    android:title="changeTruck"
-    android:id="@+id/changeTruck"
-    android:icon="@drawable/ic_day_night_mode"
-    app:showAsAction="always">
-</item>
+
 </menu>
