@@ -18,6 +18,7 @@ import android.view.View;
 import java.util.ArrayList;
 
 import se.chalmers.fleetspeak.Model;
+import se.chalmers.fleetspeak.Network.SocketFactory;
 import se.chalmers.fleetspeak.R;
 import se.chalmers.fleetspeak.Room;
 import se.chalmers.fleetspeak.User;
@@ -86,9 +87,8 @@ public class MainActivity extends ActionBarActivity implements TruckStateListene
         // Show the home icon im the option menu
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         // Create a new Model with this activity and the updatehandler
-        model = new Model(this, updateHandler);
-
-
+        model = new Model(updateHandler);
+        SocketFactory.setContext(this);
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         prefEdit = prefs.edit();
         // Get the theme saved in shared preferences with key "Theme" if no value is accessed returns 1

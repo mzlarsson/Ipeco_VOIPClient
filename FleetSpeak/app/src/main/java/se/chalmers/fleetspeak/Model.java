@@ -1,6 +1,5 @@
 package se.chalmers.fleetspeak;
 
-import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
@@ -9,6 +8,7 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
+import se.chalmers.fleetspeak.Network.TLSConnector;
 import se.chalmers.fleetspeak.audio.sound.SoundController;
 import se.chalmers.fleetspeak.audio.sound.SoundHandler;
 import se.chalmers.fleetspeak.util.Command;
@@ -22,21 +22,20 @@ import se.chalmers.fleetspeak.util.Utils;
 public class Model {
     private RoomHandler roomHandler;
     private CommandHandler commandHandler;
-    private Connector connector;
+    private TLSConnector connector;
     private Handler callbackHandler;
     private String remoteIP;
-    private Context context;
+
     private SoundController soundController;
     private State state;
 
     private SoundHandler soundHandler;
 
-    public Model(final Context context, Handler callbackHandler){
+    public Model(Handler callbackHandler){
         state = State.not_connected;
-        this.context = context;
         roomHandler = new RoomHandler(callbackHandler);
         commandHandler = new CommandHandler();
-        connector = new Connector(commandHandler);
+        connector = new TLSConnector(commandHandler);
         this.callbackHandler = callbackHandler;
 
         soundHandler = new SoundHandler();
@@ -55,7 +54,7 @@ public class Model {
         if(state == State.not_connected){
             roomHandler.clear();
             state = State.connecting;
-            connector.connect(callbackHandler, ip, port);
+            connector.connect(ip, port);
         }else{
             Log.d("Model", "Already connected or trying to connect");
         }
@@ -64,23 +63,23 @@ public class Model {
     public void disconnect(){
         if(state == State.authorized || state == State.connected){
             state = State.not_connected;
-            connector.disconnect(callbackHandler);
+            connector.disconnect();
         }else{
             Log.d("Model","Not connected, cannot send disconnect");
         }
 
     }
     public void setName(String name){
-        connector.setName(callbackHandler, name);
+        connector.sendMessage(new Command("setname", name, null));
     }
     public void move(int roomid){
         if(roomid != roomHandler.getCurrentRoom()){
             roomHandler.moveUser(roomHandler.getUserid(), roomid);
-            connector.move(callbackHandler, roomid);
+            connector.sendMessage(new Command("move", roomid,null));
         }
     }
     public void moveNewRoom(String roomname){
-        connector.moveNewRoom(callbackHandler, roomname);
+        connector.sendMessage(new Command("movenewroom", roomname, null));
     }
     public int getCurrentRoom(){
         return roomHandler.getCurrentRoom();
@@ -149,22 +148,22 @@ public class Model {
                     roomHandler.removeRoom((Integer) command.getKey());
                     break;
                 case "requestsoundport":
-                    int port = soundController.addStream((Integer) command.getKey());
-                    try {
-                        msg.replyTo.send(Message.obtain(null, MessageValues.SETSOUNDPORT, port, 0, command.getKey()));
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
+                    //int port = soundController.addStream((Integer) command.getKey());
+                    //try {
+                    //    msg.replyTo.send(Message.obtain(null, MessageValues.SETSOUNDPORT, port, 0, command.getKey()));
+                    //} catch (RemoteException e) {
+                    //    e.printStackTrace();
+                    //}
+
                     break;
                 case "usesoundport":
-                    soundController = new SoundController(context, remoteIP, (Integer) command.getKey());
+                    //soundController = new SoundController(context, remoteIP, (Integer) command.getKey());
                     break;
                 case "sendauthenticationdetails":
-                    try {
-                        msg.replyTo.send(Message.obtain(null, MessageValues.AUTHENTICATIONDETAILS, Utils.getUsername()));
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
+
+                        connector.sendMessage(new Command("authenticationdetails", Utils.getUsername(), null));
+                       //msg.replyTo.send(Message.obtain(null, MessageValues.AUTHENTICATIONDETAILS, Utils.getUsername()));
+
                     break;
                 case "authorizationresult":
                     if ((boolean) command.getKey()) { // true if successfully authorized

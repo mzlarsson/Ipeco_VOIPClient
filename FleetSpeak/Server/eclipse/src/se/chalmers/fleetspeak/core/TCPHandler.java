@@ -11,6 +11,8 @@ import java.net.SocketTimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.net.ssl.SSLException;
+
 import se.chalmers.fleetspeak.eventbus.EventBus;
 import se.chalmers.fleetspeak.eventbus.EventBusEvent;
 import se.chalmers.fleetspeak.eventbus.IEventBusSubscriber;
@@ -42,32 +44,21 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 		logger = Logger.getLogger("Debug");
 		this.clientSocket = clientSocket;
 		try {
+
 			logger.log(Level.FINE,"[TCPHandler]Trying to get streams");
 			objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
 			objectInputStream = new ObjectInputStream(clientSocket.getInputStream());
 			logger.log(Level.FINE,"[TCPHandler]Got streams");
-		} catch (IOException e) {
+		}catch(SSLException e){
+			e.printStackTrace();
+		}
+		catch (IOException e) {
 			logger.log(Level.WARNING,e.getMessage());
+			e.printStackTrace();
 		}
 		EventBus.getInstance().addSubscriber(this);
 	}
 
-	/**
-	 * Syncs the current model to the client so it is fully updated
-	 */
-	public void syncToClient(){
-		logger.log(Level.WARNING, "this does not work anymore");
-		//TODO doesnt work anymore needs to be placed somewhere else
-		/*RoomHandler handler = RoomHandler.getInstance();
-
-		for(Room r : handler.getRooms()){
-			sendCommand(new Command("createdRoom", r.getId(), r.getName()));
-			for(Client c : handler.getClients(r)){
-				sendCommand(new Command("addedUser", c.getInfoPacket().setRoomID(r.getId()), null));
-			}
-		}
-		synced = true;*/
-	}
 
 	/**
 	 * Looks for new incoming messages
@@ -105,6 +96,7 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 
 	private void receivedCommand(Command c) {
 		if (ch != null) {
+			logger.log(Level.FINE,  c.getCommand());
 			ch.handleCommand(c);
 		} else {
 			logger.log(Level.SEVERE, "[TCPHandler] Received a Command without a set CommandHandler");
@@ -121,7 +113,7 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 			objectOutputStream.writeObject(command);
 		} catch(SocketException e){
 			if(command==null || !command.getCommand().equals("userDisconnected")){
-				receivedCommand(new Command("disconnect", null, null));
+				//receivedCommand(new Command("disconnect", null, null));
 			}
 		} catch(IOException e){
 			logger.log(Level.SEVERE, e.getMessage());

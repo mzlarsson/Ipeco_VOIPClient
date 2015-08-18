@@ -1,8 +1,9 @@
 package se.chalmers.fleetspeak;
 
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,7 +23,9 @@ public class TestingMainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_testing_main);
-        model = new Model(this, new Handler());
+        Log.i("TEST", "starting");
+
+        model = new Model(new Handler());
 
         connectButton = (Button) findViewById(R.id.button);
         talkButton = (ToggleButton) findViewById(R.id.toggleButton);
