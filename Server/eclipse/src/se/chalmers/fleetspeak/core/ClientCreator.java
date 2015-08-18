@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import se.chalmers.fleetspeak.core_v2.Building;
 import se.chalmers.fleetspeak.database.UserInfo;
+import se.chalmers.fleetspeak.network.tcp.TCPHandler;
 import se.chalmers.fleetspeak.util.Command;
 
 /**
@@ -58,9 +58,9 @@ public class ClientCreator implements AuthenticatorListener{
 	}
 
 	private void establishUDPConnection() {
-		
+
 	}
-	
+
 	@Override
 	public void authenticationSuccessful(Object authorizedObject, Authenticator authenticator) {
 		if (authenticator.getClass() == ClientAuthenticator.class) {
