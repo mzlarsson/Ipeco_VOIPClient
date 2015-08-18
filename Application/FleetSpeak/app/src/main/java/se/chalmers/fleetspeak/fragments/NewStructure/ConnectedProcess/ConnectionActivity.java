@@ -61,6 +61,7 @@
                         case MessageValues.CONNECTIONFAILED:
                             break;
                         case MessageValues.AUTHORIZED:
+                            updateView();
                             break;
                         case MessageValues.AUTHENTICATIONFAILED:
                             returnToLogin("Authentication failed");

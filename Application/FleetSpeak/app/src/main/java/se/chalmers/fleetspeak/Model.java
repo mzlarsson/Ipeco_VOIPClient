@@ -9,7 +9,6 @@ import android.util.Log;
 import java.util.ArrayList;
 
 import se.chalmers.fleetspeak.Network.TLSConnector;
-import se.chalmers.fleetspeak.audio.sound.SoundController;
 import se.chalmers.fleetspeak.audio.sound.SoundHandler;
 import se.chalmers.fleetspeak.util.Command;
 import se.chalmers.fleetspeak.util.MessageValues;
@@ -36,7 +35,7 @@ public class Model {
 
         soundHandler = new SoundHandler();
         Thread t = new Thread(soundHandler,"SoundHandler");
-        t.start();
+        //t.start();
     }
 
     public ArrayList<Room> getRooms(){
