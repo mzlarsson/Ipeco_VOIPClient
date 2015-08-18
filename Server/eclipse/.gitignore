@@ -3,3 +3,6 @@
 /css/
 /icons/
 /markup/
+
+# Exceptions #
+!libs/*.jar
