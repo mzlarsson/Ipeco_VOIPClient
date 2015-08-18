@@ -28,7 +28,7 @@ public class SimpleMixer extends AbstractMixer{
 				for(int j = 0; j<mixed[i].length; j++){													//Mix every byte
 					for(int k = 0; k<members; k++){														//By traversing all members sound
 						if(data[k].length>j && k != i){													//Except themself (or empty signals)
-							mixed[i][j] = (byte) (mixed[i][j]+data[k][j]-mixed[i][j]*data[k][j]);		//And perform a+b-ab on the signal
+							mixed[i][j] = (byte) (mixed[i][j]+data[k][j]-mixed[i][j]*data[k][j]/127);		//And perform a+b-ab on the signal
 						}
 					}
 				}
