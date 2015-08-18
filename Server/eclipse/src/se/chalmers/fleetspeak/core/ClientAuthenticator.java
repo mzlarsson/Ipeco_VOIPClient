@@ -5,6 +5,7 @@ import java.util.List;
 
 import se.chalmers.fleetspeak.database.DatabaseCommunicator;
 import se.chalmers.fleetspeak.database.UserInfo;
+import se.chalmers.fleetspeak.network.tcp.TCPHandler;
 import se.chalmers.fleetspeak.util.Command;
 
 /**
@@ -16,9 +17,9 @@ import se.chalmers.fleetspeak.util.Command;
 public class ClientAuthenticator implements Authenticator, CommandHandler{
 
 	private TCPHandler tcp;
-	
+
 	private List<AuthenticatorListener> listeners;
-	
+
 	/**
 	 * Constructor for a ClientAuthenticator.
 	 * @param clientSocket The socket with the new connection to authorize.
@@ -29,12 +30,12 @@ public class ClientAuthenticator implements Authenticator, CommandHandler{
 		tcp.setCommandHandler(this);
 		tcp.start();
 	}
-	
+
 	/**
 	 * Starts the authentication process.
 	 */
 	public void start() {
-		tcp.sendCommand(new Command("sendAuthenticationDetails", null, null));		
+		tcp.sendCommand(new Command("sendAuthenticationDetails", null, null));
 	}
 	/**
 	 * Checks if the response from the connection matches with the information in the database.
@@ -66,7 +67,7 @@ public class ClientAuthenticator implements Authenticator, CommandHandler{
 			al.authenticationFailed(errorMsg, this);
 		}
 	}
-	
+
 	/**
 	 * Returns the connection that is pending authorization.
 	 * @return The TCPHandler holding the connection.
@@ -74,7 +75,7 @@ public class ClientAuthenticator implements Authenticator, CommandHandler{
 	public TCPHandler getTCPHandler() {
 		return tcp;
 	}
-	
+
 	/**
 	 * Shuts down the active connection in the process of authorization
 	 */

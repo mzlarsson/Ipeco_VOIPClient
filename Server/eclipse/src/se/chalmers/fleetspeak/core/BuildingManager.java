@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.core_v2;
+package se.chalmers.fleetspeak.core;
 
 import se.chalmers.fleetspeak.util.Command;
 

@@ -30,9 +30,9 @@ import javafx.stage.Stage;
 
 import org.fxmisc.richtext.StyleClassedTextArea;
 
+import se.chalmers.fleetspeak.core.MainController;
 import se.chalmers.fleetspeak.core.command.Commands;
 import se.chalmers.fleetspeak.core.command.impl.CommandResponse;
-import se.chalmers.fleetspeak.core_v2.MainController;
 
 public class ServerGUIController implements StageOwner{
 
