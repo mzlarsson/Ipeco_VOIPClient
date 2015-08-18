@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.network;
+package se.chalmers.fleetspeak.network.tcp;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -15,8 +15,6 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.net.ssl.HandshakeCompletedEvent;
-import javax.net.ssl.HandshakeCompletedListener;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLException;
@@ -41,10 +39,7 @@ public class TLSConnectionHandler{
 		executor = Executors.newSingleThreadExecutor();
 		executor.execute(connectionListener);
 	}
-	HandshakeCompletedListener handshakeListener = (HandshakeCompletedEvent event)->{
-		logger.log(Level.INFO, "handshake complete");
-		clientCreator.addNewClient(event.getSocket());
-	};
+
 	Runnable connectionListener = ()->{
 
 
@@ -61,14 +56,8 @@ public class TLSConnectionHandler{
 			try{
 				logger.log(Level.FINER, "Wainting for client");
 				clientSocket = (SSLSocket) serverSocket.accept();
-
-
 				logger.log(Level.INFO,"created socket" + clientSocket.getSession().getProtocol());
-				//clientSocket.addHandshakeCompletedListener(handshakeListener);
-				logger.log(Level.FINEST, "handshakelistener added");
 				clientCreator.addNewClient(clientSocket);
-
-
 			}catch(SSLException e){
 				e.printStackTrace();
 			}

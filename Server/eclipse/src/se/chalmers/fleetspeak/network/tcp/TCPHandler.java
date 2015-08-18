@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.core;
+package se.chalmers.fleetspeak.network.tcp;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 
 import javax.net.ssl.SSLException;
 
+import se.chalmers.fleetspeak.core.CommandHandler;
 import se.chalmers.fleetspeak.eventbus.EventBus;
 import se.chalmers.fleetspeak.eventbus.EventBusEvent;
 import se.chalmers.fleetspeak.eventbus.IEventBusSubscriber;

@@ -2,7 +2,7 @@ package se.chalmers.fleetspeak;
 
 import java.util.Scanner;
 
-import se.chalmers.fleetspeak.core_v2.MainController;
+import se.chalmers.fleetspeak.core.MainController;
 import se.chalmers.fleetspeak.eventbus.EventBus;
 import se.chalmers.fleetspeak.eventbus.EventBusEvent;
 import se.chalmers.fleetspeak.util.Command;

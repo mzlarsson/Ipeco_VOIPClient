@@ -1,10 +1,9 @@
-package se.chalmers.fleetspeak.core_v2;
+package se.chalmers.fleetspeak.core;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import se.chalmers.fleetspeak.core.Client;
 import se.chalmers.fleetspeak.util.Command;
 
 public class Building {

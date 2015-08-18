@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.core;
+package se.chalmers.fleetspeak.network.udp;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -7,6 +7,8 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.Random;
 
+import se.chalmers.fleetspeak.core.CommandHandler;
+import se.chalmers.fleetspeak.network.tcp.TCPHandler;
 import se.chalmers.fleetspeak.util.Command;
 import se.chalmers.fleetspeak.util.PortFactory;
 
@@ -25,7 +27,7 @@ public class STUNInitiator extends Thread implements CommandHandler{
 	private int responseTimeoutTime = 2000, nbrOfResponseAttempts = 10;
 	private long delayInMilliBetweenAttempts = 50;
 	private volatile boolean isWaitingForResponse;
-	
+
 	public STUNInitiator(TCPHandler tcp, int connectionID) {
 		super("STUNInitiator:id"+connectionID);
 		tcp.setCommandHandler(this);
@@ -36,7 +38,7 @@ public class STUNInitiator extends Thread implements CommandHandler{
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Override
 	public void run() {
 		ctrlCode = (byte)new Random().nextInt();

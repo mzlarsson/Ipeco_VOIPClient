@@ -1,7 +1,6 @@
-package se.chalmers.fleetspeak.core_v2;
+package se.chalmers.fleetspeak.core;
 
-import se.chalmers.fleetspeak.core.ClientCreator;
-import se.chalmers.fleetspeak.network.TLSConnectionHandler;
+import se.chalmers.fleetspeak.network.tcp.TLSConnectionHandler;
 
 public class MainController {
 
