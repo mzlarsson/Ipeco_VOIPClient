@@ -2,7 +2,7 @@
 
     import android.animation.Animator;
     import android.animation.AnimatorListenerAdapter;
-    import android.app.ActionBar;
+    import android.support.v7.app.ActionBar;
     import android.app.FragmentTransaction;
     import android.content.Intent;
     import android.os.Handler;
@@ -40,7 +40,6 @@
             private BackFragment backFragment;
             private View loadingView;
             private String username;
-            private boolean isAutherized = false;
 
 
             /**
@@ -54,7 +53,6 @@
                         case MessageValues.CONNECTED:
                             break;
                         case MessageValues.DISCONNECTED:
-                            isAutherized = false;
                             updateView();
                             break;
                         case MessageValues.MODELCHANGED:
@@ -63,10 +61,8 @@
                         case MessageValues.CONNECTIONFAILED:
                             break;
                         case MessageValues.AUTHORIZED:
-                            isAutherized = true;
                             break;
                         case MessageValues.AUTHENTICATIONFAILED:
-                            isAutherized = false;
                             returnToLogin("Authentication failed");
                             break;
                     }
@@ -115,7 +111,7 @@
                 TruckDataHandler.addListener(this);
                 carMode = TruckDataHandler.getInstance().getTruckMode();
 
-                actionBar = getActionBar();
+                actionBar = getSupportActionBar();
                 actionBar.setDisplayHomeAsUpEnabled(true);
                 actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
                 ActionBar.Tab rooms = actionBar.newTab();
@@ -182,19 +178,7 @@
                 carMode = mode;
                 changeCarModeTabs(mode);
             }
-            @Override
-            public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-                viewPager.setCurrentItem(tab.getPosition());
-            }
 
-            @Override
-            public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-            }
-
-            @Override
-            public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-
-            }
 
             @Override
             public List<Room> getRooms() {
@@ -258,9 +242,7 @@
 
         @Override
         public void onBackYes() {
-            if(isAutherized){
-                model.disconnect();
-            }
+            model.disconnect();
             returnToLogin(null);
         }
 
@@ -273,7 +255,22 @@
                 }
             }
 
-            public class PagerAdapter extends FragmentPagerAdapter {
+        @Override
+        public void onTabSelected(ActionBar.Tab tab, android.support.v4.app.FragmentTransaction fragmentTransaction) {
+            viewPager.setCurrentItem(tab.getPosition());
+        }
+
+        @Override
+        public void onTabUnselected(ActionBar.Tab tab, android.support.v4.app.FragmentTransaction fragmentTransaction) {
+
+        }
+
+        @Override
+        public void onTabReselected(ActionBar.Tab tab, android.support.v4.app.FragmentTransaction fragmentTransaction) {
+
+        }
+
+        public class PagerAdapter extends FragmentPagerAdapter {
                 public PagerAdapter(FragmentManager fragmentManager) {
                     super(fragmentManager);
                 }

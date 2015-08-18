@@ -23,8 +23,8 @@ public class DummyModel extends Model {
 
 
     private ArrayList<Room> rooms = new ArrayList<Room>();
-    public DummyModel(Context context, Handler callbackHandler) {
-        super(context, callbackHandler);
+    public DummyModel( Handler callbackHandler) {
+        super(callbackHandler);
         Room room1 = new Room("First", 0);
         Room room2 = new Room("Second", 1);
         users1.add(new User("Henrik", 1));

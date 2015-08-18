@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import se.chalmers.fleetspeak.Network.SocketFactory;
 import se.chalmers.fleetspeak.R;
 import se.chalmers.fleetspeak.fragments.NewStructure.ConnectedProcess.ConnectionActivity;
 import se.chalmers.fleetspeak.truck.TruckDataHandler;
@@ -102,6 +103,7 @@ public class LoginActivity extends ActionBarActivity implements TruckStateListen
         prefEdit.commit();
     }
     public void startConnectionProcess(){
+        SocketFactory.setContext(this);
         Intent newIntent = new Intent(this, ConnectionActivity.class);
         newIntent.putExtra("username", username);
         newIntent.putExtra("password", password);
