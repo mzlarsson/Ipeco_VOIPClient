@@ -9,7 +9,6 @@ import android.util.Log;
 import java.util.ArrayList;
 
 import se.chalmers.fleetspeak.Network.TLSConnector;
-import se.chalmers.fleetspeak.audio.sound.SoundController;
 import se.chalmers.fleetspeak.audio.sound.SoundHandler;
 import se.chalmers.fleetspeak.util.Command;
 import se.chalmers.fleetspeak.util.MessageValues;
@@ -23,9 +22,6 @@ public class Model {
     private CommandHandler commandHandler;
     private TLSConnector connector;
     private Handler callbackHandler;
-    private String remoteIP;
-
-    private SoundController soundController;
     private State state;
 
     private SoundHandler soundHandler;
@@ -39,7 +35,7 @@ public class Model {
 
         soundHandler = new SoundHandler();
         Thread t = new Thread(soundHandler,"SoundHandler");
-        t.start();
+        //t.start();
     }
 
     public ArrayList<Room> getRooms(){
@@ -69,37 +65,24 @@ public class Model {
 
     }
     public void setName(String name){
-        connector.sendMessage(new Command("setname", name, null));
+        if(state == State.authorized) {
+            connector.sendMessage(new Command("setname", name, null));
+        }
     }
     public void move(int roomid){
-        if(roomid != roomHandler.getCurrentRoom()){
+        if(state == State.authorized &&
+                roomid != roomHandler.getCurrentRoom()){
             roomHandler.moveUser(roomHandler.getUserid(), roomid);
             connector.sendMessage(new Command("move", roomid,null));
         }
     }
     public void moveNewRoom(String roomname){
-        connector.sendMessage(new Command("movenewroom", roomname, null));
+        if(state == State.authorized) {
+            connector.sendMessage(new Command("movenewroom", roomname, null));
+        }
     }
     public int getCurrentRoom(){
         return roomHandler.getCurrentRoom();
-    }
-    public void pushToTalk(){
-        if(soundController != null)
-            soundController.pushToTalk();
-
-    }
-    public void muteUser(User user){
-        Log.d("Model", "muteUser not implemented ");
-    }
-    public boolean isTalking(){
-        if(soundController != null)
-            return soundController.isTalking();
-        return false;
-    }
-
-    public void getAssistance(int who){
-        //TODO signal server
-        Log.i("Model", "getAssistance is not implemented");
     }
 
     class CommandHandler extends Handler {
@@ -111,7 +94,6 @@ public class Model {
 
             switch (sCommand.toLowerCase()){
                 case "connected":
-                    remoteIP = (String) command.getKey();
                     state = State.connected;
                     break;
                 case "connectionfailed":

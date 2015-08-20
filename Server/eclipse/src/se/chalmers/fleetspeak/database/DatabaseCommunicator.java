@@ -214,7 +214,7 @@ public class DatabaseCommunicator {
 			String url = "jdbc:postgresql://localhost/postgres";
 			Properties props = new Properties();
 			props.setProperty("user","postgres");
-			props.setProperty("password","FleetElite");
+			props.setProperty("password","FleetElit");
 			//			props.setProperty("ssl","true");	//TODO When we change it to ssl.
 			try {
 				connection = DriverManager.getConnection(url, props);

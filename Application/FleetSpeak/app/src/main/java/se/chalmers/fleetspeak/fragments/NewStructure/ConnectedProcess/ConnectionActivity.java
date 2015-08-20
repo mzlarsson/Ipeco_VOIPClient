@@ -2,7 +2,7 @@
 
     import android.animation.Animator;
     import android.animation.AnimatorListenerAdapter;
-    import android.app.ActionBar;
+    import android.support.v7.app.ActionBar;
     import android.app.FragmentTransaction;
     import android.content.Intent;
     import android.os.Handler;
@@ -24,7 +24,6 @@
     import se.chalmers.fleetspeak.R;
     import se.chalmers.fleetspeak.Room;
     import se.chalmers.fleetspeak.User;
-    import se.chalmers.fleetspeak.fragments.NewStructure.DummyModel.DummyModel;
     import se.chalmers.fleetspeak.fragments.NewStructure.EstablishConnection.BackFragment;
     import se.chalmers.fleetspeak.fragments.NewStructure.LoginProcess.LoginActivity;
     import se.chalmers.fleetspeak.truck.TruckDataHandler;
@@ -41,7 +40,6 @@
             private BackFragment backFragment;
             private View loadingView;
             private String username;
-            private boolean isConnected = false;
 
 
             /**
@@ -53,18 +51,20 @@
                     Log.d("updateHandler", "Got Message=" + msg.what);
                     switch (msg.what){
                         case MessageValues.CONNECTED:
-                            // If the user is able to be connected go to the join fragment
-                            // where the user can choose which room to join
                             break;
                         case MessageValues.DISCONNECTED:
-                            // If disconnected from the server return the to start fragment
-                            // where user can try to connect again
+                            updateView();
                             break;
                         case MessageValues.MODELCHANGED:
+                            updateView();
                             break;
-
                         case MessageValues.CONNECTIONFAILED:
-
+                            break;
+                        case MessageValues.AUTHORIZED:
+                            updateView();
+                            break;
+                        case MessageValues.AUTHENTICATIONFAILED:
+                            returnToLogin("Authentication failed");
                             break;
                     }
                 }
@@ -88,14 +88,15 @@
                 viewPager = (CViewPager)findViewById(R.id.pager);
                 viewPager.setId(R.id.pager);
                 viewPager.setAdapter(new PagerAdapter(getSupportFragmentManager()));
-                viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+
+                viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
                     @Override
                     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                     }
 
                     @Override
                     public void onPageSelected(int position) {
-                        if(position != 2) {
+                        if (position != 2) {
                             actionBar.setSelectedNavigationItem(position);
                         }
                     }
@@ -104,14 +105,14 @@
                     public void onPageScrollStateChanged(int state) {
                     }
                 });
-                model = new DummyModel(this, updateHandler);
-                //model.connect((String) extras.get("password"), 8867);
+                model = new Model(updateHandler);
+                model.connect((String) extras.get("password"), 8867);
                 username = (String)extras.get("username");
 
                 TruckDataHandler.addListener(this);
                 carMode = TruckDataHandler.getInstance().getTruckMode();
 
-                actionBar = getActionBar();
+                actionBar = getSupportActionBar();
                 actionBar.setDisplayHomeAsUpEnabled(true);
                 actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
                 ActionBar.Tab rooms = actionBar.newTab();
@@ -144,14 +145,6 @@
                 if (id == R.id.changeTruck) {
                     truckModeChanged(!carMode);
                     return true;
-                }else if(id == R.id.menuCon){
-                    if(isConnected) {
-                        model.disconnect();
-                    }else{
-                        model.connect("lalal", 88867);
-                        updateRoomView();
-                    }
-                    isConnected = !isConnected;
                     // home id seems overwritten write out number
                 }else if(id == 16908332){
                     if(viewPager.getCurrentItem() == 2){
@@ -186,19 +179,7 @@
                 carMode = mode;
                 changeCarModeTabs(mode);
             }
-            @Override
-            public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-                viewPager.setCurrentItem(tab.getPosition());
-            }
 
-            @Override
-            public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-            }
-
-            @Override
-            public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-
-            }
 
             @Override
             public List<Room> getRooms() {
@@ -262,6 +243,7 @@
 
         @Override
         public void onBackYes() {
+            model.disconnect();
             returnToLogin(null);
         }
 
@@ -274,7 +256,22 @@
                 }
             }
 
-            public class PagerAdapter extends FragmentPagerAdapter {
+        @Override
+        public void onTabSelected(ActionBar.Tab tab, android.support.v4.app.FragmentTransaction fragmentTransaction) {
+            viewPager.setCurrentItem(tab.getPosition());
+        }
+
+        @Override
+        public void onTabUnselected(ActionBar.Tab tab, android.support.v4.app.FragmentTransaction fragmentTransaction) {
+
+        }
+
+        @Override
+        public void onTabReselected(ActionBar.Tab tab, android.support.v4.app.FragmentTransaction fragmentTransaction) {
+
+        }
+
+        public class PagerAdapter extends FragmentPagerAdapter {
                 public PagerAdapter(FragmentManager fragmentManager) {
                     super(fragmentManager);
                 }
