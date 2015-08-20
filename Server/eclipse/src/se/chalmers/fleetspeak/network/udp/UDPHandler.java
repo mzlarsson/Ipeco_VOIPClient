@@ -12,13 +12,15 @@ public class UDPHandler extends Thread{
 	private boolean isRunning = false;
 	private Logger logger;
 	private DatagramPacket receivePacket;
-	private static int PACKET_SIZE = 172;
+	private int packetSize;
+	private PacketReceiver receiver;
 	
-	public UDPHandler(DatagramSocket socket) {
-		super("RTPHandler:port"+socket.getLocalPort());
+	public UDPHandler(DatagramSocket socket, int packetSize) {
+		super("UDPHandler:port"+socket.getLocalPort());
 		logger = Logger.getLogger("Debug");
 		this.socket = socket;
-		receivePacket = new DatagramPacket(new byte[PACKET_SIZE], PACKET_SIZE);
+		this.packetSize = packetSize;
+		receivePacket = new DatagramPacket(new byte[this.packetSize], this.packetSize);
 	}
 
 	@Override
@@ -29,10 +31,25 @@ public class UDPHandler extends Thread{
 			try {
 				socket.receive(receivePacket);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				logger.log(Level.WARNING, "UDP-socket " + socket.getLocalPort() + " caught an exception");
 				e.printStackTrace();
 			}
-			
+			handlePacket(receivePacket.getData());			
 		}
+	}
+	
+	protected void handlePacket(byte[] packet) {
+		if (receiver != null) {
+			receiver.handlePacket(packet);
+		}
+	}
+	
+	public void setReceiver(PacketReceiver receiver) {
+		this.receiver = receiver;
+	}
+	
+	public void terminate() {
+		isRunning = false;
+		socket.close();
 	}
 }
