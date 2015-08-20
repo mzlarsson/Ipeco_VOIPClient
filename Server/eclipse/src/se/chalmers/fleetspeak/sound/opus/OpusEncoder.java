@@ -1,15 +1,17 @@
 package se.chalmers.fleetspeak.sound.opus;
 
+import org.jitsi.impl.neomedia.codec.audio.opus.Opus;
+
 public class OpusEncoder implements Encoder{
 
 	private long encoder;
 	
 	public OpusEncoder() throws OpusException{
-		this(8000);
+		this(Constants.DEFAULT_SAMPLE_RATE);
 	}
 	
-	public OpusEncoder(int frequency) throws OpusException{
-		encoder = Opus.encoder_create(frequency, 1);
+	public OpusEncoder(int sampleRate) throws OpusException{
+		encoder = Opus.encoder_create(sampleRate, 1);
 		if(encoder == 0){
 			throw new OpusException("Could not initiate encoder");
 		}

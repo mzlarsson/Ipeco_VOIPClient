@@ -1,7 +1,5 @@
 package se.chalmers.fleetspeak.test;
 
-import java.util.Random;
-
 import se.chalmers.fleetspeak.sound.opus.OpusDecoder;
 import se.chalmers.fleetspeak.sound.opus.OpusEncoder;
 import se.chalmers.fleetspeak.sound.opus.OpusException;
@@ -22,14 +20,15 @@ public class OpusTester {
 		
 		byte[] bytedata = new byte[160];
 		for(int i = 0; i<bytedata.length; i++){
-			bytedata[i] = (byte)new Random().nextInt();
+			bytedata[i] = (byte)120;
 		}
 		
-		byte[] newData = encoder.encode(decoder.decode(bytedata));
+		byte[] middleData = encoder.encode(bytedata);
+		byte[] newData = decoder.decode(middleData);
 		
 		int errorCounter = 0;
 		for(int i = 0; i<bytedata.length; i++){
-			System.out.println(bytedata[i]+"\t"+newData[i]+"\t=\t"+(bytedata[i]==newData[i]?"SAME":"DIFF"));
+			System.out.println(bytedata[i]+"\t-->\t"+middleData[i]+"\t-->\t"+newData[i]+"\t=\t"+(bytedata[i]==newData[i]?"SAME":"DIFF"));
 			if(bytedata[i] != newData[i]){
 				errorCounter++;
 			}
