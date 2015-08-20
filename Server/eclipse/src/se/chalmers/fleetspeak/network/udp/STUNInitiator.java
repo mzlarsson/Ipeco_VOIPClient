@@ -6,6 +6,7 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.Random;
+import java.util.logging.Logger;
 
 import se.chalmers.fleetspeak.core.CommandHandler;
 import se.chalmers.fleetspeak.network.tcp.TCPHandler;
@@ -27,9 +28,11 @@ public class STUNInitiator extends Thread implements CommandHandler{
 	private int responseTimeoutTime = 2000, nbrOfResponseAttempts = 10;
 	private long delayInMilliBetweenAttempts = 50;
 	private volatile boolean isWaitingForResponse;
+	private Logger logger;
 
 	public STUNInitiator(TCPHandler tcp, int connectionID) {
 		super("STUNInitiator:id"+connectionID);
+		logger = Logger.getLogger("Debug");
 		tcp.setCommandHandler(this);
 		this.tcp = tcp;
 		try {
