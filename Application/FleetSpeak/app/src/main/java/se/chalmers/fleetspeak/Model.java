@@ -18,7 +18,7 @@ import se.chalmers.fleetspeak.util.UserInfoPacket;
  * Created by Nieo on 08/03/15.
  */
 public class Model {
-    private RoomHandler roomHandler;
+    private Building building;
     private CommandHandler commandHandler;
     private TLSConnector connector;
     private Handler callbackHandler;
@@ -26,63 +26,69 @@ public class Model {
 
     private SoundHandler soundHandler;
 
+    String username ="";
+
     public Model(Handler callbackHandler){
         state = State.not_connected;
-        roomHandler = new RoomHandler(callbackHandler);
+        building = new Building(new Messenger(callbackHandler));
         commandHandler = new CommandHandler();
         connector = new TLSConnector(commandHandler);
         this.callbackHandler = callbackHandler;
 
-        soundHandler = new SoundHandler();
-        Thread t = new Thread(soundHandler,"SoundHandler");
+        //soundHandler = new SoundHandler();
+        //Thread t = new Thread(soundHandler,"SoundHandler");
         //t.start();
     }
 
     public ArrayList<Room> getRooms(){
-        return roomHandler.getRooms();
+        if(state == State.authenticated)
+            return building.getRooms();
+        return null;
     }
     public ArrayList<User> getUsers(int roomid){
-        return roomHandler.getUsers(roomid);
+        if(state == State.authenticated)
+            return building.getUsers(roomid);
+        return null;
     }
 
-    public void connect(String ip, int port){
+    public void connect(String name, int port){
         if(state == State.not_connected){
-            roomHandler.clear();
+            username = name;
+            building.clear();
             state = State.connecting;
-            connector.connect(ip, port);
+            connector.connect("192.168.10.100", 8867);
         }else{
             Log.d("Model", "Already connected or trying to connect");
         }
     }
 
     public void disconnect(){
-        if(state == State.authorized || state == State.connected){
+        if(state == State.authenticated || state == State.connected){
             state = State.not_connected;
             connector.disconnect();
         }else{
-            Log.d("Model","Not connected, cannot send disconnect");
+            Log.d("Model", "Not connected, cannot send disconnect");
         }
 
     }
-    public void setName(String name){
-        if(state == State.authorized) {
-            connector.sendMessage(new Command("setname", name, null));
-        }
-    }
     public void move(int roomid){
-        if(state == State.authorized &&
-                roomid != roomHandler.getCurrentRoom()){
-            roomHandler.moveUser(roomHandler.getUserid(), roomid);
-            connector.sendMessage(new Command("move", roomid,null));
+        if(state == State.authenticated &&
+                roomid != building.getCurrentRoom()){
+            Log.d("Model", "Moving to " + roomid);
+            building.moveUser(building.getUserid(), building.getCurrentRoom(),roomid);
+            connector.sendMessage(new Command("move", building.getCurrentRoom(),roomid));
         }
+        Log.d("Model", roomid + " " + building.getCurrentRoom() );
     }
     public void moveNewRoom(String roomname){
-        if(state == State.authorized) {
+        Log.d("Model", state.toString());
+        if(state == State.authenticated) {
+            Log.d("Model", "Moving to " + roomname);
             connector.sendMessage(new Command("movenewroom", roomname, null));
         }
     }
     public int getCurrentRoom(){
-        return roomHandler.getCurrentRoom();
+        return building.getCurrentRoom();
     }
 
     class CommandHandler extends Handler {
@@ -101,32 +107,31 @@ public class Model {
                     break;
                 case "disconnected":
                     state = State.not_connected;
-                    roomHandler.clear();
+                    building.clear();
                     break;
                 case "setinfo":
-                    roomHandler.setUserInfo((UserInfoPacket) command.getKey());
+                    building.setUserInfo(((UserInfoPacket) command.getKey()).getID());
                     break;
                 case "addeduser":
                     UserInfoPacket user = (UserInfoPacket)command.getKey();
                     int roomid = (int)command.getValue();
-                    roomHandler.addUser(new User(user.getName(), user.getID()), roomid);
-                    break;
-                case "changedusername":
-                    roomHandler.changeUsername((Integer) command.getKey(), (String) command.getValue());
+                    building.addUser(user.getID(), user.getName(), roomid);
                     break;
                 case "changedroomname":
-                    roomHandler.changeRoomName((Integer) command.getKey(), (String) command.getValue());
+                    building.changeRoomName((Integer) command.getKey(), (String) command.getValue());
                 case "moveduser":
-                    roomHandler.moveUser((Integer) command.getKey(), (Integer) command.getValue());
+
+                    String[] rooms = ((String)command.getValue()).split(",");
+                    building.moveUser((Integer) command.getKey(), Integer.parseInt(rooms[0]), Integer.parseInt(rooms[1]));
                     break;
                 case "createdroom":
-                    roomHandler.addRoom((Integer) command.getKey(), (String) command.getValue());
+                    building.addRoom((Integer) command.getKey(), (String) command.getValue());
                     break;
                 case "removeduser":
-                    roomHandler.removeUser((Integer) command.getKey());
+                    building.removeUser((Integer) command.getKey(), (Integer) command.getValue());
                     break;
                 case "removedroom":
-                    roomHandler.removeRoom((Integer) command.getKey());
+                    building.removeRoom((Integer) command.getKey());
                     break;
                 case "requestsoundport":
                     //int port = soundController.addStream((Integer) command.getKey());
@@ -141,14 +146,14 @@ public class Model {
                     //soundController = new SoundController(context, remoteIP, (Integer) command.getKey());
                     break;
                 case "sendauthenticationdetails":
-
-                        connector.sendMessage(new Command("authenticationdetails", "v", null)); //TODO "v" should be the given username.
+                        Log.d("auth", username);
+                        connector.sendMessage(new Command("authenticationdetails", username, null)); //TODO "v" should be the given username.
                        //msg.replyTo.send(Message.obtain(null, MessageValues.AUTHENTICATIONDETAILS, Utils.getUsername()));
 
                     break;
-                case "authorizationresult":
-                    if ((boolean) command.getKey()) { // true if successfully authorized
-                        state = State.authorized;
+                case "authenticationresult":
+                    if ((boolean) command.getKey()) { // true if successfully authenticated
+                        state = State.authenticated;
                         try {
                             new Messenger(callbackHandler).send(Message.obtain(null, MessageValues.AUTHORIZED));
                         } catch (RemoteException e) {
@@ -165,13 +170,13 @@ public class Model {
                     break;
             }
 
-            //Log.d("CommandHandler", "Rooms " + roomHandler.toString());
+
 
 
         }
     }
     private enum State{
-        not_connected, connecting, connected, authorized;
+        not_connected, connecting, connected, authenticated;
     }
 
 

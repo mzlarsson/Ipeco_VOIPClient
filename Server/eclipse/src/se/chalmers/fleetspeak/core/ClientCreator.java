@@ -37,7 +37,7 @@ public class ClientCreator implements AuthenticatorListener{
 	}
 
 	/**
-	 * Starts the authorization-process to check if the new connection is a valid user.
+	 * Starts the authentication process to check if the new connection is a valid user.
 	 * @param clientSocket
 	 */
 	public void addNewClient(Socket clientSocket) {
@@ -48,7 +48,7 @@ public class ClientCreator implements AuthenticatorListener{
 	}
 
 	/**
-	 * Shuts down all connections in the process of authorization.
+	 * Shuts down all connections in the process of authentication.
 	 */
 	public void terminate() {
 		for (ClientAuthenticator ca : authenticators) {
@@ -69,7 +69,7 @@ public class ClientCreator implements AuthenticatorListener{
 				UserInfo ui = (UserInfo)authorizedObject;
 				TCPHandler tcph = ca.getTCPHandler();
 				Client client = new Client(ui.getID(), ui.getAlias(), ca.getTCPHandler().getInetAddress(), tcph);
-				tcph.sendCommand(new Command("authorizationResult", true, "Successful authorization"));
+				tcph.sendCommand(new Command("authenticationResult", true, "Successful authentication"));
 				logger.log(Level.INFO, "A new person joined");
 				building.addClient(client, targetRoom);
 				//TODO this should be checked together with name/pwd
@@ -91,7 +91,7 @@ public class ClientCreator implements AuthenticatorListener{
 	public void authenticationFailed(String errorMsg, Authenticator authenticator) {
 		if (authenticator.getClass() == ClientAuthenticator.class) {
 			ClientAuthenticator ca = (ClientAuthenticator)authenticator;
-			ca.getTCPHandler().sendCommand(new Command("authorizationResult", false, errorMsg));
+			ca.getTCPHandler().sendCommand(new Command("authenticationResult", false, errorMsg));
 			ca.terminate();
 			logger.log(Level.FINER, errorMsg);
 			authenticators.remove(ca);

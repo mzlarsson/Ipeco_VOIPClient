@@ -33,7 +33,7 @@ public class TLSConnector{
         responseMessenger = new Messenger(handler);
 
     }
-
+    //TODO change to username, password and use a static IP,port
     public void connect(String ip,  int port){
         new SocketCreator().execute(ip, ""+port);
     }
@@ -41,14 +41,14 @@ public class TLSConnector{
     public void sendMessage(Object message){
 
         try {
-            Log.d(LOGTAG, "sening message");
+            Log.d(LOGTAG, "sending message");
             writeMessenger.send(Message.obtain(null,1,message));
         } catch (RemoteException e) {
             Log.e(LOGTAG, "failed to send message: " + e.getMessage());
         }
     }
     public void disconnect(){
-
+        new SocketDestroyer();
     }
 
     private class SocketCreator extends AsyncTask<String,  Void, SSLSocket>{
@@ -58,6 +58,7 @@ public class TLSConnector{
             SSLSocket sslSocket = null;
             if(strings.length == 2){
                 try {
+                    Log.i(LOGTAG, "trying to connect to " + strings[0] + strings[1]);
                     sslSocket = (SSLSocket) SocketFactory.getSocketFactory().createSocket(strings[0], Integer.parseInt(strings[1]));
 
                     Log.i(LOGTAG, sslSocket.getSession().getProtocol());
@@ -97,7 +98,24 @@ public class TLSConnector{
             }
         }
     }
+    private class SocketDestroyer extends AsyncTask<Void,Void,Void>{
 
+        @Override
+        protected Void doInBackground(Void... voids) {
+            socketReader.stop();
+            try {
+                writeMessenger.send(Message.obtain(null,0));
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+            try {
+                socket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+    }
 
 
 }

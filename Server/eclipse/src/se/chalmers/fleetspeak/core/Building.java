@@ -24,8 +24,8 @@ public class Building {
 		case "createroom":
 			addRoom((String)cmd.getValue(), false);
 			break;
-		case "roomempty":
-			removeRoom(id);
+		case "disconnect":
+			removeClient((int)cmd.getKey(),id);
 			break;
 		default:
 			logger.log(Level.WARNING, "Unknown command: " + cmd.getCommand() );
@@ -79,9 +79,19 @@ public class Building {
 	public void moveClient(int clientid, int sourceRoom, int destinationRoom ){
 		Client c = rooms.get(sourceRoom).removeClient(clientid);
 		rooms.get(destinationRoom).addClient(c);
-		postUpdate(new Command("moveduser", clientid, destinationRoom));
+		postUpdate(new Command("moveduser", clientid, sourceRoom + "," + destinationRoom));
 		logger.log(Level.INFO, "Moved client " + clientid + " to room " + destinationRoom);
+		if(rooms.get(sourceRoom).canDelete()){
+			removeRoom(sourceRoom);
+		}
 	}
+
+	public void removeClient(int clientid, int roomid){
+		rooms.get(roomid).removeClient(clientid);
+		postUpdate(new Command("removeduser", clientid, roomid));
+		logger.log(Level.INFO, "Removed client " + clientid);
+	}
+
 	/**
 	 * Sends a command to all Clients in the Building
 	 * @param c Command to send
@@ -92,6 +102,7 @@ public class Building {
 	}
 
 	private void sync(Client c){
+		logger.log(Level.FINE, "Syncing client " + c.getName());
 		rooms.forEach((id,room)-> {
 			c.sendCommand(new Command("createdroom", id, room.getName()));
 			room.sync(c);

@@ -176,6 +176,7 @@ public class Client implements CommandHandler {
 			break;
 		case "disconnect":
 			tcp.terminate();
+			room.handleCommand(new Command("disconnect", clientID,null));
 			break;
 		default:
 			room.handleCommand(c);

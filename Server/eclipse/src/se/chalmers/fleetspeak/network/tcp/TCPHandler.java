@@ -46,10 +46,10 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 		this.clientSocket = clientSocket;
 		try {
 
-			logger.log(Level.FINE,"[TCPHandler]Trying to get streams");
+			logger.log(Level.FINE,"Trying to get streams");
 			objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
 			objectInputStream = new ObjectInputStream(clientSocket.getInputStream());
-			logger.log(Level.FINE,"[TCPHandler]Got streams");
+			logger.log(Level.FINE,"Got streams");
 		}catch(SSLException e){
 			e.printStackTrace();
 		}
@@ -69,13 +69,13 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 		isRunning = true;
 		try {
 			while (isRunning && objectInputStream != null) {
-				logger.log(Level.FINER,"[TCPHandler] trying to read");
+				logger.log(Level.FINER,"trying to read");
 				Object o = objectInputStream.readObject();
 
 				if (o.getClass() == Command.class) {
 					receivedCommand((Command) o);
 				} else {
-					logger.log(Level.SEVERE, "[TCPHandler] Found a non-Command object: " + o.getClass().toString());
+					logger.log(Level.SEVERE, "Found a non-Command object: " + o.getClass().toString());
 				}
 			}
 		} catch(EOFException eofe){
@@ -100,7 +100,7 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 			logger.log(Level.FINE,  c.getCommand());
 			ch.handleCommand(c);
 		} else {
-			logger.log(Level.SEVERE, "[TCPHandler] Received a Command without a set CommandHandler");
+			logger.log(Level.SEVERE, "Received a Command without a set CommandHandler");
 		}
 	}
 
@@ -110,7 +110,7 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 	 */
 	public void sendCommand(Command command){
 		try{
-			logger.log(Level.FINER,"[TCPHandler]Sending Command: [ " + command.getCommand()+" | "+command.getKey()+" | "+command.getValue()+" ]");
+			logger.log(Level.FINER,"Sending Command: [ " + command.toString()+ " ]");
 			objectOutputStream.writeObject(command);
 		} catch(SocketException e){
 			if(command==null || !command.getCommand().equals("userDisconnected")){

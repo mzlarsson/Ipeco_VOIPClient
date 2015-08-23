@@ -192,7 +192,7 @@ public class RoomHandler{
     }
 
     public void changeRoomName(int roomid, String roomname) {
-        findRoom(roomid).setName(roomname);
+        //findRoom(roomid).setName(roomname);
         postUpdate(MessageValues.MODELCHANGED);
     }
 

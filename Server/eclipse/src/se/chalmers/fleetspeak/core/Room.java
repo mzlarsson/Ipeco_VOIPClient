@@ -43,11 +43,11 @@ public class Room implements CommandHandler{
 		logger.log(Level.FINER, "Room:" + id + " Removing user with id: " + clientid);
 		Client c = clients.get(clientid);
 		clients.remove(clientid);
-		if(clients.isEmpty() && !permanent) {
-			buildingManager.handleCommand(new Command("roomempty",null,null), this.id);
-			c.sendCommand(new Command("removedroom",this.id,null));
-		}
 		return c;
+	}
+
+	public boolean canDelete(){
+		return clients.isEmpty() && !permanent;
 	}
 
 	public Integer getId() {
@@ -70,8 +70,9 @@ public class Room implements CommandHandler{
 	}
 
 	public void sync(Client c){
+		logger.log(Level.FINE, name + " " + clients.size());
 		clients.forEach((id,client)->{
-			c.sendCommand(new Command("addeduser", c.getInfoPacket(), this.id));
+			c.sendCommand(new Command("addeduser", client.getInfoPacket(), this.id));
 		});
 	}
 
