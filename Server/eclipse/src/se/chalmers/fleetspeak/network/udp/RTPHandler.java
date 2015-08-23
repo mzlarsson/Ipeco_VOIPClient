@@ -1,62 +1,26 @@
 package se.chalmers.fleetspeak.network.udp;
 
 import java.net.DatagramSocket;
-import java.util.Arrays;
 
 public class RTPHandler implements PacketReceiver{
 	
-	private byte[] data;
-	private UDPHandler handler;
+	private UDPHandler udp;
+	private short seqNumber = 0;
 
 	public RTPHandler(DatagramSocket socket) {
-		handler = new UDPHandler(socket, 172);
-		handler.setReceiver(this);
-		handler.start();
+		udp = new UDPHandler(socket, 172);
+		udp.setReceiver(this);
+		udp.start();
 	}
 	
 	@Override
 	public void handlePacket(byte[] packet){
-		this.data = packet;
+		// TODO send to jitterbuffer
+		new RTPPacket(packet);
 	}
 	
-	private int getRTPVersion(){
-		return data[0]>>>6;
-	}
-	
-	private boolean hasPadding(){
-		return (data[0]&0x20) > 0; 
-	}
-	
-	private boolean hasExtension(){
-		return (data[0]&0x10) > 0;
-	}
-	
-	private int getCrscCount(){
-		return data[0]&0x0F;
-	}
-	
-	private boolean isMarked(){
-		return (data[1]>>>7) > 0;
-	}
-	
-	private int getPayloadType(){
-		return (data[1]&0x7F);
-	}
-	
-	private short getSequenceNumber(){
-		return (short)(Byte.toUnsignedInt(data[2])*256+data[3]);
-	}
-	
-	private long getTimeStamp(){
-		return (long)Byte.toUnsignedInt(data[4])*16777216+Byte.toUnsignedInt(data[5])*65536+Byte.toUnsignedInt(data[6])*256+data[7];
-	}
-	
-	private long getSourceID(){
-		return (long)Byte.toUnsignedInt(data[8])*16777216+Byte.toUnsignedInt(data[9])*65536+Byte.toUnsignedInt(data[10])*256+data[11];
-	}
-	
-	private byte[] getData(){
-		return Arrays.copyOfRange(data, 12, 160);
+	public void sendPacket(byte[] packet) {
+		udp.sendPacket(new RTPPacket(seqNumber++, (int)System.nanoTime(), packet).toByteArraySimple());
 	}
 	
 	private class JitterBuffer {
