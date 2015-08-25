@@ -3,7 +3,6 @@
     import android.animation.Animator;
     import android.animation.AnimatorListenerAdapter;
     import android.support.v7.app.ActionBar;
-    import android.app.FragmentTransaction;
     import android.content.Intent;
     import android.os.Handler;
     import android.os.Message;
@@ -60,7 +59,7 @@
                             break;
                         case MessageValues.CONNECTIONFAILED:
                             break;
-                        case MessageValues.AUTHORIZED:
+                        case MessageValues.AUTHENTICATED:
                             updateView();
                             break;
                         case MessageValues.AUTHENTICATIONFAILED:
@@ -106,8 +105,9 @@
                     }
                 });
                 model = new Model(updateHandler);
-                model.connect((String) extras.get("password"), 8867);
                 username = (String)extras.get("username");
+                model.connect(username, (String) extras.get("password"));
+
 
                 TruckDataHandler.addListener(this);
                 carMode = TruckDataHandler.getInstance().getTruckMode();

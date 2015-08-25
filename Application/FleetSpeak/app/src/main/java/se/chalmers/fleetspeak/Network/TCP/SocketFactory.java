@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.Network;
+package se.chalmers.fleetspeak.Network.TCP;
 
 
 import android.content.Context;

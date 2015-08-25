@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.Network;
+package se.chalmers.fleetspeak.Network.TCP;
 
 import android.os.Message;
 import android.os.Messenger;
@@ -9,6 +9,8 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+
+import se.chalmers.fleetspeak.util.MessageValues;
 
 /**
  * Created by Nieo on 17/08/15.
@@ -40,7 +42,7 @@ public class SocketReader implements Runnable{
         while(reading){
             try {
                 if((readObject = objectInputStream.readObject()) != null){
-                    Message msg = Message.obtain(null, 0, readObject);
+                    Message msg = Message.obtain(null, MessageValues.COMMAND, readObject);
                     messenger.send(msg);
                 }
                 Thread.sleep(100);

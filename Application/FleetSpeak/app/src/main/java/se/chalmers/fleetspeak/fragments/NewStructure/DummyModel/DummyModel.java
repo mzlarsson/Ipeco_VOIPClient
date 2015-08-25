@@ -1,11 +1,9 @@
 package se.chalmers.fleetspeak.fragments.NewStructure.DummyModel;
 
-import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 import se.chalmers.fleetspeak.Model;
 import se.chalmers.fleetspeak.Room;
@@ -39,7 +37,7 @@ public class DummyModel extends Model {
     }
 
     @Override
-    public void connect(String ip, int port) {
+    public void connect(String ip, String pwd) {
         connected = true;
         Log.d("DummyModel", "Connection established");
     }

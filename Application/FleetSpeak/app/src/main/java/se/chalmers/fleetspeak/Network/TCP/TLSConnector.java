@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.Network;
+package se.chalmers.fleetspeak.Network.TCP;
 
 import android.os.AsyncTask;
 import android.os.Handler;
@@ -12,7 +12,7 @@ import java.io.IOException;
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLSocket;
 
-import se.chalmers.fleetspeak.util.Command;
+import se.chalmers.fleetspeak.util.MessageValues;
 
 /**
  * Created by Nieo on 12/08/15.
@@ -86,7 +86,7 @@ public class TLSConnector{
                         socketWriter.wait();
                     }
                     writeMessenger = new Messenger(socketWriter.getHandler());
-                    responseMessenger.send(Message.obtain(null,0,new Command("connected",sslSocket.getInetAddress().toString(),null)));
+                    responseMessenger.send(Message.obtain(null, MessageValues.CONNECTED));
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (InterruptedException e) {
@@ -96,6 +96,7 @@ public class TLSConnector{
                 }
 
             }
+            //TODO add messages for failures
         }
     }
     private class SocketDestroyer extends AsyncTask<Void,Void,Void>{
@@ -115,6 +116,13 @@ public class TLSConnector{
             }
             return null;
         }
+    }
+
+    public String getIP(){
+        if(socket != null){
+            return socket.getInetAddress().getHostAddress();
+        }
+        return null;
     }
 
 
