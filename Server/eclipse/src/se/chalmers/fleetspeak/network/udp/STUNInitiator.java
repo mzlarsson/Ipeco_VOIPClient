@@ -22,9 +22,8 @@ import se.chalmers.fleetspeak.util.PortFactory;
  * Initiation process:
  * Server: "initiateSoundPort" + port + control-code --> Client (tcp)
  * Client: control-code --> Server (udp)
- * Server: "udpTestPacket" + control-code --> Client (tcp)
  * Server: control-code --> Client (udp with repeated tries)
- * Client: "UDPTestOk" --> Server (udp 1+ tries)
+ * Client: "clientUdpTestOk" --> Server (tcp)
  * 
  * @author Patrik Haar
  */
@@ -64,7 +63,6 @@ public class STUNInitiator extends Thread implements CommandHandler{
 			if (verificationPacket.getData()[0]==ctrlCode) {
 				udp.connect(verificationPacket.getSocketAddress());
 				logger.log(Level.FINER, "Sending test udp-packets to client: " + udp.getRemoteSocketAddress() + " from port: " + udp.getLocalPort());
-				tcp.sendCommand(new Command("udpTestPacket", ctrlCode, null));
 				verificationPacket = new DatagramPacket(new byte[] {ctrlCode}, 1, udp.getRemoteSocketAddress());
 				isWaitingForResponse = true;
 				for(int i=0; isWaitingForResponse && i<nbrOfResponseAttempts; i++) { // Sending the message multiple times due to possible packet-loss.
@@ -93,7 +91,7 @@ public class STUNInitiator extends Thread implements CommandHandler{
 
 	@Override
 	public void handleCommand(Command c) {
-		if(isWaitingForResponse && c.getCommand().equalsIgnoreCase("udptestok")) {
+		if(isWaitingForResponse && c.getCommand().equalsIgnoreCase("clientudptestok")) {
 			if ((byte)c.getKey() == ctrlCode) {
 				logger.log(Level.FINER, "Client: " + udp.getRemoteSocketAddress() + " recieved testpacket from port: " + udp.getLocalPort());
 				isWaitingForResponse = false;

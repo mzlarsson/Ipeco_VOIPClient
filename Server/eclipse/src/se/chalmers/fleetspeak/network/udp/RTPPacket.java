@@ -9,6 +9,8 @@ import java.nio.ByteBuffer;
  */
 public class RTPPacket {
 
+	public static final int HEADER_SIZE = 12;
+	
     private int version = 2;
     private boolean padding = false;
     private boolean extensions = false;
@@ -16,7 +18,7 @@ public class RTPPacket {
     private boolean marker = false;
     private byte payloadType;
     private short seqNumber;
-    private int timestamp;
+    private long timestamp;
     private long ssrc;
     private byte[] payload;
 
@@ -93,7 +95,7 @@ public class RTPPacket {
      * interpreted as the SSRC and the last 32 bits as the CSRC.
      * @param payload The data to be sent.
      */
-    public RTPPacket(byte payloadType, short seqNumber, int timestamp, long ssrc,
+    public RTPPacket(byte payloadType, short seqNumber, long timestamp, long ssrc,
             byte[] payload) {
         this.payloadType = payloadType;
         this.payload = payload;
@@ -110,7 +112,7 @@ public class RTPPacket {
      * @param timestamp The timestamp of the packet.
      * @param payload The data to be sent.
      */
-    public RTPPacket(short seqNumber, int timestamp, byte[] payload) {
+    public RTPPacket(short seqNumber, long timestamp, byte[] payload) {
     	this((byte)0, seqNumber, timestamp, 0, payload);
     }
     
@@ -146,7 +148,7 @@ public class RTPPacket {
         return payload;
     }
 
-    public int getTimestamp() {
+    public long getTimestamp() {
         return timestamp;
     }
 

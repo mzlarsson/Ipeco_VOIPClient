@@ -32,7 +32,7 @@ public class UDPHandler extends Thread{
 		this.packetSize = packetSize;
 		receivePacket = new DatagramPacket(new byte[this.packetSize], this.packetSize);
 		if (socket.isConnected()) {
-			outgoingPacket = new DatagramPacket(new byte[172], 172, socket.getRemoteSocketAddress());
+			outgoingPacket = new DatagramPacket(new byte[packetSize], packetSize, socket.getRemoteSocketAddress());
 		} else {
 			throw new IllegalArgumentException("The socket is not connected to a remote adress.");
 		}
@@ -71,6 +71,14 @@ public class UDPHandler extends Thread{
 		if (receiver != null) {
 			receiver.handlePacket(packet);
 		}
+	}
+	
+	/**
+	 * Set the size of the packets the UDPHandler will read from the incoming udp-traffic.
+	 * @param packetSize The size of the read-array in number of bytes.
+	 */
+	public void setPacketSize(int packetSize) {
+		this.packetSize = packetSize;
 	}
 	
 	/**
