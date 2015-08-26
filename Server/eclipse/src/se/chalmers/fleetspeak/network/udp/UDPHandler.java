@@ -6,6 +6,8 @@ import java.net.DatagramSocket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import se.chalmers.fleetspeak.util.PortFactory;
+
 /**
  * Handles incoming and outgoing UDP traffic to a client.
  *
@@ -94,6 +96,7 @@ public class UDPHandler extends Thread{
 	 */
 	public void terminate() {
 		isRunning = false;
+		PortFactory.getInstance().freePort(socket.getLocalPort());
 		socket.close();
 	}
 }

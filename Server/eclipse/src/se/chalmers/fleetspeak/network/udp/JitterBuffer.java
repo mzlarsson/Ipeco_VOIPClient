@@ -3,13 +3,15 @@ package se.chalmers.fleetspeak.network.udp;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class JitterBuffer<E> implements BufferedAudioStream{
+public class JitterBuffer implements BufferedAudioStream{
 
-	private JitterBufferQueue<E> buffer;
-	private long lastestReadtimestamp;
-	private Boolean ready, empty = true;
-	private int currentSize;
-	private final int BUFFERSIZE = 3;
+	private static final int SOUND_ARRAY_SIZE = 160;
+	private static final int TIME_BETWEEN_SAMPLES = 20;
+	
+	private JitterBufferQueue buffer;
+	private short lastReadSeqNbr = -1;
+	private long lastReadtimestamp = -1;
+	private Boolean ready, buildMode;
 	private Logger logger;
 
 	private long bufferTime;
@@ -23,61 +25,69 @@ public class JitterBuffer<E> implements BufferedAudioStream{
 	 */
 	public JitterBuffer(long bufferTime) {
 		logger = Logger.getLogger("Debug");
+		buffer = new JitterBufferQueue();
 		this.bufferTime = bufferTime;
 	}
 	
-	public JitterBuffer(){
-		buffer = new JitterBufferQueue<E>();
-		lastestReadtimestamp = 0;
-		empty = true;
-		currentSize = 0;
-		logger = Logger.getLogger("Debug");
-	}
-
+	/**
+	 * Adds the packet to the correct place in the queue or drops it if it arrived too late.
+	 * @param packet The RTPPacket to be added to the queue.
+	 */
 	public void write(RTPPacket packet) {
-		
-	}
-	
-	public void write(E e, long timestamp){
-		if(timestamp > lastestReadtimestamp){
-			logger.log(Level.FINEST, "Item put in buffer");
-			buffer.offer(e, timestamp);
-			currentSize++;
-			if(currentSize >= BUFFERSIZE) {
-				empty = false;
-				logger.log(Level.FINEST,"JitterBuffer now allows reads");
+		if(packet.seqNumber > lastReadSeqNbr) {
+			buffer.offer(packet);
+			if(isFullyBuffered()) {
+				if (!ready) {
+					ready = true;					
+				}
+				buildMode = false;
 			}
-		}else{
-			logger.log(Level.FINEST, "Item arrived to late, got dropped");
+		} else {
+			logger.log(Level.WARNING,"Dropped a packet arriving to late, "
+					+ "sequence number: " + packet.seqNumber);
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public byte[] read() {
-		if (!ready) {
-			return null;
+		byte[] audio = null;
+		if(!ready) {
+			RTPPacket p = null;
+			if(!buildMode) {
+				if (!isFullyBuffered()) {
+					buildMode = true;
+				}
+				p = buffer.poll();
+			} else {
+				RTPPacket tmp = buffer.peek();
+				if (tmp.seqNumber == ((short)(lastReadSeqNbr + 1))) {
+					if (tmp.timestamp - 2*TIME_BETWEEN_SAMPLES <= lastReadtimestamp) { // 2*timestamp to compensate for variations.
+						p = buffer.poll();
+					} else {
+						lastReadtimestamp += TIME_BETWEEN_SAMPLES;
+					}
+				} else {
+					lastReadSeqNbr += 1;
+					lastReadtimestamp += TIME_BETWEEN_SAMPLES;
+				}
+			}
+			if (p!=null) {
+				audio = p.toByteArraySimple();
+				lastReadSeqNbr = p.seqNumber;
+				lastReadtimestamp = p.timestamp;				
+			}
 		}
-		return null;
+		return audio;
+	}
+
+	private boolean isFullyBuffered() {
+		return buffer.getBufferedTime() > bufferTime;
 	}
 	
-	public E read2(){
-		if(!empty){
-			currentSize--;
-			if(currentSize == 0){
-				empty = true;
-			}
-			JitterBufferQueue<E>.Node n = buffer.poll();
-			lastestReadtimestamp = n.timestamp;
-
-			return n.e;
-		}
-		return null;
+	public int getSoundArraySize() {
+		return SOUND_ARRAY_SIZE;
 	}
-
-
-
-
-
-
-
-
 }

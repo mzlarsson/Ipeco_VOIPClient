@@ -11,15 +11,15 @@ public class RTPPacket {
 
 	public static final int HEADER_SIZE = 12;
 	
-    private int version = 2;
-    private boolean padding = false;
-    private boolean extensions = false;
-    private int cc = 0;
-    private boolean marker = false;
-    private byte payloadType;
-    private short seqNumber;
-    private long timestamp;
-    private long ssrc;
+    protected int version = 2;
+    protected boolean padding = false;
+    protected boolean extensions = false;
+    protected int cc = 0;
+    protected boolean marker = false;
+    protected byte payloadType;
+    protected short seqNumber;
+    protected long timestamp;
+    protected long ssrc;
     private byte[] payload;
 
     
@@ -116,42 +116,10 @@ public class RTPPacket {
     	this((byte)0, seqNumber, timestamp, 0, payload);
     }
     
-    public int getVersion() {
-    	return version;
-    }
-    
-    public boolean isPadded() {
-    	return padding;
-    }
-    
-    public boolean isExtended() {
-    	return extensions;
-    }
-    
-    public int getCSRCCount() {
-    	return cc;
-    }
-    
-    public boolean getMarker() {
-        return marker;
-    }
-    
-    public int getPayloadType() {
-        return payloadType;
-    }
-
-    public int getSeqNumber() {
-        return this.seqNumber;
-    }
-
     public byte[] getPayload() {
         return payload;
     }
-
-    public long getTimestamp() {
-        return timestamp;
-    }
-
+    
     /**
      * This is a more effective method than the detailed one which only
      * tags the sequence number and timestamp dynamically and sets

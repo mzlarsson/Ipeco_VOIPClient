@@ -1,43 +1,71 @@
 package se.chalmers.fleetspeak.network.udp;
 
-public class JitterBufferQueue<E> {
+public class JitterBufferQueue {
 
-	private Node head;
-
+	private Node head, tail;
+	private Object lock;
+	
 	public JitterBufferQueue(){
-		head = new Node(null, 0,null);
+		RTPPacket p = new RTPPacket(new byte[12]);
+		p.seqNumber = -1;
+		p.timestamp = -1;
+		head = new Node(p, null, null);
+		tail = head;
+		lock = new Object();
 	}
 
-	public void offer(E e, long timestamp){
-		synchronized (head) {
-			Node n = head;
-			while(n.next != null && timestamp > n.next.timestamp){
-				n = n.next;
+	public void offer(RTPPacket e){
+		synchronized (lock) {
+			Node n = tail;
+			while(e.timestamp - n.previous.e.timestamp < 0){
+				n = n.previous;
 			}
-			Node newNode = new Node(e,timestamp,n.next);
+			Node newNode = new Node(e, n, n.next);
 			n.next = newNode;
-		}
-	}
-	public Node poll(){
-		synchronized (head) {
-			Node e = head.next;
-			if(e != null){
-				head.next = e.next;
+			if (tail == n) {
+				tail = newNode;
 			}
-			return e;
+		}
+	}
+	
+	public RTPPacket poll(){
+		synchronized (lock) {
+			Node n = head.next;
+			if(n != null){
+				head.next = n.next;
+				n.next.previous = head;
+				return n.e;
+			}
+			return null;
 		}
 	}
 
-
-	protected class Node{
-		E e;
-		long timestamp;
-		Node next;
-		Node(E e, long timestamp, Node next){
+	public RTPPacket peek() {
+		synchronized (lock) {
+			Node n = head.next;
+			if(n != null){
+				return n.e;
+			}
+			return null;
+		}
+	}
+	
+	/**
+	 * The time difference between the first and last packet in the queue
+	 * in milliseconds.
+	 * @return The timestamp difference between the first and last packet.
+	 */
+	public long getBufferedTime() {
+		return head.e.timestamp - tail.e.timestamp;
+	}
+	
+	private class Node{
+		private RTPPacket e;
+		private Node next, previous;
+		public Node(RTPPacket e, Node previous, Node next){
 			this.e = e;
-			this.timestamp = timestamp;
+			this.previous = previous;
 			this.next = next;
 		}
 	}
-
 }

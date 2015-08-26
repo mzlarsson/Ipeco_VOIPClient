@@ -3,16 +3,14 @@ package se.chalmers.fleetspeak.network.udp;
 import java.net.DatagramSocket;
 
 public class RTPHandler implements PacketReceiver{
-	
-	private static final int SOUND_ARRAY_SIZE = 160;
 
 	private UDPHandler udp;
 	private JitterBuffer jitter;
 	private short seqNumber = 0;
 
 	public RTPHandler(DatagramSocket socket) {
-		udp = new UDPHandler(socket, SOUND_ARRAY_SIZE + RTPPacket.HEADER_SIZE);
 		jitter = new JitterBuffer(60);
+		udp = new UDPHandler(socket, jitter.getSoundArraySize() + RTPPacket.HEADER_SIZE);
 		udp.setReceiver(this);
 		udp.start();
 	}
