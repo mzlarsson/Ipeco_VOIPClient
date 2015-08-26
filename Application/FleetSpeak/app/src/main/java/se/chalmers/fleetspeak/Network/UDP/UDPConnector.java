@@ -16,7 +16,7 @@ import java.util.concurrent.Executors;
  */
 public class UDPConnector implements Runnable{
 
-    private DatagramSocket socket;
+    protected DatagramSocket socket;
     private DatagramPacket sendPacket, receivePacket;
 
     private Boolean running;

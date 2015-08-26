@@ -54,6 +54,7 @@ public class SocketWriter implements Runnable{
                         try {
                             objectOutputStream.writeObject(msg.obj);
                         } catch (IOException e) {
+                            //TODO failed to send message handling
                             Log.e(LOGTAG, e.getMessage());
                         }
                         break;

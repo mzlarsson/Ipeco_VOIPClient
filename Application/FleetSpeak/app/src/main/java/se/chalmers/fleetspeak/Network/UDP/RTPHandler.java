@@ -11,7 +11,7 @@ public class RTPHandler {
         this.udpConnector = udpConnector;
     }
 
-    public void write(byte[] byets){
+    public void write(byte[] bytes){
 
     }
 

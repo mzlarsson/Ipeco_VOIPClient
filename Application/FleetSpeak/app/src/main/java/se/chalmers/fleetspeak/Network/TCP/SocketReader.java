@@ -49,6 +49,7 @@ public class SocketReader implements Runnable{
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
+                //TODO error handling
                 stop();
                 e.printStackTrace();
             } catch (RemoteException e) {
