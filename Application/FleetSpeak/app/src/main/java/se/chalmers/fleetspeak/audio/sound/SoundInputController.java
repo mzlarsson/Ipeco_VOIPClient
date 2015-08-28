@@ -1,10 +1,11 @@
 package se.chalmers.fleetspeak.audio.sound;
 
-import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.util.Log;
 
-import java.nio.ByteBuffer;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import se.chalmers.fleetspeak.audio.FleetspeakAudioException;
 
 import static se.chalmers.fleetspeak.audio.sound.SoundConstants.*;
 
@@ -15,12 +16,13 @@ import static se.chalmers.fleetspeak.audio.sound.SoundConstants.*;
 public class SoundInputController implements Runnable {
 
     private AudioRecord audioRecord;
-    private ByteBuffer audioRecBuffer;
-    private volatile boolean isRecording;
 
-    public SoundInputController(){
+    private BlockingQueue<byte[]> inputBuffer;
+    private boolean isRecording;
+;
 
-        audioRecBuffer = ByteBuffer.allocateDirect(BYTEBUFFER_IN_SIZE.value());
+    public SoundInputController() throws FleetspeakAudioException {
+        inputBuffer = new LinkedBlockingQueue<>(10);
         try {
             audioRecord = new AudioRecord(
                     INPUT_SOURCE.value(),
@@ -29,78 +31,52 @@ public class SoundInputController implements Runnable {
                     AUDIO_ENCODING.value(),
                     AUDIO_IN_BUFFER_SIZE.value()
             );
-        }catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             Log.e("SoundRecord", e.getMessage());//TODO Remove or replace this snippet
         }
 
-        if(audioRecord.getState() == AudioRecord.STATE_UNINITIALIZED)
-            throw new ExceptionInInitializerError("AudioRecord couldn't initialize");
+        if (audioRecord.getState() == AudioRecord.STATE_UNINITIALIZED)
+            throw new FleetspeakAudioException("AudioRecord couldn't initialize");
 
     }
 
-    public void init(){
+    public void init() {
         audioRecord.startRecording();
         isRecording = true;
     }
 
-    //Write
-    public synchronized int fillAudioBuffer() {
-        int bytesRead=0;
-        if (audioRecBuffer.remaining() >= INPUT_FRAME_SIZE.value()) {
-            bytesRead = audioRecord.read(audioRecBuffer, INPUT_FRAME_SIZE.value());
-            if (bytesRead > 0) {
-                audioRecBuffer.limit(bytesRead);
-                audioRecBuffer.position(bytesRead);
-            }
-        }
-            return bytesRead;
+    //Read
+    public byte[] readBuffer() throws InterruptedException {
+        return inputBuffer.take();
     }
 
 
-    //Read
-    public synchronized byte[] readBuffer() {
-        audioRecBuffer.flip();
-        byte[] audioArray = new byte[audioRecBuffer.remaining()];
-        audioRecBuffer.get(audioArray);
-
-            if(audioRecBuffer.hasRemaining()) {
-                audioRecBuffer.compact();
-            }else{
-                audioRecBuffer.clear();
-            }
-        return audioArray;
-        }
-
-
-    public synchronized void destroy(){
+    public void destroy() {
         isRecording = false;
-        if(audioRecord != null){
+        if (audioRecord != null) {
             audioRecord.release();
         }
-        audioRecBuffer = null;
     }
 
     @Override
     public void run() {
         init();
-
         android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_AUDIO);
-        while(isRecording) {
-            fillAudioBuffer();
+        while (isRecording) {
+
+                byte[] input = new byte[INPUT_FRAME_SIZE.value()];
+                audioRecord.read(input,0,input.length);
+            try {
+                inputBuffer.put(input);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+
         }
     }
 
 
-    public boolean equals(Object o){
-        if(o == null || o.getClass() != this.getClass()) {
-        return false;
-        }
-        SoundInputController sic = (SoundInputController) o;
-
-        return this.audioRecBuffer.equals(sic.audioRecBuffer) &&
-                this.audioRecord.equals(sic.audioRecord) &&
-                this.isRecording == sic.isRecording;
-    }
 
 
 }
