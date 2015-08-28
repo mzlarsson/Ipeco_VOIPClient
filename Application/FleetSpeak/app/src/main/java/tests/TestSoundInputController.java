@@ -22,7 +22,7 @@ public class TestSoundInputController extends AndroidTestCase {
         assertNotNull("Testing constructor",soundInputController);
     }
 
-    public void testReadBuffer(){
+    public void testReadBuffer() throws InterruptedException {
         Log.d("TestSoundInput","Starting testReadBuffer");
         int runs = 500;
         long sum = 0;
@@ -38,7 +38,7 @@ public class TestSoundInputController extends AndroidTestCase {
         Log.d("TestSoundInput","Average time for testReadBuffer is: "+ (sum/runs)+" nanoseconds");
     }
 
-    public void testFillAudioBuffer(){
+    public void testFillAudioBuffer() throws InterruptedException {
         Log.d("TestSoundInput","Starting testFillAudioBuffer");
         int runs = 500;
         long sum = 0;
