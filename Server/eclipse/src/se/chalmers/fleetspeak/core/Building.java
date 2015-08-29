@@ -10,7 +10,7 @@ public class Building {
 
 	private Logger logger = Logger.getLogger("Debug");
 
-	private ConcurrentHashMap<Integer, Room> rooms;
+	private ConcurrentHashMap<Integer, IRoom> rooms;
 
 	private BuildingManager manager = (cmd, id) -> {
 
@@ -34,7 +34,7 @@ public class Building {
 
 	public Building() {
 		super();
-		rooms = new ConcurrentHashMap<Integer, Room>();
+		rooms = new ConcurrentHashMap<Integer, IRoom>();
 
 		//TODO this should not be static move to config;
 		this.addRoom("Lobby", true);
@@ -46,7 +46,7 @@ public class Building {
 	 * @return
 	 */
 	public int addRoom(String name, boolean permanent){
-		Room newRoom = new Room(name, manager, permanent);
+		IRoom newRoom = new AudioRoom(name, manager, permanent);
 		rooms.put(newRoom.getId(), newRoom);
 		postUpdate(new Command("createdroom", newRoom.getId(), newRoom.getName()));
 		logger.log(Level.INFO, "Added a room "+ newRoom.getId() +", "+ newRoom.getName());

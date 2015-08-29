@@ -17,8 +17,9 @@ public class ServerConsole {
 			if (server != null) {
 				server.terminate();
 				server = null;
-				Log.stop();
+
 			}
+			Log.stop();
 		}));
 
 		new ServerConsole(port);

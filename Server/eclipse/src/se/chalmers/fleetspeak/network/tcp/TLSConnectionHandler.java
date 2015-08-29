@@ -66,11 +66,9 @@ public class TLSConnectionHandler{
 				clientCreator.addNewClient(clientSocket);
 			}catch(SSLException e){
 				e.printStackTrace();
-			}
-			catch(IOException e){
-				if(!e.getMessage().equals("socket closed") || running){			//Ignore printing if socket is closed and handler terminated
-					e.printStackTrace();
-				}
+			}catch(IOException e){
+				e.printStackTrace();
+
 			}
 		}};
 

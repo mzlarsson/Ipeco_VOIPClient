@@ -58,6 +58,7 @@ public class Log {
 	public static void stop(){
 		//Stop if started
 		if(log != null){
+			System.out.println("Stoping log");
 			log.close();
 			log = null;
 		}
