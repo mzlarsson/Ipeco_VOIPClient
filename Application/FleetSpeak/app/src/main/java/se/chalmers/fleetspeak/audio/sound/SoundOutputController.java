@@ -2,6 +2,7 @@ package se.chalmers.fleetspeak.audio.sound;
 
 import android.media.AudioTrack;
 import android.os.Process;
+import android.util.Log;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -64,6 +65,7 @@ public class SoundOutputController implements Runnable {
         android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_AUDIO);
         audioTrack.play();
         soundIsPlaying = true;
+        Log.i("SOC", "sound is playing on " + Thread.currentThread().getName());
         while(soundIsPlaying){
             try {
                 writeAudio(audioOutputProcessor.readBuffer(), 0);

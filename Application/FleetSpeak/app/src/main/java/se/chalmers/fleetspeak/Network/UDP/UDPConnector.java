@@ -19,7 +19,7 @@ public class UDPConnector implements Runnable{
     protected DatagramSocket socket;
     private DatagramPacket sendPacket, receivePacket;
 
-    private Boolean running;
+    private volatile boolean running;
 
     private Executor executor;
     private PacketReceiver receiver;
@@ -47,6 +47,7 @@ public class UDPConnector implements Runnable{
     @Override
     public void run() {
         running = true;
+        Log.i("UDP" , "is running on " + Thread.currentThread().getName());
         while(running){
             try {
                 socket.receive(receivePacket);

@@ -41,7 +41,7 @@ public class RTPHandler implements Runnable, PacketReceiver{
 
     @Override
     public void run() {
-        Log.i("RTPHandler", "send audio thread is running");
+        Log.i("RTPHandler", "send audio thread is running " + Thread.currentThread().getName());
         isRunning = true;
         byte[] data;
         while (isRunning){

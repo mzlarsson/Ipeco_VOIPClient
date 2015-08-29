@@ -73,7 +73,7 @@ public class SoundInputController implements Runnable {
 
     @Override
     public void run() {
-        Log.i(LOGTAG, "started recording");
+        Log.i(LOGTAG, "started recording " + Thread.currentThread().getName());
         init();
         android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_AUDIO);
         while (isRecording) {
