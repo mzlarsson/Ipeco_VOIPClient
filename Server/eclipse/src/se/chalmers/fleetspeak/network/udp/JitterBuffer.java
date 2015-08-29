@@ -3,6 +3,12 @@ package se.chalmers.fleetspeak.network.udp;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * The purpose of the JitterBuffer is to make audio-streams more consistent,
+ * it does this by adding a delay
+ *
+ * @author Patrik Haar
+ */
 public class JitterBuffer implements BufferedAudioStream{
 
 	private static final int SOUND_ARRAY_SIZE = 160;
@@ -35,6 +41,12 @@ public class JitterBuffer implements BufferedAudioStream{
 	 */
 	public void write(RTPPacket packet) {
 		if(packet.seqNumber > lastReadSeqNbr) {
+			byte[] payload = packet.getPayload();
+			System.out.print(packet.seqNumber + "\t" + packet.timestamp + "\t");
+			for(int i=0; i<payload.length; i++) {
+				System.out.print(payload[i] + " ");
+			}
+			System.out.println();
 			buffer.offer(packet);
 			if(isFullyBuffered()) {
 				if (!ready) {

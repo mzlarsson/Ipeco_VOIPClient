@@ -10,7 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import se.chalmers.fleetspeak.core.CommandHandler;
-import se.chalmers.fleetspeak.network.tcp.TCPHandler;
+import se.chalmers.fleetspeak.core.NetworkUser;
 import se.chalmers.fleetspeak.util.Command;
 import se.chalmers.fleetspeak.util.PortFactory;
 
@@ -29,19 +29,20 @@ import se.chalmers.fleetspeak.util.PortFactory;
  */
 public class STUNInitiator extends Thread implements CommandHandler{
 
-	private TCPHandler tcp;
+	private NetworkUser tcp;
 	private DatagramSocket udp;
+	private CommandHandler ch;
 	private byte ctrlCode;
-	private int responseTimeoutTime = 2000, nbrOfResponseAttempts = 10;
+	private int responseTimeoutTime = 2000, nbrOfResponseAttempts = 20;
 	private long delayInMilliBetweenAttempts = 50;
-	private volatile boolean isWaitingForResponse;
+	private volatile boolean udpVerified = false;
 	private Logger logger;
 
-	public STUNInitiator(TCPHandler tcp, int connectionID) {
+	public STUNInitiator(NetworkUser nu, int connectionID) {
 		super("STUNInitiator:id"+connectionID);
 		logger = Logger.getLogger("Debug");
+		this.tcp = nu;
 		tcp.setCommandHandler(this);
-		this.tcp = tcp;
 		try {
 			udp = new DatagramSocket(PortFactory.getInstance().getPort());
 		} catch (SocketException e) {
@@ -51,8 +52,9 @@ public class STUNInitiator extends Thread implements CommandHandler{
 
 	@Override
 	public void run() {
-		logger.log(Level.INFO, "Initiating STUN-protocol to client: " + tcp.getInetAddress() + " from port: " + udp.getLocalPort());
+		logger.log(Level.INFO, "Initiating STUN-protocol to client from port: " + udp.getLocalPort());
 		ctrlCode = (byte)new Random().nextInt();
+		boolean isWaitingForResponse = false;
 		tcp.sendCommand(new Command("initiateSoundPort", udp.getLocalPort(), ctrlCode));
 		DatagramPacket verificationPacket = new DatagramPacket(new byte[1], 1);
 		logger.log(Level.FINER, "Sent control code to client and waiting for response on port: " + udp.getLocalPort());
@@ -64,24 +66,27 @@ public class STUNInitiator extends Thread implements CommandHandler{
 				udp.connect(verificationPacket.getSocketAddress());
 				logger.log(Level.FINER, "Sending test udp-packets to client: " + udp.getRemoteSocketAddress() + " from port: " + udp.getLocalPort());
 				verificationPacket = new DatagramPacket(new byte[] {ctrlCode}, 1, udp.getRemoteSocketAddress());
+				udpVerified = false;
 				isWaitingForResponse = true;
-				for(int i=0; isWaitingForResponse && i<nbrOfResponseAttempts; i++) { // Sending the message multiple times due to possible packet-loss.
+				for(int i=0; !udpVerified && i<nbrOfResponseAttempts; i++) { // Sending the message multiple times due to possible packet-loss.
 					udp.send(verificationPacket);
 					Thread.sleep(delayInMilliBetweenAttempts);
 				}
+			} else {
+				logger.log(Level.WARNING, "Control codes does not match, received code: " + verificationPacket.getData()[0]);
 			}
 		} catch (SocketTimeoutException e) {	// The UDP-packet from the client never made it to the server. 
-			// TODO Let the client know that his response never made it to the server.
+			logger.log(Level.WARNING, "Timed out while waiting for udp response from client.");
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		if (!isWaitingForResponse) { // UDP-connection correctly established.
+		if (udpVerified && isWaitingForResponse) { // UDP-connection correctly established.
 			logger.log(Level.FINER, "UDP-connection successfully established on port: " + udp.getLocalPort()
 					+ " to client: " + udp.getRemoteSocketAddress());
-			// TODO Return the socket to ClientCreator
+			ch.handleCommand(new Command("DatagramSocketSTUN", tcp, udp));
 		} else {	// Failed to establish a connection.
 			logger.log(Level.WARNING, "STUN protocol falied to establish a connection on port: " + udp.getLocalPort());
 			udp.close();
@@ -89,13 +94,15 @@ public class STUNInitiator extends Thread implements CommandHandler{
 		}
 	}
 
+	public void addCommandHandler(CommandHandler ch) {
+		this.ch = ch;
+	}
+	
 	@Override
 	public void handleCommand(Command c) {
-		if(isWaitingForResponse && c.getCommand().equalsIgnoreCase("clientudptestok")) {
-			if ((byte)c.getKey() == ctrlCode) {
-				logger.log(Level.FINER, "Client: " + udp.getRemoteSocketAddress() + " recieved testpacket from port: " + udp.getLocalPort());
-				isWaitingForResponse = false;
-			}
+		if(c.getCommand().equalsIgnoreCase("clientudptestok")) {
+			logger.log(Level.FINER, "Client: " + udp.getRemoteSocketAddress() + " recieved testpacket from port: " + udp.getLocalPort());
+			udpVerified = true;
 		}
 	}
 }

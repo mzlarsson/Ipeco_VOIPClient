@@ -6,6 +6,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import se.chalmers.fleetspeak.network.tcp.TCPHandler;
+import se.chalmers.fleetspeak.network.udp.RTPHandler;
 import se.chalmers.fleetspeak.sound.Router;
 import se.chalmers.fleetspeak.util.Command;
 import se.chalmers.fleetspeak.util.UserInfoPacket;
@@ -17,10 +18,11 @@ import se.chalmers.fleetspeak.util.UserInfoPacket;
  */
 
 
-public class Client implements CommandHandler {
+public class Client implements CommandHandler, NetworkUser {
 
 	private String alias;
 	private TCPHandler tcp;
+	private RTPHandler rtp;
 	private int clientID;
 
 	private InetAddress ip;	//TODO Is it necessary for the client to hold it IP?
@@ -28,7 +30,7 @@ public class Client implements CommandHandler {
 
 	private Logger logger;
 
-	private CommandHandler room;
+	private CommandHandler ch;
 
 	/**
 	 * Creates a client with the functionality for sending and receiving
@@ -56,7 +58,7 @@ public class Client implements CommandHandler {
 	}
 
 	public void setCommandHandler(CommandHandler ch){
-		room = ch;
+		this.ch = ch;
 	}
 
 	//FIXME temporary
@@ -67,9 +69,9 @@ public class Client implements CommandHandler {
 
 
 	/**
-	 * Moves this client to another room symbolized by a list of clients
+	 * Moves this client to another ch symbolized by a list of clients
 	 * and adds them as listeners to its stream.
-	 * @param clientList A list of clients symbolizing all clients in a room.
+	 * @param clientList A list of clients symbolizing all clients in a ch.
 	 */
 	public synchronized void moveToRoom(List<Client> clientList){
 		removeAllListeningClients();
@@ -164,22 +166,26 @@ public class Client implements CommandHandler {
 		this.terminate();
 	}
 
+	public void setRTPHandler(RTPHandler rtp) {
+		this.rtp = rtp;
+	}
+	
 	@Override
 	public void handleCommand(Command c) {
 		logger.log(Level.FINER,"[Client]userid: "+ clientID + "s Got command " + c.getCommand() + " key "+ c.getKey() + " value "+ c.getValue());
 		switch(c.getCommand().toLowerCase()){
 		case "move":
-			room.handleCommand(new Command("moveclient", clientID, c.getKey()));
+			ch.handleCommand(new Command("moveclient", clientID, c.getKey()));
 			break;
 		case "movenewroom":
-			room.handleCommand(new Command("movenewroom", clientID, c.getKey()));
+			ch.handleCommand(new Command("movenewroom", clientID, c.getKey()));
 			break;
 		case "disconnect":
 			tcp.terminate();
-			room.handleCommand(new Command("disconnect", clientID,null));
+			ch.handleCommand(new Command("disconnect", clientID,null));
 			break;
 		default:
-			room.handleCommand(c);
+			ch.handleCommand(c);
 		}
 	}
 
