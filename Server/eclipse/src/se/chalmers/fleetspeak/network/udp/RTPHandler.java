@@ -4,7 +4,7 @@ import java.net.DatagramSocket;
 
 import se.chalmers.fleetspeak.sound.BufferedAudioStream;
 
-public class RTPHandler implements PacketReceiver{
+public class RTPHandler implements PacketReceiver, BufferedAudioStream{
 
 	private UDPHandler udp;
 	private JitterBuffer jitter;
@@ -18,14 +18,14 @@ public class RTPHandler implements PacketReceiver{
 	}
 	
 	public BufferedAudioStream getBufferedAudioStream() {
-		return jitter;
+		return this;
 	}
 	
 	@Override
 	public void handlePacket(byte[] packet){
 		jitter.write(new RTPPacket(packet));
 		//FIXME Temporary test function.
-		byte[] b = jitter.read();
+		byte[] b = read();
 		if(b!=null) {
 			sendPacket(b);			
 		}
@@ -33,5 +33,11 @@ public class RTPHandler implements PacketReceiver{
 	
 	public void sendPacket(byte[] packet) {
 		udp.sendPacket(new RTPPacket(seqNumber++, System.currentTimeMillis(), packet).toByteArraySimple());
+	}
+
+	@Override
+	public byte[] read() {
+		RTPPacket p = jitter.read();
+		return p!=null ? p.toByteArraySimple() : null;
 	}
 }

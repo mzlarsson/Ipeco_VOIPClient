@@ -3,8 +3,6 @@ package se.chalmers.fleetspeak.network.udp;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import se.chalmers.fleetspeak.sound.BufferedAudioStream;
-
 /**
  * The purpose of the JitterBuffer is to make audio-streams more consistent,
  * it does this by adding a delay to wait for or realign packets that arrived
@@ -19,7 +17,7 @@ import se.chalmers.fleetspeak.sound.BufferedAudioStream;
  *
  * @author Patrik Haar
  */
-public class JitterBuffer implements BufferedAudioStream{
+public class JitterBuffer{
 
 	private static final int SOUND_ARRAY_SIZE = 320;
 	private static final int TIME_BETWEEN_SAMPLES = 40;
@@ -72,13 +70,13 @@ public class JitterBuffer implements BufferedAudioStream{
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Polls the next RTPPacket available or null if the buffer is not full
+	 * or packets are missing.
+	 * @return The first RTPPacket of the queue if available, null if not.
 	 */
-	@Override
-	public byte[] read() {
-		byte[] audio = null;
+	public RTPPacket read() {
+		RTPPacket p = null;
 		if(ready) {
-			RTPPacket p = null;
 			if(!buildMode) {
 				if (!isFullyBuffered()) {
 					buildMode = true;
@@ -102,16 +100,15 @@ public class JitterBuffer implements BufferedAudioStream{
 				}
 			}
 			if (p!=null) {
-				audio = p.toByteArraySimple();
 				lastReadSeqNbr = p.seqNumber;
 				lastReadtimestamp = p.timestamp;				
 			}
 		}
-		return audio;
+		return p;
 	}
 
 	private boolean isFullyBuffered() {
-		return buffer.getBufferedTime() > bufferTime;
+		return buffer.getBufferedTime() >= bufferTime;
 	}
 	
 	public int getSoundArraySize() {

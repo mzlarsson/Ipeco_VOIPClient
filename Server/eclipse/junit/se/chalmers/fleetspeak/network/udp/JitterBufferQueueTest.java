@@ -13,9 +13,10 @@ public class JitterBufferQueueTest {
 	@Before
 	public void before() {
 		q = new JitterBufferQueue();
-		first = new RTPPacket((short) 0, 0, null);
-		second = new RTPPacket((short) 1, 20, null);
-		third = new RTPPacket((short) 2, 40, null);		
+		byte[] b = new byte[0];
+		first = new RTPPacket((short) 0, 0, b);
+		second = new RTPPacket((short) 1, 20, b);
+		third = new RTPPacket((short) 2, 40, b);
 	}
 	
 	@Test
@@ -53,5 +54,12 @@ public class JitterBufferQueueTest {
 		assertEquals(second, q.poll());
 		assertEquals(third, q.poll());
 	}
-
+	
+	@Test
+	public void testFillEmptyFillEmpty() {
+		q.offer(first);
+		assertEquals(first, q.poll());
+		q.offer(first);
+		assertEquals(first, q.poll());
+	}
 }
