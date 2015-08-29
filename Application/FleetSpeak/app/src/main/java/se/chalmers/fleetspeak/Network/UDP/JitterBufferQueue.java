@@ -1,5 +1,7 @@
 package se.chalmers.fleetspeak.Network.UDP;
 
+import android.util.Log;
+
 /**
  * Created by Nieo on 29/08/15.
  */
@@ -17,9 +19,11 @@ public class JitterBufferQueue {
     }
 
     public void offer(RTPPacket e){
+        Log.d("JBQ", "timestamp "+ e.timestamp);
+        Log.d("JBQ", "seqnr " + e.seqNumber);
         synchronized (lock) {
             Node n = tail;
-            while(head != tail && e.timestamp - n.previous.e.timestamp < 0){
+            while(head != tail && e.timestamp - n.e.timestamp < 0){
                 n = n.previous;
             }
             Node newNode = new Node(e, n, n.next);
@@ -35,7 +39,9 @@ public class JitterBufferQueue {
             Node n = head.next;
             if(n != null){
                 head.next = n.next;
-                n.next.previous = head;
+                if (n.next!=null) {
+                    n.next.previous = head;
+                }
                 return n.e;
             }
             return null;
@@ -58,7 +64,9 @@ public class JitterBufferQueue {
      * @return The timestamp difference between the first and last packet.
      */
     public long getBufferedTime() {
-        return head.e.timestamp - tail.e.timestamp;
+        long l = (head.next!=null) ? (tail.e.timestamp - head.next.e.timestamp) : 0;
+        Log.d("JBQ", "buffered time " + l);
+        return l;
     }
 
     private class Node{
@@ -70,5 +78,4 @@ public class JitterBufferQueue {
             this.next = next;
         }
     }
-
 }

@@ -1,5 +1,7 @@
 package se.chalmers.fleetspeak.audio.sound;
 
+import android.util.Log;
+
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -35,13 +37,17 @@ public class AudioOutputProcessor implements Runnable {
 
     @Override
     public void run() {
+        Log.i("AOP", "staring processing audio");
         isProcessing = true;
         outputStream = rtpHandler.getAudioStream();
         byte[] encoded;
         while (isProcessing) {
             encoded = outputStream.read();
             try {
-                outputBuffer.put(opusDecoder.decode(encoded, 0));
+                if(encoded != null) {
+                    Log.d("AOP", "decoding");
+                    outputBuffer.put(opusDecoder.decode(encoded, 0));
+                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

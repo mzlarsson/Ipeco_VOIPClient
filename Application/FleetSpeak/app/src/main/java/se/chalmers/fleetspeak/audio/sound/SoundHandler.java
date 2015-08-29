@@ -31,7 +31,7 @@ public class SoundHandler implements Runnable {
         oe= new OpusEncoder();
         od = new OpusDecoder();
 
-        soundOutputController = new SoundOutputController();
+        //soundOutputController = new SoundOutputController();
         try {
             soundInputController = new SoundInputController();
         } catch (FleetspeakAudioException e) {
@@ -52,11 +52,11 @@ public class SoundHandler implements Runnable {
     }
 
     public synchronized void transferAudio(){
-        try {
+   /*     try {
             soundOutputController.fillAudioBuffer(soundInputController.readBuffer());
         } catch (InterruptedException e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
     public void killControllers(){
@@ -80,7 +80,7 @@ public class SoundHandler implements Runnable {
                 e.printStackTrace();
             }
             byte [] e = oe.encode(b,0);
-                soundOutputController.fillAudioBuffer(od.decode(e,0));
+               // soundOutputController.fillAudioBuffer(od.decode(e,0));
 
         }
         }

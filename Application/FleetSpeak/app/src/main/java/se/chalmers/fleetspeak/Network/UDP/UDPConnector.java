@@ -29,7 +29,7 @@ public class UDPConnector implements Runnable{
         this.receiver = receiver;
         try {
             InetAddress address = InetAddress.getByName(ip);
-            sendPacket = new DatagramPacket(new byte[172],172,address, port);
+            sendPacket = new DatagramPacket(new byte[332],332,address, port);
             socket = new DatagramSocket();
             socket.connect(address,port);
         } catch (SocketException e) {
@@ -37,7 +37,7 @@ public class UDPConnector implements Runnable{
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
-        receivePacket = new DatagramPacket(new byte[172],172);
+        receivePacket = new DatagramPacket(new byte[332],332);
 
         executor = Executors.newSingleThreadExecutor();
         executor.execute(this);
@@ -51,6 +51,7 @@ public class UDPConnector implements Runnable{
             try {
                 socket.receive(receivePacket);
             } catch (IOException e) {
+                Log.e("UDP", "udp socket is closed");
                 //e.printStackTrace();
             }
             if(receiver != null)

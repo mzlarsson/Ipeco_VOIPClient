@@ -23,6 +23,7 @@ public class RTPHandler implements Runnable, PacketReceiver{
     private JitterBuffer buffer;
 
     public RTPHandler(UDPConnector udpConnector) {
+        buffer = new JitterBuffer(120);
         this.udpConnector = udpConnector;
         sequenceNumber = 0;
         try {
@@ -34,7 +35,6 @@ public class RTPHandler implements Runnable, PacketReceiver{
         executor = Executors.newSingleThreadExecutor();
         executor.execute(this);
 
-        buffer = new JitterBuffer(60);
         udpConnector.setReceiver(this);
     }
 

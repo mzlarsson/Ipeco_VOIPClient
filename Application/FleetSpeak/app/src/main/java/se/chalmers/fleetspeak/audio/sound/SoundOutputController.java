@@ -2,14 +2,19 @@ package se.chalmers.fleetspeak.audio.sound;
 
 import android.media.AudioTrack;
 import android.os.Process;
-import java.nio.ByteBuffer;
+import android.util.Log;
+
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
 
 import se.chalmers.fleetspeak.Network.UDP.RTPHandler;
 
-import static se.chalmers.fleetspeak.audio.sound.SoundConstants.*;
+import static se.chalmers.fleetspeak.audio.sound.SoundConstants.AUDIO_ENCODING;
+import static se.chalmers.fleetspeak.audio.sound.SoundConstants.AUDIO_OUT_BUFFER_SIZE;
+import static se.chalmers.fleetspeak.audio.sound.SoundConstants.OUTPUT_CHANNEL_CONFIG;
+import static se.chalmers.fleetspeak.audio.sound.SoundConstants.SAMPLE_RATE;
+import static se.chalmers.fleetspeak.audio.sound.SoundConstants.SESSION_ID;
+import static se.chalmers.fleetspeak.audio.sound.SoundConstants.STREAM_TYPE;
 
 /**
  * A class for playing PCMU sound from a buffer
@@ -40,7 +45,6 @@ public class SoundOutputController implements Runnable {
 
         executor = Executors.newSingleThreadExecutor();
         executor.execute(this);
-        init();
     }
 
     public synchronized void destroy(){
@@ -48,12 +52,9 @@ public class SoundOutputController implements Runnable {
         if(audioTrack != null){
             audioTrack.release();
         }
+        audioOutputProcessor.terminate();
     }
 
-    public void init(){
-        audioTrack.play();
-        soundIsPlaying = true;
-    }
 
     public void writeAudio(byte[] b,int offset){
         audioTrack.write(b,offset,b.length);
@@ -62,8 +63,11 @@ public class SoundOutputController implements Runnable {
     @Override
     public void run() {
         android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_AUDIO);
+        audioTrack.play();
+        soundIsPlaying = true;
         while(soundIsPlaying){
             try {
+                Log.d("SOC", "playing audio");
                 writeAudio(audioOutputProcessor.readBuffer(), 0);
             } catch (InterruptedException e) {
                 e.printStackTrace();

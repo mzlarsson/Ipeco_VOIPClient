@@ -12,7 +12,6 @@ import se.chalmers.fleetspeak.Network.TCP.TLSConnector;
 import se.chalmers.fleetspeak.Network.UDP.RTPHandler;
 import se.chalmers.fleetspeak.Network.UDP.STUNInitiator;
 import se.chalmers.fleetspeak.Network.UDP.UDPConnector;
-import se.chalmers.fleetspeak.audio.sound.SoundHandler;
 import se.chalmers.fleetspeak.audio.sound.SoundOutputController;
 import se.chalmers.fleetspeak.util.Command;
 import se.chalmers.fleetspeak.util.MessageValues;
@@ -67,6 +66,7 @@ public class Model {
         if(state == State.authenticated || state == State.connected){
             state = State.not_connected;
             connector.disconnect();
+            soundOutputController.destroy();
             rtpHandler.terminate();
         }else{
             Log.d("Model", "Not connected, cannot send disconnect");
@@ -109,7 +109,7 @@ public class Model {
                     break;
                 case MessageValues.UDPCONNECTOR:
                     Log.i("Commandhandler", "got a udpconnector");
-                    connector.sendMessage(new Command("clientUdpTestOk", null,null));
+                    connector.sendMessage(new Command("clientUdpTestOk", null, null));
                     rtpHandler = new RTPHandler((UDPConnector)msg.obj);
                     soundOutputController = new SoundOutputController(rtpHandler);
                     break;
