@@ -21,7 +21,7 @@
             android:name=".fragments.NewStructure.LoginProcess.LoginActivity"
             android:label="@string/title_activity_login"
             android:noHistory="true"
-            android:screenOrientation="locked"
+            android:screenOrientation="portrait"
             >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -33,7 +33,7 @@
             android:name=".fragments.NewStructure.ConnectedProcess.ConnectionActivity"
             android:label="@string/title_activity_connection"
             android:noHistory="true"
-            android:screenOrientation="locked"
+            android:screenOrientation="portrait"
             >
         </activity>
 

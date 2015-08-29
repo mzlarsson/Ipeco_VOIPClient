@@ -1,6 +1,7 @@
 package se.chalmers.fleetspeak.core;
 
 import se.chalmers.fleetspeak.sound.Mixer;
+import se.chalmers.fleetspeak.sound.MixerFactory;
 import se.chalmers.fleetspeak.util.Command;
 
 public class AudioRoom implements IRoom {
@@ -10,26 +11,26 @@ public class AudioRoom implements IRoom {
 
 	public AudioRoom(String name, BuildingManager buildingManager, boolean permanent){
 		room = new Room(name, buildingManager, permanent);
-		//TODO init mixer
+		mixer = MixerFactory.getDefaultMixer();
 	}
 
 
 	@Override
 	public void addClient(Client client) {
 		room.addClient(client);
-		//TODO add mixer stuff
+		mixer.addStream(client.getAudioStream(), client.getOutputBuffer());
+		
 	}
 
 	@Override
 	public Client removeClient(int clientid) {
 		Client c = room.removeClient(clientid);
-		//TODO do mixer stuff
+		mixer.removeStream(c.getAudioStream());
 		return c;
 	}
 
 	@Override
 	public boolean canDelete() {
-
 		return room.canDelete();
 	}
 

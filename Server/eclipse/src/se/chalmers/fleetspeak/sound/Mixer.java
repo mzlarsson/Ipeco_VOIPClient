@@ -1,12 +1,15 @@
 package se.chalmers.fleetspeak.sound;
 
-public interface Mixer {
+import java.util.concurrent.BlockingQueue;
+
+public interface Mixer extends Runnable{
 
 	/**
 	 * Adds a stream to the mixer.
 	 * @param stream Stream to add
+	 * @param output The output queue to put data in
 	 */
-	public void addStream(BufferedAudioStream stream);
+	public void addStream(BufferedAudioStream stream, BlockingQueue<byte[]> output);
 	
 	/**
 	 * Removes a stream from the mixer.
@@ -14,13 +17,10 @@ public interface Mixer {
 	 * @param stream The stream to remove
 	 */
 	public void removeStream(BufferedAudioStream stream);
-
-
+	
 	/**
-	 * Returns the mixed byte array of data retrieved from all registered BufferedAudioStreams to the mixer. Each channel
-	 * contains the sound of all but the sound stream on that index.
-	 * @return An array of the mixed sound
+	 * Closes the mixer and removes all input/output streams.
 	 */
-	public byte[][] getMixed();
+	public void close();
 	
 }

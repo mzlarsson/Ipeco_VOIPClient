@@ -19,8 +19,8 @@ public class OpusMixer extends SimpleMixer{
 	private OpusDecoder decoder;
 	private OpusEncoder encoder;
 
-	protected OpusMixer(){
-		super();
+	protected OpusMixer(int mixingInterval){
+		super(mixingInterval);
 		try {
 			decoder = new OpusDecoder();
 			encoder = new OpusEncoder();
@@ -58,7 +58,7 @@ public class OpusMixer extends SimpleMixer{
 	 * @return An array of the mixed encoded Opus data
 	 */
 	@Override
-	public byte[][] getMixed(){
+	protected byte[][] getMixed(){
 		byte[][] mixed = super.getMixed();
 		for(int i = 0; i<mixed.length; i++){
 			mixed[i] = encoder.encode(mixed[i]);
