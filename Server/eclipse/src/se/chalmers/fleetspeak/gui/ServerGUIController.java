@@ -6,7 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
@@ -31,8 +30,6 @@ import javafx.stage.Stage;
 import org.fxmisc.richtext.StyleClassedTextArea;
 
 import se.chalmers.fleetspeak.core.MainController;
-import se.chalmers.fleetspeak.core.command.Commands;
-import se.chalmers.fleetspeak.core.command.impl.CommandResponse;
 
 public class ServerGUIController implements StageOwner{
 
@@ -86,7 +83,6 @@ public class ServerGUIController implements StageOwner{
 		//Start new one
 		try{
 			final int port = Integer.parseInt(portNumber.getText());
-			final ServerGUIController controller = this;
 			server = new MainController(port);
 
 			//Fix UI components
@@ -263,24 +259,7 @@ public class ServerGUIController implements StageOwner{
 			startTheParty();
 		} else {
 			if(hasRunningServer()){
-				String[] parts = cmd.split(" ");
-				Commands com = Commands.getInstance();
-				CommandResponse response = null;
-				if(parts.length==1){
-					response = com.execute(-1, com.findCommand(parts[0]));
-				}else{
-					response = com.execute(-1, com.findCommand(parts[0]), (Object[])Arrays.copyOfRange(parts, 1, parts.length));
-				}
-
-				if(response != null){
-					if(response.wasSuccessful()){
-						logger.info("[Success] "+response.getMessage());
-					}else{
-						logger.warning("[Failure] "+response.getMessage());
-					}
-				}else{
-					logger.warning("Command not found. Please try again.");
-				}
+				logger.severe("Command functionality from GUI temporary disabled");
 			}else{
 				logger.warning("Commands are disabled when server is not running");
 			}
