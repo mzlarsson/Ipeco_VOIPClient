@@ -22,6 +22,11 @@ public class RTPHandler implements PacketReceiver{
 	@Override
 	public void handlePacket(byte[] packet){
 		jitter.write(new RTPPacket(packet));
+		//FIXME Temporary test function.
+		byte[] b = jitter.read();
+		if(b!=null) {
+			sendPacket(b);			
+		}
 	}
 	
 	public void sendPacket(byte[] packet) {

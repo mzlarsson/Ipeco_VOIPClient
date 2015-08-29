@@ -5,7 +5,15 @@ import java.util.logging.Logger;
 
 /**
  * The purpose of the JitterBuffer is to make audio-streams more consistent,
- * it does this by adding a delay
+ * it does this by adding a delay to wait for or realign packets that arrived
+ * out of order.
+ * Packets arriving too late are dropped.
+ * If the buffer is not completely full it enters a "building mode" where it
+ * will attempt to fill the buffer without disrupting conversations.
+ * It does this by inserting silent packages next to other "silent" packages,
+ * meaning time-gaps between two packages with the correct sequence number but
+ * with a high timestamp difference. This allows the client to conserve
+ * network bandwidth by not sending anything while no/too low audio is recorded.
  *
  * @author Patrik Haar
  */
@@ -17,7 +25,7 @@ public class JitterBuffer implements BufferedAudioStream{
 	private JitterBufferQueue buffer;
 	private short lastReadSeqNbr = -1;
 	private long lastReadtimestamp = -1;
-	private Boolean ready, buildMode;
+	private boolean ready, buildMode;
 	private Logger logger;
 
 	private long bufferTime;
@@ -41,12 +49,13 @@ public class JitterBuffer implements BufferedAudioStream{
 	 */
 	public void write(RTPPacket packet) {
 		if(packet.seqNumber > lastReadSeqNbr) {
-			byte[] payload = packet.getPayload();
-			System.out.print(packet.seqNumber + "\t" + packet.timestamp + "\t");
-			for(int i=0; i<payload.length; i++) {
-				System.out.print(payload[i] + " ");
-			}
-			System.out.println();
+			//FIXME Temporary printout.
+//			byte[] payload = packet.getPayload();
+//			System.out.print(packet.seqNumber + "\t" + packet.timestamp + "\t");
+//			for(int i=0; i<payload.length; i++) {
+//				System.out.print(payload[i] + " ");
+//			}
+//			System.out.println();
 			buffer.offer(packet);
 			if(isFullyBuffered()) {
 				if (!ready) {
@@ -66,7 +75,7 @@ public class JitterBuffer implements BufferedAudioStream{
 	@Override
 	public byte[] read() {
 		byte[] audio = null;
-		if(!ready) {
+		if(ready) {
 			RTPPacket p = null;
 			if(!buildMode) {
 				if (!isFullyBuffered()) {
