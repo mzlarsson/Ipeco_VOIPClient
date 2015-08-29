@@ -48,6 +48,8 @@ public class ServerGUI extends Application implements StageOwner{
 									Log.stop();
 								}
 							});
+				}else{
+					Log.stop();
 				}
 			}
         });
