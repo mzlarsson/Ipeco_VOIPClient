@@ -19,8 +19,8 @@ import java.util.logging.Logger;
  */
 public class JitterBuffer implements BufferedAudioStream{
 
-	private static final int SOUND_ARRAY_SIZE = 160;
-	private static final int TIME_BETWEEN_SAMPLES = 20;
+	private static final int SOUND_ARRAY_SIZE = 320;
+	private static final int TIME_BETWEEN_SAMPLES = 40;
 	
 	private JitterBufferQueue buffer;
 	private short lastReadSeqNbr = -1;
@@ -84,15 +84,19 @@ public class JitterBuffer implements BufferedAudioStream{
 				p = buffer.poll();
 			} else {
 				RTPPacket tmp = buffer.peek();
-				if (tmp.seqNumber == ((short)(lastReadSeqNbr + 1))) {
-					if (tmp.timestamp - 2*TIME_BETWEEN_SAMPLES <= lastReadtimestamp) { // 2*timestamp to compensate for variations.
-						p = buffer.poll();
+				if (tmp != null) {
+					if (tmp.seqNumber == ((short)(lastReadSeqNbr + 1))) {
+						if (tmp.timestamp - 2*TIME_BETWEEN_SAMPLES <= lastReadtimestamp) { // 2*timestamp to compensate for variations.
+							p = buffer.poll();
+						} else {
+							lastReadtimestamp += TIME_BETWEEN_SAMPLES;
+						}
 					} else {
+						lastReadSeqNbr += 1;
 						lastReadtimestamp += TIME_BETWEEN_SAMPLES;
 					}
 				} else {
-					lastReadSeqNbr += 1;
-					lastReadtimestamp += TIME_BETWEEN_SAMPLES;
+					ready = false;
 				}
 			}
 			if (p!=null) {
