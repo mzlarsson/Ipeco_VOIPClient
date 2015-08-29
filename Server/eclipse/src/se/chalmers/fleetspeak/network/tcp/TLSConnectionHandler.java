@@ -3,6 +3,7 @@ package se.chalmers.fleetspeak.network.tcp;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
@@ -45,7 +46,11 @@ public class TLSConnectionHandler{
 
 		serverSocket = createServerSocket();
 		if(serverSocket != null){
-			logger.log(Level.INFO, "Starting to listen to port " + port);
+			try{
+				logger.log(Level.INFO, "Starting server @LAN-IP "+InetAddress.getLocalHost().getHostAddress()+" on port "+port);
+			}catch(Exception e){
+				//I dont care that i cant print the local address
+			}
 			running = true;
 		}else{
 			logger.log(Level.SEVERE, "Failed to create serverSocket");

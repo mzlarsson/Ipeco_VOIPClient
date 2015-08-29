@@ -46,7 +46,7 @@ public class TestSoundInputController extends AndroidTestCase {
 
         for(int i = 0; i < runs; i++) {
             long start =System.nanoTime();
-            soundInputController.fillAudioBuffer();
+            //soundInputController.fillAudioBuffer();
             long stop = System.nanoTime();
             Log.d("TestSoundInput","Time taken :"+(stop-start));
             sum += stop-start;

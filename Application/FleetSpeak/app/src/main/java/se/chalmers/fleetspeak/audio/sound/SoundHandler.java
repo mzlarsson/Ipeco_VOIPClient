@@ -1,8 +1,8 @@
 package se.chalmers.fleetspeak.audio.sound;
 
+import se.chalmers.fleetspeak.audio.FleetspeakAudioException;
 import se.chalmers.fleetspeak.audio.codec.opus.collection.OpusDecoder;
 import se.chalmers.fleetspeak.audio.codec.opus.collection.OpusEncoder;
-import se.chalmers.fleetspeak.audio.codec.opus.jniopus.OpusEncoderWrapper;
 
 /**
  * Made for testing purposes only
@@ -32,7 +32,12 @@ public class SoundHandler implements Runnable {
         od = new OpusDecoder();
 
         soundOutputController = new SoundOutputController();
-        soundInputController = new SoundInputController();
+        try {
+            soundInputController = new SoundInputController();
+        } catch (FleetspeakAudioException e) {
+
+
+        }
         recThread = new Thread(soundInputController,"SoundInputController");
         playThread = new Thread(soundOutputController,"SoundRecordController");
         startControllers();
@@ -47,7 +52,11 @@ public class SoundHandler implements Runnable {
     }
 
     public synchronized void transferAudio(){
-        soundOutputController.fillAudioBuffer(soundInputController.readBuffer());
+        try {
+            soundOutputController.fillAudioBuffer(soundInputController.readBuffer());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public void killControllers(){
@@ -64,7 +73,12 @@ public class SoundHandler implements Runnable {
     public void run() {
         while(soundIsRunning) {
            //transferAudio();
-            byte[] b = soundInputController.readBuffer();
+            byte[] b = new byte[0];
+            try {
+                b = soundInputController.readBuffer();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             byte [] e = oe.encode(b,0);
                 soundOutputController.fillAudioBuffer(od.decode(e,0));
 

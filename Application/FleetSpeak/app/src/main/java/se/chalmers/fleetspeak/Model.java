@@ -71,6 +71,7 @@ public class Model {
         if(state == State.authenticated || state == State.connected){
             state = State.not_connected;
             connector.disconnect();
+            rtpHandler.terminate();
         }else{
             Log.d("Model", "Not connected, cannot send disconnect");
         }
@@ -105,11 +106,14 @@ public class Model {
                     break;
                 case MessageValues.DISCONNECTED://TODO send message to gui
                     state = State.not_connected;
+                    rtpHandler.terminate();
                     break;
                 case MessageValues.CONNECTIONFAILED://TODO send message to gui
                     state = State.not_connected;
                     break;
                 case MessageValues.UDPCONNECTOR:
+                    Log.i("Commandhandler", "got a udpconnector");
+                    connector.sendMessage(new Command("clientUdpTestOk", null,null));
                     rtpHandler = new RTPHandler((UDPConnector)msg.obj);
                     break;
                 case MessageValues.COMMAND:
@@ -145,7 +149,6 @@ public class Model {
                     case "initiatesoundport":
                         new STUNInitiator(connector.getIP(),(int)command.getKey(),(byte)command.getValue(), commandHandler);
                         break;
-
                     case "sendauthenticationdetails":
                         Log.d("auth", username);
                         connector.sendMessage(new Command("authenticationdetails", username, null));

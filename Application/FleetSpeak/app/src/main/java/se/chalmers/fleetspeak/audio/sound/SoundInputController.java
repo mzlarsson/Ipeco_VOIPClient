@@ -4,10 +4,18 @@ import android.media.AudioRecord;
 import android.util.Log;
 
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
+
 import se.chalmers.fleetspeak.audio.FleetspeakAudioException;
 
-import static se.chalmers.fleetspeak.audio.sound.SoundConstants.*;
+import static se.chalmers.fleetspeak.audio.sound.SoundConstants.AUDIO_ENCODING;
+import static se.chalmers.fleetspeak.audio.sound.SoundConstants.AUDIO_IN_BUFFER_SIZE;
+import static se.chalmers.fleetspeak.audio.sound.SoundConstants.INPUT_CHANNEL_CONFIG;
+import static se.chalmers.fleetspeak.audio.sound.SoundConstants.INPUT_FRAME_SIZE;
+import static se.chalmers.fleetspeak.audio.sound.SoundConstants.INPUT_SOURCE;
+import static se.chalmers.fleetspeak.audio.sound.SoundConstants.SAMPLE_RATE;
 
 /**
  * A class for recording audio from the microphone to a bytebuffer.
@@ -15,11 +23,13 @@ import static se.chalmers.fleetspeak.audio.sound.SoundConstants.*;
  */
 public class SoundInputController implements Runnable {
 
+    final String LOGTAG = "SoundInputController";
     private AudioRecord audioRecord;
 
     private BlockingQueue<byte[]> inputBuffer;
     private boolean isRecording;
-;
+
+    private Executor executor;
 
     public SoundInputController() throws FleetspeakAudioException {
         inputBuffer = new LinkedBlockingQueue<>(10);
@@ -38,6 +48,9 @@ public class SoundInputController implements Runnable {
         if (audioRecord.getState() == AudioRecord.STATE_UNINITIALIZED)
             throw new FleetspeakAudioException("AudioRecord couldn't initialize");
 
+        Log.i(LOGTAG, "initiated");
+        executor = Executors.newSingleThreadExecutor();
+        executor.execute(this);
     }
 
     public void init() {
@@ -60,6 +73,7 @@ public class SoundInputController implements Runnable {
 
     @Override
     public void run() {
+        Log.i(LOGTAG, "started recording");
         init();
         android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_AUDIO);
         while (isRecording) {

@@ -6,11 +6,9 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
 
-import java.net.SocketAddress;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-import se.chalmers.fleetspeak.Model;
 import se.chalmers.fleetspeak.util.MessageValues;
 
 /**
@@ -29,6 +27,7 @@ public class STUNInitiator implements PacketReceiver, Runnable{
     private Messenger messenger;
 
     public STUNInitiator(String ip, int port, byte controlcode, Handler handler) {
+        Log.d("STUN", "Starting");
         this.controlcode = new byte[]{controlcode};
         this.udpConnector = new UDPConnector(ip, port, this);
         this.messenger = new Messenger(handler);
@@ -39,6 +38,7 @@ public class STUNInitiator implements PacketReceiver, Runnable{
 
     @Override
     public void handlePacket(byte[] bytes) {
+        Log.i("STUN", "received "+ bytes[0]);
         if(bytes[0] == controlcode[0])
             receicedOk = true;
     }
@@ -48,7 +48,9 @@ public class STUNInitiator implements PacketReceiver, Runnable{
         receicedOk = false;
         while(!receicedOk)
             udpConnector.sendPacket(controlcode);
+        Log.d("STUN", "received ok");
         try {
+
             messenger.send(Message.obtain(null, MessageValues.UDPCONNECTOR, udpConnector));
         } catch (RemoteException e) {
             e.printStackTrace();

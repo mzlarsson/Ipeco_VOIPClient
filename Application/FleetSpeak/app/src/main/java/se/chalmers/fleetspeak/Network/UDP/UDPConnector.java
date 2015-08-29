@@ -51,7 +51,7 @@ public class UDPConnector implements Runnable{
             try {
                 socket.receive(receivePacket);
             } catch (IOException e) {
-                e.printStackTrace();
+                //e.printStackTrace();
             }
             if(receiver != null)
                 receiver.handlePacket(receivePacket.getData());
@@ -60,7 +60,9 @@ public class UDPConnector implements Runnable{
     }
 
     public void sendPacket(byte[] data){
-        if(socket.isConnected()) {
+        if(data.length == 1)
+            Log.i("UDP", "sent " +data[0]);
+        if(!socket.isClosed()) {
             sendPacket.setData(data);
             try {
                 socket.send(sendPacket);
@@ -68,7 +70,7 @@ public class UDPConnector implements Runnable{
                 e.printStackTrace();
             }
         }else{
-            Log.e("UDP", "udp socket is not connected");
+            Log.e("UDP", "udp socket is closed");
         }
     }
 

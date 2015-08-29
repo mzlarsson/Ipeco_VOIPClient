@@ -1,13 +1,15 @@
 package se.chalmers.fleetspeak.audio.sound;
 
 
+import android.util.Log;
+
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import se.chalmers.fleetspeak.audio.FleetspeakAudioException;
 import se.chalmers.fleetspeak.audio.codec.opus.collection.OpusEncoder;
-
-import static se.chalmers.fleetspeak.audio.sound.SoundConstants.*;
 
 
 /**
@@ -15,6 +17,9 @@ import static se.chalmers.fleetspeak.audio.sound.SoundConstants.*;
  */
 public class AudioInputProcessor implements Runnable {
 
+    final String LOGTAG = "AudioInputProcessor";
+
+    private final Executor executor;
     boolean isProcessing;
     private BlockingQueue<byte[]> processBuffer;
 
@@ -27,7 +32,9 @@ public class AudioInputProcessor implements Runnable {
         opusEncoder = new OpusEncoder();
         soundInputController = new SoundInputController();
         processBuffer = new LinkedBlockingQueue<>(10);//TODO Fix as a importable constant
-
+        Log.i(LOGTAG, "initiated");
+        executor = Executors.newSingleThreadExecutor();
+        executor.execute(this);
     }
 
     public byte[] readBuffer() throws InterruptedException {
@@ -36,6 +43,7 @@ public class AudioInputProcessor implements Runnable {
 
     @Override
     public void run() {
+        Log.i(LOGTAG, "working started");
         isProcessing = true;
 
         byte[] sound;
@@ -54,4 +62,8 @@ public class AudioInputProcessor implements Runnable {
 
     }
 
+    public void terminate() {
+        isProcessing = false;
+        soundInputController.destroy();
+    }
 }
