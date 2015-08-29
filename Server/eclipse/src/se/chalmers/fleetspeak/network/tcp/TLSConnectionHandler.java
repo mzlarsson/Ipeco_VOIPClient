@@ -83,7 +83,7 @@ public class TLSConnectionHandler{
 				KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
 				kmf.init(ks, "fleetspeak".toCharArray());
 
-				SSLContext context = SSLContext.getInstance("TLSv1.2");
+				SSLContext context = SSLContext.getInstance("TLSv1");
 				logger.log(Level.FINE, context.getProtocol());
 				context.init(kmf.getKeyManagers(), null, null);
 

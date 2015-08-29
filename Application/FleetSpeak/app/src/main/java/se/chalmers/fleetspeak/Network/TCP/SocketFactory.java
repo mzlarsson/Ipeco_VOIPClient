@@ -35,7 +35,7 @@ public class SocketFactory {
         SSLSocketFactory socketFactory = null;
         try {
             KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
-            InputStream in = appContext.getResources().openRawResource(R.raw.test3);
+            InputStream in = appContext.getResources().openRawResource(R.raw.keystore);
             ks.load(in, "fleetspeak".toCharArray());
 
             TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
@@ -43,7 +43,7 @@ public class SocketFactory {
             tmf.init(ks);
 
 
-            SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
+            SSLContext sslContext = SSLContext.getInstance("TLSv1");
             Log.i("TLS", sslContext.getProtocol());
             sslContext.init(null, tmf.getTrustManagers(), null);
             socketFactory = sslContext.getSocketFactory();
