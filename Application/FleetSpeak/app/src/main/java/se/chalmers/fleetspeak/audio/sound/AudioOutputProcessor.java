@@ -45,7 +45,6 @@ public class AudioOutputProcessor implements Runnable {
             encoded = outputStream.read();
             try {
                 if(encoded != null) {
-                    Log.d("AOP", "decoding");
                     outputBuffer.put(opusDecoder.decode(encoded, 0));
                 }
             } catch (InterruptedException e) {

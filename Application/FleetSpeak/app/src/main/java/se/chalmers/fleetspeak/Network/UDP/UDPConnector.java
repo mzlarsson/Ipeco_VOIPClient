@@ -72,6 +72,7 @@ public class UDPConnector implements Runnable{
             }
         }else{
             Log.e("UDP", "udp socket is closed");
+            terminate();
         }
     }
 
