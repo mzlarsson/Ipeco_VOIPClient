@@ -2,11 +2,13 @@ package se.chalmers.fleetspeak.core;
 
 import java.net.InetAddress;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import se.chalmers.fleetspeak.network.tcp.TCPHandler;
 import se.chalmers.fleetspeak.network.udp.RTPHandler;
+import se.chalmers.fleetspeak.sound.BufferedAudioStream;
 import se.chalmers.fleetspeak.sound.Router;
 import se.chalmers.fleetspeak.util.Command;
 import se.chalmers.fleetspeak.util.UserInfoPacket;
@@ -168,6 +170,14 @@ public class Client implements CommandHandler, NetworkUser {
 
 	public void setRTPHandler(RTPHandler rtp) {
 		this.rtp = rtp;
+	}
+	
+	public BufferedAudioStream getAudioStream(){
+		return rtp.getBufferedAudioStream();
+	}
+	
+	public BlockingQueue<byte[]> getOutputBuffer(){
+		return rtp.getOutputBuffer();
 	}
 	
 	@Override

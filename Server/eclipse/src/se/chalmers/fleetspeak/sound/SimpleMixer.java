@@ -8,8 +8,8 @@ package se.chalmers.fleetspeak.sound;
 
 public class SimpleMixer extends AbstractMixer{
 	
-	protected SimpleMixer(){
-		super();
+	protected SimpleMixer(int mixingInterval){
+		super(mixingInterval);
 	}
 
 	/**
@@ -18,7 +18,7 @@ public class SimpleMixer extends AbstractMixer{
 	 * @return An array of the mixed PCM
 	 */
 	@Override
-	public byte[][] getMixed() {
+	protected byte[][] getMixed() {
 		byte[][] data = getData();
 		int members = data.length;			//Used for clarity in the code.
 		
