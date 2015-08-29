@@ -11,7 +11,7 @@ import se.chalmers.fleetspeak.audio.sound.AudioInputProcessor;
 /**
  * Created by Nieo on 25/08/15.
  */
-public class RTPHandler implements Runnable{
+public class RTPHandler implements Runnable, PacketReceiver{
 
     private final Executor executor;
     private boolean isRunning;
@@ -19,6 +19,8 @@ public class RTPHandler implements Runnable{
     private short sequenceNumber;
     private UDPConnector udpConnector;
     private AudioInputProcessor audioInputProcessor;
+
+    private JitterBuffer buffer;
 
     public RTPHandler(UDPConnector udpConnector) {
         this.udpConnector = udpConnector;
@@ -31,6 +33,9 @@ public class RTPHandler implements Runnable{
         }
         executor = Executors.newSingleThreadExecutor();
         executor.execute(this);
+
+        buffer = new JitterBuffer(60);
+        udpConnector.setReceiver(this);
     }
 
 
@@ -56,5 +61,14 @@ public class RTPHandler implements Runnable{
         isRunning = false;
         udpConnector.terminate();
         audioInputProcessor.terminate();
+    }
+
+    @Override
+    public void handlePacket(byte[] bytes) {
+        buffer.write(new RTPPacket(bytes));
+    }
+
+    public BufferedAudioStream getAudioStream(){
+        return buffer;
     }
 }

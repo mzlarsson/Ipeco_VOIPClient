@@ -49,6 +49,34 @@ public class RTPPacket {
     public RTPPacket(short seqNumber, long timestamp, byte[] payload) {
         this((byte)0, seqNumber, timestamp, 0, payload);
     }
+
+    public RTPPacket(byte[] data) {
+        int b = data[0] & 0xff;
+        version = (b>>>6)&3;
+        padding = (b & 0x20) == 0x20;
+        extensions = (b & 0x10) == 0x10;
+        cc = b & 0x0F;
+
+        b = data[1] & 0xff;
+
+        marker = (b & 0x80) == 0x80;
+        payloadType = (byte) (b & 0x7F);
+        seqNumber = (short) (((data[2] & 0xff) << 8) | (data[3] & 0xff));
+
+        timestamp = data[7] & 0xFF |
+                (data[6] & 0xFF) << 8 |
+                (data[5] & 0xFF) << 16 |
+                (data[4] & 0xFF) << 24;
+
+        ssrc = data[11] & 0xFF |
+                (data[10] & 0xFF) << 8 |
+                (data[9] & 0xFF) << 16 |
+                (data[8] & 0xFF) << 24;
+
+        payload = new byte[data.length-12];
+        System.arraycopy(data, 12, payload, 0, data.length-12);;
+    }
+
     /**
      * This is a more effective method than the detailed one which only
      * tags the sequence number and timestamp dynamically and sets
@@ -69,5 +97,9 @@ public class RTPPacket {
 
         System.arraycopy(payload, 0, b, 12, payload.length);
         return b;
+    }
+
+    public byte[] getPayload() {
+        return payload;
     }
 }
