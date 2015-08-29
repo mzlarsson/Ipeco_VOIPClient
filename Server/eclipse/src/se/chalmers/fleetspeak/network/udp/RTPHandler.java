@@ -11,7 +11,7 @@ public class RTPHandler implements PacketReceiver{
 	private short seqNumber = 0;
 
 	public RTPHandler(DatagramSocket socket) {
-		jitter = new JitterBuffer(60);
+		jitter = new JitterBuffer(120);
 		udp = new UDPHandler(socket, jitter.getSoundArraySize() + RTPPacket.HEADER_SIZE);
 		udp.setReceiver(this);
 		udp.start();
