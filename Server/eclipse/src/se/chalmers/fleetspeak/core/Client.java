@@ -1,7 +1,6 @@
 package se.chalmers.fleetspeak.core;
 
 import java.net.InetAddress;
-import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -55,65 +54,15 @@ public class Client implements CommandHandler, NetworkUser {
 
 	}
 
+	@Override
 	public void sendCommand(Command c){
 		tcp.sendCommand(c);
 	}
 
+	@Override
 	public void setCommandHandler(CommandHandler ch){
 		this.ch = ch;
 	}
-
-	//FIXME temporary
-	public void sendToPort(Client c, int port){
-		tcp.sendCommand(new Command("sendStuffTo", c.ip.getHostAddress(), port));
-	}
-
-
-
-	/**
-	 * Moves this client to another ch symbolized by a list of clients
-	 * and adds them as listeners to its stream.
-	 * @param clientList A list of clients symbolizing all clients in a ch.
-	 */
-	public synchronized void moveToRoom(List<Client> clientList){
-		removeAllListeningClients();
-		for (Client c : clientList) {
-			requestListeningClient(c);
-		}
-	}
-
-	/**
-	 * Requests a port for this client to start connection
-	 * @param client The client to listen to.
-	 */
-	public void requestListeningClient(Client client){
-		tcp.sendCommand(new Command("requestSoundPort", client.getClientID(), null));
-	}
-
-	/**
-	 * Adds a client to this client connection list
-	 * @param remoteClient The remote client
-	 * @param port The port that is used
-	 */
-	public void addListeningClient(Client remoteClient, int port){
-		soundRouter.addClient(remoteClient.getClientID(), remoteClient.ip, port);
-	}
-
-	/**
-	 * Removes a client that listens to this client.
-	 * @param client The client to be removed.
-	 */
-	public void removeListeningClient(Client client) {
-		soundRouter.removeClient(client.clientID);
-	}
-
-	/**
-	 * Removes all clients that listens to this client.
-	 */
-	public void removeAllListeningClients() {
-		soundRouter.removeAllClients();
-	}
-
 	/**
 	 * Gets the information of the client in a bundle.
 	 * @return The information of the client.
@@ -171,15 +120,15 @@ public class Client implements CommandHandler, NetworkUser {
 	public void setRTPHandler(RTPHandler rtp) {
 		this.rtp = rtp;
 	}
-	
+
 	public BufferedAudioStream getAudioStream(){
 		return rtp.getBufferedAudioStream();
 	}
-	
+
 	public BlockingQueue<byte[]> getOutputBuffer(){
 		return rtp.getOutputBuffer();
 	}
-	
+
 	@Override
 	public void handleCommand(Command c) {
 		logger.log(Level.FINER,"[Client]userid: "+ clientID + "s Got command " + c.getCommand() + " key "+ c.getKey() + " value "+ c.getValue());

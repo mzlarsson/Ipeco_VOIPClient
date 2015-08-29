@@ -67,7 +67,7 @@ public class Building {
 		sync(client);
 		rooms.get(roomid).addClient(client);
 		postUpdate(new Command("addeduser", client.getInfoPacket(), roomid));
-		logger.log(Level.INFO, "Added client " + client.getClientID() + " to room " + roomid);
+		logger.log(Level.INFO, "Added client " + client.toString() + " to room " + roomid);
 
 	}
 	/**
@@ -80,7 +80,7 @@ public class Building {
 		Client c = rooms.get(sourceRoom).removeClient(clientid);
 		rooms.get(destinationRoom).addClient(c);
 		postUpdate(new Command("moveduser", clientid, sourceRoom + "," + destinationRoom));
-		logger.log(Level.INFO, "Moved client " + clientid + " to room " + destinationRoom);
+		logger.log(Level.INFO, "Moved client " + c.toString() + " to room " + destinationRoom);
 		if(rooms.get(sourceRoom).canDelete()){
 			removeRoom(sourceRoom);
 		}
