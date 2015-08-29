@@ -12,6 +12,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -67,7 +68,9 @@ public class TLSConnectionHandler{
 				e.printStackTrace();
 			}
 			catch(IOException e){
-				e.printStackTrace();
+				if(!e.getMessage().equals("socket closed") || running){			//Ignore printing if socket is closed and handler terminated
+					e.printStackTrace();
+				}
 			}
 		}};
 
@@ -121,7 +124,10 @@ public class TLSConnectionHandler{
 		public void terminate() {
 			try{
 				running = false;
-				serverSocket.close();
+				if(serverSocket != null){
+					serverSocket.close();
+				}
+				((ExecutorService)executor).shutdownNow();
 			}catch(IOException e){
 				e.printStackTrace();
 			}

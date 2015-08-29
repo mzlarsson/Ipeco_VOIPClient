@@ -68,8 +68,12 @@ public class Log {
 	 * Needs to be called before shutdown
 	 */
 	private void close(){
-		fileHandler.flush();
-		fileHandler.close();
+		if(fileHandler != null){
+			fileHandler.flush();
+			fileHandler.close();
+		}else{
+			System.out.println("Could not write log to file.");
+		}
 	}
 
 
