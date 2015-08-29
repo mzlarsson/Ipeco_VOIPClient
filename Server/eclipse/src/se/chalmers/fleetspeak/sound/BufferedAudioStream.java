@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.network.udp;
+package se.chalmers.fleetspeak.sound;
 
 public interface BufferedAudioStream {
 

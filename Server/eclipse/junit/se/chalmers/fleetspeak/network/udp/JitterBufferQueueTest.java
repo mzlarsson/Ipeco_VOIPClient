@@ -7,11 +7,51 @@ import org.junit.Test;
 
 public class JitterBufferQueueTest {
 
+	JitterBufferQueue q = new JitterBufferQueue();
+	RTPPacket first, second, third;
+	
+	@Before
+	public void before() {
+		q = new JitterBufferQueue();
+		first = new RTPPacket((short) 0, 0, null);
+		second = new RTPPacket((short) 1, 20, null);
+		third = new RTPPacket((short) 2, 40, null);		
+	}
+	
 	@Test
-	public void test() {
-		RTPPacket first = new RTPPacket((short) 0, 0, null);
-		first.cc = 4;
-		fail("Not yet implemented");
+	public void testEmpty() {
+		assertEquals(0, q.getBufferedTime());
+		assertNull(q.peek());
+		assertNull(q.poll());
+	}
+	
+	@Test
+	public void testOneLong() {
+		q.offer(second);
+		assertEquals(0, q.getBufferedTime());
+		assertEquals(second, q.peek());
+		assertEquals(second, q.poll());
+		assertNull(q.poll());
+	}
+	
+	@Test
+	public void testTwoLong() {
+		q.offer(first);
+		q.offer(second);
+		assertEquals(20, q.getBufferedTime());
+		assertEquals(first, q.poll());
+		assertEquals(second, q.poll());
+	}
+	
+	@Test
+	public void testRearange() {
+		q.offer(first);
+		q.offer(third);
+		q.offer(second);
+		assertEquals(40, q.getBufferedTime());
+		assertEquals(first, q.poll());
+		assertEquals(second, q.poll());
+		assertEquals(third, q.poll());
 	}
 
 }

@@ -13,10 +13,10 @@ import java.util.List;
 public abstract class AbstractMixer implements Mixer{
 
 	
-	private List<BufferedStream> streams;
+	private List<BufferedAudioStream> streams;
 	
 	protected AbstractMixer(){
-		streams = new ArrayList<BufferedStream>();
+		streams = new ArrayList<BufferedAudioStream>();
 	}
 
 	/**
@@ -25,7 +25,7 @@ public abstract class AbstractMixer implements Mixer{
 	 * @param stream The stream to add
 	 */
 	@Override
-	public void addStream(BufferedStream stream) {
+	public void addStream(BufferedAudioStream stream) {
 		if(stream != null){
 			streams.add(stream);
 		}
@@ -36,7 +36,7 @@ public abstract class AbstractMixer implements Mixer{
 	 * NOTE: This call does NOT close the stream.
 	 */
 	@Override
-	public void removeStream(BufferedStream stream) {
+	public void removeStream(BufferedAudioStream stream) {
 		if(stream != null){
 			streams.remove(stream);
 		}
@@ -47,11 +47,15 @@ public abstract class AbstractMixer implements Mixer{
 	 * @param nbrOfBytes The number of bytes to retrieve
 	 * @return The data from the streams, ready to be mixed.
 	 */
-	protected byte[][] getData(int nbrOfBytes){
+	protected byte[][] getData(){
 		//Save data from streams
-		byte[][] data = new byte[streams.size()][nbrOfBytes];
+		byte[][] data = new byte[streams.size()][];
 		for(int i = 0; i<streams.size(); i++){
-			data[i] = streams.get(i).getData(nbrOfBytes);
+			data[i] = streams.get(i).read();
+			
+			if(data[i] == null){
+				data[i] = new byte[0];
+			}
 		}
 		
 		return data;
@@ -62,7 +66,7 @@ public abstract class AbstractMixer implements Mixer{
 	 * to change the implementation of getData, for encoding/decoding etc.
 	 * @return The current registered streams.
 	 */
-	protected List<BufferedStream> getStreams(){
+	protected List<BufferedAudioStream> getStreams(){
 		return streams;
 	}
 }
