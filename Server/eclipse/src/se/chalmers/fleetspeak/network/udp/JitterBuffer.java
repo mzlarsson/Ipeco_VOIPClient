@@ -3,6 +3,8 @@ package se.chalmers.fleetspeak.network.udp;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import se.chalmers.fleetspeak.sound.BufferedAudioStream;
+
 /**
  * The purpose of the JitterBuffer is to make audio-streams more consistent,
  * it does this by adding a delay to wait for or realign packets that arrived

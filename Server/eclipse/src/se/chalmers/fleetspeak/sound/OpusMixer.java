@@ -35,11 +35,17 @@ public class OpusMixer extends SimpleMixer{
 	 * @return The data from the streams, ready to be mixed.
 	 */
 	@Override
-	protected byte[][] getData(int nbrOfBytes){
-		List<BufferedStream> streams = getStreams();
-		byte[][] data = new byte[streams.size()][nbrOfBytes];
+	protected byte[][] getData(){
+		List<BufferedAudioStream> streams = getStreams();
+		byte[][] data = new byte[streams.size()][];
+		byte[] b;
 		for(int i = 0; i<streams.size(); i++){
-			data[i] = decoder.decode(streams.get(i).getData(nbrOfBytes));
+			b = streams.get(i).read();
+			if(b != null){
+				data[i] = decoder.decode(b);
+			}else{
+				data[i] = new byte[0];
+			}
 		}
 		
 		return data;
@@ -52,8 +58,8 @@ public class OpusMixer extends SimpleMixer{
 	 * @return An array of the mixed encoded Opus data
 	 */
 	@Override
-	public byte[][] getMixed(int nbrOfBytes){
-		byte[][] mixed = super.getMixed(nbrOfBytes);
+	public byte[][] getMixed(){
+		byte[][] mixed = super.getMixed();
 		for(int i = 0; i<mixed.length; i++){
 			mixed[i] = encoder.encode(mixed[i]);
 		}

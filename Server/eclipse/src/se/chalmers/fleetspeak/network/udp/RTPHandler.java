@@ -2,6 +2,8 @@ package se.chalmers.fleetspeak.network.udp;
 
 import java.net.DatagramSocket;
 
+import se.chalmers.fleetspeak.sound.BufferedAudioStream;
+
 public class RTPHandler implements PacketReceiver{
 
 	private UDPHandler udp;
