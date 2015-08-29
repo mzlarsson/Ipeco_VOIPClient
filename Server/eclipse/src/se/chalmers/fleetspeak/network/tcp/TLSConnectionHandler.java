@@ -120,6 +120,7 @@ public class TLSConnectionHandler{
 
 		public void terminate() {
 			try{
+				running = false;
 				serverSocket.close();
 			}catch(IOException e){
 				e.printStackTrace();
