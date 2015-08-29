@@ -13,6 +13,7 @@ import se.chalmers.fleetspeak.Network.UDP.RTPHandler;
 import se.chalmers.fleetspeak.Network.UDP.STUNInitiator;
 import se.chalmers.fleetspeak.Network.UDP.UDPConnector;
 import se.chalmers.fleetspeak.audio.sound.SoundHandler;
+import se.chalmers.fleetspeak.audio.sound.SoundOutputController;
 import se.chalmers.fleetspeak.util.Command;
 import se.chalmers.fleetspeak.util.MessageValues;
 import se.chalmers.fleetspeak.util.UserInfoPacket;
@@ -27,9 +28,8 @@ public class Model {
     private Handler callbackHandler;
     private State state;
 
-    RTPHandler rtpHandler;
-
-    private SoundHandler soundHandler;
+    private RTPHandler rtpHandler;
+    private SoundOutputController soundOutputController;
 
     String username ="";
 
@@ -39,10 +39,6 @@ public class Model {
         commandHandler = new CommandHandler();
         connector = new TLSConnector(commandHandler);
         this.callbackHandler = callbackHandler;
-
-        //soundHandler = new SoundHandler();
-        //Thread t = new Thread(soundHandler,"SoundHandler");
-        //t.start();
     }
 
     public ArrayList<Room> getRooms(){
@@ -115,6 +111,7 @@ public class Model {
                     Log.i("Commandhandler", "got a udpconnector");
                     connector.sendMessage(new Command("clientUdpTestOk", null,null));
                     rtpHandler = new RTPHandler((UDPConnector)msg.obj);
+                    soundOutputController = new SoundOutputController(rtpHandler);
                     break;
                 case MessageValues.COMMAND:
 
