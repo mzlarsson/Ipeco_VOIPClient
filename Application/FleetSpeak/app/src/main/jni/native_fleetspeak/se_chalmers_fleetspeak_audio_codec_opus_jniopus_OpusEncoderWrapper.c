@@ -52,7 +52,7 @@ JNIEXPORT jint JNICALL Java_se_chalmers_fleetspeak_audio_codec_opus_jniopus_Opus
                                  (unsigned char *) (audioOutData),
                                  outputLength);
   (*env)->ReleasePrimitiveArrayCritical(env,opusOutData,audioOutData,0);
-  (*env)->ReleasePrimitiveArrayCritical(env,pcmInData,audioInData,JNI_ABORT);
+  (*env)->ReleasePrimitiveArrayCritical(env,pcmInData,audioInData,0);
 return encodedBytes;
 }
 
