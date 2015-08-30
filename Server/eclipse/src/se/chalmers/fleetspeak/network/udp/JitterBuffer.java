@@ -49,19 +49,17 @@ public class JitterBuffer{
 	 */
 	public void write(RTPPacket packet) {
 		if(packet.seqNumber > lastReadSeqNbr) {
-			//FIXME Temporary printout.
-//			byte[] payload = packet.getPayload();
-//			System.out.print(packet.seqNumber + "\t" + packet.timestamp + "\t");
-//			for(int i=0; i<payload.length; i++) {
-//				System.out.print(payload[i] + " ");
-//			}
-//			System.out.println();
 			buffer.offer(packet);
 			if(isFullyBuffered()) {
 				if (!ready) {
 					ready = true;					
 				}
 				buildMode = false;
+				if (buffer.getBufferedTime()>(bufferTime*2)) { //If the buffer is TOO long we poll until we are "up to date" again.
+					while(buffer.getBufferedTime()>(bufferTime)) {
+						buffer.poll();
+					}
+				}
 			}
 		} else {
 			logger.log(Level.WARNING,"Dropped a packet arriving to late, "
