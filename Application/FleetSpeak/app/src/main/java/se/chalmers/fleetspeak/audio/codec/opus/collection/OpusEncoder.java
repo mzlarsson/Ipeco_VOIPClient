@@ -36,14 +36,16 @@ public class OpusEncoder implements EncoderInterface {
     }
 
     public byte[] encode(byte[] pcmInData, int offset){
+        byte[] b = new byte[0];
         byte[] opusEncoded = new byte[320];//FIXME Find a non-constant value
         int read = encode(pcmInData,offset,opusEncoded,0);
         if(read <= 0){
             Log.d("OPUS", "Failed to encode with :"+read);
         }else {
-            System.arraycopy(opusEncoded, 0, opusEncoded, 0, read);
+            b =  new byte[read];
+            System.arraycopy(opusEncoded, 0, b, 0, read);
         }
-        return opusEncoded;
+        return b;
     }
 
     private int encode(byte[] pcmInData, int inOffset, byte[] opusEncoded, int outOffset){
