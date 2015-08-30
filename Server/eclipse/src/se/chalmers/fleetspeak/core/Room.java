@@ -43,9 +43,7 @@ public class Room implements CommandHandler, IRoom{
 	@Override
 	public Client removeClient(int clientid){
 		logger.log(Level.FINER, "Room:" + id + " Removing user with id: " + clientid);
-		Client c = clients.get(clientid);
-		clients.remove(clientid);
-		return c;
+		return clients.remove(clientid);
 	}
 
 	@Override
