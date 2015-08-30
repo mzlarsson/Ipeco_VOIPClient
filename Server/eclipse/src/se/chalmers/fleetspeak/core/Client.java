@@ -8,7 +8,6 @@ import java.util.logging.Logger;
 import se.chalmers.fleetspeak.network.tcp.TCPHandler;
 import se.chalmers.fleetspeak.network.udp.RTPHandler;
 import se.chalmers.fleetspeak.sound.BufferedAudioStream;
-import se.chalmers.fleetspeak.sound.Router;
 import se.chalmers.fleetspeak.util.Command;
 import se.chalmers.fleetspeak.util.UserInfoPacket;
 
@@ -27,7 +26,6 @@ public class Client implements CommandHandler, NetworkUser {
 	private int clientID;
 
 	private InetAddress ip;	//TODO Is it necessary for the client to hold it IP?
-	private Router soundRouter;
 
 	private Logger logger;
 
@@ -46,12 +44,6 @@ public class Client implements CommandHandler, NetworkUser {
 		this.tcp = tcph;
 		this.tcp.setCommandHandler(this);
 		this.tcp.sendCommand(new Command("setInfo", getInfoPacket(), null));
-
-		this.soundRouter = new Router();
-		this.tcp.sendCommand(new Command("useSoundPort", soundRouter.getReceivePort(), null));
-		soundRouter.start();
-
-
 	}
 
 	@Override
@@ -101,9 +93,6 @@ public class Client implements CommandHandler, NetworkUser {
 	 * Remove this client and all services associated with it.
 	 */
 	public void terminate() {
-		if (soundRouter != null) {
-			soundRouter.terminate();
-		}
 		if (tcp != null) {
 			tcp.terminate();
 		}
