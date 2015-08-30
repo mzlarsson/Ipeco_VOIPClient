@@ -46,8 +46,11 @@ public class Building {
     }
 
     public void removeUser(int roomid, int userid) {
-            rooms.get(roomid).removeUser(userid);
+        Room r = rooms.get(roomid);
+        if(r != null) {
+            r.removeUser(userid);
             postUpdate();
+        }
     }
 
     public void moveUser(int userid, int sourceid, int destinationid) {

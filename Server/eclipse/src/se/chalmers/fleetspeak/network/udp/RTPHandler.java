@@ -60,4 +60,8 @@ public class RTPHandler implements PacketReceiver, BufferedAudioStream{
 		}
 
 	};
+	
+	public void terminate(){
+		udp.terminate();
+	}
 }

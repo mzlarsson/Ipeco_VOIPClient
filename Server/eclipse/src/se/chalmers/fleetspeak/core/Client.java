@@ -107,6 +107,9 @@ public class Client implements CommandHandler, NetworkUser {
 		if (tcp != null) {
 			tcp.terminate();
 		}
+		if(rtp != null){
+			rtp.terminate();
+		}
 	}
 
 	/**
