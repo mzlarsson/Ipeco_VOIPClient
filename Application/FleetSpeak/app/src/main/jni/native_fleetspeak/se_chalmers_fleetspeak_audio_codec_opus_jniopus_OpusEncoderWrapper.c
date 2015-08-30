@@ -24,7 +24,7 @@ JNIEXPORT jlong JNICALL Java_se_chalmers_fleetspeak_audio_codec_opus_jniopus_Opu
   (JNIEnv *env, jclass jc, jint sampleRate, jint channels)
   {
     int error;
-    OpusEncoder *opusEncoder = opus_encoder_create(sampleRate, channels, OPUS_APPLICATION_VOIP, &error);
+    OpusEncoder *opusEncoder = opus_encoder_create(sampleRate, channels, OPUS_APPLICATION_RESTRICTED_LOWDELAY, &error);
 
     if(OPUS_OK != error)
       opusEncoder = 0;
