@@ -1,5 +1,8 @@
 package se.chalmers.fleetspeak.core;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import se.chalmers.fleetspeak.sound.Mixer;
 import se.chalmers.fleetspeak.sound.MixerFactory;
 import se.chalmers.fleetspeak.util.Command;
@@ -9,8 +12,10 @@ public class AudioRoom implements IRoom {
 	private Room room;
 	private Mixer mixer;
 	private Thread mixerThread;
+	private Logger logger;
 
 	public AudioRoom(String name, BuildingManager buildingManager, boolean permanent){
+		logger = Logger.getLogger("Debug");
 		room = new Room(name, buildingManager, permanent);
 		mixer = MixerFactory.getDefaultMixer();
 		mixerThread = new Thread(mixer, "Mixer "+name);
@@ -27,7 +32,11 @@ public class AudioRoom implements IRoom {
 	@Override
 	public Client removeClient(int clientid) {
 		Client c = room.removeClient(clientid);
-		mixer.removeStream(c.getAudioStream());
+		if (c!=null) {
+			mixer.removeStream(c.getAudioStream());
+		} else {
+			logger.log(Level.SEVERE, "Client was null when removedClient was called");
+		}
 		return c;
 	}
 

@@ -48,8 +48,7 @@ public class UDPHandler extends Thread{
 			try {
 				socket.receive(receivePacket);
 			} catch (IOException e) {
-				logger.log(Level.WARNING, "UDP-socket " + socket.getLocalPort() + " caught an exception");
-				e.printStackTrace();
+				logger.log(Level.WARNING, "UDP-socket " + this.getName() + " caught an exception");
 			}
 			handlePacket(receivePacket.getData());			
 		}
@@ -62,7 +61,11 @@ public class UDPHandler extends Thread{
 	public void sendPacket(byte[] packet) {
 		outgoingPacket.setData(packet);
 		try {
-			socket.send(outgoingPacket);
+			if(!socket.isClosed()) {
+				socket.send(outgoingPacket);
+			} else {
+				logger.log(Level.WARNING, "UDP-socket " + this.getName() + " tried to send when the socket is closed");
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

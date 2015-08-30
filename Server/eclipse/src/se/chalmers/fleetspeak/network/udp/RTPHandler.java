@@ -37,7 +37,17 @@ public class RTPHandler implements PacketReceiver, BufferedAudioStream{
 
 	@Override
 	public void handlePacket(byte[] packet){
-		jitter.write(new RTPPacket(packet));
+		RTPPacket p = new RTPPacket(packet);
+		if (p.seqNumber!=0 || p.timestamp!=0) {
+			jitter.write(new RTPPacket(packet));
+//			byte[] b = read();
+//			if (b!=null) {
+//				System.out.println("We are sending stuff");
+//				sendPacket(b);			
+//			} else {
+//				System.out.println("We are NOT sending stuff");
+//			}
+		}
 	}
 
 	public void sendPacket(byte[] packet) {
@@ -47,7 +57,7 @@ public class RTPHandler implements PacketReceiver, BufferedAudioStream{
 	@Override
 	public byte[] read() {
 		RTPPacket p = jitter.read();
-		return p!=null ? p.toByteArraySimple() : null;
+		return p!=null ? p.getPayload() : null;
 	}
 
 	Runnable sender = () ->{
