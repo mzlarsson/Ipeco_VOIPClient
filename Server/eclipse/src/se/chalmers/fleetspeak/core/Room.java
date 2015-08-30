@@ -86,5 +86,10 @@ public class Room implements CommandHandler, IRoom{
 	public void handleCommand(Command c) {
 		buildingManager.handleCommand(c, id);
 	}
+	
+	@Override
+	public void terminate(){
+		clients.forEach((id, client) -> client.terminate());
+	}
 
 }

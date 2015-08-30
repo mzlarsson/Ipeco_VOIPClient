@@ -8,10 +8,13 @@ public class AudioRoom implements IRoom {
 
 	private Room room;
 	private Mixer mixer;
+	private Thread mixerThread;
 
 	public AudioRoom(String name, BuildingManager buildingManager, boolean permanent){
 		room = new Room(name, buildingManager, permanent);
 		mixer = MixerFactory.getDefaultMixer();
+		mixerThread = new Thread(mixer, "Mixer "+name);
+		mixerThread.start();
 	}
 
 
@@ -19,7 +22,6 @@ public class AudioRoom implements IRoom {
 	public void addClient(Client client) {
 		room.addClient(client);
 		mixer.addStream(client.getAudioStream(), client.getOutputBuffer());
-		
 	}
 
 	@Override
@@ -57,6 +59,12 @@ public class AudioRoom implements IRoom {
 	@Override
 	public void sync(Client c) {
 		room.sync(c);
+	}
+	
+	@Override
+	public void terminate(){
+		mixer.close();
+		room.terminate();
 	}
 
 }

@@ -12,5 +12,6 @@ public interface IRoom {
 	void setName(String name);
 	public void postUpdate(Command c);
 	public void sync(Client c);
+	public void terminate();
 
 }

@@ -53,9 +53,12 @@ public class Building {
 		return newRoom.getId();
 	}
 	private void removeRoom(int roomid){
-		rooms.remove(roomid);
-		postUpdate(new Command("removedroom", roomid, null));
-		logger.log(Level.INFO, "Removed room " + roomid);
+		IRoom room = rooms.remove(roomid);
+		if(room != null){
+			room.terminate();
+			postUpdate(new Command("removedroom", roomid, null));
+			logger.log(Level.INFO, "Removed room " + roomid);
+		}
 	}
 	/**
 	 * Adds a new client to the building
@@ -87,9 +90,12 @@ public class Building {
 	}
 
 	public void removeClient(int clientid, int roomid){
-		rooms.get(roomid).removeClient(clientid);
-		postUpdate(new Command("removeduser", clientid, roomid));
-		logger.log(Level.INFO, "Removed client " + clientid);
+		Client c = rooms.get(roomid).removeClient(clientid);
+		if(c != null){
+			c.terminate();
+			postUpdate(new Command("removeduser", clientid, roomid));
+			logger.log(Level.INFO, "Removed client " + clientid);
+		}
 	}
 
 	/**
