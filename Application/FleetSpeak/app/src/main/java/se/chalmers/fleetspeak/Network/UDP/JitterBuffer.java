@@ -6,7 +6,7 @@ package se.chalmers.fleetspeak.Network.UDP;
 public class JitterBuffer{
 
     private static final int SOUND_ARRAY_SIZE = 320;
-    private static final int TIME_BETWEEN_SAMPLES = 40;
+    private static final int TIME_BETWEEN_SAMPLES = 5;
 
     private JitterBufferQueue buffer;
     private short lastReadSeqNbr = -1;
@@ -33,22 +33,18 @@ public class JitterBuffer{
      */
     public void write(RTPPacket packet) {
         if(packet.seqNumber > lastReadSeqNbr) {
-            //FIXME Temporary printout.
-//			byte[] payload = packet.getPayload();
-//			System.out.print(packet.seqNumber + "\t" + packet.timestamp + "\t");
-//			for(int i=0; i<payload.length; i++) {
-//				System.out.print(payload[i] + " ");
-//			}
-//			System.out.println();
             buffer.offer(packet);
             if(isFullyBuffered()) {
                 if (!ready) {
                     ready = true;
                 }
                 buildMode = false;
+                if (buffer.getBufferedTime()>(bufferTime*2)) { //If the buffer is TOO long we poll until we are "up to date" again.
+                    while(buffer.getBufferedTime()>(bufferTime)) {
+                        buffer.poll();
+                    }
+                }
             }
-        } else {
-
         }
     }
 
@@ -89,6 +85,7 @@ public class JitterBuffer{
         }
         return p;
     }
+
 
     private boolean isFullyBuffered() {
         return buffer.getBufferedTime() >= bufferTime;

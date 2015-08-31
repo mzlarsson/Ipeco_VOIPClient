@@ -46,8 +46,14 @@ public class STUNInitiator implements PacketReceiver, Runnable{
     @Override
     public void run() {
         receicedOk = false;
-        while(!receicedOk)
+        while(!receicedOk) {
             udpConnector.sendPacket(controlcode);
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         Log.d("STUN", "received ok");
         try {
 

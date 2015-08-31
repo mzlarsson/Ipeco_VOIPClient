@@ -44,7 +44,7 @@ public class SoundInputController implements Runnable {
             Log.e("SoundRecord", e.getMessage());//TODO Remove or replace this snippet
         }
 
-        if (audioRecord.getState() == AudioRecord.STATE_UNINITIALIZED)
+        if (audioRecord == null || audioRecord.getState() == AudioRecord.STATE_UNINITIALIZED)
             throw new FleetspeakAudioException("AudioRecord couldn't initialize");
 
         Log.i(LOGTAG, "initiated");
@@ -78,7 +78,7 @@ public class SoundInputController implements Runnable {
         android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_AUDIO);
         while (isRecording) {
 
-                byte[] input = new byte[640];
+                byte[] input = new byte[320];
                 audioRecord.read(input,0,input.length);
             try {
                 inputBuffer.put(input);
