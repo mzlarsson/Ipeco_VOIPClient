@@ -250,7 +250,7 @@
         @Override
             public void onBackPressed(){
                 if(viewPager.getCurrentItem() == 2){
-                    returnToLogin(null);
+                    onBackYes();
                 }else{
                     viewPager.setCurrentItem(2);
                 }
