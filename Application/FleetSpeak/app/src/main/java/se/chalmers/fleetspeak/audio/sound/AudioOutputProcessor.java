@@ -37,6 +37,7 @@ public class AudioOutputProcessor implements Runnable {
 
     @Override
     public void run() {
+        Thread.currentThread().setName("AudioOutputProcessorThread");
         Log.i("AOP", "staring processing audio " + Thread.currentThread().getName());
         isProcessing = true;
         outputStream = rtpHandler.getAudioStream();
@@ -45,8 +46,8 @@ public class AudioOutputProcessor implements Runnable {
             encoded = outputStream.read();
             try {
                 if(encoded != null) {
-                    //outputBuffer.put(encoded);
-                    outputBuffer.put(opusDecoder.decode(encoded, 0));
+                    outputBuffer.put(encoded);
+//                    outputBuffer.put(opusDecoder.decode(encoded, 0));
                 }else{
                     //TODO cant process nulls takes way to much proccessing power
                     Thread.sleep(1);

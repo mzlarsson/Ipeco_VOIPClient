@@ -1,5 +1,4 @@
 package se.chalmers.fleetspeak.network.udp;
-import java.nio.ByteBuffer;
 
 /**
  * Reads and interprets a byte array as a RTP-packet of version 2.
@@ -21,35 +20,6 @@ public class RTPPacket {
     protected long timestamp;
     protected long ssrc;
     private byte[] payload;
-
-    
-    /**
-     * Creates a RTPPacket meant to be read.
-     * The given ByteBuffer will be assumed to contain a RTP version 2 header
-     * and read as such.
-     * @param readerBuffer The ByteBuffer wrapping the data.
-     */
-    public RTPPacket(ByteBuffer readerBuffer) {
-        int len = readerBuffer.limit();
-        int b = readerBuffer.get() & 0xff;
-        
-        version = (b>>>6)&3;
-        padding = (b & 0x20) == 0x20;
-        extensions = (b & 0x10) == 0x10;
-        cc = b & 0x0F;
-        
-        b = readerBuffer.get() & 0xff;
-        marker = (b & 0x80) == 0x80;
-        payloadType = (byte) (b & 0x7F);
-
-        seqNumber = (short) (((readerBuffer.get() & 0xff) << 8) | (readerBuffer.get() & 0xff));
-
-        timestamp = readerBuffer.getInt();
-        ssrc = readerBuffer.getInt();
-        
-        payload = new byte[len - 12];
-        readerBuffer.get(payload, 0, payload.length);
-    }
     
     /**
      * Creates a RTPPacket meant to be read.
@@ -58,6 +28,9 @@ public class RTPPacket {
      * @param data A data packet with RTP version 2 format.
      */
     public RTPPacket(byte[] data) {
+    	if (data==null || data.length<12) {
+    		throw new IllegalArgumentException("Input array cannot be " + (data==null?"null.":"shorter than 12 in length."));
+    	}
         int b = data[0] & 0xff;
         version = (b>>>6)&3;
         padding = (b & 0x20) == 0x20;
@@ -171,6 +144,6 @@ public class RTPPacket {
     @Override
     public String toString() {
         return "RTP Packet[seq=" + this.seqNumber + ", timestamp=" + timestamp +
-                ", payload_size=" + payload.length + ", payload=" + payloadType + "]";
+                ", payload_size=" + (payload==null?0:payload.length) + ", payload=" + payloadType + "]";
     }
 }
