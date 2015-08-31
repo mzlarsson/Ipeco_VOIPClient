@@ -48,7 +48,8 @@ public class RTPHandler implements Runnable, PacketReceiver, BufferedAudioStream
         while (isRunning){
             try {
                 data = audioInputProcessor.readBuffer();
-                udpConnector.sendPacket(new RTPPacket(sequenceNumber++,System.currentTimeMillis(),data).toByteArraySimple());
+                //udpConnector.sendPacket(new RTPPacket(sequenceNumber++,System.currentTimeMillis(),data).toByteArraySimple());
+                buffer.write(new RTPPacket(sequenceNumber++,System.currentTimeMillis(),data));
                 //Log.d("RTPHandler", +data.length + " " + (sequenceNumber-1) +  " send " + printPacket(data));
             } catch (InterruptedException e) {
                 e.printStackTrace();
