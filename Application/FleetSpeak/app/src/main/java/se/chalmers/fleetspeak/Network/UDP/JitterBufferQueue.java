@@ -19,16 +19,15 @@ public class JitterBufferQueue {
     public void offer(RTPPacket e){
         synchronized (lock) {
             Node n = tail;
-            while(head != tail && e.timestamp - n.e.timestamp < 0){
+            while(head != tail && e.seqNumber - n.e.seqNumber < 0){
                 n = n.previous;
             }
             Node newNode = new Node(e, n, n.next);
             n.next = newNode;
             if (tail == n) {
                 tail = newNode;
-            }else{
+            } else {
                 n.next.previous = newNode;
-
             }
         }
     }
@@ -40,7 +39,7 @@ public class JitterBufferQueue {
                 head.next = n.next;
                 if (n.next!=null) {
                     n.next.previous = head;
-                }else{
+                } else {
                     tail = head;
                 }
                 return n.e;
@@ -77,4 +76,5 @@ public class JitterBufferQueue {
             this.next = next;
         }
     }
+
 }

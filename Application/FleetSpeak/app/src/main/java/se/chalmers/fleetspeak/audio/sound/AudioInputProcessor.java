@@ -43,6 +43,7 @@ public class AudioInputProcessor implements Runnable {
 
     @Override
     public void run() {
+        Thread.currentThread().setName("AudioInputProcessorThread");
         Log.i(LOGTAG, "working started " + Thread.currentThread().getName());
         isProcessing = true;
 

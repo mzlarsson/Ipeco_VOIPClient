@@ -36,6 +36,7 @@ public class SocketWriter implements Runnable{
 
     @Override
     public void run() {
+        Thread.currentThread().setName("SocketWriterThread");
         try {
             objectOutputStream = new ObjectOutputStream(outputStream);
         } catch (IOException e) {

@@ -13,7 +13,6 @@ import se.chalmers.fleetspeak.audio.FleetspeakAudioException;
 import static se.chalmers.fleetspeak.audio.sound.SoundConstants.AUDIO_ENCODING;
 import static se.chalmers.fleetspeak.audio.sound.SoundConstants.AUDIO_IN_BUFFER_SIZE;
 import static se.chalmers.fleetspeak.audio.sound.SoundConstants.INPUT_CHANNEL_CONFIG;
-import static se.chalmers.fleetspeak.audio.sound.SoundConstants.INPUT_FRAME_SIZE;
 import static se.chalmers.fleetspeak.audio.sound.SoundConstants.INPUT_SOURCE;
 import static se.chalmers.fleetspeak.audio.sound.SoundConstants.SAMPLE_RATE;
 
@@ -73,12 +72,13 @@ public class SoundInputController implements Runnable {
 
     @Override
     public void run() {
+        Thread.currentThread().setName("SoundInputControllerThread");
         Log.i(LOGTAG, "started recording " + Thread.currentThread().getName());
         init();
         android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_AUDIO);
         while (isRecording) {
 
-                byte[] input = new byte[INPUT_FRAME_SIZE.value()];
+                byte[] input = new byte[640];
                 audioRecord.read(input,0,input.length);
             try {
                 inputBuffer.put(input);

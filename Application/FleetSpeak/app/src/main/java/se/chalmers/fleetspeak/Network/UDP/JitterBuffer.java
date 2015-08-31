@@ -3,16 +3,15 @@ package se.chalmers.fleetspeak.Network.UDP;
 /**
  * Created by Volt on 29/08/15.
  */
-public class JitterBuffer implements BufferedAudioStream {
+public class JitterBuffer{
 
-    private static final int SOUND_ARRAY_SIZE = 160;
+    private static final int SOUND_ARRAY_SIZE = 320;
     private static final int TIME_BETWEEN_SAMPLES = 40;
 
     private JitterBufferQueue buffer;
     private short lastReadSeqNbr = -1;
     private long lastReadtimestamp = -1;
     private boolean ready, buildMode;
-
 
     private long bufferTime;
 
@@ -24,7 +23,6 @@ public class JitterBuffer implements BufferedAudioStream {
      * @param bufferTime The delay the JitterBuffer has to work with in milliseconds.
      */
     public JitterBuffer(long bufferTime) {
-
         buffer = new JitterBufferQueue();
         this.bufferTime = bufferTime;
     }
@@ -55,13 +53,13 @@ public class JitterBuffer implements BufferedAudioStream {
     }
 
     /**
-     * {@inheritDoc}
+     * Polls the next RTPPacket available or null if the buffer is not full
+     * or packets are missing.
+     * @return The first RTPPacket of the queue if available, null if not.
      */
-    @Override
-    public byte[] read() {
-        byte[] audio = null;
+    public RTPPacket read() {
+        RTPPacket p = null;
         if(ready) {
-            RTPPacket p = null;
             if(!buildMode) {
                 if (!isFullyBuffered()) {
                     buildMode = true;
@@ -70,8 +68,8 @@ public class JitterBuffer implements BufferedAudioStream {
             } else {
                 RTPPacket tmp = buffer.peek();
                 if (tmp != null) {
-                    if (tmp.seqNumber == ((short) (lastReadSeqNbr + 1))) {
-                        if (tmp.timestamp - 2 * TIME_BETWEEN_SAMPLES <= lastReadtimestamp) { // 2*timestamp to compensate for variations.
+                    if (tmp.seqNumber == ((short)(lastReadSeqNbr + 1))) {
+                        if (tmp.timestamp - 2*TIME_BETWEEN_SAMPLES <= lastReadtimestamp) { // 2*timestamp to compensate for variations.
                             p = buffer.poll();
                         } else {
                             lastReadtimestamp += TIME_BETWEEN_SAMPLES;
@@ -85,19 +83,19 @@ public class JitterBuffer implements BufferedAudioStream {
                 }
             }
             if (p!=null) {
-                audio = p.toByteArraySimple();
                 lastReadSeqNbr = p.seqNumber;
                 lastReadtimestamp = p.timestamp;
             }
         }
-        return audio;
+        return p;
     }
 
     private boolean isFullyBuffered() {
-        return buffer.getBufferedTime() > bufferTime;
+        return buffer.getBufferedTime() >= bufferTime;
     }
 
     public int getSoundArraySize() {
         return SOUND_ARRAY_SIZE;
     }
+
 }

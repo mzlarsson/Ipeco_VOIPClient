@@ -32,6 +32,7 @@ public class SocketReader implements Runnable{
 
     @Override
     public void run() {
+        Thread.currentThread().setName("SocketReaderThread");
         try {
             objectInputStream = new ObjectInputStream(inputStream);
         } catch (IOException e) {

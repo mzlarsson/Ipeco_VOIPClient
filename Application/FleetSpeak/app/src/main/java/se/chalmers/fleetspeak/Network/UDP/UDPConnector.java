@@ -46,8 +46,9 @@ public class UDPConnector implements Runnable{
 
     @Override
     public void run() {
-        running = true;
+        Thread.currentThread().setName("UDPConnectorThread");
         Log.i("UDP" , "is running on " + Thread.currentThread().getName());
+        running = true;
         while(running){
             try {
                 socket.receive(receivePacket);

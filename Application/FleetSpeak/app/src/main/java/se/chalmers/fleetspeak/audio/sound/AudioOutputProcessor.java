@@ -45,6 +45,7 @@ public class AudioOutputProcessor implements Runnable {
             encoded = outputStream.read();
             try {
                 if(encoded != null) {
+                    //outputBuffer.put(encoded);
                     outputBuffer.put(opusDecoder.decode(encoded, 0));
                 }else{
                     //TODO cant process nulls takes way to much proccessing power
