@@ -7,7 +7,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import se.chalmers.fleetspeak.Network.UDP.BufferedAudioStream;
-import se.chalmers.fleetspeak.Network.UDP.RTPHandler;
 import se.chalmers.fleetspeak.audio.codec.opus.collection.OpusDecoder;
 
 /**
@@ -17,14 +16,14 @@ public class AudioOutputProcessor implements Runnable {
 
     private final Executor executor;
     private OpusDecoder opusDecoder;
-    private RTPHandler rtpHandler;
+    private AudioInputProcessor aip;
     private boolean isProcessing;
     private LinkedBlockingQueue<byte[]> outputBuffer;
     private BufferedAudioStream outputStream;
 
 
-    public AudioOutputProcessor(RTPHandler rtpHandler) {
-        this.rtpHandler = rtpHandler;
+    public AudioOutputProcessor(AudioInputProcessor aip) {
+        this.aip = aip;
         outputBuffer = new LinkedBlockingQueue(10);//FIXME Constants yada-yada
         opusDecoder = new OpusDecoder();
         executor = Executors.newSingleThreadExecutor();
@@ -40,11 +39,10 @@ public class AudioOutputProcessor implements Runnable {
         Thread.currentThread().setName("AudioOutputProcessorThread");
         Log.i("AOP", "staring processing audio " + Thread.currentThread().getName());
         isProcessing = true;
-        outputStream = rtpHandler.getAudioStream();
         byte[] encoded;
         while (isProcessing) {
-            encoded = outputStream.read();
             try {
+                encoded = aip.readBuffer();
                 if(encoded != null) {
                     outputBuffer.put(encoded);
 //                    outputBuffer.put(opusDecoder.decode(encoded, 0));

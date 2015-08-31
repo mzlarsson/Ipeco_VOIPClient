@@ -34,8 +34,8 @@ public class SoundOutputController implements Runnable {
 
     private Executor executor;
 
-    public SoundOutputController(RTPHandler rtpHandler){
-        audioOutputProcessor = new AudioOutputProcessor(rtpHandler);
+    public SoundOutputController(AudioInputProcessor aip){
+        audioOutputProcessor = new AudioOutputProcessor(aip);
         audioTrack = new AudioTrack(
                 STREAM_TYPE.value(),
                 SAMPLE_RATE.value(),

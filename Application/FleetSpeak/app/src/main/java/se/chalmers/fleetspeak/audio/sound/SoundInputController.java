@@ -76,21 +76,17 @@ public class SoundInputController implements Runnable {
         Log.i(LOGTAG, "started recording " + Thread.currentThread().getName());
         init();
         android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_AUDIO);
-        while (isRecording) {
+        byte[] input = new byte[SoundConstants.INPUT_FRAME_SIZE.value()];
 
-                byte[] input = new byte[320];
-                audioRecord.read(input,0,input.length);
+        while (isRecording) {
+            audioRecord.read(input, 0, input.length);
             try {
                 inputBuffer.put(input);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
-
         }
     }
-
-
 
 
 }
