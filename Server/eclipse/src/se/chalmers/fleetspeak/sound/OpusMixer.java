@@ -31,7 +31,6 @@ public class OpusMixer extends SimpleMixer{
 	
 	/**
 	 * Collects the data needed from the streams for the mixing.
-	 * @param nbrOfBytes The number of bytes to retrieve
 	 * @return The data from the streams, ready to be mixed.
 	 */
 	@Override
@@ -54,7 +53,6 @@ public class OpusMixer extends SimpleMixer{
 	/**
 	 * Returns the mixed byte array of data (Opus encoded) retrieved from all registered BufferedStreams to this mixer. The
 	 * data in the BufferedStream is considered to be Opus encoded as well.
-	 * @param nbrOfBytes The number of bytes to mix together
 	 * @return An array of the mixed encoded Opus data
 	 */
 	@Override

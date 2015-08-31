@@ -17,7 +17,7 @@ public class MixerFactory {
 	 * @return A valid mixer instance
 	 */
 	public static Mixer getDefaultMixer(){
-		return new OpusMixer(40);
+		return new ShortMixer(10);
 	}
 	
 }
