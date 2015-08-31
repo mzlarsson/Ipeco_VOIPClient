@@ -17,6 +17,7 @@ import android.widget.TextView;
 import se.chalmers.fleetspeak.Network.SocketFactory;
 import se.chalmers.fleetspeak.R;
 import se.chalmers.fleetspeak.fragments.NewStructure.ConnectedProcess.ConnectionActivity;
+import se.chalmers.fleetspeak.fragments.NewStructure.location.LocationHandler;
 import se.chalmers.fleetspeak.truck.TruckDataHandler;
 import se.chalmers.fleetspeak.truck.TruckStateListener;
 
@@ -24,14 +25,18 @@ public class LoginActivity extends ActionBarActivity implements TruckStateListen
     private FragmentManager fragmentManager;
     private SharedPreferences prefs;
     private SharedPreferences.Editor prefEdit;
-    private boolean carmode = true;
+    private boolean carmode = false;
     private String username;
     private String password;
     private String error;
+    private LocationHandler locationHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        locationHandler = new LocationHandler(this);
+        locationHandler.addTruckListener(this);
+        carmode = locationHandler.getCarMode();
         setContentView(R.layout.activity_login);
         if(this.getIntent().hasExtra("error")){
                 error = this.getIntent().getStringExtra("error");
@@ -48,6 +53,8 @@ public class LoginActivity extends ActionBarActivity implements TruckStateListen
         carmode = TruckDataHandler.getInstance().getTruckMode();
         setStartFragment(carmode);
 
+
+
     }
 
 
@@ -56,11 +63,12 @@ public class LoginActivity extends ActionBarActivity implements TruckStateListen
         Fragment fragment;
 
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        Log.d("LoginActivity", "is locationhandler null?" + (locationHandler == null));
         if(b){
             fragment = fragmentManager.findFragmentByTag("CarStartLogin");
             if( fragment == null);
             Bundle bundle = new Bundle();
-            bundle.putString("username", username);
+            bundle.putString("username", "" + locationHandler.getLastSpeed());
             bundle.putString("password", password);
             if(error!= null) {
                 bundle.putString("error", error);
@@ -75,7 +83,7 @@ public class LoginActivity extends ActionBarActivity implements TruckStateListen
             if(error!= null) {
                 bundle.putString("error", error);
             }
-            bundle.putString("username", username);
+            bundle.putString("username", "" + locationHandler.getLastSpeed());
             bundle.putString("password", password);
             fragment = new StartLogin();
             fragment.setArguments(bundle);
@@ -107,6 +115,7 @@ public class LoginActivity extends ActionBarActivity implements TruckStateListen
         Intent newIntent = new Intent(this, ConnectionActivity.class);
         newIntent.putExtra("username", username);
         newIntent.putExtra("password", password);
+        newIntent.putExtra("carState", carmode);
         startActivity(newIntent);
     }
 
@@ -136,6 +145,7 @@ public class LoginActivity extends ActionBarActivity implements TruckStateListen
     public void truckModeChanged(boolean mode) {
         carmode = mode;
         setStartFragment(carmode);
+
     }
 
     @Override

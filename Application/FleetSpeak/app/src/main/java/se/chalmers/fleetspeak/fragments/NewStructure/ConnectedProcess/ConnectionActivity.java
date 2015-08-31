@@ -3,7 +3,6 @@
     import android.animation.Animator;
     import android.animation.AnimatorListenerAdapter;
     import android.support.v7.app.ActionBar;
-    import android.app.FragmentTransaction;
     import android.content.Intent;
     import android.os.Handler;
     import android.os.Message;
@@ -26,6 +25,7 @@
     import se.chalmers.fleetspeak.User;
     import se.chalmers.fleetspeak.fragments.NewStructure.EstablishConnection.BackFragment;
     import se.chalmers.fleetspeak.fragments.NewStructure.LoginProcess.LoginActivity;
+    import se.chalmers.fleetspeak.fragments.NewStructure.location.LocationHandler;
     import se.chalmers.fleetspeak.truck.TruckDataHandler;
     import se.chalmers.fleetspeak.truck.TruckStateListener;
     import se.chalmers.fleetspeak.util.MessageValues;
@@ -40,6 +40,7 @@
             private BackFragment backFragment;
             private View loadingView;
             private String username;
+            private LocationHandler locationHandler;
 
 
             /**
@@ -127,6 +128,11 @@
                 inRoom.setText("ChatRoom");
                 inRoom.setTabListener(this);
                 actionBar.addTab(inRoom);
+
+
+                locationHandler = new LocationHandler(this);
+                locationHandler.addTruckListener(this);
+                carMode = locationHandler.getCarMode();
             }
             @Override
             public boolean onCreateOptionsMenu(Menu menu) {
@@ -161,6 +167,7 @@
             private void changeCarModeTabs(boolean b){
                 if(loobyFragment != null){
                     loobyFragment.truckModeChanged(b);
+
                 }
                 if(inRoomFragment != null){
                     inRoomFragment.truckModeChanged(b);
@@ -303,35 +310,6 @@
                 public int getCount() {
                     return 3;
                 }
-            }
-            private void crossFade(){
-                viewPager.setVisibility(View.GONE);
-                int aniTime = getResources().getInteger(
-                        android.R.integer.config_longAnimTime);
-                // Set the content view to 0% opacity but visible, so that it is visible
-                // (but fully transparent) during the animation.
-                viewPager.setAlpha(0f);
-                viewPager.setVisibility(View.VISIBLE);
-
-                // Animate the content view to 100% opacity, and clear any animation
-                // listener set on the view.
-                viewPager.animate()
-                        .alpha(1f)
-                        .setDuration(aniTime)
-                        .setListener(null);
-
-                // Animate the loading view to 0% opacity. After the ananimation ends,
-                // set its visibility to GONE as an optimization step (it won't
-                // participate in layout passes, etc.)
-                loadingView.animate()
-                        .alpha(0f)
-                        .setDuration(aniTime)
-                        .setListener(new AnimatorListenerAdapter() {
-                            @Override
-                            public void onAnimationEnd(Animator animation) {
-                                loadingView.setVisibility(View.GONE);
-                            }
-                        });
             }
 
     }
