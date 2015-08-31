@@ -14,7 +14,6 @@ public class SimpleMixer extends AbstractMixer{
 
 	/**
 	 * Returns the mixed byte array of data (PCM) retrieved from all registered BufferedStreams to this mixer.
-	 * @param nbrOfBytes The number of bytes to mix together
 	 * @return An array of the mixed PCM
 	 */
 	@Override
@@ -40,7 +39,7 @@ public class SimpleMixer extends AbstractMixer{
 		}
 	}
 	
-	private int getMaxDataLength(byte[][] data){
+	protected int getMaxDataLength(byte[][] data){
 		int length = 0;
 		for(int i = 0; i<data.length; i++){
 			if(data[i].length>length){

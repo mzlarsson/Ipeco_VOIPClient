@@ -19,7 +19,7 @@ public class JitterBufferQueue {
     public void offer(RTPPacket e){
         synchronized (lock) {
             Node n = tail;
-            while(head != tail && e.seqNumber - n.e.seqNumber < 0){
+            while (head != tail && ((short) (e.seqNumber - n.e.seqNumber)) < 0) {
                 n = n.previous;
             }
             Node newNode = new Node(e, n, n.next);

@@ -93,7 +93,6 @@ public abstract class AbstractMixer implements Mixer{
 
 	/**
 	 * Collects the data needed from the streams for the mixing.
-	 * @param nbrOfBytes The number of bytes to retrieve
 	 * @return The data from the streams, ready to be mixed.
 	 */
 	protected byte[][] getData(){

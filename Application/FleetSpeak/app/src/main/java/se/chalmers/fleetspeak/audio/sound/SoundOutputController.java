@@ -51,7 +51,7 @@ public class SoundOutputController implements Runnable {
         byteBuffer = ByteBuffer.allocateDirect(BYTEBUFFER_OUT_SIZE.value());
         executor = Executors.newFixedThreadPool(2);
         executor.execute(this);
-        executor.execute(new Runnable() {
+       /* executor.execute(new Runnable() {
             @Override
             public void run() {
                 soundIsPlaying = true;
@@ -68,7 +68,7 @@ public class SoundOutputController implements Runnable {
                 }
                 }
             }
-        });
+        });*/
     }
 
     public synchronized void destroy(){
@@ -92,6 +92,7 @@ public class SoundOutputController implements Runnable {
         soundIsPlaying = true;
         Log.i("SOC", "sound is playing on " + Thread.currentThread().getName());
         while(soundIsPlaying){
+/*
             synchronized (byteBuffer){
                 byteBuffer.flip();
                 byte[] audioArray = new byte[byteBuffer.remaining()];
@@ -103,12 +104,12 @@ public class SoundOutputController implements Runnable {
                     byteBuffer.clear();
                 }
             }
-
-            /*try {
+*/
+            try {
                 writeAudio(audioOutputProcessor.readBuffer(), 0);
             } catch (InterruptedException e) {
                 e.printStackTrace();
-            }*/
+            }
 
         }
     }
