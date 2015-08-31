@@ -61,7 +61,7 @@ public class JitterBufferTest {
 
 	@Test
 	public void testRearrange() {
-		buf = new JitterBuffer(0);
+		buf = new JitterBuffer(80);
 		buf.write(p1);
 		buf.write(p3);
 		buf.write(p2);

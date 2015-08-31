@@ -62,7 +62,8 @@ public class JitterBufferQueue {
 	 * @return The timestamp difference between the first and last packet.
 	 */
 	public long getBufferedTime() {
-		return (head.next!=null) ? (tail.e.timestamp - head.next.e.timestamp) : 0;
+		long time = (head.next!=null) ? (tail.e.timestamp - head.next.e.timestamp) : 0;
+		return time<0 ? -time : time;
 	}
 	
 	private class Node{
