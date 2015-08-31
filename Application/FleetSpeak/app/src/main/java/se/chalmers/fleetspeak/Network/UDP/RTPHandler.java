@@ -92,6 +92,7 @@ public class RTPHandler implements Runnable, PacketReceiver, BufferedAudioStream
      */
     @Override
     public byte[] read() {
-        return buffer.read().getPayload();
+        RTPPacket r = buffer.read();
+        return r != null ? r.getPayload(): null;
     }
 }
