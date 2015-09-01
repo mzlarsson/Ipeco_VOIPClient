@@ -52,12 +52,15 @@ public abstract class AbstractMixer implements Mixer{
 			}
 			
 			//Fix timing
-			try {
-				Thread.sleep(nextMixTime-System.currentTimeMillis());
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			} catch(IllegalArgumentException e){
-				e.printStackTrace();
+			if(nextMixTime>System.currentTimeMillis()){
+				try {
+					Thread.sleep(nextMixTime-System.currentTimeMillis());
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				} catch(IllegalArgumentException e){
+					e.printStackTrace();
+				}
+			}else{
 				Logger.getLogger("Debug").severe("A mixer is behind!");
 			}
 		}
