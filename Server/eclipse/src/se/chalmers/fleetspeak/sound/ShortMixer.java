@@ -18,7 +18,9 @@ public class ShortMixer extends SimpleMixer{
 		byte[][] data = getData();
 		int members = data.length;			//Used for clarity in the code.
 		
-		if(data.length>1){
+		if(data.length==2){
+			return new byte[][]{data[1], data[0]};
+		}else if(data.length>2){
 			int maxDataLength = getMaxDataLength(data);
 			byte[][] mixed = new byte[members][maxDataLength];
 			ByteBuffer mixedBuffer = ByteBuffer.allocate(maxDataLength);
