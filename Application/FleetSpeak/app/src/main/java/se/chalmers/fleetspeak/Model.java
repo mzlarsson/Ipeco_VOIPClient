@@ -26,16 +26,14 @@ public class Model {
 
     private SoundHandler soundHandler;
 
+
+
     public Model(Handler callbackHandler){
         state = State.not_connected;
         roomHandler = new RoomHandler(callbackHandler);
         commandHandler = new CommandHandler();
         connector = new TLSConnector(commandHandler);
         this.callbackHandler = callbackHandler;
-
-        soundHandler = new SoundHandler();
-        Thread t = new Thread(soundHandler,"SoundHandler");
-        //t.start();
     }
 
     public ArrayList<Room> getRooms(){
@@ -81,10 +79,18 @@ public class Model {
             connector.sendMessage(new Command("movenewroom", roomname, null));
         }
     }
+    public void setNewHandler(Handler handler){
+        connector.setNewHandler(handler);
+        roomHandler.setNewHandler(handler);
+
+    }
     public int getCurrentRoom(){
         return roomHandler.getCurrentRoom();
     }
 
+    public boolean isAutherized(){
+        return (state ==State.authorized);
+    }
     class CommandHandler extends Handler {
         public void handleMessage(Message msg) {
 

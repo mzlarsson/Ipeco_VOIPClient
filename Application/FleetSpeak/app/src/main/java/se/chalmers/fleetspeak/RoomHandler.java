@@ -25,6 +25,9 @@ public class RoomHandler{
 
     private Messenger updateMessenger;
 
+    public void setNewHandler(Handler handler){
+        updateMessenger = new Messenger(handler);
+    }
 
     public RoomHandler(Handler updateListener) {
         rooms = new HashMap<>();

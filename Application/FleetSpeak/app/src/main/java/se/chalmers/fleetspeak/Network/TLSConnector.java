@@ -27,11 +27,18 @@ public class TLSConnector{
 
     private SocketWriter socketWriter;
     private SocketReader socketReader;
-
+    public void setNewHandler(Handler handler){
+        responseMessenger = new Messenger(handler);
+    }
 
     public TLSConnector(Handler handler){
         responseMessenger = new Messenger(handler);
 
+
+    }
+
+    public void setResponseMessenger(Handler handler){
+        responseMessenger = new Messenger(handler);
     }
 
     public void connect(String ip,  int port){

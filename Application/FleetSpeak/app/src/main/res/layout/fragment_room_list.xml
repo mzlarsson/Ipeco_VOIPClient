@@ -7,4 +7,36 @@
         android:layout_height="match_parent"
         android:id="@+id/rvRooms"
         />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:text="@string/unable_to_connect"
+            android:id="@+id/textView"
+            android:textSize="30sp"
+            android:layout_marginTop="121dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignRight="@+id/yesButton" />
+        <Button
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:background="@drawable/special_button_shape2"
+            android:text="@string/yes"
+            android:layout_marginRight="51dp"
+            android:id="@+id/yesButton"
+            android:layout_alignTop="@+id/noButton"
+            android:layout_alignParentRight="true" />
+        <Button
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:background="@drawable/special_button_shape2"
+            android:text="@string/no"
+            android:id="@+id/noButton"
+            android:layout_below="@+id/textView"
+            android:layout_alignLeft="@+id/textView"
+            android:layout_marginTop="63dp" />
+    </RelativeLayout>
 </RelativeLayout>

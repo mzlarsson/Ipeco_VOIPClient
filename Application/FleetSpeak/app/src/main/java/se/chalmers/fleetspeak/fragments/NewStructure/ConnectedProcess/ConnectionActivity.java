@@ -29,6 +29,7 @@
     import se.chalmers.fleetspeak.truck.TruckDataHandler;
     import se.chalmers.fleetspeak.truck.TruckStateListener;
     import se.chalmers.fleetspeak.util.MessageValues;
+    import se.chalmers.fleetspeak.util.ModelFactory;
 
     public class ConnectionActivity extends ActionBarActivity implements TruckStateListener, ActionBar.TabListener, ConnectedCommunicator {
             private Model model;
@@ -38,7 +39,6 @@
             private InRoomFragment inRoomFragment;
             private LoobyFragment loobyFragment;
             private BackFragment backFragment;
-            private View loadingView;
             private String username;
             private LocationHandler locationHandler;
 
@@ -60,6 +60,7 @@
                             updateView();
                             break;
                         case MessageValues.CONNECTIONFAILED:
+                            // TODO fixme
                             break;
                         case MessageValues.AUTHORIZED:
                             updateView();
@@ -85,7 +86,6 @@
                 super.onCreate(savedInstanceState);
                 Bundle extras = this.getIntent().getExtras();
                 setContentView(R.layout.activity_connection);
-                loadingView = findViewById(R.id.loading_spinner);
                 viewPager = (CViewPager)findViewById(R.id.pager);
                 viewPager.setId(R.id.pager);
                 viewPager.setAdapter(new PagerAdapter(getSupportFragmentManager()));
@@ -106,8 +106,10 @@
                     public void onPageScrollStateChanged(int state) {
                     }
                 });
-                model = new Model(updateHandler);
-                model.connect((String) extras.get("password"), 8867);
+                model = ModelFactory.getModel(updateHandler);
+                if( !model.isAutherized()){
+                    model.connect((String) extras.get("password"), 8867);
+                }
                 username = (String)extras.get("username");
 
                 TruckDataHandler.addListener(this);
@@ -133,6 +135,7 @@
                 locationHandler = new LocationHandler(this);
                 locationHandler.addTruckListener(this);
                 carMode = locationHandler.getCarMode();
+
             }
             @Override
             public boolean onCreateOptionsMenu(Menu menu) {
