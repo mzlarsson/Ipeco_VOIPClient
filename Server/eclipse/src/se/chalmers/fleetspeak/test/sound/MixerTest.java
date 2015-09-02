@@ -19,13 +19,13 @@ public class MixerTest {
 	private Mixer m;
 	
 	public static void main(String[] args){
-//		new MixerTest();
-		SongHandler.playAudioLocally(1);
+		new MixerTest(true);
+//		SongHandler.playAudioLocally(1);
 	}
 	
-	public MixerTest(){
+	public MixerTest(boolean playBack){
 		m = MixerFactory.getDefaultMixer();
-		String[] filenames = {"test2", "test1", "test3", "silent"};
+		String[] filenames = {"test2", "test1", "test3"};
 		for(int i = 0; i<filenames.length; i++){
 			MixerTestOutputAudioBuffer out = new MixerTestOutputAudioBuffer(filenames[i]);
 			out.start();
@@ -33,7 +33,55 @@ public class MixerTest {
 			m.addStream(in, out.getQueue());
 		}
 		
-		new Thread(m).start();
+		if(playBack){
+			MixerTestImmediateAudioBuffer mixerOutput = new MixerTestImmediateAudioBuffer("silent");
+			m.addStream(new MixerTestInputAudioBuffer("silent"), mixerOutput.getQueue());
+			new Thread(m).start();
+			SongHandler.playAudioLocally(mixerOutput);
+		}else{
+			MixerTestOutputAudioBuffer out = new MixerTestOutputAudioBuffer("silent");
+			out.start();
+			m.addStream(new MixerTestInputAudioBuffer("silent"), out.getQueue());
+			new Thread(m).start();
+		}
+	}
+	
+	public class MixerTestImmediateAudioBuffer extends InputStream{
+		private BlockingQueue<byte[]> queue;
+		public MixerTestImmediateAudioBuffer(String filename){
+			queue = new LinkedBlockingQueue<byte[]>();
+		}
+		
+		public BlockingQueue<byte[]> getQueue(){
+			return queue;
+		}
+		
+		@Override
+		public int available(){
+			return 1;
+		}
+
+		@Override
+		public int read() throws IOException {
+			throw new IllegalArgumentException("Use method read(byte[]) instead.");		//TODO FIXME lol.
+		}
+		
+		@Override
+		public int read(byte[] arr){
+			return read(arr, 0, arr.length);
+		}
+		
+		@Override
+		public int read(byte[] arr, int offset, int length){
+			try {
+				byte[] b = queue.take();
+				System.arraycopy(b, 0, arr, offset, length);
+				return b.length;
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+				return -1;
+			}
+		}
 	}
 	
 	public class MixerTestOutputAudioBuffer extends Thread{

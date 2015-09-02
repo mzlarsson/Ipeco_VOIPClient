@@ -44,6 +44,10 @@ public class SongHandler {
 		}
 		
 		InputStream audioStream = getByteInputStream(songs.get(songIndex));
+		playAudioLocally(audioStream);
+	}
+		
+	protected static void playAudioLocally(InputStream audioStream){
 		SourceDataLine output = getOutputLine();
 		if(audioStream != null){
 			//Play it
