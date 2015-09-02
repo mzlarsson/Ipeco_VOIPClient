@@ -88,7 +88,9 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 			if(isRunning){
 				logger.log(Level.SEVERE, e.getMessage());
 			}
+			receivedCommand(new Command("disconnect", null, null));
 		}catch (IOException e) {
+			receivedCommand(new Command("disconnect", null, null));
 			logger.log(Level.SEVERE,e.getMessage());
 		} catch (ClassNotFoundException e) {
 			logger.log(Level.FINE,"[TCPHandler]" + e.getMessage());

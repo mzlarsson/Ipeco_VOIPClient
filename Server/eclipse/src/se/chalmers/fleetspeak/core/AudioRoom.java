@@ -88,7 +88,9 @@ public class AudioRoom implements IRoom {
 	
 	@Override
 	public void terminate(){
-		mixer.close();
+		if (mixer!=null) {
+			mixer.close();
+		}
 		room.terminate();
 	}
 
