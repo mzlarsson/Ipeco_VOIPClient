@@ -11,6 +11,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.RelativeLayout;
 
 import java.util.List;
 
@@ -21,16 +23,28 @@ import se.chalmers.fleetspeak.fragments.NewStructure.ConnectedProcess.ConnectedC
 
 public class RoomList extends Fragment {
     private RoomAdapter roomAdapter;
+    RecyclerView rv;
+    View altView;
+    ConnectedCommunicator communicator;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_room_list,container, false);
-        RecyclerView rv = (RecyclerView)view.findViewById(R.id.rvRooms);
+        altView = (RelativeLayout) view.findViewById(R.id.altView);
+        Button button = (Button) view.findViewById(R.id.reconnectButton);
+        communicator = (ConnectedCommunicator)this.getActivity();
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                communicator.reconnect();
+            }
+        });
+        rv = (RecyclerView)view.findViewById(R.id.rvRooms);
         GridLayoutManager lm = new GridLayoutManager(this.getActivity().getApplicationContext(), 1);
         rv.setLayoutManager(lm);
-        ConnectedCommunicator communicator = (ConnectedCommunicator)this.getActivity();
         roomAdapter = new RoomAdapter(this.getActivity(), communicator);
         rv.setAdapter(roomAdapter);
+        altView.setVisibility(View.INVISIBLE);
         return view;
     }
 
@@ -38,6 +52,15 @@ public class RoomList extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+    }
+    public void isConnected(boolean b){
+        if(b){
+            altView.setVisibility(View.INVISIBLE);
+            rv.setVisibility(View.VISIBLE);
+        }else{
+            altView.setVisibility(View.VISIBLE);
+            rv.setVisibility(View.INVISIBLE);
+        }
     }
     public void changedTruckState(boolean b){
         roomAdapter.notifyDataSetChanged(b);

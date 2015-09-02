@@ -20,7 +20,7 @@
             android:text="@string/unable_to_connect"
             android:id="@+id/textView"
             android:textSize="30sp"
-            android:layout_marginTop="101dp"
+            android:layout_marginTop="45dp"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true" />
         <Button
@@ -29,8 +29,8 @@
             android:background="@drawable/special_button_shape2"
             android:text="@string/reconnect"
             android:id="@+id/reconnectButton"
-            android:layout_below="@+id/textView"
+            android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="83dp" />
+            android:layout_marginBottom="29dp" />
     </RelativeLayout>
 </RelativeLayout>
