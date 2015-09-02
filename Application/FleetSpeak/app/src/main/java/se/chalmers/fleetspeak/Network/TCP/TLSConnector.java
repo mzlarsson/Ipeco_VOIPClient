@@ -22,7 +22,7 @@ public class TLSConnector{
     private String LOGTAG = "TLSConnector";
 
     private SSLSocket socket;
-    private Messenger responseMessenger;
+    private Handler responseHandler;
     private Messenger writeMessenger;
 
     private SocketWriter socketWriter;
@@ -32,7 +32,7 @@ public class TLSConnector{
     }
 
     public TLSConnector(Handler handler){
-        responseMessenger = new Messenger(handler);
+        responseHandler = handler;
 
 
     }
@@ -72,10 +72,10 @@ public class TLSConnector{
 
                     Log.i(LOGTAG, "socket created");
                 }catch(SSLException e){
-                    e.printStackTrace();
+
                 }
                 catch (IOException e) {
-                    e.printStackTrace();
+
                 }
             }
             return sslSocket;
@@ -87,23 +87,24 @@ public class TLSConnector{
 
                 socket = sslSocket;
                 try {
-                    socketReader = new SocketReader(sslSocket.getInputStream(), responseMessenger);
+                    socketReader = new SocketReader(sslSocket.getInputStream(), new Messenger(responseHandler));
                     socketWriter = new SocketWriter(sslSocket.getOutputStream());
                     synchronized (socketWriter){
                         socketWriter.wait();
                     }
                     writeMessenger = new Messenger(socketWriter.getHandler());
-                    responseMessenger.send(Message.obtain(null, MessageValues.CONNECTED));
+                    responseHandler.sendEmptyMessage(MessageValues.CONNECTED);
                 } catch (IOException e) {
+
                     e.printStackTrace();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
-                } catch (RemoteException e) {
-                    e.printStackTrace();
                 }
 
+            }else{
+                Log.i(LOGTAG, "Failed to connect");
+                responseHandler.sendEmptyMessage(MessageValues.CONNECTIONFAILED);
             }
-            //TODO add messages for failures
         }
     }
     private class SocketDestroyer extends AsyncTask<Void,Void,Void>{
@@ -118,6 +119,7 @@ public class TLSConnector{
             }
             try {
                 socket.close();
+                Log.d(LOGTAG, "Closed socket");
             } catch (IOException e) {
                 e.printStackTrace();
             }
