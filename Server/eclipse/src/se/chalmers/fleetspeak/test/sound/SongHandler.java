@@ -47,7 +47,7 @@ public class SongHandler {
 		playAudioLocally(audioStream);
 	}
 		
-	protected static void playAudioLocally(InputStream audioStream){
+	public static void playAudioLocally(InputStream audioStream){
 		SourceDataLine output = getOutputLine();
 		if(audioStream != null){
 			//Play it
@@ -63,6 +63,12 @@ public class SongHandler {
 					}
 					
 					output.write(tmp, 0, readBytes);
+					try {
+						Thread.sleep(10);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 				
 				//All audio sent.
@@ -107,7 +113,7 @@ public class SongHandler {
 		if(source.exists() && source.isDirectory()){
 			songs = new ArrayList<File>();
 			for(File f : source.listFiles()){
-				if(f.isFile() && f.canRead() && (f.getName().endsWith(".wav") || f.getName().endsWith(".bad"))){
+				if(f.isFile() && f.canRead() && (f.getName().endsWith(".wav") || f.getName().endsWith(".bad")) && !f.getName().equals("silent.bad")){
 					songs.add(f);
 				}
 			}

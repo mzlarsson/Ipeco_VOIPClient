@@ -11,6 +11,7 @@ import java.util.Random;
 
 import javax.swing.Timer;
 
+import se.chalmers.fleetspeak.network.udp.RTPHandler;
 import se.chalmers.fleetspeak.test.sound.SongHandler;
 import se.chalmers.fleetspeak.util.Command;
 import se.chalmers.fleetspeak.util.RtpPackageHandler;
@@ -24,7 +25,7 @@ public class MusicBot extends Thread {
 	
 	//Static values
 	private final static String musicRoomName = "Music Hangaround";
-	private static final int sendFreq = 3;
+	private static final int sendFreq = 10;
 
 	//Connection values
 	private TCPBot tcpBot;
@@ -35,10 +36,11 @@ public class MusicBot extends Thread {
 	//Socket values
 	private DatagramSocket socket = null;
 	private DatagramPacket packet = null;
+	private RTPHandler rtp;
 	
 	public MusicBot(String name, String ip, int port){
-//		this.tcpBot = new TCPBot(name, ip, port);
-//		tcpBot.start();
+		this.tcpBot = new TCPBot(name, ip, port);
+		tcpBot.start();
 		
 		handler = RtpPackageHandler.createHandler();
 		handler.setTimeInterval(sendFreq);
@@ -51,24 +53,28 @@ public class MusicBot extends Thread {
 		
 		//Do the STUN protocol
 		performSTUN();
-			
+		
+		//Start RTP functionality
+		rtp = new RTPHandler(socket);
+		
+		//Fix all stuff
 		if(stunStatus==STUN_STATUS_DONE || stunStatus>-1000){
 			tcpBot.send(new Command("clientUdpTestOk", null, null));
 			sleep(1000);
 			System.out.println("Entering music room");
 			moveToMusicRoom();
-			sleep(1000);
-			System.out.println("Playing audio");
-			playRandomAudioOverIP();
-			sleep(1000);
-			System.out.println("Starting over");
-			playRandomAudioOverIP();
-			sleep(1000);
-			System.out.println("Starting over");
-			playRandomAudioOverIP();
-			sleep(1000);
-			System.out.println("Starting over");
-			playRandomAudioOverIP();
+//			sleep(1000);
+//			System.out.println("Playing audio");
+//			playRandomAudioOverIP();
+//			sleep(1000);
+//			System.out.println("Starting over");
+//			playRandomAudioOverIP();
+//			sleep(1000);
+//			System.out.println("Starting over");
+//			playRandomAudioOverIP();
+//			sleep(1000);
+//			System.out.println("Starting over");
+//			playRandomAudioOverIP();
 			sleep(1000);
 			System.out.println("Starting over (last time)");
 			playRandomAudioOverIP();
@@ -105,6 +111,7 @@ public class MusicBot extends Thread {
 		packet = null;
 		try {
 			socket = new DatagramSocket(localPort);
+			socket.connect(tcpBot.getServerIP(), tcpBot.getSoundPort());
 			packet = new DatagramPacket(new byte[172], 172, tcpBot.getServerIP(), tcpBot.getSoundPort());
 			
 			final DatagramSocket currentSocket = socket;
@@ -122,7 +129,7 @@ public class MusicBot extends Thread {
 						});
 						timeoutTimer.setRepeats(false);
 						timeoutTimer.start();
-						while(!currentSocket.isClosed()){
+						while(!currentSocket.isClosed() && stunStatus==STUN_STATUS_UNINITIATED){
 							currentSocket.receive(p);
 							if(p.getData().length>0 && p.getData()[0]==tcpBot.getControlCode()){
 								setStunStatus(STUN_STATUS_DONE);
@@ -164,7 +171,6 @@ public class MusicBot extends Thread {
 			tcpBot.send(new Command("move", roomID, null));
 		}
 	}
-
 	
 	private void playRandomAudioOverIP(){
 		InputStream audioStream = SongHandler.getSong((new Random().nextInt(SongHandler.getSongCount())));
@@ -182,9 +188,7 @@ public class MusicBot extends Thread {
 						}
 					}
 					
-					packet.setData(handler.toRtpPackage(tmp));
-					socket.send(packet);
-					
+					rtp.sendPacket(tmp);
 					sleep(sendFreq-1);
 				}
 				
@@ -197,8 +201,8 @@ public class MusicBot extends Thread {
 	}
 	
 	private void leaveAndCleanUp(){
+		rtp.terminate();
 		tcpBot.send(new Command("disconnect", null, null));
-		socket.close();
 		tcpBot.close();
 	}
 	
@@ -207,7 +211,6 @@ public class MusicBot extends Thread {
 			Thread.sleep(ms);
 		} catch (InterruptedException e) {}
 	}
-	
 	
 	public static void main(String[] args){
 		new Thread(new MusicBot("bottenanja", "46.239.103.195", 8867)).start();
