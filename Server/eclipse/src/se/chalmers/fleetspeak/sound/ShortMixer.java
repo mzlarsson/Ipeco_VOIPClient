@@ -24,21 +24,23 @@ public class ShortMixer extends SimpleMixer{
 			int maxDataLength = getMaxDataLength(data);
 			byte[][] mixed = new byte[members][maxDataLength];
 			ByteBuffer mixedBuffer = ByteBuffer.allocate(maxDataLength);
-			short mixedShort, dataShort;
+			int mixedShort;
+			short dataShort;
 			for(int i = 0; i<members; i++){																//For every member
 				for(int j = 0; j+1<maxDataLength; j+=2){												//Mix every other byte (every short). (Make sure we have a complete pair.)
 					mixedShort = 0;
 					for(int k = 0; k<members; k++){														//By traversing all members sound
 						if(data[k].length>j+1 && k != i){												//Except themself (or empty signals)
 							dataShort = bytesToShort(data[k][j], data[k][j+1]);							//Make sure to convert byte to short
-							mixedShort = (short)(Math.min(Short.MAX_VALUE, Math.max(Short.MIN_VALUE, mixedShort+dataShort)));		//And perform a+b on the signal (adapt max/min)
+							mixedShort += dataShort;													//And perform a+b on the signal (adapt max/min)
 						}
 					}
-					mixedBuffer.putShort(mixedShort);
+					mixedBuffer.putShort((short)(Math.min(Short.MAX_VALUE, Math.max(Short.MIN_VALUE, mixedShort))));
 				}
 				
 				mixed[i] = mixedBuffer.array();
 				mixedBuffer = ByteBuffer.allocate(maxDataLength);
+				//FIXME optimize this.
 			}
 			
 			return mixed;
