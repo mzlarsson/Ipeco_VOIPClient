@@ -120,6 +120,7 @@
                 lobyFragment = new LobyFragment();
                 inRoomFragment = new InRoomFragment();
                 model = ModelFactory.getModel(updateHandler);
+                Log.d("ConnectionActivity", " Checking if connected");
                 if( !model.isAuthenticated()){
                     Log.d("ConnectionActivity", " Connected");
                     model.connect(username ,password);
@@ -202,6 +203,7 @@
                     intent.putExtra("error", errorMessage);
                 }
                 startActivity(intent);
+                this.finish();
             }
 
             @Override
@@ -337,10 +339,10 @@
                     return 3;
                 }
             }
-            protected void onDestroy(){
-                Log.d("ConnectionActivity", " Destroy && Disconnect");
-                super.onDestroy();
-                model.disconnect();
-            }
 
+        @Override
+        protected void onDestroy() {
+            super.onDestroy();
+            model.disconnect();
+        }
     }
