@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/card_view"
+    android:layout_width="match_parent"
+    android:layout_height="150dp"
+    card_view:cardBackgroundColor="#ff2d2d2d"
+    card_view:cardPreventCornerOverlap="true"
+    card_view:cardElevation="1dp"
+    card_view:cardCornerRadius="6dp"
+    android:clickable="false"
+    android:orientation="horizontal"
+    android:paddingTop="2dp"
+    android:paddingBottom="2dp"
+    >
+        <ImageView
+            android:id="@+id/userItemIcon"
+            android:layout_height="100dp"
+            android:layout_width="100dp"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/ic_user"
+            android:layout_marginLeft="10dp"
+            android:baselineAlignBottom="false" />
+
+        <TextView
+            android:id="@+id/userName"
+            android:paddingTop="10dp"
+            android:layout_width="210dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            android:layout_gravity="center_horizontal"
+            android:text="Username">
+            </TextView>
+
+    </android.support.v7.widget.CardView>
