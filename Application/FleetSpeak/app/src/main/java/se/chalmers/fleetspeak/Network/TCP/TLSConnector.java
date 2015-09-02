@@ -27,9 +27,6 @@ public class TLSConnector{
 
     private SocketWriter socketWriter;
     private SocketReader socketReader;
-    public void setNewHandler(Handler handler){
-        responseHandler = handler;
-    }
 
     public TLSConnector(Handler handler){
         responseHandler = handler;
