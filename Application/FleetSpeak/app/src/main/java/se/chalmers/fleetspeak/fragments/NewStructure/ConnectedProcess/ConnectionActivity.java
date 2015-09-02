@@ -164,16 +164,21 @@
                 // Handle action bar item clicks here. The action bar will
                 // automatically handle clicks on the Home/Up button, so long
                 // as you specify a parent activity in AndroidManifest.xml.
+                // home id seems overwritten write out number
+                Log.d("ConnectionActivity", "is home == "+(R.id.home == item.getItemId()));
+                Log.d("ConnectionActivity", "item id is " + item.getItemId());
                 int id = item.getItemId();
                 //noinspection SimplifiableIfStatement
                 if (id == R.id.changeTruck) {
                     truckModeChanged(!carMode);
                     return true;
-                    // home id seems overwritten write out number
-                }else if(id == R.id.home){
+                } else if(id == 16908332){
                     if(viewPager.getCurrentItem() == 2){
                         returnToLogin(null);
-                    }else{
+                    }else if(viewPager.getCurrentItem() == 1) {
+                        viewPager.setCurrentItem(0);
+                    }
+                    else{
                         viewPager.setCurrentItem(2);
                     }
                     return true;
@@ -280,7 +285,11 @@
 
         @Override
             public void onBackPressed(){
-                if(viewPager.getCurrentItem() == 2){
+                if(viewPager.getCurrentItem() == 1){
+                    Log.d("ConnectionActivity", " current item on back is 1");
+                    onBackNo();
+                }
+                else if(viewPager.getCurrentItem() == 2){
                     onBackYes();
                 }else{
                     viewPager.setCurrentItem(2);

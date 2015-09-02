@@ -54,6 +54,7 @@ public class Model {
 
     public void connect(String name, String password){
         if(state == State.not_connected){
+            Log.d("Model", "Trying to disconnect");
             username = name;
             building.clear();
             state = State.connecting;
