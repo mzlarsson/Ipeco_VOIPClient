@@ -124,4 +124,7 @@ public class LoobyFragment extends AppConnectFragment {
     public void resetList(List<Room> list){
         roomList.resetList(list);
     }
+    public void isConnected(boolean b){
+        roomList.isConnected(b);
+    }
 }

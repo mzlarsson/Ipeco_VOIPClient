@@ -32,6 +32,8 @@ public class Model {
 
     String username ="";
 
+
+
     public Model(Handler callbackHandler){
         state = State.not_connected;
         building = new Building(new Messenger(callbackHandler));
@@ -90,10 +92,17 @@ public class Model {
             connector.sendMessage(new Command("movenewroom", roomname, null));
         }
     }
+    public void setNewHandler(Handler handler){
+        connector.setNewHandler(handler);
+
+    }
     public int getCurrentRoom(){
         return building.getCurrentRoom();
     }
 
+    public boolean isAutherized(){
+        return (state ==State.authenticated);
+    }
     class CommandHandler extends Handler {
         public void handleMessage(Message msg) {
 

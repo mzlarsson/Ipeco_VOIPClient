@@ -49,7 +49,7 @@ public class CarStartLogin extends AppStartFragment {
     }
     public void changePassword(String password){
         View view = this.getView();
-        ((TextView) view.findViewById(R.id.IpAdress)).setText(password);
+        ((TextView) view.findViewById(R.id.passwordField)).setText(password);
     }
 
 
