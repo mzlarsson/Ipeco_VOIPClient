@@ -1,6 +1,7 @@
 package se.chalmers.fleetspeak.sound;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 public class ShortMixer extends SimpleMixer{
 
@@ -24,23 +25,22 @@ public class ShortMixer extends SimpleMixer{
 			int maxDataLength = getMaxDataLength(data);
 			byte[][] mixed = new byte[members][maxDataLength];
 			ByteBuffer mixedBuffer = ByteBuffer.allocate(maxDataLength);
-			int mixedShort;
-			short dataShort;
+			mixedBuffer.order(ByteOrder.LITTLE_ENDIAN);
+			int mixedData;
 			for(int i = 0; i<members; i++){																//For every member
 				for(int j = 0; j+1<maxDataLength; j+=2){												//Mix every other byte (every short). (Make sure we have a complete pair.)
-					mixedShort = 0;
+					mixedData = 0;
 					for(int k = 0; k<members; k++){														//By traversing all members sound
 						if(data[k].length>j+1 && k != i){												//Except themself (or empty signals)
-							dataShort = bytesToShort(data[k][j], data[k][j+1]);							//Make sure to convert byte to short
-							mixedShort += dataShort;													//And perform a+b on the signal (adapt max/min)
+							mixedData += bytesToShort(data[k][j+1], data[k][j]);						//And perform a+b on the signal
 						}
 					}
-					mixedBuffer.putShort((short)(Math.min(Short.MAX_VALUE, Math.max(Short.MIN_VALUE, mixedShort))));
+					mixedBuffer.putShort((short)(Math.min(Short.MAX_VALUE, Math.max(Short.MIN_VALUE, mixedData))));		//Make sure Short.MIN < signal < Short.MAX
 				}
 				
-				mixed[i] = mixedBuffer.array();
-				mixedBuffer = ByteBuffer.allocate(maxDataLength);
-				//FIXME optimize this.
+				mixedBuffer.flip();
+				mixedBuffer.get(mixed[i]);
+				mixedBuffer.clear();
 			}
 			
 			return mixed;
@@ -50,7 +50,7 @@ public class ShortMixer extends SimpleMixer{
 	}
 	
 	private short bytesToShort(byte big, byte small){
-		return (short) (((big & 0xff) << 8) | (small & 0xff));
+		return (short) ((big << 8) | (small & 0xff));
 	}
 
 }

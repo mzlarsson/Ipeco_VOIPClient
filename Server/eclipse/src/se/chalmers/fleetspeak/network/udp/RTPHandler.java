@@ -61,11 +61,16 @@ public class RTPHandler implements PacketReceiver, BufferedAudioStream{
 	}
 
 	Runnable sender = () ->{
+		byte[] b = null;
 		while(udp.isAlive()){
 			try{
-				sendPacket(outputBuffer.take());
+				b = outputBuffer.take();
 			}catch(InterruptedException e){
 				e.printStackTrace();
+			}
+			
+			if(b.length>0){
+				sendPacket(b);
 			}
 		}
 
