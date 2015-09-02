@@ -84,7 +84,7 @@ public class MicRecorder extends Thread{
 	}
 
 	public static void main(String[] args){
-		MicRecorder m = new MicRecorder("test1.0");
+		MicRecorder m = new MicRecorder("test1.1");
 		m.start();
 
 		Scanner sc = new Scanner(System.in);

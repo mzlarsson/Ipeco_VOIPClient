@@ -68,7 +68,7 @@ public class LoginActivity extends ActionBarActivity implements TruckStateListen
             fragment = fragmentManager.findFragmentByTag("CarStartLogin");
             if( fragment == null);
             Bundle bundle = new Bundle();
-            bundle.putString("username", "");
+            bundle.putString("username", username);
             bundle.putString("password", password);
             if(error!= null) {
                 bundle.putString("error", error);
@@ -83,7 +83,7 @@ public class LoginActivity extends ActionBarActivity implements TruckStateListen
             if(error!= null) {
                 bundle.putString("error", error);
             }
-            bundle.putString("username", "");
+            bundle.putString("username", username);
             bundle.putString("password", password);
             fragment = new StartLogin();
             fragment.setArguments(bundle);

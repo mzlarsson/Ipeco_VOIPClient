@@ -63,22 +63,13 @@ public class MusicBot extends Thread {
 			sleep(1000);
 			System.out.println("Entering music room");
 			moveToMusicRoom();
-//			sleep(1000);
-//			System.out.println("Playing audio");
-//			playRandomAudioOverIP();
-//			sleep(1000);
-//			System.out.println("Starting over");
-//			playRandomAudioOverIP();
-//			sleep(1000);
-//			System.out.println("Starting over");
-//			playRandomAudioOverIP();
-//			sleep(1000);
-//			System.out.println("Starting over");
-//			playRandomAudioOverIP();
 			sleep(1000);
-			System.out.println("Starting over (last time)");
-			playRandomAudioOverIP();
-			sleep(1000);
+			int playTimes = 5;
+			for(int i = 0; i<playTimes; i++){
+				System.out.println(i==0?"Playing audio":"Starting over"+(i+1==playTimes?" (last time)":""));		//Info message.
+				playRandomAudioOverIP();
+				sleep(1000);
+			}
 			System.out.println("Audio playing done. Disconnecting...");
 			leaveAndCleanUp();
 		}else{

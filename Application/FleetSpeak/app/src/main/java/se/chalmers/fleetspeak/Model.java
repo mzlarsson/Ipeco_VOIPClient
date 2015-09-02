@@ -54,6 +54,7 @@ public class Model {
 
     public void connect(String name, String password){
         if(state == State.not_connected){
+            Log.d("Model", "Trying to connect");
             username = name;
             building.clear();
             state = State.connecting;
@@ -70,6 +71,8 @@ public class Model {
             connector.disconnect();
             soundOutputController.destroy();
             rtpHandler.terminate();
+            state = State.not_connected;
+            Log.d("Model", " set state to not connected");
         }else{
             Log.d("Model", "Not connected, cannot send disconnect");
         }
@@ -92,14 +95,16 @@ public class Model {
         }
     }
     public void setNewHandler(Handler handler){
-        connector.setNewHandler(handler);
+        callbackHandler = handler;
+        building = new Building(new Messenger(handler));
 
     }
     public int getCurrentRoom(){
         return building.getCurrentRoom();
     }
 
-    public boolean isAutherized(){
+    public boolean isAuthenticated(){
+        Log.d("Model", " State is autenticacted = " + ((state ==State.authenticated)));
         return (state ==State.authenticated);
     }
     class CommandHandler extends Handler {
