@@ -19,8 +19,8 @@ public class OpusMixer extends SimpleMixer{
 	private OpusDecoder decoder;
 	private OpusEncoder encoder;
 
-	protected OpusMixer(){
-		super();
+	protected OpusMixer(int mixingInterval){
+		super(mixingInterval);
 		try {
 			decoder = new OpusDecoder();
 			encoder = new OpusEncoder();
@@ -31,15 +31,20 @@ public class OpusMixer extends SimpleMixer{
 	
 	/**
 	 * Collects the data needed from the streams for the mixing.
-	 * @param nbrOfBytes The number of bytes to retrieve
 	 * @return The data from the streams, ready to be mixed.
 	 */
 	@Override
-	protected byte[][] getData(int nbrOfBytes){
-		List<BufferedStream> streams = getStreams();
-		byte[][] data = new byte[streams.size()][nbrOfBytes];
+	protected byte[][] getData(){
+		List<BufferedAudioStream> streams = getStreams();
+		byte[][] data = new byte[streams.size()][];
+		byte[] b;
 		for(int i = 0; i<streams.size(); i++){
-			data[i] = decoder.decode(streams.get(i).getData(nbrOfBytes));
+			b = streams.get(i).read();
+			if(b != null){
+				data[i] = decoder.decode(b);
+			}else{
+				data[i] = new byte[0];
+			}
 		}
 		
 		return data;
@@ -48,12 +53,11 @@ public class OpusMixer extends SimpleMixer{
 	/**
 	 * Returns the mixed byte array of data (Opus encoded) retrieved from all registered BufferedStreams to this mixer. The
 	 * data in the BufferedStream is considered to be Opus encoded as well.
-	 * @param nbrOfBytes The number of bytes to mix together
 	 * @return An array of the mixed encoded Opus data
 	 */
 	@Override
-	public byte[][] getMixed(int nbrOfBytes){
-		byte[][] mixed = super.getMixed(nbrOfBytes);
+	protected byte[][] getMixed(){
+		byte[][] mixed = super.getMixed();
 		for(int i = 0; i<mixed.length; i++){
 			mixed[i] = encoder.encode(mixed[i]);
 		}

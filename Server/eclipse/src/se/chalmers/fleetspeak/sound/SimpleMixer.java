@@ -8,22 +8,21 @@ package se.chalmers.fleetspeak.sound;
 
 public class SimpleMixer extends AbstractMixer{
 	
-	protected SimpleMixer(){
-		super();
+	protected SimpleMixer(int mixingInterval){
+		super(mixingInterval);
 	}
 
 	/**
 	 * Returns the mixed byte array of data (PCM) retrieved from all registered BufferedStreams to this mixer.
-	 * @param nbrOfBytes The number of bytes to mix together
 	 * @return An array of the mixed PCM
 	 */
 	@Override
-	public byte[][] getMixed(int nbrOfBytes) {
-		if(nbrOfBytes>0){
-			byte[][] data = getData(nbrOfBytes);
-			int members = data.length;			//Used for clarity in the code.
-			
-			byte[][] mixed = new byte[members][nbrOfBytes];
+	protected byte[][] getMixed() {
+		byte[][] data = getData();
+		int members = data.length;			//Used for clarity in the code.
+		
+		if(data.length>1){
+			byte[][] mixed = new byte[members][getMaxDataLength(data)];
 			for(int i = 0; i<members; i++){																//For every member
 				for(int j = 0; j<mixed[i].length; j++){													//Mix every byte
 					for(int k = 0; k<members; k++){														//By traversing all members sound
@@ -36,7 +35,18 @@ public class SimpleMixer extends AbstractMixer{
 			
 			return mixed;
 		}else{
-			return new byte[getStreams().size()][0];
+			return new byte[data.length][0];
 		}
+	}
+	
+	protected int getMaxDataLength(byte[][] data){
+		int length = 0;
+		for(int i = 0; i<data.length; i++){
+			if(data[i].length>length){
+				length = data[i].length;
+			}
+		}
+		
+		return length;
 	}
 }

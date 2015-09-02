@@ -2,9 +2,21 @@ package se.chalmers.fleetspeak.audio.sound;
 
 import android.media.AudioTrack;
 import android.os.Process;
-import java.nio.ByteBuffer;
+import android.util.Log;
 
-import static se.chalmers.fleetspeak.audio.sound.SoundConstants.*;
+import java.nio.ByteBuffer;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+
+import se.chalmers.fleetspeak.Network.UDP.RTPHandler;
+
+import static se.chalmers.fleetspeak.audio.sound.SoundConstants.AUDIO_ENCODING;
+import static se.chalmers.fleetspeak.audio.sound.SoundConstants.AUDIO_OUT_BUFFER_SIZE;
+import static se.chalmers.fleetspeak.audio.sound.SoundConstants.BYTEBUFFER_OUT_SIZE;
+import static se.chalmers.fleetspeak.audio.sound.SoundConstants.OUTPUT_CHANNEL_CONFIG;
+import static se.chalmers.fleetspeak.audio.sound.SoundConstants.SAMPLE_RATE;
+import static se.chalmers.fleetspeak.audio.sound.SoundConstants.SESSION_ID;
+import static se.chalmers.fleetspeak.audio.sound.SoundConstants.STREAM_TYPE;
 
 /**
  * A class for playing PCMU sound from a buffer
@@ -13,12 +25,17 @@ import static se.chalmers.fleetspeak.audio.sound.SoundConstants.*;
 public class SoundOutputController implements Runnable {
 
     private AudioTrack audioTrack;
-    private ByteBuffer audioPlayBuffer;
-    private volatile boolean soundIsPlaying;
+    private volatile ByteBuffer byteBuffer;
 
-    public SoundOutputController(){
 
-        audioPlayBuffer = ByteBuffer.allocateDirect(BYTEBUFFER_OUT_SIZE.value());
+
+    private boolean soundIsPlaying;
+    private AudioOutputProcessor audioOutputProcessor;
+
+    private Executor executor;
+
+    public SoundOutputController(RTPHandler rtpHandler){
+        audioOutputProcessor = new AudioOutputProcessor(rtpHandler);
         audioTrack = new AudioTrack(
                 STREAM_TYPE.value(),
                 SAMPLE_RATE.value(),
@@ -31,30 +48,27 @@ public class SoundOutputController implements Runnable {
         if( audioTrack.getState() == AudioTrack.STATE_UNINITIALIZED) {
             throw new ExceptionInInitializerError("AudioTrack couldn't initialize");
         }
-        init();
-    }
-
-    //Read
-    public synchronized void playFromBuffer(){
-            audioPlayBuffer.flip();
-            byte[] audioArray = new byte[audioPlayBuffer.remaining()];
-            audioPlayBuffer.get(audioArray);
-            audioTrack.write(audioArray, 0, audioArray.length);
-
-            if(audioPlayBuffer.hasRemaining()){
-                audioPlayBuffer.compact();
-            }else{
-                audioPlayBuffer.clear();
+        byteBuffer = ByteBuffer.allocateDirect(BYTEBUFFER_OUT_SIZE.value());
+        executor = Executors.newFixedThreadPool(2);
+        executor.execute(this);
+       /* executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                soundIsPlaying = true;
+                while(soundIsPlaying) {
+                    try {
+                    byte[] bytes = audioOutputProcessor.readBuffer();
+                    synchronized (byteBuffer) {
+                        if(bytes != null && byteBuffer.remaining() > bytes.length){
+                            byteBuffer.put(bytes);
+                        }
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                }
             }
-
-    }
-
-
-    //Write
-    public synchronized void fillAudioBuffer(byte[] b){
-        if(audioPlayBuffer.remaining() > b.length) {
-            audioPlayBuffer.put(b);
-        }
+        });*/
     }
 
     public synchronized void destroy(){
@@ -62,37 +76,44 @@ public class SoundOutputController implements Runnable {
         if(audioTrack != null){
             audioTrack.release();
         }
-        audioPlayBuffer = null;
+        audioOutputProcessor.terminate();
     }
 
-    public void init(){
-        audioTrack.play();
-        soundIsPlaying = true;
+
+    public void writeAudio(byte[] b,int offset){
+        audioTrack.write(b,offset,b.length);
     }
 
     @Override
     public void run() {
+        Thread.currentThread().setName("SoundOutputControllerThread");
         android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_AUDIO);
+        audioTrack.play();
+        soundIsPlaying = true;
+        Log.i("SOC", "sound is playing on " + Thread.currentThread().getName());
         while(soundIsPlaying){
-
-            if(audioPlayBuffer.remaining() > 500) {//FIXME Remove constants
-                playFromBuffer();
+/*
+            synchronized (byteBuffer){
+                byteBuffer.flip();
+                byte[] audioArray = new byte[byteBuffer.remaining()];
+                byteBuffer.get(audioArray);
+                audioTrack.write(audioArray, 0,audioArray.length);
+                if(byteBuffer.hasRemaining()){
+                    byteBuffer.compact();
+                }else{
+                    byteBuffer.clear();
+                }
             }
+*/
+            try {
+                writeAudio(audioOutputProcessor.readBuffer(), 0);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
         }
     }
 
-
-    public boolean equals(Object o) {
-
-        if (o == null || this.getClass() != o.getClass()) {
-            return false;
-        }
-        SoundOutputController soc = (SoundOutputController) o;
-        return this.audioPlayBuffer.equals(soc.audioPlayBuffer) &&
-                this.audioTrack.equals(soc.audioTrack) &&
-                this.soundIsPlaying == soc.soundIsPlaying;
-
-    }
 
 
 }

@@ -1,5 +1,6 @@
 package se.chalmers.fleetspeak.core;
 
+import java.net.DatagramSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,6 +10,8 @@ import java.util.logging.Logger;
 
 import se.chalmers.fleetspeak.database.UserInfo;
 import se.chalmers.fleetspeak.network.tcp.TCPHandler;
+import se.chalmers.fleetspeak.network.udp.RTPHandler;
+import se.chalmers.fleetspeak.network.udp.STUNInitiator;
 import se.chalmers.fleetspeak.util.Command;
 
 /**
@@ -18,7 +21,7 @@ import se.chalmers.fleetspeak.util.Command;
  *
  * @author Patrik Haar
  */
-public class ClientCreator implements AuthenticatorListener{
+public class ClientCreator implements AuthenticatorListener, CommandHandler{
 
 	private List<ClientAuthenticator> authenticators;
 	private Logger logger;
@@ -37,7 +40,7 @@ public class ClientCreator implements AuthenticatorListener{
 	}
 
 	/**
-	 * Starts the authorization-process to check if the new connection is a valid user.
+	 * Starts the authentication process to check if the new connection is a valid user.
 	 * @param clientSocket
 	 */
 	public void addNewClient(Socket clientSocket) {
@@ -46,21 +49,7 @@ public class ClientCreator implements AuthenticatorListener{
 		ca.addAuthenticatorListener(this);
 		ca.start();
 	}
-
-	/**
-	 * Shuts down all connections in the process of authorization.
-	 */
-	public void terminate() {
-		for (ClientAuthenticator ca : authenticators) {
-			ca.terminate();
-		}
-		authenticators.clear();
-	}
-
-	private void establishUDPConnection() {
-
-	}
-
+	
 	@Override
 	public void authenticationSuccessful(Object authorizedObject, Authenticator authenticator) {
 		if (authenticator.getClass() == ClientAuthenticator.class) {
@@ -69,9 +58,7 @@ public class ClientCreator implements AuthenticatorListener{
 				UserInfo ui = (UserInfo)authorizedObject;
 				TCPHandler tcph = ca.getTCPHandler();
 				Client client = new Client(ui.getID(), ui.getAlias(), ca.getTCPHandler().getInetAddress(), tcph);
-				tcph.sendCommand(new Command("authorizationResult", true, "Successful authorization"));
-				logger.log(Level.INFO, "A new person joined");
-				building.addClient(client, targetRoom);
+				establishUDPConnection(client);
 				//TODO this should be checked together with name/pwd
 				/*if (RoomHandler.getInstance().findClient(ui.getID()) == null) {
 
@@ -91,12 +78,42 @@ public class ClientCreator implements AuthenticatorListener{
 	public void authenticationFailed(String errorMsg, Authenticator authenticator) {
 		if (authenticator.getClass() == ClientAuthenticator.class) {
 			ClientAuthenticator ca = (ClientAuthenticator)authenticator;
-			ca.getTCPHandler().sendCommand(new Command("authorizationResult", false, errorMsg));
+			ca.getTCPHandler().sendCommand(new Command("authenticationResult", false, errorMsg));
 			ca.terminate();
 			logger.log(Level.FINER, errorMsg);
 			authenticators.remove(ca);
 		} else {
 			logger.log(Level.WARNING, "Unknown '" + authenticator.getClass() + "' was found when '" + ClientAuthenticator.class + "' was expected.");
+		}
+	}
+
+	/**
+	 * Shuts down all connections in the process of authentication.
+	 */
+	public void terminate() {
+		for (ClientAuthenticator ca : authenticators) {
+			ca.terminate();
+		}
+		authenticators.clear();
+	}
+
+	private void establishUDPConnection(Client client) {
+		STUNInitiator stun = new STUNInitiator(client, client.getClientID());
+		stun.addCommandHandler(this);
+		stun.start();
+	}
+
+	private void finalizeClient(Client client, DatagramSocket socket) {
+		client.setRTPHandler(new RTPHandler(socket));
+		client.sendCommand(new Command("authenticationResult", true, "Successful authentication"));
+		logger.log(Level.INFO, "A new person joined");
+		building.addClient(client, targetRoom);		
+	}
+	
+	@Override
+	public void handleCommand(Command c) {
+		if (c.getCommand().toLowerCase().equals("datagramsocketstun")) {
+			finalizeClient((Client)c.getKey(), (DatagramSocket)c.getValue());
 		}
 	}
 }

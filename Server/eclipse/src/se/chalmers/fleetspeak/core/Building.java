@@ -10,7 +10,7 @@ public class Building {
 
 	private Logger logger = Logger.getLogger("Debug");
 
-	private ConcurrentHashMap<Integer, Room> rooms;
+	private ConcurrentHashMap<Integer, IRoom> rooms;
 
 	private BuildingManager manager = (cmd, id) -> {
 
@@ -24,8 +24,8 @@ public class Building {
 		case "createroom":
 			addRoom((String)cmd.getValue(), false);
 			break;
-		case "roomempty":
-			removeRoom(id);
+		case "disconnect":
+			removeClient((int)cmd.getKey(),id);
 			break;
 		default:
 			logger.log(Level.WARNING, "Unknown command: " + cmd.getCommand() );
@@ -34,7 +34,7 @@ public class Building {
 
 	public Building() {
 		super();
-		rooms = new ConcurrentHashMap<Integer, Room>();
+		rooms = new ConcurrentHashMap<Integer, IRoom>();
 
 		//TODO this should not be static move to config;
 		this.addRoom("Lobby", true);
@@ -46,16 +46,19 @@ public class Building {
 	 * @return
 	 */
 	public int addRoom(String name, boolean permanent){
-		Room newRoom = new Room(name, manager, permanent);
+		IRoom newRoom = new AudioRoom(name, manager, permanent);
 		rooms.put(newRoom.getId(), newRoom);
 		postUpdate(new Command("createdroom", newRoom.getId(), newRoom.getName()));
 		logger.log(Level.INFO, "Added a room "+ newRoom.getId() +", "+ newRoom.getName());
 		return newRoom.getId();
 	}
 	private void removeRoom(int roomid){
-		rooms.remove(roomid);
-		postUpdate(new Command("removedroom", roomid, null));
-		logger.log(Level.INFO, "Removed room " + roomid);
+		IRoom room = rooms.remove(roomid);
+		if(room != null){
+			room.terminate();
+			postUpdate(new Command("removedroom", roomid, null));
+			logger.log(Level.INFO, "Removed room " + roomid);
+		}
 	}
 	/**
 	 * Adds a new client to the building
@@ -67,7 +70,7 @@ public class Building {
 		sync(client);
 		rooms.get(roomid).addClient(client);
 		postUpdate(new Command("addeduser", client.getInfoPacket(), roomid));
-		logger.log(Level.INFO, "Added client " + client.getClientID() + " to room " + roomid);
+		logger.log(Level.INFO, "Added client " + client.toString() + " to room " + roomid);
 
 	}
 	/**
@@ -79,9 +82,22 @@ public class Building {
 	public void moveClient(int clientid, int sourceRoom, int destinationRoom ){
 		Client c = rooms.get(sourceRoom).removeClient(clientid);
 		rooms.get(destinationRoom).addClient(c);
-		postUpdate(new Command("moveduser", clientid, destinationRoom));
-		logger.log(Level.INFO, "Moved client " + clientid + " to room " + destinationRoom);
+		postUpdate(new Command("moveduser", clientid, sourceRoom + "," + destinationRoom));
+		logger.log(Level.INFO, "Moved client " + c.toString() + " to room " + destinationRoom);
+		if(rooms.get(sourceRoom).canDelete()){
+			removeRoom(sourceRoom);
+		}
 	}
+
+	public void removeClient(int clientid, int roomid){
+		Client c = rooms.get(roomid).removeClient(clientid);
+		if(c != null){
+			c.terminate();
+			postUpdate(new Command("removeduser", clientid, roomid));
+			logger.log(Level.INFO, "Removed client " + clientid);
+		}
+	}
+
 	/**
 	 * Sends a command to all Clients in the Building
 	 * @param c Command to send
@@ -92,6 +108,7 @@ public class Building {
 	}
 
 	private void sync(Client c){
+		logger.log(Level.FINE, "Syncing client " + c.getName());
 		rooms.forEach((id,room)-> {
 			c.sendCommand(new Command("createdroom", id, room.getName()));
 			room.sync(c);

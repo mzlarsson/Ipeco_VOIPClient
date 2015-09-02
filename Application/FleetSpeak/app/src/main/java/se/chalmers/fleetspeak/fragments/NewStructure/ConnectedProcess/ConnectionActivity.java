@@ -55,10 +55,12 @@
                     Log.d("updateHandler", "Got Message=" + msg.what);
                     switch (msg.what){
                         case MessageValues.CONNECTED:
+                            Log.d("UpdateHandler", "Connected");o
                             loobyFragment.isConnected(true);
                             updateView();
                             break;
                         case MessageValues.DISCONNECTED:
+                            Log.d("UpdateHandler", " Disconnected");
                             loobyFragment.isConnected(false);
                             updateView();
                             break;
@@ -66,10 +68,11 @@
                             updateView();
                             break;
                         case MessageValues.CONNECTIONFAILED:
+                            Log.d("UpdateHandler", "Connection failed");
                             loobyFragment.isConnected(false);
                             updateView();
                             break;
-                        case MessageValues.AUTHORIZED:
+                        case MessageValues.AUTHENTICATED:
                             updateView();
                             break;
                         case MessageValues.AUTHENTICATIONFAILED:
@@ -114,16 +117,20 @@
                     public void onPageScrollStateChanged(int state) {
                     }
                 });
+
                 password = extras.getString("password");
                 username=  extras.getString("username");
                 loobyFragment = new LoobyFragment();
                 inRoomFragment = new InRoomFragment();
                 model = ModelFactory.getModel(updateHandler);
                 if( !model.isAutherized()){
-                    model.connect((String) extras.get("password"), 8867);
+                    Log.d("ConnectionActivity", " Connected");
+                    model.connect(username ,password);
+
                 }else{
                     loobyFragment.isConnected(true);
                 }
+                username = (String)extras.get("username");
 
                 TruckDataHandler.addListener(this);
                 carMode = TruckDataHandler.getInstance().getTruckMode();
@@ -166,7 +173,7 @@
                     truckModeChanged(!carMode);
                     return true;
                     // home id seems overwritten write out number
-                }else if(id == 16908332){
+                }else if(id == R.id.home){
                     if(viewPager.getCurrentItem() == 2){
                         returnToLogin(null);
                     }else{
@@ -209,7 +216,7 @@
 
         @Override
         public void reconnect() {
-            model.connect(password, 8867);
+            model.connect(username, password);
         }
 
         @Override
@@ -269,6 +276,7 @@
 
         @Override
         public void onBackYes() {
+            Log.d("ConnectionActivity", " Back yes & Disconnect");
             model.disconnect();
             returnToLogin(null);
         }
@@ -281,7 +289,6 @@
                     viewPager.setCurrentItem(2);
                 }
             }
-
         @Override
         public void onTabSelected(ActionBar.Tab tab, android.support.v4.app.FragmentTransaction fragmentTransaction) {
             viewPager.setCurrentItem(tab.getPosition());
@@ -325,6 +332,7 @@
                 }
             }
             protected void onDestroy(){
+                Log.d("ConnectionActivity", " Destroy && Disconnect");
                 super.onDestroy();
                 model.disconnect();
             }

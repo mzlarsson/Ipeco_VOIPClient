@@ -6,12 +6,12 @@ import java.io.Serializable;
  * A class holding the information of a user for communication between server and client.
  * @author Patrik
  * @version 1.0
- * 
+ *
  */
 public class UserInfoPacket implements Serializable{
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	private int id, roomID;
 	private String name;
 
@@ -20,25 +20,25 @@ public class UserInfoPacket implements Serializable{
 	 * @param id The ID of the user.
 	 * @param name The name of the user.
 	 */
-    public UserInfoPacket(int id, String name) {
-        this.id = id;
-        this.name = name;
-    }
+	public UserInfoPacket(int id, String name) {
+		this.id = id;
+		this.name = name;
+	}
 
-    /**
-     * The ID of the user.
-     * @return The ID of the user.
-     */
-    public int getID() {
-        return id;
-    }
+	/**
+	 * The ID of the user.
+	 * @return The ID of the user.
+	 */
+	public int getID() {
+		return id;
+	}
 
-    /**
+	/**
 	 * The name of the user.
 	 * @return The name of the user.
 	 */
 	public String getName() {
-	    return name;
+		return name;
 	}
 
 	/**
@@ -46,7 +46,7 @@ public class UserInfoPacket implements Serializable{
 	 * @return The ID of the room the user is currently in.
 	 */
 	public int getRoomID() {
-	    return roomID;
+		return roomID;
 	}
 
 	/**
@@ -77,5 +77,10 @@ public class UserInfoPacket implements Serializable{
 	public UserInfoPacket setRoomID(int roomID) {
 		this.roomID = roomID;
 		return this;
+	}
+
+	@Override
+	public String toString(){
+		return id + " " + name;
 	}
 }

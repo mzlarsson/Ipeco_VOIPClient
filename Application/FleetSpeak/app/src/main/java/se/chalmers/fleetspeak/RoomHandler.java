@@ -194,11 +194,6 @@ public class RoomHandler{
         rooms.remove(findRoom(roomid));
     }
 
-    public void changeRoomName(int roomid, String roomname) {
-        findRoom(roomid).setName(roomname);
-        postUpdate(MessageValues.MODELCHANGED);
-    }
-
     private void postUpdate(int what){
         try {
             Log.d("RoomHandler", ""+ rooms);

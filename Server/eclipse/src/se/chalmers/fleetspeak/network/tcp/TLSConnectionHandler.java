@@ -3,6 +3,7 @@ package se.chalmers.fleetspeak.network.tcp;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
@@ -11,6 +12,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -45,7 +47,11 @@ public class TLSConnectionHandler{
 
 		serverSocket = createServerSocket();
 		if(serverSocket != null){
-			logger.log(Level.INFO, "Starting to listen to port " + port);
+			try{
+				logger.log(Level.INFO, "Starting server @LAN-IP "+InetAddress.getLocalHost().getHostAddress()+" on port "+port);
+			}catch(Exception e){
+				//I dont care that i cant print the local address
+			}
 			running = true;
 		}else{
 			logger.log(Level.SEVERE, "Failed to create serverSocket");
@@ -60,9 +66,9 @@ public class TLSConnectionHandler{
 				clientCreator.addNewClient(clientSocket);
 			}catch(SSLException e){
 				e.printStackTrace();
-			}
-			catch(IOException e){
+			}catch(IOException e){
 				e.printStackTrace();
+
 			}
 		}};
 
@@ -77,7 +83,7 @@ public class TLSConnectionHandler{
 				KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
 				kmf.init(ks, "fleetspeak".toCharArray());
 
-				SSLContext context = SSLContext.getInstance("TLSv1.2");
+				SSLContext context = SSLContext.getInstance("TLSv1");
 				logger.log(Level.FINE, context.getProtocol());
 				context.init(kmf.getKeyManagers(), null, null);
 
@@ -115,7 +121,11 @@ public class TLSConnectionHandler{
 
 		public void terminate() {
 			try{
-				serverSocket.close();
+				running = false;
+				if(serverSocket != null){
+					serverSocket.close();
+				}
+				((ExecutorService)executor).shutdownNow();
 			}catch(IOException e){
 				e.printStackTrace();
 			}
