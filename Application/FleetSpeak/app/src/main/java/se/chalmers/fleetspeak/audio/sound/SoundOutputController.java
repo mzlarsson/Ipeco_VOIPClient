@@ -76,7 +76,8 @@ public class SoundOutputController implements Runnable {
         if(audioTrack != null){
             audioTrack.release();
         }
-        audioOutputProcessor.terminate();
+        if(audioOutputProcessor != null)
+            audioOutputProcessor.terminate();
     }
 
 

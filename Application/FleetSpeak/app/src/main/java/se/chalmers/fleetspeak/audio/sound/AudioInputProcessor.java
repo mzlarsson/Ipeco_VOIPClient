@@ -65,6 +65,7 @@ public class AudioInputProcessor implements Runnable {
 
     public void terminate() {
         isProcessing = false;
-        soundInputController.destroy();
+        if(soundInputController != null)
+            soundInputController.destroy();
     }
 }

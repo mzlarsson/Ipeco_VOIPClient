@@ -64,6 +64,7 @@ public class Model {
 
     public void disconnect(){
         if(state == State.authenticated || state == State.connected){
+            Log.i("Model", "Disconnecting");
             state = State.not_connected;
             connector.disconnect();
             soundOutputController.destroy();
