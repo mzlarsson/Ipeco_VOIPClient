@@ -120,7 +120,7 @@
                 lobyFragment = new LobyFragment();
                 inRoomFragment = new InRoomFragment();
                 model = ModelFactory.getModel(updateHandler);
-                if( !model.isAutherized()){
+                if( !model.isAuthenticated()){
                     Log.d("ConnectionActivity", " Connected");
                     model.connect(username ,password);
 

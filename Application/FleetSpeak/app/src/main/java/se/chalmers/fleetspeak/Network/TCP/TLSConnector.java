@@ -27,9 +27,6 @@ public class TLSConnector{
 
     private SocketWriter socketWriter;
     private SocketReader socketReader;
-    public void setNewHandler(Handler handler){
-        responseHandler = handler;
-    }
 
     public TLSConnector(Handler handler){
         responseHandler = handler;
@@ -52,7 +49,7 @@ public class TLSConnector{
         }
     }
     public void disconnect(){
-        new SocketDestroyer();
+        new SocketDestroyer().execute();
     }
 
     private class SocketCreator extends AsyncTask<String,  Void, SSLSocket>{
@@ -108,13 +105,16 @@ public class TLSConnector{
 
         @Override
         protected Void doInBackground(Void... voids) {
+            Log.d(LOGTAG, "Stopping reader");
             socketReader.stop();
             try {
                 writeMessenger.send(Message.obtain(null,0));
+                Log.d(LOGTAG, "Stopping writer");
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
             try {
+                Log.d(LOGTAG, "trying to close socket");
                 socket.close();
                 Log.d(LOGTAG, "Closed socket");
             } catch (IOException e) {

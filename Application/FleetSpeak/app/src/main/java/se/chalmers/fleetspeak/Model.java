@@ -93,14 +93,14 @@ public class Model {
         }
     }
     public void setNewHandler(Handler handler){
-        connector.setNewHandler(handler);
+        callbackHandler = handler;
 
     }
     public int getCurrentRoom(){
         return building.getCurrentRoom();
     }
 
-    public boolean isAutherized(){
+    public boolean isAuthenticated(){
         return (state ==State.authenticated);
     }
     class CommandHandler extends Handler {

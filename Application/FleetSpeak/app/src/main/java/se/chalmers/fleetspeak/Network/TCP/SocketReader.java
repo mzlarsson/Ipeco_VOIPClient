@@ -52,7 +52,6 @@ public class SocketReader implements Runnable{
             } catch (IOException e) {
                 //TODO error handling
                 stop();
-                e.printStackTrace();
             } catch (RemoteException e) {
                 e.printStackTrace();
             } catch (InterruptedException e) {
