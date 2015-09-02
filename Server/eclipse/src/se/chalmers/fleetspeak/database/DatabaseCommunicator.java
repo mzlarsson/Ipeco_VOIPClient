@@ -20,7 +20,8 @@ public class DatabaseCommunicator {
 	private Connection conn;
 	private static DatabaseCommunicator instance;
 	private Logger logger = Logger.getLogger("Debug");
-
+	
+	private int tmpIDs = 100;
 
 	private DatabaseCommunicator(){
 		conn = DatabaseConnector.initiateConnection();
@@ -127,6 +128,9 @@ public class DatabaseCommunicator {
 	 * @return A UserInfo object with the information of the user if found, null if not found.
 	 */
 	public UserInfo findUser(String username) {
+		if (username.equals("bottenanja")) { //FIXME Temporary implementation for allowing bots.
+			return new UserInfo(tmpIDs, username+tmpIDs, username+(tmpIDs++));
+		}
 		UserInfo user = null;
 		Statement st = null;
 		try {
