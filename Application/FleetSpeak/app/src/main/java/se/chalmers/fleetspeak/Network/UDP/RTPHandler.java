@@ -23,7 +23,7 @@ public class RTPHandler implements Runnable, PacketReceiver, BufferedAudioStream
     private JitterBuffer buffer;
 
     public RTPHandler(UDPConnector udpConnector) {
-        buffer = new JitterBuffer(120);
+        buffer = new JitterBuffer(50);
         this.udpConnector = udpConnector;
         sequenceNumber = 0;
         try {
@@ -48,8 +48,8 @@ public class RTPHandler implements Runnable, PacketReceiver, BufferedAudioStream
         while (isRunning){
             try {
                 data = audioInputProcessor.readBuffer();
-                //udpConnector.sendPacket(new RTPPacket(sequenceNumber++,System.currentTimeMillis(),data).toByteArraySimple());
-                buffer.write(new RTPPacket(sequenceNumber++,System.currentTimeMillis(),data));
+                udpConnector.sendPacket(new RTPPacket(sequenceNumber++,System.currentTimeMillis(),data).toByteArraySimple());
+                //buffer.write(new RTPPacket(sequenceNumber++,System.currentTimeMillis(),data));
                 //Log.d("RTPHandler", +data.length + " " + (sequenceNumber-1) +  " send " + printPacket(data));
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -62,8 +62,10 @@ public class RTPHandler implements Runnable, PacketReceiver, BufferedAudioStream
 
     public void terminate() {
         isRunning = false;
-        udpConnector.terminate();
-        audioInputProcessor.terminate();
+        if(udpConnector != null)
+            udpConnector.terminate();
+        if(audioInputProcessor != null)
+            audioInputProcessor.terminate();
     }
 
     @Override

@@ -25,9 +25,11 @@
     import se.chalmers.fleetspeak.User;
     import se.chalmers.fleetspeak.fragments.NewStructure.EstablishConnection.BackFragment;
     import se.chalmers.fleetspeak.fragments.NewStructure.LoginProcess.LoginActivity;
+    import se.chalmers.fleetspeak.fragments.NewStructure.location.LocationHandler;
     import se.chalmers.fleetspeak.truck.TruckDataHandler;
     import se.chalmers.fleetspeak.truck.TruckStateListener;
     import se.chalmers.fleetspeak.util.MessageValues;
+    import se.chalmers.fleetspeak.util.ModelFactory;
 
     public class ConnectionActivity extends ActionBarActivity implements TruckStateListener, ActionBar.TabListener, ConnectedCommunicator {
             private Model model;
@@ -37,8 +39,11 @@
             private InRoomFragment inRoomFragment;
             private LoobyFragment loobyFragment;
             private BackFragment backFragment;
-            private View loadingView;
+            private LocationHandler locationHandler;
+
+
             private String username;
+            private String password;
 
 
             /**
@@ -50,19 +55,28 @@
                     Log.d("updateHandler", "Got Message=" + msg.what);
                     switch (msg.what){
                         case MessageValues.CONNECTED:
+                            Log.d("UpdateHandler", "Connected");o
+                            loobyFragment.isConnected(true);
+                            updateView();
                             break;
                         case MessageValues.DISCONNECTED:
+                            Log.d("UpdateHandler", " Disconnected");
+                            loobyFragment.isConnected(false);
                             updateView();
                             break;
                         case MessageValues.MODELCHANGED:
                             updateView();
                             break;
                         case MessageValues.CONNECTIONFAILED:
+                            Log.d("UpdateHandler", "Connection failed");
+                            loobyFragment.isConnected(false);
+                            updateView();
                             break;
                         case MessageValues.AUTHENTICATED:
                             updateView();
                             break;
                         case MessageValues.AUTHENTICATIONFAILED:
+                            model.disconnect();
                             returnToLogin("Authentication failed");
                             break;
                     }
@@ -83,7 +97,6 @@
                 super.onCreate(savedInstanceState);
                 Bundle extras = this.getIntent().getExtras();
                 setContentView(R.layout.activity_connection);
-                loadingView = findViewById(R.id.loading_spinner);
                 viewPager = (CViewPager)findViewById(R.id.pager);
                 viewPager.setId(R.id.pager);
                 viewPager.setAdapter(new PagerAdapter(getSupportFragmentManager()));
@@ -104,10 +117,20 @@
                     public void onPageScrollStateChanged(int state) {
                     }
                 });
-                model = new Model(updateHandler);
-                username = (String)extras.get("username");
-                model.connect(username, (String) extras.get("password"));
 
+                password = extras.getString("password");
+                username=  extras.getString("username");
+                loobyFragment = new LoobyFragment();
+                inRoomFragment = new InRoomFragment();
+                model = ModelFactory.getModel(updateHandler);
+                if( !model.isAutherized()){
+                    Log.d("ConnectionActivity", " Connected");
+                    model.connect(username ,password);
+
+                }else{
+                    loobyFragment.isConnected(true);
+                }
+                username = (String)extras.get("username");
 
                 TruckDataHandler.addListener(this);
                 carMode = TruckDataHandler.getInstance().getTruckMode();
@@ -121,12 +144,16 @@
                 rooms.setTabListener(this);
                 actionBar.addTab(rooms);
 
-
                 ActionBar.Tab inRoom = actionBar.newTab();
                 inRoom.setIcon(R.drawable.ic_room);
                 inRoom.setText("ChatRoom");
                 inRoom.setTabListener(this);
                 actionBar.addTab(inRoom);
+
+                locationHandler = new LocationHandler(this);
+                locationHandler.addTruckListener(this);
+                carMode = locationHandler.getCarMode();
+
             }
             @Override
             public boolean onCreateOptionsMenu(Menu menu) {
@@ -146,7 +173,7 @@
                     truckModeChanged(!carMode);
                     return true;
                     // home id seems overwritten write out number
-                }else if(id == 16908332){
+                }else if(id == R.id.home){
                     if(viewPager.getCurrentItem() == 2){
                         returnToLogin(null);
                     }else{
@@ -161,6 +188,7 @@
             private void changeCarModeTabs(boolean b){
                 if(loobyFragment != null){
                     loobyFragment.truckModeChanged(b);
+
                 }
                 if(inRoomFragment != null){
                     inRoomFragment.truckModeChanged(b);
@@ -186,7 +214,12 @@
                 return model.getRooms();
             }
 
-            @Override
+        @Override
+        public void reconnect() {
+            model.connect(username, password);
+        }
+
+        @Override
             public ArrayList<User> getUsersForRoom(int RoomID) {
                 return model.getUsers(RoomID);
             }
@@ -243,6 +276,7 @@
 
         @Override
         public void onBackYes() {
+            Log.d("ConnectionActivity", " Back yes & Disconnect");
             model.disconnect();
             returnToLogin(null);
         }
@@ -255,7 +289,6 @@
                     viewPager.setCurrentItem(2);
                 }
             }
-
         @Override
         public void onTabSelected(ActionBar.Tab tab, android.support.v4.app.FragmentTransaction fragmentTransaction) {
             viewPager.setCurrentItem(tab.getPosition());
@@ -280,15 +313,9 @@
                     Log.d("ConnectionActivity", " getItem called");
                     if (arg == 0) {
                         Log.d("ConnectionActivity", " Lobby called");
-                        if (loobyFragment == null) {
-                            loobyFragment = new LoobyFragment();
-                        }
                         return loobyFragment;
                     } else if (arg == 1) {
                         Log.d("ConnectionActivity", " InRoom called");
-                        if (inRoomFragment == null) {
-                            inRoomFragment = new InRoomFragment();
-                        }
                         return inRoomFragment;
                     }else if (arg == 2){
                         Log.d("ConnectionActivity"," Back called");
@@ -304,34 +331,10 @@
                     return 3;
                 }
             }
-            private void crossFade(){
-                viewPager.setVisibility(View.GONE);
-                int aniTime = getResources().getInteger(
-                        android.R.integer.config_longAnimTime);
-                // Set the content view to 0% opacity but visible, so that it is visible
-                // (but fully transparent) during the animation.
-                viewPager.setAlpha(0f);
-                viewPager.setVisibility(View.VISIBLE);
-
-                // Animate the content view to 100% opacity, and clear any animation
-                // listener set on the view.
-                viewPager.animate()
-                        .alpha(1f)
-                        .setDuration(aniTime)
-                        .setListener(null);
-
-                // Animate the loading view to 0% opacity. After the ananimation ends,
-                // set its visibility to GONE as an optimization step (it won't
-                // participate in layout passes, etc.)
-                loadingView.animate()
-                        .alpha(0f)
-                        .setDuration(aniTime)
-                        .setListener(new AnimatorListenerAdapter() {
-                            @Override
-                            public void onAnimationEnd(Animator animation) {
-                                loadingView.setVisibility(View.GONE);
-                            }
-                        });
+            protected void onDestroy(){
+                Log.d("ConnectionActivity", " Destroy && Disconnect");
+                super.onDestroy();
+                model.disconnect();
             }
 
     }

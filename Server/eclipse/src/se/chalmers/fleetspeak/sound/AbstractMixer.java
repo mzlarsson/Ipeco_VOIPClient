@@ -14,7 +14,6 @@ import java.util.logging.Logger;
 
 public abstract class AbstractMixer implements Mixer{
 
-	
 	private List<BufferedAudioStream> streams;
 	private List<BlockingQueue<byte[]>> outStreams;
 	

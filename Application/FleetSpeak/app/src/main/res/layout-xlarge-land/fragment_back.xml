@@ -1,0 +1,40 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="se.chalmers.fleetspeak.fragments.NewStructure.EstablishConnection.BackFragment">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="150dp"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/AboutToDisconnect"
+        android:id="@+id/textView2"
+        android:textColor="#ffffffff"
+        android:textSize="50sp"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/noButton"
+        android:layout_marginTop="113dp" />
+
+    <Button
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:background="@drawable/special_button_shape2"
+        android:text="@string/yes"
+        android:layout_marginRight="88dp"
+        android:id="@+id/yesButton"
+        android:layout_alignTop="@+id/noButton"
+        android:layout_alignParentRight="true"
+        android:textSize="30sp" />
+
+    <Button
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:background="@drawable/special_button_shape2"
+        android:text="@string/no"
+        android:id="@+id/noButton"
+        android:layout_marginBottom="133dp"
+        android:layout_marginLeft="109dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:textSize="30sp" />
+</RelativeLayout>

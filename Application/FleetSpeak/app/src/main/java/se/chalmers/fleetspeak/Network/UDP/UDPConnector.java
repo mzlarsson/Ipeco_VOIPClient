@@ -84,6 +84,7 @@ public class UDPConnector implements Runnable{
 
     public void terminate(){
         running = false;
-        socket.close();
+        if(socket != null)
+            socket.close();
     }
 }
