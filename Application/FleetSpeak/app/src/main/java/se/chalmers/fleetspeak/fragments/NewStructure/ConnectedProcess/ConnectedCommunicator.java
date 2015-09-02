@@ -12,6 +12,7 @@ import se.chalmers.fleetspeak.User;
 public interface ConnectedCommunicator {
 
     public List<Room> getRooms();
+    public void reconnect();
     public ArrayList<User> getUsersForRoom(int RoomID);
     public boolean getTruckState();
     public String getUsername();

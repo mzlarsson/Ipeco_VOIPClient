@@ -39,8 +39,11 @@
             private InRoomFragment inRoomFragment;
             private LoobyFragment loobyFragment;
             private BackFragment backFragment;
-            private String username;
             private LocationHandler locationHandler;
+
+
+            private String username;
+            private String password;
 
 
             /**
@@ -52,20 +55,25 @@
                     Log.d("updateHandler", "Got Message=" + msg.what);
                     switch (msg.what){
                         case MessageValues.CONNECTED:
+                            loobyFragment.isConnected(true);
+                            updateView();
                             break;
                         case MessageValues.DISCONNECTED:
+                            loobyFragment.isConnected(false);
                             updateView();
                             break;
                         case MessageValues.MODELCHANGED:
                             updateView();
                             break;
                         case MessageValues.CONNECTIONFAILED:
-                            // TODO fixme
+                            loobyFragment.isConnected(false);
+                            updateView();
                             break;
                         case MessageValues.AUTHORIZED:
                             updateView();
                             break;
                         case MessageValues.AUTHENTICATIONFAILED:
+                            model.disconnect();
                             returnToLogin("Authentication failed");
                             break;
                     }
@@ -106,11 +114,16 @@
                     public void onPageScrollStateChanged(int state) {
                     }
                 });
+                password = extras.getString("password");
+                username=  extras.getString("username");
+                loobyFragment = new LoobyFragment();
+                inRoomFragment = new InRoomFragment();
                 model = ModelFactory.getModel(updateHandler);
                 if( !model.isAutherized()){
                     model.connect((String) extras.get("password"), 8867);
+                }else{
+                    loobyFragment.isConnected(true);
                 }
-                username = (String)extras.get("username");
 
                 TruckDataHandler.addListener(this);
                 carMode = TruckDataHandler.getInstance().getTruckMode();
@@ -124,13 +137,11 @@
                 rooms.setTabListener(this);
                 actionBar.addTab(rooms);
 
-
                 ActionBar.Tab inRoom = actionBar.newTab();
                 inRoom.setIcon(R.drawable.ic_room);
                 inRoom.setText("ChatRoom");
                 inRoom.setTabListener(this);
                 actionBar.addTab(inRoom);
-
 
                 locationHandler = new LocationHandler(this);
                 locationHandler.addTruckListener(this);
@@ -196,7 +207,12 @@
                 return model.getRooms();
             }
 
-            @Override
+        @Override
+        public void reconnect() {
+            model.connect(password, 8867);
+        }
+
+        @Override
             public ArrayList<User> getUsersForRoom(int RoomID) {
                 return model.getUsers(RoomID);
             }
@@ -260,7 +276,7 @@
         @Override
             public void onBackPressed(){
                 if(viewPager.getCurrentItem() == 2){
-                    returnToLogin(null);
+                    onBackYes();
                 }else{
                     viewPager.setCurrentItem(2);
                 }
@@ -290,15 +306,9 @@
                     Log.d("ConnectionActivity", " getItem called");
                     if (arg == 0) {
                         Log.d("ConnectionActivity", " Lobby called");
-                        if (loobyFragment == null) {
-                            loobyFragment = new LoobyFragment();
-                        }
                         return loobyFragment;
                     } else if (arg == 1) {
                         Log.d("ConnectionActivity", " InRoom called");
-                        if (inRoomFragment == null) {
-                            inRoomFragment = new InRoomFragment();
-                        }
                         return inRoomFragment;
                     }else if (arg == 2){
                         Log.d("ConnectionActivity"," Back called");
@@ -313,6 +323,10 @@
                 public int getCount() {
                     return 3;
                 }
+            }
+            protected void onDestroy(){
+                super.onDestroy();
+                model.disconnect();
             }
 
     }

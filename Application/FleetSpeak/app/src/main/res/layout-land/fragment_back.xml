@@ -10,9 +10,8 @@
         android:text="@string/AboutToDisconnect"
         android:id="@+id/textView2"
         android:textColor="#ffffffff"
-        android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="62dp" />
+        android:layout_marginTop="56dp" />
 
     <Button
         android:layout_width="100dp"
@@ -20,8 +19,10 @@
         android:background="@drawable/special_button_shape2"
         android:text="@string/yes"
         android:id="@+id/yesButton"
-        android:layout_below="@+id/textView2"
-        android:layout_alignRight="@+id/textView2" />
+        android:layout_marginRight="71dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="26dp" />
 
     <Button
         android:layout_width="100dp"
@@ -29,6 +30,8 @@
         android:background="@drawable/special_button_shape2"
         android:text="@string/no"
         android:id="@+id/noButton"
-        android:layout_below="@+id/textView2"
-        android:layout_alignLeft="@+id/textView2" />
+        android:layout_marginLeft="77dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="26dp" />
 </RelativeLayout>

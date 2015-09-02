@@ -34,5 +34,6 @@
     <string name="title_activity_establish_connection">EstablishConnectionActivity</string>
     <string name="unable_to_connect">You were unable to connect to the server do you want to reconnect?</string>
     <string name="discconect">You were disconnected from the server do you want to reconnect?</string>
+    <string name="reconnect">Reconnect</string>
 
 </resources>
