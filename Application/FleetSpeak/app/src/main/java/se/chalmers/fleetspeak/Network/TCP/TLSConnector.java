@@ -28,7 +28,7 @@ public class TLSConnector{
     private SocketWriter socketWriter;
     private SocketReader socketReader;
     public void setNewHandler(Handler handler){
-        responseMessenger = new Messenger(handler);
+        responseHandler = handler;
     }
 
     public TLSConnector(Handler handler){
@@ -37,9 +37,6 @@ public class TLSConnector{
 
     }
 
-    public void setResponseMessenger(Handler handler){
-        responseMessenger = new Messenger(handler);
-    }
     //TODO change to username, password and use a static IP,port
     public void connect(String ip,  int port){
         new SocketCreator().execute(ip, ""+port);

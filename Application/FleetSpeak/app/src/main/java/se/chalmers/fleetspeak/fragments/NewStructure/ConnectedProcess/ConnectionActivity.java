@@ -1,7 +1,5 @@
     package se.chalmers.fleetspeak.fragments.NewStructure.ConnectedProcess;
 
-    import android.animation.Animator;
-    import android.animation.AnimatorListenerAdapter;
     import android.support.v7.app.ActionBar;
     import android.content.Intent;
     import android.os.Handler;
@@ -14,7 +12,6 @@
     import android.util.Log;
     import android.view.Menu;
     import android.view.MenuItem;
-    import android.view.View;
 
     import java.util.ArrayList;
     import java.util.List;
@@ -37,7 +34,7 @@
             private ActionBar actionBar;
             private CViewPager viewPager;
             private InRoomFragment inRoomFragment;
-            private LoobyFragment loobyFragment;
+            private LobyFragment lobyFragment;
             private BackFragment backFragment;
             private LocationHandler locationHandler;
 
@@ -55,13 +52,13 @@
                     Log.d("updateHandler", "Got Message=" + msg.what);
                     switch (msg.what){
                         case MessageValues.CONNECTED:
-                            Log.d("UpdateHandler", "Connected");o
-                            loobyFragment.isConnected(true);
+                            Log.d("UpdateHandler", "Connected");
+                            lobyFragment.isConnected(true);
                             updateView();
                             break;
                         case MessageValues.DISCONNECTED:
                             Log.d("UpdateHandler", " Disconnected");
-                            loobyFragment.isConnected(false);
+                            lobyFragment.isConnected(false);
                             updateView();
                             break;
                         case MessageValues.MODELCHANGED:
@@ -69,7 +66,7 @@
                             break;
                         case MessageValues.CONNECTIONFAILED:
                             Log.d("UpdateHandler", "Connection failed");
-                            loobyFragment.isConnected(false);
+                            lobyFragment.isConnected(false);
                             updateView();
                             break;
                         case MessageValues.AUTHENTICATED:
@@ -86,7 +83,7 @@
                 inRoomFragment.resetList(model.getUsers(model.getCurrentRoom()));
             }
             public void updateRoomView(){
-                loobyFragment.resetList(model.getRooms());
+                lobyFragment.resetList(model.getRooms());
             }
             public void updateView(){
                 updateRoomView();
@@ -120,7 +117,7 @@
 
                 password = extras.getString("password");
                 username=  extras.getString("username");
-                loobyFragment = new LoobyFragment();
+                lobyFragment = new LobyFragment();
                 inRoomFragment = new InRoomFragment();
                 model = ModelFactory.getModel(updateHandler);
                 if( !model.isAutherized()){
@@ -128,7 +125,7 @@
                     model.connect(username ,password);
 
                 }else{
-                    loobyFragment.isConnected(true);
+                    lobyFragment.isConnected(true);
                 }
                 username = (String)extras.get("username");
 
@@ -186,8 +183,8 @@
             }
 
             private void changeCarModeTabs(boolean b){
-                if(loobyFragment != null){
-                    loobyFragment.truckModeChanged(b);
+                if(lobyFragment != null){
+                    lobyFragment.truckModeChanged(b);
 
                 }
                 if(inRoomFragment != null){
@@ -236,10 +233,10 @@
 
             @Override
             public void createAndMoveRoom(String newRoomName) {
-                loobyFragment.closeDialog();
+                lobyFragment.closeDialog();
                 model.moveNewRoom(newRoomName);
                 updateView();
-                loobyFragment.movedToRoom(getCurrentRoomId());
+                lobyFragment.movedToRoom(getCurrentRoomId());
                 viewPager.setCurrentItem(1);
                 actionBar.setSelectedNavigationItem(1);
             }
@@ -263,7 +260,7 @@
             public void roomClicked(Room room) {
                 model.move(room.getId());
                 updateUsersView();
-                loobyFragment.movedToRoom(room.getId());
+                lobyFragment.movedToRoom(room.getId());
                 viewPager.setCurrentItem(1);
                 actionBar.setSelectedNavigationItem(1);
             }
@@ -313,7 +310,7 @@
                     Log.d("ConnectionActivity", " getItem called");
                     if (arg == 0) {
                         Log.d("ConnectionActivity", " Lobby called");
-                        return loobyFragment;
+                        return lobyFragment;
                     } else if (arg == 1) {
                         Log.d("ConnectionActivity", " InRoom called");
                         return inRoomFragment;

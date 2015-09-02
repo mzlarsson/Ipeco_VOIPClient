@@ -28,7 +28,7 @@ import se.chalmers.fleetspeak.fragments.NewStructure.Lists.RoomList;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class LoobyFragment extends AppConnectFragment {
+public class LobyFragment extends AppConnectFragment {
     private RoomList roomList;
     private ConnectedCommunicator communicator;
     private AlertDialog dialog;
