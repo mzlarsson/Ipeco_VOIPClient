@@ -11,7 +11,8 @@
         android:id="@+id/textView2"
         android:textColor="#ffffffff"
         android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:gravity="center_horizontal" />
 
     <Button
         android:layout_width="100dp"
@@ -21,7 +22,8 @@
         android:id="@+id/yesButton"
         android:layout_below="@+id/textView2"
         android:layout_alignRight="@+id/textView2"
-        android:layout_marginTop="46dp" />
+        android:layout_marginBottom="10dp"
+        android:layout_marginRight="10dp" />
 
     <Button
         android:layout_width="100dp"
@@ -30,5 +32,7 @@
         android:text="@string/no"
         android:id="@+id/noButton"
         android:layout_alignTop="@+id/yesButton"
-        android:layout_alignLeft="@+id/textView2" />
+        android:layout_alignLeft="@+id/textView2"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="10dp" />
 </RelativeLayout>
