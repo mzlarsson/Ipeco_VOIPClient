@@ -94,7 +94,7 @@ public class Building {
 		if(c != null){
 			c.terminate();
 			postUpdate(new Command("removeduser", clientid, roomid));
-			logger.log(Level.INFO, "Removed client " + clientid);
+			logger.log(Level.INFO, "Removed client id: " + clientid + " Alias: " + c.getName());
 		}
 	}
 

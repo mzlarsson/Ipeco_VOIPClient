@@ -106,7 +106,7 @@ public class ClientCreator implements AuthenticatorListener, CommandHandler{
 	private void finalizeClient(Client client, DatagramSocket socket) {
 		client.setRTPHandler(new RTPHandler(socket));
 		client.sendCommand(new Command("authenticationResult", true, "Successful authentication"));
-		logger.log(Level.INFO, "A new person joined");
+		logger.log(Level.INFO, "A new person joined id: " + client.getClientID() + " Alias: " + client.getName());
 		building.addClient(client, targetRoom);		
 	}
 	
