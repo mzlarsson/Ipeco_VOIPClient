@@ -48,7 +48,7 @@ public class JitterBuffer{
 	 * @param packet The RTPPacket to be added to the queue.
 	 */
 	public void write(RTPPacket packet) {
-		if(packet.seqNumber > lastReadSeqNbr) {
+		if((short)(packet.seqNumber - lastReadSeqNbr) > 0) {
 			buffer.offer(packet);
 			if(isFullyBuffered()) {
 				if (!ready) {
@@ -87,9 +87,13 @@ public class JitterBuffer{
 						if (tmp.timestamp - 2*TIME_BETWEEN_SAMPLES <= lastReadtimestamp) { // 2*timestamp to compensate for variations.
 							p = buffer.poll();
 						} else {
+							logger.log(Level.FINEST, "[Buildmode] Returned null to reader due to too big of a time difference between package "
+									+ lastReadSeqNbr + "-" + (lastReadSeqNbr+1) + " (" + (tmp.timestamp-lastReadtimestamp) + ")");
 							lastReadtimestamp += TIME_BETWEEN_SAMPLES;
 						}
 					} else {
+						logger.log(Level.FINEST, "[Buildmode] Returned null to reader due to unmatching sequence numbers, expected "
+								+ (lastReadSeqNbr+1) + " but next was " + (tmp.seqNumber));
 						lastReadSeqNbr += 1;
 						lastReadtimestamp += TIME_BETWEEN_SAMPLES;
 					}

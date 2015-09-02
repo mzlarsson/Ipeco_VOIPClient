@@ -17,7 +17,7 @@ public class RTPHandler implements PacketReceiver, BufferedAudioStream{
 	private Executor executor;
 
 	public RTPHandler(DatagramSocket socket) {
-		jitter = new JitterBuffer(120);
+		jitter = new JitterBuffer(50);
 		outputBuffer = new LinkedBlockingQueue<byte[]>();
 		udp = new UDPHandler(socket, jitter.getSoundArraySize() + RTPPacket.HEADER_SIZE);
 		udp.setReceiver(this);

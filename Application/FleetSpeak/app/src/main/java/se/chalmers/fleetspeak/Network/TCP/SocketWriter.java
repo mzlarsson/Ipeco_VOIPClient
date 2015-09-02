@@ -45,13 +45,13 @@ public class SocketWriter implements Runnable{
         Looper.prepare();
         handler = new Handler(){
             public void handleMessage(Message msg){
-                Command c =(Command) msg.obj;
-                Log.d(LOGTAG, c.getCommand() + " " + c.getKey());
                 switch (msg.what){
                     case 0:
                         close();
                         break;
                     case 1:
+                        Command c =(Command) msg.obj;
+                        Log.d(LOGTAG, c.getCommand() + " " + c.getKey());
                         try {
                             objectOutputStream.writeObject(msg.obj);
                         } catch (IOException e) {

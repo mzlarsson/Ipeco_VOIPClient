@@ -33,23 +33,8 @@ $(LOCAL_PATH)/native_fleetspeak
 
 
 LOCAL_CFLAGS        := -DNULL=0 -DSOCKLEN_T=socklen_t -DLOCALE_NOT_USED -D_LARGEFILE_SOURCE=1 -D_FILE_OFFSET_BITS=64
-LOCAL_CFLAGS        += -Drestrict='' -D__EMX__ -DOPUS_BUILD -DFIXED_POINT=1 -DDISABLE_FLOAT_API -DUSE_ALLOCA -DHAVE_LRINT -DHAVE_LRINTF -O3 -fno-math-errno
+LOCAL_CFLAGS        += -Drestrict='' -D__EMX__ -DOPUS_BUILD -DFIXED_POINT=1 -DDISABLE_FLOAT_API -DUSE_ALLOCA -DHAVE_LRINT -DHAVE_LRINTF -O3 -fno-math-errno -enable-fixed-point
 LOCAL_CPPFLAGS      := -DBSD=1
 LOCAL_CPPFLAGS      += -ffast-math -O3 -funroll-loops
 
 include $(BUILD_SHARED_LIBRARY)
-
-
-
-# LOCAL_PATH := $(call my-dir)
-# #Opus library
-# include $(CLEAR_VARS)
-
-# OPUS_PATH :=$LOCAL_PATH/opus
-# LOCAL_MODULE    := Opus
-# LOCAL_C_INCLUDES := $OPUS_PATH/celt
-# LOCAL_SRC_FILES:=opus/src/opus_encoder.c 
-
-# LOCAL_CFLAGS	+= -Drestrict='' -D__EMX__ -DOPUS_BUILD -DFIXED_POINT -DDISABLE_FLOAT_API -DUSE_ALLOCA -DHAVE_LRINT -DHAVE_LRINTF -O3 -fno-math-errno --enable-fixed-point
-# include $(BUILD_SHARED_LIBRARY)
-

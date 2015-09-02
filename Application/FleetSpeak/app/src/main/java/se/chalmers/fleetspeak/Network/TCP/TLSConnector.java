@@ -22,24 +22,18 @@ public class TLSConnector{
     private String LOGTAG = "TLSConnector";
 
     private SSLSocket socket;
-    private Messenger responseMessenger;
+    private Handler responseHandler;
     private Messenger writeMessenger;
 
     private SocketWriter socketWriter;
     private SocketReader socketReader;
-    public void setNewHandler(Handler handler){
-        responseMessenger = new Messenger(handler);
-    }
 
     public TLSConnector(Handler handler){
-        responseMessenger = new Messenger(handler);
+        responseHandler = handler;
 
 
     }
 
-    public void setResponseMessenger(Handler handler){
-        responseMessenger = new Messenger(handler);
-    }
     //TODO change to username, password and use a static IP,port
     public void connect(String ip,  int port){
         new SocketCreator().execute(ip, ""+port);
@@ -55,7 +49,7 @@ public class TLSConnector{
         }
     }
     public void disconnect(){
-        new SocketDestroyer();
+        new SocketDestroyer().execute();
     }
 
     private class SocketCreator extends AsyncTask<String,  Void, SSLSocket>{
@@ -72,10 +66,10 @@ public class TLSConnector{
 
                     Log.i(LOGTAG, "socket created");
                 }catch(SSLException e){
-                    e.printStackTrace();
+
                 }
                 catch (IOException e) {
-                    e.printStackTrace();
+
                 }
             }
             return sslSocket;
@@ -87,37 +81,42 @@ public class TLSConnector{
 
                 socket = sslSocket;
                 try {
-                    socketReader = new SocketReader(sslSocket.getInputStream(), responseMessenger);
+                    socketReader = new SocketReader(sslSocket.getInputStream(), new Messenger(responseHandler));
                     socketWriter = new SocketWriter(sslSocket.getOutputStream());
                     synchronized (socketWriter){
                         socketWriter.wait();
                     }
                     writeMessenger = new Messenger(socketWriter.getHandler());
-                    responseMessenger.send(Message.obtain(null, MessageValues.CONNECTED));
+                    responseHandler.sendEmptyMessage(MessageValues.CONNECTED);
                 } catch (IOException e) {
+
                     e.printStackTrace();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
-                } catch (RemoteException e) {
-                    e.printStackTrace();
                 }
 
+            }else{
+                Log.i(LOGTAG, "Failed to connect");
+                responseHandler.sendEmptyMessage(MessageValues.CONNECTIONFAILED);
             }
-            //TODO add messages for failures
         }
     }
     private class SocketDestroyer extends AsyncTask<Void,Void,Void>{
 
         @Override
         protected Void doInBackground(Void... voids) {
+            Log.d(LOGTAG, "Stopping reader");
             socketReader.stop();
             try {
                 writeMessenger.send(Message.obtain(null,0));
+                Log.d(LOGTAG, "Stopping writer");
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
             try {
+                Log.d(LOGTAG, "trying to close socket");
                 socket.close();
+                Log.d(LOGTAG, "Closed socket");
             } catch (IOException e) {
                 e.printStackTrace();
             }

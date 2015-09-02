@@ -3,7 +3,6 @@ package se.chalmers.fleetspeak;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
-import android.os.RemoteException;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -55,6 +54,7 @@ public class Model {
 
     public void connect(String name, String password){
         if(state == State.not_connected){
+            Log.d("Model", "Trying to connect");
             username = name;
             building.clear();
             state = State.connecting;
@@ -71,6 +71,8 @@ public class Model {
             connector.disconnect();
             soundOutputController.destroy();
             rtpHandler.terminate();
+            state = State.not_connected;
+            Log.d("Model", " set state to not connected");
         }else{
             Log.d("Model", "Not connected, cannot send disconnect");
         }
@@ -93,28 +95,33 @@ public class Model {
         }
     }
     public void setNewHandler(Handler handler){
-        connector.setNewHandler(handler);
+        callbackHandler = handler;
+        building = new Building(new Messenger(handler));
 
     }
     public int getCurrentRoom(){
         return building.getCurrentRoom();
     }
 
-    public boolean isAutherized(){
+    public boolean isAuthenticated(){
+        Log.d("Model", " State is autenticacted = " + ((state ==State.authenticated)));
         return (state ==State.authenticated);
     }
     class CommandHandler extends Handler {
         public void handleMessage(Message msg) {
-
+            Log.d("Model", "Commandhandler " + msg.what);
             switch(msg.what) {
                 case MessageValues.CONNECTED:
                     state = State.connected;
                     break;
-                case MessageValues.DISCONNECTED://TODO send message to gui
+                case MessageValues.DISCONNECTED:
+                    callbackHandler.sendEmptyMessage(MessageValues.DISCONNECTED);
                     state = State.not_connected;
                     rtpHandler.terminate();
                     break;
-                case MessageValues.CONNECTIONFAILED://TODO send message to gui
+                case MessageValues.CONNECTIONFAILED:
+
+                    callbackHandler.sendEmptyMessage(MessageValues.CONNECTIONFAILED);
                     state = State.not_connected;
                     break;
                 case MessageValues.UDPCONNECTOR:
@@ -163,18 +170,11 @@ public class Model {
                     case "authenticationresult":
                         if ((boolean) command.getKey()) { // true if successfully authenticated
                             state = State.authenticated;
-                            try {
-                                new Messenger(callbackHandler).send(Message.obtain(null, MessageValues.AUTHENTICATED));
-                            } catch (RemoteException e) {
-                                e.printStackTrace();
-                            }
+                            callbackHandler.sendEmptyMessage(MessageValues.AUTHENTICATED);
+
                         } else {
                             state = State.not_connected;
-                            try {
-                                new Messenger(callbackHandler).send(Message.obtain(null, MessageValues.AUTHENTICATIONFAILED, command.getValue())); // .getValue contains the reason for rejection
-                            } catch (RemoteException e) {
-                                e.printStackTrace();
-                            }
+                            callbackHandler.sendMessage(Message.obtain(null, MessageValues.AUTHENTICATIONFAILED, command.getValue())); // .getValue contains the reason for rejection
                         }
                         break;
                 }
