@@ -68,7 +68,8 @@ public class Model {
             Log.i("Model", "Disconnecting");
             state = State.not_connected;
             connector.disconnect();
-            soundOutputController.destroy();
+            if(soundOutputController != null)
+                soundOutputController.destroy();
             rtpHandler.terminate();
             state = State.not_connected;
             Log.d("Model", " set state to not connected");

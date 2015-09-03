@@ -82,11 +82,11 @@ public class TLSConnector{
                 socket = sslSocket;
                 try {
                     socketReader = new SocketReader(sslSocket.getInputStream(), new Messenger(responseHandler));
-                    socketWriter = new SocketWriter(sslSocket.getOutputStream());
+                    socketWriter = new SocketWriter(sslSocket.getOutputStream(), responseHandler);
                     synchronized (socketWriter){
                         socketWriter.wait();
                     }
-                    writeMessenger = new Messenger(socketWriter.getHandler());
+                    writeMessenger = new Messenger(socketWriter.getWriterHandler());
                     responseHandler.sendEmptyMessage(MessageValues.CONNECTED);
                 } catch (IOException e) {
 
