@@ -45,11 +45,11 @@
             android:password="true" />
 
         <CheckBox
+            android:paddingLeft="30dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/save_preferences"
             android:id="@+id/saveUserPref"
-            android:layout_weight="0.2"
             android:textSize="25sp" />
 
         <TextView
@@ -70,7 +70,7 @@
         android:textColor="#FFFFFF"
         android:textSize="30sp"
         android:layout_width="250dp"
-        android:layout_height="80dp"
+        android:layout_height="70dp"
         android:background="@drawable/special_button_shape"
         android:shadowColor="#A8A8A8"
         android:shadowDx="0"

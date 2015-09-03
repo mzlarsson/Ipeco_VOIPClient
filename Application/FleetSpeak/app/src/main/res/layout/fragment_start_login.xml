@@ -49,16 +49,16 @@
             android:layout_height="wrap_content"
             android:text="@string/save_preferences"
             android:id="@+id/saveUserPref"
-            android:layout_weight="0.5" />
+            android:layout_weight="0.20" />
 
         <TextView
-            android:layout_width="310dp"
+            android:layout_width="279dp"
             android:layout_height="wrap_content"
             android:text="@string/error_code"
             android:id="@+id/error_text"
             android:layout_gravity="center_horizontal"
-            android:layout_weight="0.15"
-            android:textColor="#fffff5ff" />
+            android:textColor="#fffff5ff"
+            android:layout_weight="0.32" />
 
     </LinearLayout>
 
