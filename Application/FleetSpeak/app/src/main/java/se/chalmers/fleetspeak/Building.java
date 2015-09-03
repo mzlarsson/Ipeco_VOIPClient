@@ -47,7 +47,7 @@ public class Building {
         postUpdate();
     }
 
-    public void removeUser(int roomid, int userid) {
+    public void removeUser(int userid, int roomid) {
         Room r = rooms.get(roomid);
         if(r != null) {
             r.removeUser(userid);
