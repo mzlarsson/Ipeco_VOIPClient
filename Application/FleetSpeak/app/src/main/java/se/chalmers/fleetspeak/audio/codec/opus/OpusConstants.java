@@ -10,7 +10,7 @@ public enum OpusConstants {
     MAX_ENCODING_PAYLOAD(1500), //TODO Find more fitting values
     CHANNELS(1),
     FRAME_SIZE_MS(SoundConstants.FRAME_SIZE_MS.value()),
-    FRAME_SIZE(SAMPLE_RATE.value()*FRAME_SIZE_MS.value()/1000); //TODO Find more fitting values
+    FRAME_SIZE(SAMPLE_RATE.value()*2*FRAME_SIZE_MS.value()/1000); //TODO Find more fitting values
 
     private final int value;
 

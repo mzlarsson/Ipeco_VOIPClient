@@ -24,7 +24,7 @@ JNIEXPORT jlong JNICALL Java_se_chalmers_fleetspeak_audio_codec_opus_jniopus_Opu
   (JNIEnv *env, jclass jc, jint sampleRate, jint channels)
   {
     int error;
-    OpusEncoder *opusEncoder = opus_encoder_create(sampleRate, channels, OPUS_APPLICATION_RESTRICTED_LOWDELAY, &error);
+    OpusEncoder *opusEncoder = opus_encoder_create(sampleRate, channels, OPUS_APPLICATION_VOIP, &error);
 
     if(OPUS_OK != error)
       opusEncoder = 0;
@@ -42,17 +42,17 @@ JNIEXPORT jint JNICALL Java_se_chalmers_fleetspeak_audio_codec_opus_jniopus_Opus
   jbyte *audioInData;
   jbyte *audioOutData;
 
-  audioInData = (*env)->GetByteArrayElements(env, pcmInData,0);
+  audioInData = (*env)->GetPrimitiveArrayCritical(env, pcmInData,0);
 
-  audioOutData = (*env)->GetByteArrayElements(env, opusOutData,0);
+  audioOutData = (*env)->GetPrimitiveArrayCritical(env, opusOutData,0);
 
   opus_int16 encodedBytes = opus_encode((OpusEncoder *) (intptr_t)(encoder),
-                                 (opus_int16 *) (audioInData),
+                                 (opus_int16 *) (audioInData + pcmInDataOffset),
                                  pcmSampleRate,
-                                 (unsigned char *) (audioOutData),
+                                 (unsigned char *) (audioOutData + opusOutDataOffset),
                                  outputLength);
-  (*env)->ReleaseByteArrayElements(env,pcmInData,audioInData,0);
-  (*env)->ReleaseByteArrayElements(env,opusOutData,audioOutData,JNI_ABORT);
+  (*env)->ReleasePrimitiveArrayCritical(env,pcmInData,audioInData,0);
+  (*env)->ReleasePrimitiveArrayCritical(env,opusOutData,audioOutData,JNI_ABORT);
 return encodedBytes;
 }
 
@@ -67,3 +67,14 @@ JNIEXPORT void JNICALL Java_se_chalmers_fleetspeak_audio_codec_opus_jniopus_Opus
 opus_encoder_destroy((OpusEncoder *) (intptr_t)(opusInstance));
 }
 
+/*
+ * Class:     se_chalmers_fleetspeak_audio_codec_opus_jniopus_OpusEncoderWrapper
+ * Method:    ctl
+ * Signature: (JI)I
+ */
+JNIEXPORT jint JNICALL Java_se_chalmers_fleetspeak_audio_codec_opus_jniopus_OpusEncoderWrapper_ctl
+        (JNIEnv *env, jclass jc, jlong opusInstance, jint request)
+{
+  int error = opus_encoder_ctl((OpusEncoder *) (intptr_t)(opusInstance), OPUS_SET_BITRATE(request));
+  return error;
+}

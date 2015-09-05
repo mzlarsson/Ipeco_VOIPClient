@@ -39,6 +39,14 @@ JNIEXPORT jint JNICALL Java_se_chalmers_fleetspeak_audio_codec_opus_jniopus_Opus
 JNIEXPORT void JNICALL Java_se_chalmers_fleetspeak_audio_codec_opus_jniopus_OpusEncoderWrapper_destroy
   (JNIEnv *, jclass, jlong);
 
+/*
+ * Class:     se_chalmers_fleetspeak_audio_codec_opus_jniopus_OpusEncoderWrapper
+ * Method:    ctl
+ * Signature: (JI)I
+ */
+JNIEXPORT jint JNICALL Java_se_chalmers_fleetspeak_audio_codec_opus_jniopus_OpusEncoderWrapper_ctl
+        (JNIEnv *, jclass, jlong, jint);
+
 #ifdef __cplusplus
 }
 #endif

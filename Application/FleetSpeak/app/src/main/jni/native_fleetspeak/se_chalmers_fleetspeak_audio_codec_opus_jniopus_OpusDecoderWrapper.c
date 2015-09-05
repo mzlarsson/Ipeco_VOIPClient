@@ -75,10 +75,10 @@ JNIEXPORT jint JNICALL Java_se_chalmers_fleetspeak_audio_codec_opus_jniopus_Opus
         (JNIEnv *env, jclass jc, jbyteArray opusInData, jint offset, jint length){
     int status;
     if(opusInData){
-        jbyte *encodedData = (*env)->GetByteArrayElements(env, opusInData, NULL);
+        jbyte *encodedData = (*env)->GetPrimitiveArrayCritical(env, opusInData, NULL);
         if(encodedData){
             status = opus_packet_get_nb_frames( (unsigned char *) (encodedData + offset), (opus_int32) length);
-            (*env)->ReleaseByteArrayElements(env, opusInData, encodedData, JNI_ABORT);
+            (*env)->ReleasePrimitiveArrayCritical(env, opusInData, encodedData, JNI_ABORT);
         }
 
     }

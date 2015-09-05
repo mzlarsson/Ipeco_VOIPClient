@@ -19,6 +19,7 @@ public class OpusEncoder implements EncoderInterface {
 
     private long opusEncoder;
 
+    private byte[] tmp = new byte[0];
     public OpusEncoder(){
         try {
             create(OpusConstants.SAMPLE_RATE.value(),
@@ -36,16 +37,15 @@ public class OpusEncoder implements EncoderInterface {
     }
 
     public byte[] encode(byte[] pcmInData, int offset){
-        byte[] b = new byte[0];
-        byte[] opusEncoded = new byte[320];//FIXME Find a non-constant value
+        byte[] opusEncoded = new byte[320];
         int read = encode(pcmInData,offset,opusEncoded,0);
         if(read <= 0){
             Log.d("OPUS", "Failed to encode with :"+read);
         }else {
-            b =  new byte[read];
-            System.arraycopy(opusEncoded, 0, b, 0, read);
+            this.tmp =  new byte[read];
+            System.arraycopy(opusEncoded, 0, this.tmp, 0, read);
         }
-        return b;
+        return tmp;
     }
 
     private int encode(byte[] pcmInData, int inOffset, byte[] opusEncoded, int outOffset){

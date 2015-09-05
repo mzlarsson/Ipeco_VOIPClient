@@ -24,7 +24,7 @@ public enum SoundConstants {
     BYTEBUFFER_IN_SIZE(AUDIO_IN_BUFFER_SIZE.value()),
     BYTEBUFFER_OUT_SIZE(AUDIO_OUT_BUFFER_SIZE.value()),
     FRAME_SIZE_MS(60),
-    INPUT_FRAME_SIZE(AudioRecord.getMinBufferSize(SAMPLE_RATE.value(),INPUT_CHANNEL_CONFIG.value(),AUDIO_ENCODING.value()));//Higher value (To a limit...) degrades sound quality and latency but eases on the performance.
+    INPUT_FRAME_SIZE(1920);//Higher value (To a limit...) degrades sound quality and latency but eases on the performance.
 
     private final int value;
 

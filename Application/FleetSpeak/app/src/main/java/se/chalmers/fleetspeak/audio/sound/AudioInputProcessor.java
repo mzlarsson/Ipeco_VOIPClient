@@ -52,8 +52,7 @@ public class AudioInputProcessor implements Runnable {
 
             try {
                 sound = soundInputController.readBuffer();
-                //byte[] encoded = opusEncoder.encode(sound, 0);
-                processBuffer.put(sound);
+                processBuffer.put(opusEncoder.encode(sound, 0));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
