@@ -1,8 +1,6 @@
 package se.chalmers.fleetspeak;
 
-import android.os.Message;
-import android.os.Messenger;
-import android.os.RemoteException;
+import android.os.Handler;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -16,15 +14,19 @@ import se.chalmers.fleetspeak.util.MessageValues;
 public class Building {
 
     private ConcurrentHashMap<Integer, Room> rooms;
-    private Messenger updateMessenger;
+    private Handler handler;
 
     private int activeUserid;
 
     private int currentRoom;
 
-    public Building(Messenger updateMessenger) {
+    public Building(Handler handler) {
         rooms = new ConcurrentHashMap<>();
-        this.updateMessenger = updateMessenger;
+        this.handler = handler;
+    }
+
+    public void setHandler(Handler handler){
+        this.handler = handler;
     }
 
     public void addRoom(int roomid, String roomname) {
@@ -45,7 +47,7 @@ public class Building {
         postUpdate();
     }
 
-    public void removeUser(int roomid, int userid) {
+    public void removeUser(int userid, int roomid) {
         Room r = rooms.get(roomid);
         if(r != null) {
             r.removeUser(userid);
@@ -93,12 +95,8 @@ public class Building {
     }
 
     public void postUpdate() {
-        try {
-            Log.d("Building", toString());
-            updateMessenger.send(Message.obtain(null, MessageValues.MODELCHANGED));
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+        Log.d("Building", toString());
+        handler.sendEmptyMessage(MessageValues.MODELCHANGED);
     }
 
     @Override

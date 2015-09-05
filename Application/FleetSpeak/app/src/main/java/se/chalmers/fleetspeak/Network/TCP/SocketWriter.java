@@ -12,6 +12,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import se.chalmers.fleetspeak.util.Command;
+import se.chalmers.fleetspeak.util.MessageValues;
 
 /**
  * Created by Nieo on 17/08/15.
@@ -22,11 +23,13 @@ public class SocketWriter implements Runnable{
 
     private ObjectOutputStream objectOutputStream;
     private OutputStream outputStream;
-    private Handler handler;
+    private Handler writerHandler;
+    private Handler errorHandler;
 
     private Executor executor;
 
-    public SocketWriter(OutputStream outputStream) {
+    public SocketWriter(OutputStream outputStream, Handler errorHandler) {
+        this.errorHandler = errorHandler;
         this.outputStream = outputStream;
         executor = Executors.newSingleThreadExecutor();
         executor.execute(this);
@@ -43,7 +46,7 @@ public class SocketWriter implements Runnable{
             e.printStackTrace();
         }
         Looper.prepare();
-        handler = new Handler(){
+        writerHandler = new Handler(){
             public void handleMessage(Message msg){
                 switch (msg.what){
                     case 0:
@@ -55,8 +58,8 @@ public class SocketWriter implements Runnable{
                         try {
                             objectOutputStream.writeObject(msg.obj);
                         } catch (IOException e) {
-                            //TODO failed to send message handling
                             Log.e(LOGTAG, "IOException " + e.getMessage());
+                            errorHandler.sendEmptyMessage(MessageValues.DISCONNECTED);
                         }
                         break;
                     default:
@@ -70,8 +73,8 @@ public class SocketWriter implements Runnable{
         }
         Looper.loop();
     }
-    public Handler getHandler(){
-        return handler;
+    public Handler getWriterHandler(){
+        return writerHandler;
     }
 
     private void close(){

@@ -13,10 +13,13 @@ import se.chalmers.fleetspeak.audio.sound.AudioInputProcessor;
  */
 public class RTPHandler implements Runnable, PacketReceiver, BufferedAudioStream{
 
+    private static final int TIME_BETWEEN_PACKAGES = 10;
+
     private final Executor executor;
     private boolean isRunning;
 
     private short sequenceNumber;
+    private long timestamp;
     private UDPConnector udpConnector;
     private AudioInputProcessor audioInputProcessor;
 
@@ -48,16 +51,23 @@ public class RTPHandler implements Runnable, PacketReceiver, BufferedAudioStream
         while (isRunning){
             try {
                 data = audioInputProcessor.readBuffer();
-                udpConnector.sendPacket(new RTPPacket(sequenceNumber++,System.currentTimeMillis(),data).toByteArraySimple());
+                udpConnector.sendPacket(new RTPPacket(sequenceNumber++, getNextTimestamp(), data).toByteArraySimple());
                 //buffer.write(new RTPPacket(sequenceNumber++,System.currentTimeMillis(),data));
                 //Log.d("RTPHandler", +data.length + " " + (sequenceNumber-1) +  " send " + printPacket(data));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
-
-
         }
+    }
+
+    private long getNextTimestamp() {
+        long curr = System.currentTimeMillis();
+        if(Math.abs(curr-timestamp)>(10*TIME_BETWEEN_PACKAGES)) {
+            timestamp = curr;
+        } else {
+            timestamp += TIME_BETWEEN_PACKAGES;
+        }
+        return timestamp;
     }
 
     public void terminate() {

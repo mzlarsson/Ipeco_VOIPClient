@@ -53,8 +53,11 @@ public class UDPConnector implements Runnable{
             try {
                 socket.receive(receivePacket);
             } catch (IOException e) {
-                Log.e("UDP", "udp socket is closed");
-                //e.printStackTrace();
+                if(!running) {
+                    Log.i("UDP", "udp socket is closed");
+                }else{
+                    Log.e("UDP", "" + e.getMessage());
+                }
             }
             if(receiver != null)
                 receiver.handlePacket(receivePacket.getData());

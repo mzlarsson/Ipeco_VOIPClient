@@ -71,6 +71,7 @@
                             break;
                         case MessageValues.AUTHENTICATED:
                             updateView();
+                            lobyFragment.isConnected(true);
                             break;
                         case MessageValues.AUTHENTICATIONFAILED:
                             model.disconnect();

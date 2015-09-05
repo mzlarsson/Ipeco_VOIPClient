@@ -24,27 +24,17 @@ import se.chalmers.fleetspeak.fragments.NewStructure.ConnectedProcess.ConnectedC
 public class RoomList extends Fragment {
     private RoomAdapter roomAdapter;
     RecyclerView rv;
-    View altView;
-    ConnectedCommunicator communicator;
 
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_room_list,container, false);
-        altView = (RelativeLayout) view.findViewById(R.id.altView);
-        Button button = (Button) view.findViewById(R.id.reconnectButton);
-        communicator = (ConnectedCommunicator)this.getActivity();
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                communicator.reconnect();
-            }
-        });
+
         rv = (RecyclerView)view.findViewById(R.id.rvRooms);
         GridLayoutManager lm = new GridLayoutManager(this.getActivity().getApplicationContext(), 1);
         rv.setLayoutManager(lm);
+        ConnectedCommunicator communicator = (ConnectedCommunicator)this.getActivity();
         roomAdapter = new RoomAdapter(this.getActivity(), communicator);
         rv.setAdapter(roomAdapter);
-        altView.setVisibility(View.INVISIBLE);
         return view;
     }
 
@@ -53,15 +43,7 @@ public class RoomList extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
     }
-    public void isConnected(boolean b){
-        if(b){
-            altView.setVisibility(View.INVISIBLE);
-            rv.setVisibility(View.VISIBLE);
-        }else{
-            altView.setVisibility(View.VISIBLE);
-            rv.setVisibility(View.INVISIBLE);
-        }
-    }
+
     public void changedTruckState(boolean b){
         roomAdapter.notifyDataSetChanged(b);
     }

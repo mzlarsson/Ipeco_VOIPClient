@@ -32,6 +32,8 @@ public class LobyFragment extends AppConnectFragment {
     private RoomList roomList;
     private ConnectedCommunicator communicator;
     private AlertDialog dialog;
+    private View mainView;
+    private View altView;
 
     @Override
     public void onAttach(Activity activity) {
@@ -50,6 +52,19 @@ public class LobyFragment extends AppConnectFragment {
         ft.replace(R.id.fragment_holder_room, roomList);
         ft.commit();
 
+        mainView = view.findViewById(R.id.mainView);
+        Log.d("LobyFragment", " MainView is null = "  + (null == mainView));
+        altView = view.findViewById(R.id.altView);
+
+        altView.setVisibility(View.INVISIBLE);
+        Button button = (Button) view.findViewById(R.id.reconnectButton);
+        communicator = (ConnectedCommunicator)this.getActivity();
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                communicator.reconnect();
+            }
+        });
         Button createButton = (Button) view.findViewById(R.id.buttonCreateRoom);
         createButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -125,6 +140,13 @@ public class LobyFragment extends AppConnectFragment {
         roomList.resetList(list);
     }
     public void isConnected(boolean b){
-        roomList.isConnected(b);
+        if(b){
+            mainView.setVisibility(View.VISIBLE);
+            altView.setVisibility(View.INVISIBLE);
+        }
+        else{
+            mainView.setVisibility(View.INVISIBLE);
+            altView.setVisibility(View.VISIBLE);
+        }
     }
 }

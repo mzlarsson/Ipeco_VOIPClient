@@ -3,6 +3,7 @@ package se.chalmers.fleetspeak.Network.TCP;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -50,7 +51,12 @@ public class SocketReader implements Runnable{
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
-                //TODO error handling
+                try {
+                    Log.e("SocketReader", "socket crashed");
+                    messenger.send(Message.obtain(null, MessageValues.DISCONNECTED));
+                } catch (RemoteException e1) {
+                    e1.printStackTrace();
+                }
                 stop();
             } catch (RemoteException e) {
                 e.printStackTrace();

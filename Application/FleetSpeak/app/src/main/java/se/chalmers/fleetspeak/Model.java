@@ -2,7 +2,6 @@ package se.chalmers.fleetspeak;
 
 import android.os.Handler;
 import android.os.Message;
-import android.os.Messenger;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -35,7 +34,7 @@ public class Model {
 
     public Model(Handler callbackHandler){
         state = State.not_connected;
-        building = new Building(new Messenger(callbackHandler));
+        building = new Building(callbackHandler);
         commandHandler = new CommandHandler();
         connector = new TLSConnector(commandHandler);
         this.callbackHandler = callbackHandler;
@@ -69,7 +68,8 @@ public class Model {
             Log.i("Model", "Disconnecting");
             state = State.not_connected;
             connector.disconnect();
-            soundOutputController.destroy();
+            if(soundOutputController != null)
+                soundOutputController.destroy();
             rtpHandler.terminate();
             state = State.not_connected;
             Log.d("Model", " set state to not connected");
@@ -96,7 +96,7 @@ public class Model {
     }
     public void setNewHandler(Handler handler){
         callbackHandler = handler;
-        building = new Building(new Messenger(handler));
+        building.setHandler(handler);
 
     }
     public int getCurrentRoom(){
