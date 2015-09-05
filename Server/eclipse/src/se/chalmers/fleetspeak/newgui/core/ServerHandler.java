@@ -77,7 +77,9 @@ public class ServerHandler {
 	
 	public static void disconnect(){
 		if(server != null){
+			server.sendCommand(new Command("disconnect", null, null));
 			server.terminate();
+			server = null;
 		}
 	}
 	
