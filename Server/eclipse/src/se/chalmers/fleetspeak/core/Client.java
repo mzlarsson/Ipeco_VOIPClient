@@ -101,14 +101,6 @@ public class Client implements CommandHandler, NetworkUser {
 		}
 	}
 
-	/**
-	 * Logs an error-message and terminates the client.
-	 */
-	public void connectionLost() {
-		logger.log(Level.INFO, "Client disconnected - closing streams");
-		this.terminate();
-	}
-
 	public void setRTPHandler(RTPHandler rtp) {
 		this.rtp = rtp;
 	}
