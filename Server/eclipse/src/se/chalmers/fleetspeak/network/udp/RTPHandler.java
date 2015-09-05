@@ -5,6 +5,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import se.chalmers.fleetspeak.sound.BufferedAudioStream;
 
@@ -15,9 +17,11 @@ public class RTPHandler implements PacketReceiver, BufferedAudioStream{
 	private short seqNumber = 0;
 	private BlockingQueue<byte[]> outputBuffer;
 	private Executor executor;
+	private Logger logger;
 
 	public RTPHandler(DatagramSocket socket) {
-		jitter = new JitterBuffer(50);
+		logger = Logger.getLogger("Debug");
+		jitter = new JitterBuffer(100);
 		outputBuffer = new LinkedBlockingQueue<byte[]>();
 		udp = new UDPHandler(socket, jitter.getSoundArraySize() + RTPPacket.HEADER_SIZE);
 		udp.setReceiver(this);
@@ -38,15 +42,21 @@ public class RTPHandler implements PacketReceiver, BufferedAudioStream{
 	@Override
 	public void handlePacket(byte[] packet){
 		RTPPacket p = new RTPPacket(packet);
-		if (p.seqNumber!=0 || p.timestamp!=0) {
-			jitter.write(new RTPPacket(packet));
-//			byte[] b = read();
-//			if (b!=null) {
-//				System.out.println("We are sending stuff");
-//				sendPacket(b);			
-//			} else {
-//				System.out.println("We are NOT sending stuff");
-//			}
+		switch (p.payloadType) {
+		case 0:
+			if (p.seqNumber!=0 || p.timestamp!=0) {
+				jitter.write(new RTPPacket(packet));
+//				byte[] b = read();
+//				if (b!=null) {
+//					System.out.println("We are sending stuff");
+//					sendPacket(b);			
+//				} else {
+//					System.out.println("We are NOT sending stuff");
+//				}
+			}	
+			break;
+		default:
+			logger.log(Level.WARNING, Thread.currentThread().getName() + " RTP payload-type: " + p.payloadType);
 		}
 	}
 
