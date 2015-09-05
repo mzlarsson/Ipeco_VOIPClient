@@ -15,10 +15,10 @@ public class RTPPacket {
     protected boolean extensions = false;
     protected int cc = 0;
     protected boolean marker = false;
-    protected byte payloadType;
+    protected byte payloadType = 0;
     protected short seqNumber;
     protected long timestamp;
-    protected long ssrc;
+    protected long ssrc = 0;
     private byte[] payload;
     
     /**
@@ -64,17 +64,13 @@ public class RTPPacket {
      * @param payloadType The type of the payload.
      * @param seqNumber The sequence number of the packet.
      * @param timestamp The timestamp of the packet.
-     * @param ssrc A long of which the first 32 bits is
-     * interpreted as the SSRC and the last 32 bits as the CSRC.
      * @param payload The data to be sent.
      */
-    public RTPPacket(byte payloadType, short seqNumber, long timestamp, long ssrc,
-            byte[] payload) {
+    public RTPPacket(byte payloadType, short seqNumber, long timestamp, byte[] payload) {
         this.payloadType = payloadType;
         this.payload = payload;
         this.seqNumber = seqNumber;
         this.timestamp = timestamp;
-        this.ssrc = ssrc;
     }
 
     /**
@@ -86,7 +82,7 @@ public class RTPPacket {
      * @param payload The data to be sent.
      */
     public RTPPacket(short seqNumber, long timestamp, byte[] payload) {
-    	this((byte)0, seqNumber, timestamp, 0, payload);
+    	this((byte)0, seqNumber, timestamp, payload);
     }
     
     public byte[] getPayload() {
