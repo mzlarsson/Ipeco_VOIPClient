@@ -16,7 +16,7 @@ import se.chalmers.fleetspeak.util.PortFactory;
 public class UDPHandler extends Thread{
 
 	private DatagramSocket socket;
-	private boolean isRunning = false;
+	private volatile boolean isRunning = false;
 	private Logger logger;
 	private DatagramPacket receivePacket, outgoingPacket;
 	private int packetSize;
@@ -48,7 +48,11 @@ public class UDPHandler extends Thread{
 			try {
 				socket.receive(receivePacket);
 			} catch (IOException e) {
-				logger.log(Level.WARNING, "UDP-socket " + this.getName() + " caught an exception");
+				if (!isRunning) {
+					logger.log(Level.INFO, "Stopped listening on socket: " + this.getName());
+				} else {
+					logger.log(Level.WARNING, "UDP-socket " + this.getName() + " caught an exception");					
+				}
 			}
 			handlePacket(receivePacket.getData());			
 		}

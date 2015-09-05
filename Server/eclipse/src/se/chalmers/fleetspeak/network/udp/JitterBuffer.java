@@ -20,7 +20,7 @@ import java.util.logging.Logger;
 public class JitterBuffer{
 
 	private static final int SOUND_ARRAY_SIZE = 320;
-	private static final int TIME_BETWEEN_SAMPLES = 40;
+	private static final int TIME_BETWEEN_SAMPLES = 10;
 	
 	private JitterBufferQueue buffer;
 	private short lastReadSeqNbr = -1;
@@ -55,14 +55,15 @@ public class JitterBuffer{
 					ready = true;					
 				}
 				buildMode = false;
-				if (buffer.getBufferedTime()>(bufferTime*2)) { //If the buffer is TOO long we poll until we are "up to date" again.
+				if (buffer.getBufferedTime()>(bufferTime*2)) {
+					logger.log(Level.FINEST, "(" + Thread.currentThread().getName() + ")Buffer is too long, reducing delay");
 					while(buffer.getBufferedTime()>(bufferTime)) {
 						buffer.poll();
 					}
 				}
 			}
 		} else {
-			logger.log(Level.WARNING,"Dropped a packet arriving to late, "
+			logger.log(Level.WARNING,"(" + Thread.currentThread().getName() + ")Dropped a packet arriving to late, "
 					+ "sequence number: " + packet.seqNumber);
 		}
 	}
@@ -84,15 +85,15 @@ public class JitterBuffer{
 				RTPPacket tmp = buffer.peek();
 				if (tmp != null) {
 					if (tmp.seqNumber == ((short)(lastReadSeqNbr + 1))) {
-						if (tmp.timestamp - 2*TIME_BETWEEN_SAMPLES <= lastReadtimestamp) { // 2*timestamp to compensate for variations.
+						if (tmp.timestamp - 4*TIME_BETWEEN_SAMPLES <= lastReadtimestamp) { // 2*timestamp to compensate for variations.
 							p = buffer.poll();
 						} else {
-							logger.log(Level.FINEST, "[Buildmode] Returned null to reader due to too big of a time difference between package "
+							logger.log(Level.FINEST, "(" + Thread.currentThread().getName() + ")[Buildmode] Returned null to reader due to too big of a time difference between package "
 									+ lastReadSeqNbr + "-" + (lastReadSeqNbr+1) + " (" + (tmp.timestamp-lastReadtimestamp) + ")");
 							lastReadtimestamp += TIME_BETWEEN_SAMPLES;
 						}
 					} else {
-						logger.log(Level.FINEST, "[Buildmode] Returned null to reader due to unmatching sequence numbers, expected "
+						logger.log(Level.FINEST, "(" + Thread.currentThread().getName() + ")[Buildmode] Returned null to reader due to unmatching sequence numbers, expected "
 								+ (lastReadSeqNbr+1) + " but next was " + (tmp.seqNumber));
 						lastReadSeqNbr += 1;
 						lastReadtimestamp += TIME_BETWEEN_SAMPLES;
@@ -105,6 +106,8 @@ public class JitterBuffer{
 				lastReadSeqNbr = p.seqNumber;
 				lastReadtimestamp = p.timestamp;				
 			}
+		} else {
+			logger.log(Level.FINEST, "(" + Thread.currentThread().getName() + ")[Not Ready] Returned null due to the jitterbuffer not being ready, last packet was: " + lastReadSeqNbr);
 		}
 		return p;
 	}

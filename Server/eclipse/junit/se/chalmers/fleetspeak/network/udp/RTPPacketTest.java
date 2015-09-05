@@ -34,7 +34,7 @@ public class RTPPacketTest {
 	@Test
 	public void testDetailedConnstructor() {
 		byte[] b = {(byte) 0x80, (byte) 0x11, (byte) 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11};
-		RTPPacket p = new RTPPacket((byte)17, (short)4369, (long)286331153, (long)286331153, new byte[] {0x11, 0x11});
+		RTPPacket p = new RTPPacket((byte)17, (short)4369, (long)286331153, new byte[] {0x11, 0x11});
 		assertEquals(2, p.version);
 		assertEquals(false, p.padding);
 		assertEquals(false, p.extensions);
@@ -43,7 +43,7 @@ public class RTPPacketTest {
 		assertEquals(17, p.payloadType);
 		assertEquals(4369, p.seqNumber);
 		assertEquals(286331153, p.timestamp);
-		assertEquals(286331153, p.ssrc);
+		assertEquals(0, p.ssrc);
 		byte[] pay = p.getPayload();
 		assertEquals(2, pay.length);
 		assertEquals(17, pay[0]);
@@ -87,7 +87,7 @@ public class RTPPacketTest {
 			p1 = new RTPPacket(null);
 		} catch (IllegalArgumentException e) {}
 		assertNull(p1);
-		RTPPacket p2 = new RTPPacket((byte)0, (short)0, (long)0, (long)0, null);
+		RTPPacket p2 = new RTPPacket((byte)0, (short)0, (long)0, null);
 		RTPPacket p3 = new RTPPacket((short)0, (long)0, null);
 		String s = "RTP Packet[seq=0, timestamp=0, payload_size=0, payload=0]";
 		assertTrue(s.equals(p2.toString()));

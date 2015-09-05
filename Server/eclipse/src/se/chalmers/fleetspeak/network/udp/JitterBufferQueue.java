@@ -27,6 +27,31 @@ public class JitterBufferQueue {
 			} else {
 				n.next.previous = newNode;
 			}
+			//FIXME Temporary bad-ass printout.
+//			System.out.print("[" + System.currentTimeMillis() + "]-[" + e.seqNumber + "]-[" + e.timestamp + "]-------------------------------------------");
+//			int l = String.valueOf(e.seqNumber).length();
+//			for (int i=6; i>l; i--) {
+//				System.out.print("-");
+//			}
+//			System.out.print("\n|");
+//			boolean full = false;
+//			short seq = 0;;
+//			n = head;
+//			for(int i=0; i<20; i++) {
+//				full = false;
+//				if (i == 0) {
+//					seq = n.next.e.seqNumber;
+//				}
+//				if(n.next!=null) {
+//					n = n.next;
+//					if(!(n.e.seqNumber>(seq++))) {
+//						full = true;
+//					}
+//				}
+//				System.out.print(" " + (full?"X":" ") + " |");
+//			}
+//			System.out.println();
+//			System.out.println("---------------------------------------------------------------------------------");
 		}
 	}
 	
