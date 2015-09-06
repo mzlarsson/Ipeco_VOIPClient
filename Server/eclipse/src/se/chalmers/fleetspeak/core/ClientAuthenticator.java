@@ -1,8 +1,5 @@
 package se.chalmers.fleetspeak.core;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import se.chalmers.fleetspeak.database.DatabaseCommunicator;
 import se.chalmers.fleetspeak.database.UserInfo;
 import se.chalmers.fleetspeak.network.tcp.TCPHandler;
@@ -18,14 +15,13 @@ public class ClientAuthenticator implements Authenticator, CommandHandler{
 
 	private TCPHandler tcp;
 
-	private List<AuthenticatorListener> listeners;
+	private AuthenticatorListener listener;
 
 	/**
 	 * Constructor for a ClientAuthenticator.
 	 * @param clientSocket The socket with the new connection to authorize.
 	 */
 	public ClientAuthenticator(TCPHandler tcp) {
-		listeners = new ArrayList<AuthenticatorListener>();
 		this.tcp = tcp;
 		tcp.setCommandHandler(this);
 		tcp.start();
@@ -48,9 +44,7 @@ public class ClientAuthenticator implements Authenticator, CommandHandler{
 			String username = (String)authCommand.getKey();
 			UserInfo user = DatabaseCommunicator.getInstance().findUser(username);
 			if (user != null) {
-				for (AuthenticatorListener al : listeners) {
-					al.authenticationSuccessful(user, this);
-				}
+				listener.authenticationSuccessful("android", user, this);
 				return true;
 			} else {
 				failedAuthentication("Unknown username and password combination");
@@ -63,9 +57,7 @@ public class ClientAuthenticator implements Authenticator, CommandHandler{
 	}
 
 	private void failedAuthentication(String errorMsg) {
-		for (AuthenticatorListener al : listeners) {
-			al.authenticationFailed(errorMsg, this);
-		}
+		listener.authenticationFailed(errorMsg, this);
 	}
 
 	/**
@@ -84,17 +76,12 @@ public class ClientAuthenticator implements Authenticator, CommandHandler{
 	}
 
 	@Override
-	public void addAuthenticatorListener(AuthenticatorListener listener) {
-		listeners.add(listener);
-	}
-
-	@Override
-	public void removeAuthenticatorListener(AuthenticatorListener listener) {
-		listeners.remove(listener);
-	}
-
-	@Override
 	public void handleCommand(Command c) {
 		authenticate(c);
+	}
+
+	@Override
+	public void setAuthenticatorListener(AuthenticatorListener listener) {
+		this.listener = listener;
 	}
 }
