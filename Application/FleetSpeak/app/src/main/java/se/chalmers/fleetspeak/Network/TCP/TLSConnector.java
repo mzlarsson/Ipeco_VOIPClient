@@ -39,10 +39,9 @@ public class TLSConnector{
         new SocketCreator().execute(ip, ""+port);
     }
 
-    public void sendMessage(Object message){
-
+    public void sendMessage(String message){
         try {
-            Log.d(LOGTAG, "sending message");
+            Log.d(LOGTAG, "sending message " + message);
             writeMessenger.send(Message.obtain(null,1,message));
         } catch (RemoteException e) {
             Log.e(LOGTAG, "failed to send message: " + e.getMessage());
@@ -80,6 +79,11 @@ public class TLSConnector{
             if(sslSocket != null){
 
                 socket = sslSocket;
+                try {
+                    socket.startHandshake();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 try {
                     socketReader = new SocketReader(sslSocket.getInputStream(), new Messenger(responseHandler));
                     socketWriter = new SocketWriter(sslSocket.getOutputStream(), responseHandler);

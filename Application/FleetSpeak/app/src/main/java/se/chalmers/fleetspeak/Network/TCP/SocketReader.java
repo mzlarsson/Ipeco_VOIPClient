@@ -5,9 +5,10 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInputStream;
+import java.io.InputStreamReader;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -19,7 +20,7 @@ import se.chalmers.fleetspeak.util.MessageValues;
 public class SocketReader implements Runnable{
 
     private Messenger messenger;
-    private ObjectInputStream objectInputStream;
+    private BufferedReader bufferedReader;
     private InputStream inputStream;
     private Executor executor;
     private Boolean reading;
@@ -34,22 +35,18 @@ public class SocketReader implements Runnable{
     @Override
     public void run() {
         Thread.currentThread().setName("SocketReaderThread");
-        try {
-            objectInputStream = new ObjectInputStream(inputStream);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        Object readObject;
+        bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+        String readObject;
         reading = true;
+        Log.i("SocketReader", "start reading");
         while(reading){
             try {
-                if((readObject = objectInputStream.readObject()) != null){
-                    Message msg = Message.obtain(null, MessageValues.COMMAND, readObject);
-                    messenger.send(msg);
-                }
+                readObject = bufferedReader.readLine();
+                Log.d("SocketReader", "" + readObject);
+                Message msg = Message.obtain(null, MessageValues.COMMAND, readObject);
+                messenger.send(msg);
+
                 Thread.sleep(100);
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
             } catch (IOException e) {
                 try {
                     Log.e("SocketReader", "socket crashed");
@@ -69,7 +66,7 @@ public class SocketReader implements Runnable{
     public void stop(){
         reading = false;
         try {
-            objectInputStream.close();
+            bufferedReader.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

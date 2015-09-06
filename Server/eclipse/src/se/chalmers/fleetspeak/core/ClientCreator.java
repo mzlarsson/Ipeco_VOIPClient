@@ -8,11 +8,13 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import se.chalmers.fleetspeak.database.UserInfo;
 import se.chalmers.fleetspeak.network.tcp.TCPHandler;
 import se.chalmers.fleetspeak.network.udp.RTPHandler;
 import se.chalmers.fleetspeak.network.udp.STUNInitiator;
-import se.chalmers.fleetspeak.util.Command;
 
 /**
  * A sort of instantiated factory for the client creation process.
@@ -21,7 +23,7 @@ import se.chalmers.fleetspeak.util.Command;
  *
  * @author Patrik Haar
  */
-public class ClientCreator implements AuthenticatorListener, CommandHandler{
+public class ClientCreator implements AuthenticatorListener{
 
 	private List<ClientAuthenticator> authenticators;
 	private Logger logger;
@@ -49,7 +51,7 @@ public class ClientCreator implements AuthenticatorListener, CommandHandler{
 		ca.addAuthenticatorListener(this);
 		ca.start();
 	}
-	
+
 	@Override
 	public void authenticationSuccessful(Object authorizedObject, Authenticator authenticator) {
 		if (authenticator.getClass() == ClientAuthenticator.class) {
@@ -78,7 +80,8 @@ public class ClientCreator implements AuthenticatorListener, CommandHandler{
 	public void authenticationFailed(String errorMsg, Authenticator authenticator) {
 		if (authenticator.getClass() == ClientAuthenticator.class) {
 			ClientAuthenticator ca = (ClientAuthenticator)authenticator;
-			ca.getTCPHandler().sendCommand(new Command("authenticationResult", false, errorMsg));
+			ca.getTCPHandler().sendCommand("{\"authenticationResult\":false, "
+					+ "\"rejection\":\"" + errorMsg + "\"}");
 			ca.terminate();
 			logger.log(Level.FINER, errorMsg);
 			authenticators.remove(ca);
@@ -103,17 +106,20 @@ public class ClientCreator implements AuthenticatorListener, CommandHandler{
 		stun.start();
 	}
 
-	private void finalizeClient(Client client, DatagramSocket socket) {
+	public void finalizeClient(Client client, DatagramSocket socket) {
 		client.setRTPHandler(new RTPHandler(socket));
-		client.sendCommand(new Command("authenticationResult", true, "Successful authentication"));
-		logger.log(Level.INFO, "A new person joined id: " + client.getClientID() + " Alias: " + client.getName());
-		building.addClient(client, targetRoom);		
-	}
-	
-	@Override
-	public void handleCommand(Command c) {
-		if (c.getCommand().toLowerCase().equals("datagramsocketstun")) {
-			finalizeClient((Client)c.getKey(), (DatagramSocket)c.getValue());
+		JSONObject json = new JSONObject();
+		try {
+			json.put("command", "authenticationResult");
+			json.put("result", true);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+
+		client.sendCommand(json.toString());
+		logger.log(Level.INFO, "A new person joined id: " + client.getClientID() + " Alias: " + client.getName());
+		building.addClient(client, targetRoom);
 	}
+
 }

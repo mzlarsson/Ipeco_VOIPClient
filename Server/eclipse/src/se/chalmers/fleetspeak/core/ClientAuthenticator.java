@@ -1,12 +1,15 @@
 package se.chalmers.fleetspeak.core;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import se.chalmers.fleetspeak.database.DatabaseCommunicator;
 import se.chalmers.fleetspeak.database.UserInfo;
 import se.chalmers.fleetspeak.network.tcp.TCPHandler;
-import se.chalmers.fleetspeak.util.Command;
 
 /**
  * A class that will communicate with a connection until it has successfully
@@ -20,11 +23,15 @@ public class ClientAuthenticator implements Authenticator, CommandHandler{
 
 	private List<AuthenticatorListener> listeners;
 
+	private int randomNumber;
+
 	/**
 	 * Constructor for a ClientAuthenticator.
 	 * @param clientSocket The socket with the new connection to authorize.
 	 */
 	public ClientAuthenticator(TCPHandler tcp) {
+		SecureRandom rand = new SecureRandom();
+		randomNumber = rand.nextInt();
 		listeners = new ArrayList<AuthenticatorListener>();
 		this.tcp = tcp;
 		tcp.setCommandHandler(this);
@@ -35,19 +42,21 @@ public class ClientAuthenticator implements Authenticator, CommandHandler{
 	 * Starts the authentication process.
 	 */
 	public void start() {
-		tcp.sendCommand(new Command("sendAuthenticationDetails", null, null));
+
+		tcp.sendCommand("{\"command\":\"sendAuthenticationDetails\","
+				+ "\"work\":\"" + randomNumber + "\"}");
 	}
 	/**
 	 * Checks if the response from the connection matches with the information in the database.
 	 * @param authCommand The response from the connection.
 	 * @return true if accepted, false if not.
 	 */
-	private boolean authenticate(Command authCommand) {
-		if (authCommand.getCommand().toLowerCase().equals("authenticationdetails")
-				&& authCommand.getKey().getClass() == String.class) {
-			String username = (String)authCommand.getKey();
-			UserInfo user = DatabaseCommunicator.getInstance().findUser(username);
-			if (user != null) {
+	private boolean authenticate(String authCommand) {
+		try {
+			JSONObject command = new JSONObject(authCommand);
+			int work = command.getInt("work");
+			UserInfo user = DatabaseCommunicator.getInstance().findUser(command.getString("username"));
+			if (user != null && work == randomNumber) {
 				for (AuthenticatorListener al : listeners) {
 					al.authenticationSuccessful(user, this);
 				}
@@ -56,10 +65,13 @@ public class ClientAuthenticator implements Authenticator, CommandHandler{
 				failedAuthentication("Unknown username and password combination");
 				return false;
 			}
-		} else {
-			failedAuthentication("Response is of an unknown format: " + authCommand.toString());
-			return false;
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+
+		return false;
+
 	}
 
 	private void failedAuthentication(String errorMsg) {
@@ -94,7 +106,9 @@ public class ClientAuthenticator implements Authenticator, CommandHandler{
 	}
 
 	@Override
-	public void handleCommand(Command c) {
-		authenticate(c);
+	public void handleCommand(String c) {
+		if(c != null) {
+			authenticate(c);
+		}
 	}
 }
