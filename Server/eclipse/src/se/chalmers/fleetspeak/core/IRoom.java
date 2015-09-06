@@ -1,6 +1,5 @@
 package se.chalmers.fleetspeak.core;
 
-import se.chalmers.fleetspeak.util.Command;
 
 public interface IRoom {
 
@@ -10,8 +9,8 @@ public interface IRoom {
 	Integer getId();
 	String getName();
 	void setName(String name);
-	public void postUpdate(Command c);
-	public void sync(Client c);
-	public void terminate();
+	void sync(Client c);
+	void terminate();
+	void postUpdate(String c);
 
 }

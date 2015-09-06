@@ -4,13 +4,16 @@ import java.net.DatagramSocket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import se.chalmers.fleetspeak.database.UserInfo;
 import se.chalmers.fleetspeak.network.tcp.TCPHandler;
 import se.chalmers.fleetspeak.network.udp.RTPHandler;
 import se.chalmers.fleetspeak.network.udp.STUNInitiator;
-import se.chalmers.fleetspeak.util.Command;
+import se.chalmers.fleetspeak.network.udp.STUNListener;
 
-public class AndroidClientCreator implements CommandHandler {
+public class AndroidClientCreator implements STUNListener {
 
 	private Building building;
 	
@@ -31,21 +34,32 @@ public class AndroidClientCreator implements CommandHandler {
 	
 	private void establishUDPConnection(Client client) {
 		STUNInitiator stun = new STUNInitiator(client, client.getClientID());
-		stun.addCommandHandler(this);
+		stun.addSTUNListener(this);
 		stun.start();
 	}
 
 	private void finalizeClient(Client client, DatagramSocket socket) {
 		client.setRTPHandler(new RTPHandler(socket));
-		client.sendCommand(new Command("authenticationResult", true, "Successful authentication"));
+		JSONObject json = new JSONObject();
+		try {
+			json.put("command", "authenticationResult");
+			json.put("result", true);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		client.sendCommand(json.toString());
 		logger.log(Level.INFO, "A new person joined id: " + client.getClientID() + " Alias: " + client.getName());
 		building.addClient(client, targetRoom);		
 	}
-	
+
 	@Override
-	public void handleCommand(Command c) {
-		if (c.getCommand().toLowerCase().equals("datagramsocketstun")) {
-			finalizeClient((Client)c.getKey(), (DatagramSocket)c.getValue());
-		}
+	public void stunSuccessful(NetworkUser nu, DatagramSocket udp) {
+		finalizeClient((Client)nu, udp);
+	}
+
+	@Override
+	public void stunFailed(NetworkUser nu, String error) {
+		// TODO Let the android client know that the STUN initiation failed.
 	}
 }

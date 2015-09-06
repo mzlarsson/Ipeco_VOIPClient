@@ -9,7 +9,6 @@ import java.util.logging.Logger;
 
 import se.chalmers.fleetspeak.database.UserInfo;
 import se.chalmers.fleetspeak.network.tcp.TCPHandler;
-import se.chalmers.fleetspeak.util.Command;
 
 /**
  * A sort of instantiated factory for the client creation process.
@@ -43,7 +42,7 @@ public class ClientCreator implements AuthenticatorListener{
 		ca.setAuthenticatorListener(this);
 		ca.start();
 	}
-	
+
 	@Override
 	public void authenticationSuccessful(String userType, UserInfo authorizedUser, ClientAuthenticator authenticator) {
 		switch(userType) {
@@ -58,7 +57,8 @@ public class ClientCreator implements AuthenticatorListener{
 
 	@Override
 	public void authenticationFailed(String errorMsg, ClientAuthenticator authenticator) {
-		authenticator.getTCPHandler().sendCommand(new Command("authenticationResult", false, errorMsg));
+		authenticator.getTCPHandler().sendCommand("{\"authenticationResult\":false, "
+				+ "\"rejection\":\"" + errorMsg + "\"}");
 		authenticator.terminate();
 		logger.log(Level.FINER, errorMsg);
 		authenticators.remove(authenticator);

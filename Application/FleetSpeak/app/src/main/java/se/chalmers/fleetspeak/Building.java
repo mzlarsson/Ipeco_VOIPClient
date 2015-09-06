@@ -56,8 +56,11 @@ public class Building {
     }
 
     public void moveUser(int userid, int sourceid, int destinationid) {
-        if (activeUserid == userid)
+        Log.d("Building", "moveuser " + userid + ":" + sourceid + ":" + destinationid);
+        if (activeUserid == userid) {
             currentRoom = destinationid;
+        Log.d("Building", "updateing current room to " + currentRoom);
+        }
         User u = rooms.get(sourceid).removeUser(userid);
         rooms.get(destinationid).addUser(u);
         postUpdate();
@@ -85,7 +88,7 @@ public class Building {
         return activeUserid;
     }
 
-    public void setUserInfo(int userid) {
+    public void setUserid(int userid) {
         activeUserid = userid;
     }
 
