@@ -63,7 +63,9 @@
             android:id="@+id/saveUserPref"
             android:layout_weight="0.5"
             android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true" />
+            android:layout_alignParentLeft="true"
+            android:paddingLeft="@dimen/padding_checkbox"
+            />
 
     </RelativeLayout>
 

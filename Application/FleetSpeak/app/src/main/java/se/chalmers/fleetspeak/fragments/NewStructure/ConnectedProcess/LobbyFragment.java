@@ -3,12 +3,11 @@ package se.chalmers.fleetspeak.fragments.NewStructure.ConnectedProcess;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.support.v4.app.FragmentManager;
+import android.content.res.Resources;
 import android.support.v4.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,8 +16,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
-import java.io.FileDescriptor;
-import java.io.PrintWriter;
 import java.util.List;
 
 import se.chalmers.fleetspeak.R;
@@ -28,7 +25,7 @@ import se.chalmers.fleetspeak.fragments.NewStructure.Lists.RoomList;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class LobyFragment extends AppConnectFragment {
+public class LobbyFragment extends AppConnectFragment {
     private RoomList roomList;
     private ConnectedCommunicator communicator;
     private AlertDialog dialog;
@@ -46,7 +43,7 @@ public class LobyFragment extends AppConnectFragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
-        View view =  inflater.inflate(R.layout.fragment_looby, container, false);
+        View view =  inflater.inflate(R.layout.fragment_lobby, container, false);
         roomList = new RoomList();
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.replace(R.id.fragment_holder_room, roomList);
@@ -91,8 +88,8 @@ public class LobyFragment extends AppConnectFragment {
                     LinearLayout.LayoutParams.MATCH_PARENT);
             input.setLayoutParams(lp);
             alertDialog.setView(input);
-
-            alertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            Resources res = communicator.getResources();
+            alertDialog.setPositiveButton(res.getString(R.string.OK), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     String newRoomName;
@@ -105,7 +102,7 @@ public class LobyFragment extends AppConnectFragment {
                     createAndMoveRoom(newRoomName);
                 }
             });
-            alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            alertDialog.setNegativeButton(res.getString(R.string.cancel), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.cancel();
@@ -115,7 +112,7 @@ public class LobyFragment extends AppConnectFragment {
 
         } else{ //When the car is driving and the user have selected "Create room" the user won't be
             //allowed to pick a name since it will take to much time.
-            String newRoomName = (communicator.getUsername() + "'s room");
+            String newRoomName = (communicator.getUsername() + getResources().getString(R.string.sRoom));
             createAndMoveRoom(newRoomName);
         }
     }

@@ -168,13 +168,15 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
         }
         public void truckModeChanged(boolean b){
             if(b) {
-                roomname.setTextSize(20);
-                userListText.setTextSize(15);
+                float car = communicator.getResources().getDimension(R.dimen.carsize);
+                roomname.setTextSize(car);
+                userListText.setTextSize(car-5);
                 userListText.setSingleLine(true);
             }
             else{
-                roomname.setTextSize(15);
-                userListText.setTextSize(10);
+                float normal = communicator.getResources().getDimension(R.dimen.normalsize);
+                roomname.setTextSize(normal);
+                userListText.setTextSize(normal-5);
                 userListText.setSingleLine(false);
             }
         }

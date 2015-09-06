@@ -27,13 +27,16 @@
     <string name="title_activity_connection">FleetSpeak</string>
     <string name="error_code">Error Code</string>
     <string name="EmptyRoomList">There are no rooms available</string>
-
+    <string name="OK">Ok</string>
+    <string name="cancel">Cancel</string>
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="AboutToDisconnect">You are about to leave, are you sure?</string>
     <string name="unable_to_connect">You were unable to connect to the server do you want to reconnect?</string>
     <string name="discconect">You were disconnected from the server do you want to reconnect?</string>
-    
+    <string name="lobby">Lobby</string>
+    <string name="Chatroom">Chatroom</string>
     <string name="reconnect">Reconnect</string>
+    <string name="sRoom">'s room</string>
 
 </resources>

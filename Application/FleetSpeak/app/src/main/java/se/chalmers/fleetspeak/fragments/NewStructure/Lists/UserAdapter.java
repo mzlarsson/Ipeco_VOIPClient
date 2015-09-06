@@ -62,11 +62,11 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
         holder.username.setText(current.getName());
         ViewGroup.LayoutParams params;
         if(truckstate){
-
-            holder.username.setTextSize(20);
+            float car = communicator.getResources().getDimension(R.dimen.carsize);
+            holder.username.setTextSize(car);
         }else{
-
-            holder.username.setTextSize(15);
+            float normal = communicator.getResources().getDimension(R.dimen.normalsize);
+            holder.username.setTextSize(normal);
         }
     }
 

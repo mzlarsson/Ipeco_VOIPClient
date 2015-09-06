@@ -1,5 +1,7 @@
 package se.chalmers.fleetspeak.fragments.NewStructure.ConnectedProcess;
 
+import android.content.res.Resources;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,18 +13,20 @@ import se.chalmers.fleetspeak.User;
  */
 public interface ConnectedCommunicator {
 
-    public List<Room> getRooms();
-    public void reconnect();
-    public ArrayList<User> getUsersForRoom(int RoomID);
-    public boolean getTruckState();
-    public String getUsername();
-    public void createAndMoveRoom(String newRoomName);
-    public int getCurrentRoomId();
-    public List<User> getCurrentRoomsUsers();
+    List<Room> getRooms();
+    void reconnect();
+    ArrayList<User> getUsersForRoom(int RoomID);
+    boolean getTruckState();
+    String getUsername();
+    void createAndMoveRoom(String newRoomName);
+    int getCurrentRoomId();
+    List<User> getCurrentRoomsUsers();
 
     void sendUserClicked(User user);
     void roomClicked(Room room);
     void onBackNo();
     void onBackYes();
+    Resources getResources();
+
 
 }

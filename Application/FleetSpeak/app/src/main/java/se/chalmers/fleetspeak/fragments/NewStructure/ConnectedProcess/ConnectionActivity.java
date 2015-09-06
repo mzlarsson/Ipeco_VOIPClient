@@ -1,5 +1,6 @@
     package se.chalmers.fleetspeak.fragments.NewStructure.ConnectedProcess;
 
+    import android.content.res.Resources;
     import android.support.v7.app.ActionBar;
     import android.content.Intent;
     import android.os.Handler;
@@ -34,7 +35,7 @@
             private ActionBar actionBar;
             private CViewPager viewPager;
             private InRoomFragment inRoomFragment;
-            private LobyFragment lobyFragment;
+            private LobbyFragment lobbyFragment;
             private BackFragment backFragment;
             private LocationHandler locationHandler;
 
@@ -53,12 +54,12 @@
                     switch (msg.what){
                         case MessageValues.CONNECTED:
                             Log.d("UpdateHandler", "Connected");
-                            lobyFragment.isConnected(true);
+                            lobbyFragment.isConnected(true);
                             updateView();
                             break;
                         case MessageValues.DISCONNECTED:
                             Log.d("UpdateHandler", " Disconnected");
-                            lobyFragment.isConnected(false);
+                            lobbyFragment.isConnected(false);
                             updateView();
                             break;
                         case MessageValues.MODELCHANGED:
@@ -66,12 +67,12 @@
                             break;
                         case MessageValues.CONNECTIONFAILED:
                             Log.d("UpdateHandler", "Connection failed");
-                            lobyFragment.isConnected(false);
+                            lobbyFragment.isConnected(false);
                             updateView();
                             break;
                         case MessageValues.AUTHENTICATED:
                             updateView();
-                            lobyFragment.isConnected(true);
+                            lobbyFragment.isConnected(true);
                             break;
                         case MessageValues.AUTHENTICATIONFAILED:
                             model.disconnect();
@@ -84,7 +85,7 @@
                 inRoomFragment.resetList(model.getUsers(model.getCurrentRoom()));
             }
             public void updateRoomView(){
-                lobyFragment.resetList(model.getRooms());
+                lobbyFragment.resetList(model.getRooms());
             }
             public void updateView(){
                 updateRoomView();
@@ -118,7 +119,7 @@
 
                 password = extras.getString("password");
                 username=  extras.getString("username");
-                lobyFragment = new LobyFragment();
+                lobbyFragment = new LobbyFragment();
                 inRoomFragment = new InRoomFragment();
                 model = ModelFactory.getModel(updateHandler);
                 Log.d("ConnectionActivity", " Checking if connected");
@@ -127,7 +128,7 @@
                     model.connect(username ,password);
 
                 }else{
-                    lobyFragment.isConnected(true);
+                    lobbyFragment.isConnected(true);
                 }
                 username = (String)extras.get("username");
 
@@ -135,17 +136,18 @@
                 carMode = TruckDataHandler.getInstance().getTruckMode();
 
                 actionBar = getSupportActionBar();
-                actionBar.setDisplayHomeAsUpEnabled(true);
                 actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
                 ActionBar.Tab rooms = actionBar.newTab();
                 rooms.setIcon(R.drawable.ic_house);
-                rooms.setText("Looby");
+                String lobby = getResources().getString(R.string.lobby);
+                rooms.setText(lobby);
                 rooms.setTabListener(this);
                 actionBar.addTab(rooms);
 
                 ActionBar.Tab inRoom = actionBar.newTab();
                 inRoom.setIcon(R.drawable.ic_room);
-                inRoom.setText("ChatRoom");
+                String chatroom = getRecources().getString(R.string.Chatroom);
+                inRoom.setText(chatroom);
                 inRoom.setTabListener(this);
                 actionBar.addTab(inRoom);
 
@@ -167,31 +169,19 @@
                 // automatically handle clicks on the Home/Up button, so long
                 // as you specify a parent activity in AndroidManifest.xml.
                 // home id seems overwritten write out number
-                Log.d("ConnectionActivity", "is home == "+(R.id.home == item.getItemId()));
-                Log.d("ConnectionActivity", "item id is " + item.getItemId());
                 int id = item.getItemId();
                 //noinspection SimplifiableIfStatement
                 if (id == R.id.changeTruck) {
                     truckModeChanged(!carMode);
-                    return true;
-                } else if(id == 16908332){
-                    if(viewPager.getCurrentItem() == 2){
-                        returnToLogin(null);
-                    }else if(viewPager.getCurrentItem() == 1) {
-                        viewPager.setCurrentItem(0);
-                    }
-                    else{
-                        viewPager.setCurrentItem(2);
-                    }
-                    return true;
-                }
+                    return true;}
+
 
                 return super.onOptionsItemSelected(item);
             }
 
             private void changeCarModeTabs(boolean b){
-                if(lobyFragment != null){
-                    lobyFragment.truckModeChanged(b);
+                if(lobbyFragment != null){
+                    lobbyFragment.truckModeChanged(b);
 
                 }
                 if(inRoomFragment != null){
@@ -241,10 +231,10 @@
 
             @Override
             public void createAndMoveRoom(String newRoomName) {
-                lobyFragment.closeDialog();
+                lobbyFragment.closeDialog();
                 model.moveNewRoom(newRoomName);
                 updateView();
-                lobyFragment.movedToRoom(getCurrentRoomId());
+                lobbyFragment.movedToRoom(getCurrentRoomId());
                 viewPager.setCurrentItem(1);
                 actionBar.setSelectedNavigationItem(1);
             }
@@ -268,7 +258,7 @@
             public void roomClicked(Room room) {
                 model.move(room.getId());
                 updateUsersView();
-                lobyFragment.movedToRoom(room.getId());
+                lobbyFragment.movedToRoom(room.getId());
                 viewPager.setCurrentItem(1);
                 actionBar.setSelectedNavigationItem(1);
             }
@@ -322,7 +312,7 @@
                     Log.d("ConnectionActivity", " getItem called");
                     if (arg == 0) {
                         Log.d("ConnectionActivity", " Lobby called");
-                        return lobyFragment;
+                        return lobbyFragment;
                     } else if (arg == 1) {
                         Log.d("ConnectionActivity", " InRoom called");
                         return inRoomFragment;
@@ -345,5 +335,8 @@
         protected void onDestroy() {
             super.onDestroy();
             model.disconnect();
+        }
+        public Resources getRecources(){
+           return getResources();
         }
     }
