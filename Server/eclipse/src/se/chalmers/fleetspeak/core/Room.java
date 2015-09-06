@@ -4,6 +4,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.json.JSONObject;
+
 import se.chalmers.fleetspeak.util.IDFactory;
 
 
@@ -77,10 +79,17 @@ public class Room implements CommandHandler, IRoom{
 	public void sync(Client c){
 		logger.log(Level.FINE, name + " " + clients.size());
 		clients.forEach((id,client)->{
-			c.sendCommand("{\"command\":\"addeduser\","
-					+ "\"userid\":" + client.getClientID() + ","
-					+ "\"username\":\"" + client.getName() + "\","
-					+ "\"roomid\":" + this.id + "}");
+			JSONObject json = new JSONObject();
+			try {
+				json.put("command", "addeduser");
+				json.put("userid", client.getClientID());
+				json.put("username", client.getName());
+				json.put("roomid", this.id);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			c.sendCommand(json.toString());
 		});
 	}
 
