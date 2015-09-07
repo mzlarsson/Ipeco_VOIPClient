@@ -19,11 +19,12 @@ public class DatabaseCommunicator {
 
 	private Connection conn;
 	private static DatabaseCommunicator instance;
-	private Logger logger = Logger.getLogger("Debug");
+	private Logger logger;
 	
 	private int tmpIDs = 100;
 
 	private DatabaseCommunicator(){
+		logger = Logger.getLogger("Debug");
 		conn = DatabaseConnector.initiateConnection();
 	}
 
@@ -129,7 +130,7 @@ public class DatabaseCommunicator {
 	 */
 	public UserInfo findUser(String username) {
 		if (username.equals("bottenanja")) { //FIXME Temporary implementation for allowing bots.
-			return new UserInfo(tmpIDs, username+tmpIDs, username+(tmpIDs++));
+			return new UserInfo(tmpIDs, username+tmpIDs, username+(tmpIDs++), "", "");
 		}
 		UserInfo user = null;
 		Statement st = null;
@@ -138,7 +139,7 @@ public class DatabaseCommunicator {
 			ResultSet rs = doQuery("SELECT * FROM users "
 					+ "WHERE username = '"+username+"'", st);
 			if (rs.next()) {
-				user = new UserInfo(rs.getInt(1), rs.getString(2), rs.getString(3));
+				user = new UserInfo(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4));
 			}
 			else {
 				logger.log(Level.INFO, "[DatabaseCommunicator]: User with username '"
