@@ -8,6 +8,7 @@ CREATE TABLE users
   id serial NOT NULL,
   username character varying(50) NOT NULL,
   alias character varying(50),
+  password character varying(110) NOT NULL,
   CONSTRAINT users_pkey PRIMARY KEY (id),
   CONSTRAINT users_username_key UNIQUE (username)
 )
@@ -41,47 +42,31 @@ WITH (
 ALTER TABLE buildings
   OWNER TO postgres;
 
-CREATE TABLE permission-levels
+CREATE TABLE permission_levels
 (
   id integer NOT NULL,
   name character varying(50) NOT NULL,
-  CONSTRAINT permission-levels_pkey PRIMARY KEY (id)
+  CONSTRAINT permission_levels_pkey PRIMARY KEY (id)
 )
 WITH (
   OIDS=FALSE
 );
-ALTER TABLE permission-levels
+ALTER TABLE permission_levels
   OWNER TO postgres;
   
-CREATE TABLE permission-types
+CREATE TABLE permission_types
 (
   id integer NOT NULL,
   name character varying(50) NOT NULL,
-  CONSTRAINT permission-types_pkey PRIMARY KEY (id)
+  CONSTRAINT permission_types_pkey PRIMARY KEY (id)
 )
 WITH (
   OIDS=FALSE
 );
-ALTER TABLE permission-types
+ALTER TABLE permission_types
   OWNER TO postgres;
 
-CREATE TABLE permission-groups
-(
-  id integer NOT NULL,
-  name character varying(50) NOT NULL,
-  CONSTRAINT permission-groups_pkey PRIMARY KEY (id)
-)
-WITH (
-  OIDS=FALSE
-);
-ALTER TABLE permission-groups
-  OWNER TO postgres;
-/*
-*******************************************************************
- Relationships
-*******************************************************************
-*/
-CREATE TABLE building_permission-type_maps
+CREATE TABLE permission_groups
 (
   id integer NOT NULL,
   name character varying(50) NOT NULL,
@@ -92,3 +77,21 @@ WITH (
 );
 ALTER TABLE permission_groups
   OWNER TO postgres;
+/*
+*******************************************************************
+ Relationships
+*******************************************************************
+*/
+/*
+CREATE TABLE building_permission_type_maps
+(
+  id integer NOT NULL,
+  name character varying(50) NOT NULL,
+  CONSTRAINT permission_groups_pkey PRIMARY KEY (id)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE permission_groups
+  OWNER TO postgres;
+*/

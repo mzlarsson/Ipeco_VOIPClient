@@ -13,7 +13,7 @@ import se.chalmers.fleetspeak.audio.sound.AudioInputProcessor;
  */
 public class RTPHandler implements Runnable, PacketReceiver, BufferedAudioStream{
 
-    private static final int TIME_BETWEEN_PACKAGES = 10;
+    private static final int TIME_BETWEEN_PACKAGES = 20;
 
     private final Executor executor;
     private boolean isRunning;
@@ -26,7 +26,7 @@ public class RTPHandler implements Runnable, PacketReceiver, BufferedAudioStream
     private JitterBuffer buffer;
 
     public RTPHandler(UDPConnector udpConnector) {
-        buffer = new JitterBuffer(50);
+        buffer = new JitterBuffer(100);
         this.udpConnector = udpConnector;
         sequenceNumber = 0;
         try {
@@ -53,7 +53,7 @@ public class RTPHandler implements Runnable, PacketReceiver, BufferedAudioStream
                 data = audioInputProcessor.readBuffer();
                 udpConnector.sendPacket(new RTPPacket(sequenceNumber++, getNextTimestamp(), data).toByteArraySimple());
                 //buffer.write(new RTPPacket(sequenceNumber++,System.currentTimeMillis(),data));
-                //Log.d("RTPHandler", +data.length + " " + (sequenceNumber-1) +  " send " + printPacket(data));
+                //Log.d("RTPHandler", +data.length + " " + (sequenceNumber-1) +  " send " + data.length +" and time "+System.currentTimeMillis());
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

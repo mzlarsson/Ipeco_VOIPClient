@@ -9,7 +9,7 @@ package se.chalmers.fleetspeak.database;
 public class UserInfo {
 
 	private int id;
-	private String username, alias;
+	private String username, alias, password;
 	private String[] permissions;
 	
 	/**
@@ -17,11 +17,14 @@ public class UserInfo {
 	 * @param id The ID of the user.
 	 * @param username The unique username of the user.
 	 * @param alias The alias of the user.
+	 * @param password The password of the user.
+	 * @param salt The salt for the password.
 	 */
-	public UserInfo(int id, String username, String alias, String... permissions) {
+	public UserInfo(int id, String username, String alias, String password, String... permissions) {
 		this.id = id;
 		this.username = username;
 		this.alias = alias;
+		this.password = password;
 		this.permissions = permissions;
 	}
 	
@@ -47,6 +50,14 @@ public class UserInfo {
 	 */
 	public String getAlias() {
 		return alias;
+	}
+	
+	/**
+	 * Returns the users password.
+	 * @return The users password.
+	 */
+	public String getPassword() {
+		return password;
 	}
 	
 	/**

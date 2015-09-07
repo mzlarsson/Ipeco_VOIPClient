@@ -6,7 +6,7 @@ package se.chalmers.fleetspeak.Network.UDP;
 public class JitterBuffer{
 
     private static final int SOUND_ARRAY_SIZE = 320;
-    private static final int TIME_BETWEEN_SAMPLES = 5;
+    private static final int TIME_BETWEEN_SAMPLES = 20;
 
     private JitterBufferQueue buffer;
     private short lastReadSeqNbr = -1;

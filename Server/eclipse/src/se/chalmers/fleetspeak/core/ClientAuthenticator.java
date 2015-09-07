@@ -1,6 +1,10 @@
 package se.chalmers.fleetspeak.core;
 
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -8,6 +12,7 @@ import org.json.JSONObject;
 import se.chalmers.fleetspeak.database.DatabaseCommunicator;
 import se.chalmers.fleetspeak.database.UserInfo;
 import se.chalmers.fleetspeak.network.tcp.TCPHandler;
+import se.chalmers.fleetspeak.util.PasswordHash;
 
 /**
  * A class that will communicate with a connection until it has successfully
@@ -18,6 +23,7 @@ import se.chalmers.fleetspeak.network.tcp.TCPHandler;
 public class ClientAuthenticator implements Authenticator, CommandHandler{
 
 	private TCPHandler tcp;
+	private Logger logger;
 
 	private AuthenticatorListener listener;
 
@@ -28,6 +34,7 @@ public class ClientAuthenticator implements Authenticator, CommandHandler{
 	 * @param clientSocket The socket with the new connection to authorize.
 	 */
 	public ClientAuthenticator(TCPHandler tcp) {
+		logger = Logger.getLogger("Debug");
 		SecureRandom rand = new SecureRandom();
 		randomNumber = rand.nextInt();
 		this.tcp = tcp;
@@ -46,33 +53,40 @@ public class ClientAuthenticator implements Authenticator, CommandHandler{
 	/**
 	 * Checks if the response from the connection matches with the information in the database.
 	 * @param authCommand The response from the connection.
-	 * @return true if accepted, false if not.
 	 */
-	private boolean authenticate(String authCommand) {
+	private void authenticate(String authCommand) {
 		int work = 0;
-		String username = null;
+		String username = null, password = null, clientType = null;
 		try {
 			JSONObject command = new JSONObject(authCommand);
 			work = command.getInt("work");
 			username = command.getString("username");
+			password = command.getString("password");
+			clientType = command.getString("clienttype");
 		} catch (JSONException e) {
 			failedAuthentication("Data is not in the correct JSON format");
 		}
 		if (work==randomNumber) {
 			UserInfo user = DatabaseCommunicator.getInstance().findUser(username);
 			if (user != null) {
-				listener.authenticationSuccessful("android", user, this);
-				return true;				
+				listener.authenticationSuccessful(clientType, user, this); //FIXME This is to temporary ignore passwords.
+//				try {
+//					if (PasswordHash.validatePassword(password, user.getPassword())) {
+//						listener.authenticationSuccessful(clientType, user, this);
+//					} else {
+//						failedAuthentication("Unknown username and password combination");
+//					}
+//				} catch (NoSuchAlgorithmException e) {
+//					logger.log(Level.SEVERE, "Caught an exception: " + e.getMessage());
+//				} catch (InvalidKeySpecException e) {
+//					logger.log(Level.SEVERE, "Caught an exception: " + e.getMessage());
+//				}
 			} else {
-				failedAuthentication("Unknown username and password combination");
-				return false;
+				failedAuthentication("Unknown username and password combination");				
 			}
 		} else {
 			failedAuthentication("Work number did not match");
 		}
-
-		return false;
-
 	}
 
 	private void failedAuthentication(String errorMsg) {
