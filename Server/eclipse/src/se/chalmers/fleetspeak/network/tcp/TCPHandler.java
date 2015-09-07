@@ -12,8 +12,6 @@ import java.net.SocketTimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.net.ssl.SSLException;
-
 import se.chalmers.fleetspeak.core.CommandHandler;
 
 /**
@@ -46,8 +44,6 @@ public class TCPHandler extends Thread{
 			printWriter = new PrintWriter(clientSocket.getOutputStream());
 			bufferedReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 			logger.log(Level.FINE,"Got streams");
-		}catch(SSLException e){
-			e.printStackTrace();
 		}
 		catch (IOException e) {
 			logger.log(Level.WARNING,e.getMessage());
