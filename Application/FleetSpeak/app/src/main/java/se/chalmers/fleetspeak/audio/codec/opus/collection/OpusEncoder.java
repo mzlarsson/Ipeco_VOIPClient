@@ -4,12 +4,11 @@ import android.util.Log;
 
 import se.chalmers.fleetspeak.audio.FleetspeakAudioException;
 import se.chalmers.fleetspeak.audio.codec.EncoderInterface;
-import se.chalmers.fleetspeak.audio.codec.opus.OpusConstants;
 import se.chalmers.fleetspeak.audio.codec.opus.jniopus.OpusEncoderWrapper;
+import se.chalmers.fleetspeak.audio.sound.SoundConstants;
 
 //Static import
 
-import static se.chalmers.fleetspeak.audio.sound.SoundConstants.*;
 
 /**
  * A class for encoding PCMU data to the opus codec
@@ -19,11 +18,12 @@ public class OpusEncoder implements EncoderInterface {
 
     private long opusEncoder;
 
-    private byte[] tmp = new byte[0];
+    private SoundConstants s;
     public OpusEncoder(){
+        s = SoundConstants.getCurrent();
         try {
-            create(OpusConstants.SAMPLE_RATE.value(),
-                    OpusConstants.CHANNELS.value());
+            create(s.getSampleRate(),
+                    s.getChannels());
         } catch (FleetspeakAudioException e) {
             e.printStackTrace();
         }
@@ -37,19 +37,20 @@ public class OpusEncoder implements EncoderInterface {
     }
 
     public byte[] encode(byte[] pcmInData, int offset){
-        byte[] opusEncoded = new byte[320];
+        byte[] opusEncoded = new byte[1000];//FIXME Subsitute with a constant value threshold
+        byte[] tmp = new byte[0];
         int read = encode(pcmInData,offset,opusEncoded,0);
         if(read <= 0){
             Log.d("OPUS", "Failed to encode with :"+read);
-        }else {
-            this.tmp =  new byte[read];
-            System.arraycopy(opusEncoded, 0, this.tmp, 0, read);
+        }else{
+                tmp =  new byte[read];
+            System.arraycopy(opusEncoded, 0, tmp, 0, read);
         }
         return tmp;
     }
 
     private int encode(byte[] pcmInData, int inOffset, byte[] opusEncoded, int outOffset){
-        return OpusEncoderWrapper.encode(this.opusEncoder, pcmInData, inOffset, OpusConstants.FRAME_SIZE.value(), opusEncoded, outOffset, opusEncoded.length);
+        return OpusEncoderWrapper.encode(this.opusEncoder, pcmInData, inOffset, s.getFrameSize(), opusEncoded, outOffset, opusEncoded.length);
     }
 
 

@@ -5,44 +5,101 @@ import android.media.AudioManager;
 import android.media.AudioRecord;
 import android.media.AudioTrack;
 import android.media.MediaRecorder;
-import android.util.Log;
 
 /**
  *
  * Created by Fridgeridge on 2015-06-29.
  */
 public enum SoundConstants {
-    AUDIO_ENCODING(AudioFormat.ENCODING_PCM_16BIT),
-    INPUT_CHANNEL_CONFIG(AudioFormat.CHANNEL_IN_MONO),
-    INPUT_SOURCE(MediaRecorder.AudioSource.MIC),
-    SAMPLE_RATE(16000), //Recommended sample rate for VoIP TODO Implement support for more sample rates.
-    OUTPUT_CHANNEL_CONFIG(AudioFormat.CHANNEL_OUT_MONO),
-    SESSION_ID(AudioTrack.MODE_STREAM),
-    STREAM_TYPE(AudioManager.STREAM_VOICE_CALL),
-    AUDIO_IN_BUFFER_SIZE(AudioRecord.getMinBufferSize(SAMPLE_RATE.value(), AudioFormat.CHANNEL_IN_MONO, AUDIO_ENCODING.value())*3),
-    AUDIO_OUT_BUFFER_SIZE(AudioRecord.getMinBufferSize(SAMPLE_RATE.value(), AudioFormat.CHANNEL_IN_MONO, AUDIO_ENCODING.value())*3),
-    BYTEBUFFER_IN_SIZE(AUDIO_IN_BUFFER_SIZE.value()),
-    BYTEBUFFER_OUT_SIZE(AUDIO_OUT_BUFFER_SIZE.value()),
-    FRAME_SIZE_MS(60),
-    INPUT_FRAME_SIZE(1920);//Higher value (To a limit...) degrades sound quality and latency but eases on the performance.
-
-    private final int value;
-
-    private SoundConstants(int i){
-        this.value = i;
-    }
-
-    public int value(){
-        return value;
-    }
-
-    public static void printValues(){
-        SoundConstants[] all = SoundConstants.class.getEnumConstants();
-        for(SoundConstants s: all){
-            Log.d("SoundConstants",s.name()+": " + s.value);
+    LOW() {
+        @Override
+        public int getSampleRate(){
+            return 8000;
         }
 
+        @Override
+        public double getFrameSizeMS(){
+            return 20;
+        }
+    },
 
+    MID() {
+        @Override
+        public int getSampleRate(){
+            return 16000;
+        }
+
+        @Override
+        public double getFrameSizeMS(){
+            return 20;
+        }
+    },
+
+    HIGH() {
+        @Override
+        public int getSampleRate(){
+            return 24000;
+        }
+
+        @Override
+        public double getFrameSizeMS(){
+            return 20;
+        }
+    },
+
+    CD() {
+        @Override
+        public int getSampleRate(){
+            return 48000;
+        }
+
+        @Override
+        public double getFrameSizeMS(){
+            return 20;
+        }
+    };
+
+    public static SoundConstants getCurrent() {
+        return LOW;
     }
 
+    public int getEncoding() {
+        return AudioFormat.ENCODING_PCM_16BIT;
+    }
+    public int getInputChannelConfig() {
+        return AudioFormat.CHANNEL_IN_MONO;
+    }
+    public int getOutputChannelConfig(){
+        return AudioFormat.CHANNEL_OUT_MONO;
+    }
+    public int getInputSource() {
+        return MediaRecorder.AudioSource.MIC;
+    }
+    public int getSampleRate(){
+        return 16000;
+    }
+    public int getChannels(){
+        return 1;
+    }
+    public int getSessionID(){
+        return AudioTrack.MODE_STREAM;
+    }
+    public int getStreamType(){
+        return AudioManager.STREAM_VOICE_CALL;
+    }
+    public int getInputBufferSize(){
+        return AudioRecord.getMinBufferSize(getSampleRate(), getInputChannelConfig(), getEncoding())*3;
+    }
+    public int getOutputBufferSize(){
+        return AudioRecord.getMinBufferSize(getSampleRate(), getInputChannelConfig(), getEncoding())*3;
+    }
+    public double getFrameSizeMS(){
+        return 20;
+    }
+    public int getFrameSize(){
+        return (int)((getSampleRate()*getFrameSizeMS())/1000);
+    }
+    public int getPCMSize(){
+        return getFrameSize()*getChannels()*2;
+    }
 }

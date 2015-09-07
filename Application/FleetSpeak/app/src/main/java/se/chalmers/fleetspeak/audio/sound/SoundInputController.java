@@ -10,12 +10,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import se.chalmers.fleetspeak.audio.FleetspeakAudioException;
 
-import static se.chalmers.fleetspeak.audio.sound.SoundConstants.AUDIO_ENCODING;
-import static se.chalmers.fleetspeak.audio.sound.SoundConstants.AUDIO_IN_BUFFER_SIZE;
-import static se.chalmers.fleetspeak.audio.sound.SoundConstants.INPUT_CHANNEL_CONFIG;
-import static se.chalmers.fleetspeak.audio.sound.SoundConstants.INPUT_SOURCE;
-import static se.chalmers.fleetspeak.audio.sound.SoundConstants.SAMPLE_RATE;
-
 /**
  * A class for recording audio from the microphone to a bytebuffer.
  * Created by Fridgeridge on 2015-06-18.
@@ -24,21 +18,23 @@ public class SoundInputController implements Runnable {
 
     final String LOGTAG = "SoundInputController";
     private AudioRecord audioRecord;
-
     private BlockingQueue<byte[]> inputBuffer;
     private boolean isRecording;
 
     private Executor executor;
 
+    private SoundConstants s;
+
     public SoundInputController() throws FleetspeakAudioException {
+        s = SoundConstants.getCurrent();
         inputBuffer = new LinkedBlockingQueue<>(10);
         try {
             audioRecord = new AudioRecord(
-                    INPUT_SOURCE.value(),
-                    SAMPLE_RATE.value(),
-                    INPUT_CHANNEL_CONFIG.value(),
-                    AUDIO_ENCODING.value(),
-                    AUDIO_IN_BUFFER_SIZE.value()
+                    s.getInputSource(),
+                    s.getSampleRate(),
+                    s.getInputChannelConfig(),
+                    s.getEncoding(),
+                    s.getInputBufferSize()
             );
         } catch (IllegalArgumentException e) {
             Log.e("SoundRecord", e.getMessage());//TODO Remove or replace this snippet
@@ -77,8 +73,7 @@ public class SoundInputController implements Runnable {
         init();
         android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_AUDIO);
         while (isRecording) {
-
-                byte[] input = new byte[320];
+                byte[] input = new byte[s.getPCMSize()];
                 audioRecord.read(input,0,input.length);
             try {
                 inputBuffer.put(input);
