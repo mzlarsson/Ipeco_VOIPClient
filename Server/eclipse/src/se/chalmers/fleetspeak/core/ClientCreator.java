@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import se.chalmers.fleetspeak.database.UserInfo;
 import se.chalmers.fleetspeak.network.tcp.TCPHandler;
 
@@ -57,8 +60,17 @@ public class ClientCreator implements AuthenticatorListener{
 
 	@Override
 	public void authenticationFailed(String errorMsg, ClientAuthenticator authenticator) {
-		authenticator.getTCPHandler().sendCommand("{\"authenticationResult\":false, "
-				+ "\"rejection\":\"" + errorMsg + "\"}");
+		JSONObject json = new JSONObject();
+		try {
+			json.put("command" , "authenticationresult");
+			json.put("result", false);
+			json.put("rejection", errorMsg);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		authenticator.getTCPHandler().sendCommand(json.toString());
 		authenticator.terminate();
 		logger.log(Level.FINER, errorMsg);
 		authenticators.remove(authenticator);

@@ -112,6 +112,6 @@ public class Building {
     }
 
     public void clear() {
-        rooms = new ConcurrentHashMap<>();
+        rooms.clear();
     }
 }

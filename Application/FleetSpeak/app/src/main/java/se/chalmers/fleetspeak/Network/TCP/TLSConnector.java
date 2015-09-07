@@ -19,7 +19,7 @@ public class TLSConnector{
 
     private String LOGTAG = "TLSConnector";
 
-    private Socket socket;
+    private volatile Socket socket;
     private Handler responseHandler;
     private Messenger writeMessenger;
 
@@ -40,7 +40,11 @@ public class TLSConnector{
     public void sendMessage(String message){
         try {
             Log.d(LOGTAG, "sending message " + message);
-            writeMessenger.send(Message.obtain(null,1,message));
+            if(socket.isConnected()) {
+                writeMessenger.send(Message.obtain(null, 1, message));
+            }else{
+                disconnect();
+            }
         } catch (RemoteException e) {
             Log.e(LOGTAG, "failed to send message: " + e.getMessage());
         }
@@ -94,15 +98,21 @@ public class TLSConnector{
         protected Void doInBackground(Void... voids) {
             Log.d(LOGTAG, "Stopping reader");
             socketReader.stop();
+            socketReader = null;
             try {
                 writeMessenger.send(Message.obtain(null,0));
+                writeMessenger = null;
                 Log.d(LOGTAG, "Stopping writer");
             } catch (RemoteException e) {
                 e.printStackTrace();
+            } catch (IllegalStateException e){
+                e.printStackTrace();
             }
+
             try {
                 Log.d(LOGTAG, "trying to close socket");
                 socket.close();
+                socket = null;
                 Log.d(LOGTAG, "Closed socket");
             } catch (IOException e) {
                 e.printStackTrace();

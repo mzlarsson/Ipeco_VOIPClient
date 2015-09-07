@@ -30,7 +30,7 @@ public class Model {
     private SoundOutputController soundOutputController;
 
     String username ="";
-    String password ="";
+    String password ="fuck you";
 
 
 
@@ -85,10 +85,10 @@ public class Model {
         if(state == State.authenticated &&
                 roomid != building.getCurrentRoom()){
             Log.d("Model", "Moving to " + roomid);
-            connector.sendMessage("{\"command\":\"moveclient\","+
-                    "\"userid\":\"" + building.getUserid() + "\", " + 
+            connector.sendMessage("{\"command\":\"moveclient\"," +
+                    "\"userid\":\"" + building.getUserid() + "\", " +
                     "\"currentroom\":\"" + building.getCurrentRoom() + "\"," +
-                    "\"destinationroom\":\"" + roomid +"\"}");
+                    "\"destinationroom\":\"" + roomid + "\"}");
             building.moveUser(building.getUserid(), building.getCurrentRoom(), roomid);
         }
         Log.d("Model", roomid + " " + building.getCurrentRoom() );
@@ -126,7 +126,8 @@ public class Model {
                 case MessageValues.DISCONNECTED:
                     callbackHandler.sendEmptyMessage(MessageValues.DISCONNECTED);
                     state = State.not_connected;
-                    rtpHandler.terminate();
+                    if(rtpHandler != null)
+                        rtpHandler.terminate();
                     break;
                 case MessageValues.CONNECTIONFAILED:
 
@@ -170,10 +171,14 @@ public class Model {
                                 break;
                             case "sendauthenticationdetails":
                                 Log.d("auth", username);
-                                connector.sendMessage("{\"command\":\"authenticationdetails\"," +
-                                        "\"work\":" + json.getInt("work") +  "," + 
-                                        "\"username\":\"" + username + "\"," +
-                                        "\"password\":\"" + password + "\"}");
+                                JSONObject command = new JSONObject();
+                                command.put("command", "autheticationdetails");
+                                command.put("work", json.getString("work"));
+                                command.put("username", username);
+                                command.put("password", password);
+                                command.put("clienttype", "android");
+                                
+                                connector.sendMessage(command.toString());
                                 break;
                             case "authenticationresult":
                                 if (json.getBoolean("result")) { // true if successfully authenticated
@@ -189,7 +194,7 @@ public class Model {
                     } catch (JSONException e) {
                        Log.e("Model", "JSONException " + e.getMessage()); 
                     } catch (NullPointerException e){
-                        Log.e("Model", "Probably failed to parse JSON ");
+                        Log.e("Model", "Probably failed to parse JSON " + msg.obj);
                     }
                     
                 
