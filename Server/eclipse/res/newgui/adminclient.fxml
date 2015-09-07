@@ -1,13 +1,81 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
 
-<Pane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="se.chalmers.fleetspeak.newgui.AdminClientController">
+<AnchorPane prefHeight="680.0" prefWidth="1280.0" styleClass="container" stylesheets="@stylesheet.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="se.chalmers.fleetspeak.newgui.AdminClientController">
    <children>
-      <Label alignment="CENTER" layoutX="249.0" layoutY="239.0" prefHeight="52.0" prefWidth="303.0" text="INLOGGAD!" />
-      <Button layoutX="304.0" layoutY="310.0" mnemonicParsing="false" onAction="#disconnect" prefHeight="52.0" prefWidth="194.0" text="Disconnect" />
+      <MenuBar prefHeight="32.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <menus>
+          <Menu mnemonicParsing="false" text="File">
+            <items>
+              <MenuItem mnemonicParsing="false" text="Close" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Edit">
+            <items>
+              <MenuItem mnemonicParsing="false" text="Delete" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Help">
+            <items>
+              <MenuItem mnemonicParsing="false" text="About" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+      <AnchorPane layoutY="32.0" prefHeight="668.0" prefWidth="1280.0" styleClass="container" stylesheets="@stylesheet.css" AnchorPane.topAnchor="32.0">
+         <children>
+            <Pane layoutX="299.0" prefHeight="666.0" prefWidth="981.0">
+               <children>
+                  <Pane layoutX="278.0" layoutY="268.0" styleClass="container" stylesheets="@stylesheet.css">
+                     <children>
+                        <Button alignment="CENTER" layoutX="232.0" layoutY="79.0" mnemonicParsing="false" onAction="#disconnect" prefHeight="52.0" prefWidth="194.0" text="Disconnect" />
+                        <Button alignment="CENTER" layoutY="79.0" mnemonicParsing="false" onAction="#addRandomAdmin" prefHeight="52.0" prefWidth="194.0" text="Add admin" />
+                        <Label alignment="CENTER" layoutX="63.0" layoutY="14.0" prefHeight="52.0" prefWidth="300.0" text="INLOGGAD!" />
+                     </children>
+                  </Pane>
+               </children>
+            </Pane>
+            <Pane id="menuPane" prefWidth="300.0" stylesheets="@stylesheet.css">
+               <children>
+                  <Pane prefHeight="134.0" prefWidth="300.0" styleClass="menuSection" stylesheets="@stylesheet.css">
+                     <children>
+                        <Label alignment="CENTER" layoutX="72.0" layoutY="46.0" prefHeight="42.0" prefWidth="144.0" text="Buttons" />
+                     </children>
+                  </Pane>
+                  <Pane layoutY="134.0" prefHeight="170.0" stylesheets="@stylesheet.css">
+                     <children>
+                        <ScrollPane fx:id="scroller" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" layoutX="1.0" layoutY="1.0" prefHeight="167.0" prefViewportHeight="167.0" prefViewportWidth="297.0" prefWidth="297.0" styleClass="container" stylesheets="@stylesheet.css">
+                           <content>
+                              <VBox fx:id="adminList" prefHeight="168.0" prefWidth="297.0" stylesheets="@stylesheet.css">
+                                 <children>
+                                    <Label alignment="CENTER" prefHeight="37.0" prefWidth="300.0" text="Administrators" />
+                                 </children>
+                                 <styleClass>
+                                    <String fx:value="container" />
+                                    <String fx:value="vbox" />
+                                 </styleClass>
+                              </VBox>
+                           </content>
+                        </ScrollPane>
+                     </children>
+                     <styleClass>
+                        <String fx:value="container" />
+                        <String fx:value="menuSection" />
+                     </styleClass>
+                  </Pane>
+                  <Pane layoutY="302.0" prefHeight="366.0" prefWidth="300.0" styleClass="menuSection" stylesheets="@stylesheet.css">
+                     <children>
+                        <Label alignment="CENTER" layoutX="97.0" layoutY="143.0" prefHeight="61.0" prefWidth="106.0" text="GROUPS" />
+                     </children>
+                  </Pane>
+               </children>
+            </Pane>
+         </children>
+      </AnchorPane>
    </children>
-</Pane>
+</AnchorPane>

@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.newgui.core;
+package se.chalmers.fleetspeak.newgui.connection;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -8,8 +8,10 @@ import java.security.KeyStore;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
 
-import se.chalmers.fleetspeak.newgui.core.Authenticator.AuthenticatorListener;
-import se.chalmers.fleetspeak.util.Command;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import se.chalmers.fleetspeak.newgui.connection.Authenticator.AuthenticatorListener;
 
 public class ServerHandler {
 	
@@ -17,19 +19,35 @@ public class ServerHandler {
 	
 	private TCPHandler tcp;
 	private UDPHandler udp;
+	private String username;
+	private int userID;
 	
-	private ServerHandler(TCPHandler tcp, UDPHandler udp){
+	private ServerHandler(TCPHandler tcp, UDPHandler udp, String username, int userID){
 		this.tcp = tcp;
 		this.udp = udp;
+		this.username = username;
+		this.userID = userID;
+	}
+	
+	public String getUsername(){
+		return username;
+	}
+	
+	public int getUserID(){
+		return userID;
+	}
+	
+	public Integer getUserRoomID(){
+		return null;
 	}
 	
 	public void setCommandHandler(CommandHandler handler){
 		tcp.setCommandHandler(handler);
 	}
 	
-	public void sendCommand(Command c){
-		if(c != null){
-			tcp.send(c);
+	public void sendCommand(String json){
+		if(json != null){
+			tcp.send(json);
 		}
 	}
 	
@@ -44,11 +62,11 @@ public class ServerHandler {
 
 	public static void connect(String ip, int port, String username, String password, ConnectionListener listener){
 		Socket tlsSocket = getTLSSocket(ip, port);
-		System.out.println("Got socket");
 		if(tlsSocket == null){
 			listener.onConnectionFailure("Error starting TLS");
 			return;
 		}
+		System.out.println("Got socket");
 		
 		System.out.println("Initiating data tests");
 		try {
@@ -65,7 +83,7 @@ public class ServerHandler {
 				
 				@Override
 				public void authenticationDone() {
-					server = new ServerHandler(tcp, authenticator.getUDPHandler());
+					server = new ServerHandler(tcp, authenticator.getUDPHandler(), authenticator.getAlias(), authenticator.getUserID());
 					listener.onConnect();
 				}
 			});
@@ -77,7 +95,11 @@ public class ServerHandler {
 	
 	public static void disconnect(){
 		if(server != null){
-			server.sendCommand(new Command("disconnect", null, null));
+			try {
+				server.sendCommand(new JSONObject().put("command", "disconnect").toString());
+			} catch (JSONException e) {
+				System.out.println("Could not send disconnect: [JSONException] "+e.getMessage());
+			}
 			server.terminate();
 			server = null;
 		}
@@ -95,7 +117,6 @@ public class ServerHandler {
 			return ssl.getSocketFactory().createSocket(host, port);
 		}catch(Exception e){
 			System.out.println("Got fucking exception while creating TLS socket. ");
-			e.printStackTrace();
 			return null;
 		}
 	}

@@ -1,6 +1,0 @@
-//noCommandThatCanDoAnythingOnlyForDelaying null null 10000
-moveNewRoom HelloAssman null 4000
-moveNewRoom TrolololAss null 4000
-move 1 null 4000
-setName VoltIsBadAss null 4000
-disconnect null null 0

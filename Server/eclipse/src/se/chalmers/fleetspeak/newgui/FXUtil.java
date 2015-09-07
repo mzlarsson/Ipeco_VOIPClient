@@ -3,6 +3,7 @@ package se.chalmers.fleetspeak.newgui;
 import java.io.IOException;
 
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -22,6 +23,10 @@ public class FXUtil {
             if(!stage.isShowing()){
             	stage.show();
             }
+            
+            stage.setResizable(false);
+        	stage.sizeToScene();
+        	stage.centerOnScreen();
         } catch (IOException e) {
             e.printStackTrace();
         }

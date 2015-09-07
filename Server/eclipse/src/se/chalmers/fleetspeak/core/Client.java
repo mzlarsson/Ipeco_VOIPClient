@@ -10,7 +10,6 @@ import org.json.JSONObject;
 import se.chalmers.fleetspeak.network.tcp.TCPHandler;
 import se.chalmers.fleetspeak.network.udp.RTPHandler;
 import se.chalmers.fleetspeak.sound.BufferedAudioStream;
-import se.chalmers.fleetspeak.util.UserInfoPacket;
 
 /**
  * A class that handles all connectors with the app
@@ -63,13 +62,6 @@ public class Client implements CommandHandler, NetworkUser {
 	@Override
 	public void setCommandHandler(CommandHandler ch){
 		this.ch = ch;
-	}
-	/**
-	 * Gets the information of the client in a bundle.
-	 * @return The information of the client.
-	 */
-	public UserInfoPacket getInfoPacket() {
-		return new UserInfoPacket(clientID, alias);
 	}
 
 	/**

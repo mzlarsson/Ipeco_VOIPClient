@@ -9,10 +9,11 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.Pane;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
-import se.chalmers.fleetspeak.newgui.core.ConnectionListener;
-import se.chalmers.fleetspeak.newgui.core.ServerHandler;
+import se.chalmers.fleetspeak.newgui.connection.ConnectionListener;
+import se.chalmers.fleetspeak.newgui.connection.ServerHandler;
+import se.chalmers.fleetspeak.newgui.core.Building;
 
 public class AdminClientLoginController implements ConnectionListener{
 
@@ -27,7 +28,7 @@ public class AdminClientLoginController implements ConnectionListener{
 	@FXML
 	private Button loginButton;
 	@FXML
-	private Pane loadingOverlay;
+	private ImageView loadingOverlay;
 	
 	public void initialize(){
 		serverIPField.focusedProperty().addListener((ObservableValue<? extends Boolean> value, Boolean oldProp, Boolean newProp) -> {
@@ -48,7 +49,6 @@ public class AdminClientLoginController implements ConnectionListener{
 				serverPortField.selectAll();
 			}
 		});
-		showLoading(false);
 	}
 	
 	public void loginPropertyChanged(){
@@ -93,11 +93,19 @@ public class AdminClientLoginController implements ConnectionListener{
 	private void showLoading(boolean show){
 		System.out.println((show?"Showing":"Hiding")+" loading icon");
 		loadingOverlay.setVisible(show);
+		loginButton.setDisable(show);
+		serverIPField.setDisable(show);
+		serverPortField.setDisable(show);
+		usernameField.setDisable(show);
+		passwordField.setDisable(show);
 	}
 
 	@Override
 	public void onConnect() {
 		showLoading(false);
+		ServerHandler server = ServerHandler.getConnectedServer();
+		Building building = Building.getInstance(server.getUsername(), server.getUserID(), server.getUserRoomID());
+		server.setCommandHandler(building);
 		Platform.runLater(() -> {
 			FXUtil.switchLayout(getStage(), "adminclient");
 		});
