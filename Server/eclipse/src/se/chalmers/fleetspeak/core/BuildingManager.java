@@ -1,8 +1,7 @@
 package se.chalmers.fleetspeak.core;
 
-import se.chalmers.fleetspeak.util.Command;
 
 @FunctionalInterface
 public interface BuildingManager {
-	void handleCommand(Command c, int roomid);
+	void handleCommand(String c, int roomid);
 }

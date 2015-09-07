@@ -9,9 +9,11 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import se.chalmers.fleetspeak.core.CommandHandler;
 import se.chalmers.fleetspeak.core.NetworkUser;
-import se.chalmers.fleetspeak.util.Command;
 import se.chalmers.fleetspeak.util.PortFactory;
 
 /**
@@ -24,14 +26,14 @@ import se.chalmers.fleetspeak.util.PortFactory;
  * Client: control-code --> Server (udp)
  * Server: control-code --> Client (udp with repeated tries)
  * Client: "clientUdpTestOk" --> Server (tcp)
- * 
+ *
  * @author Patrik Haar
  */
 public class STUNInitiator extends Thread implements CommandHandler{
 
 	private NetworkUser tcp;
 	private DatagramSocket udp;
-	private CommandHandler ch;
+	private STUNListener listener;
 	private byte ctrlCode;
 	private int responseTimeoutTime = 2000, nbrOfResponseAttempts = 20;
 	private long delayInMilliBetweenAttempts = 50;
@@ -55,7 +57,17 @@ public class STUNInitiator extends Thread implements CommandHandler{
 		logger.log(Level.INFO, "Initiating STUN-protocol to client from port: " + udp.getLocalPort());
 		ctrlCode = (byte)new Random().nextInt();
 		boolean isWaitingForResponse = false;
-		tcp.sendCommand(new Command("initiateSoundPort", udp.getLocalPort(), ctrlCode));
+		JSONObject json = new JSONObject();
+		try {
+			json.put("command","initiateSoundPort");
+			json.put("port", udp.getLocalPort());
+			json.put("controlcode", "" + ctrlCode);
+		} catch (JSONException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+		tcp.sendCommand(json.toString());
 		DatagramPacket verificationPacket = new DatagramPacket(new byte[1], 1);
 		logger.log(Level.FINER, "Sent control code to client and waiting for response on port: " + udp.getLocalPort());
 		try {
@@ -75,7 +87,7 @@ public class STUNInitiator extends Thread implements CommandHandler{
 			} else {
 				logger.log(Level.WARNING, "Control codes does not match, received code: " + verificationPacket.getData()[0]);
 			}
-		} catch (SocketTimeoutException e) {	// The UDP-packet from the client never made it to the server. 
+		} catch (SocketTimeoutException e) {	// The UDP-packet from the client never made it to the server.
 			logger.log(Level.WARNING, "Timed out while waiting for udp response from client.");
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -86,7 +98,7 @@ public class STUNInitiator extends Thread implements CommandHandler{
 		if (udpVerified && isWaitingForResponse) { // UDP-connection correctly established.
 			logger.log(Level.FINER, "UDP-connection successfully established on port: " + udp.getLocalPort()
 					+ " to client: " + udp.getRemoteSocketAddress());
-			ch.handleCommand(new Command("DatagramSocketSTUN", tcp, udp));
+			listener.stunSuccessful(tcp, udp);
 		} else {	// Failed to establish a connection.
 			logger.log(Level.WARNING, "STUN protocol falied to establish a connection on port: " + udp.getLocalPort());
 			udp.close();
@@ -94,15 +106,20 @@ public class STUNInitiator extends Thread implements CommandHandler{
 		}
 	}
 
-	public void addCommandHandler(CommandHandler ch) {
-		this.ch = ch;
+	public void addSTUNListener(STUNListener listener) {
+		this.listener = listener;
 	}
-	
+
 	@Override
-	public void handleCommand(Command c) {
-		if(c.getCommand().equalsIgnoreCase("clientudptestok")) {
-			logger.log(Level.FINER, "Client: " + udp.getRemoteSocketAddress() + " recieved testpacket from port: " + udp.getLocalPort());
-			udpVerified = true;
+	public void handleCommand(String string) {
+		try {
+			JSONObject command = new JSONObject(string);
+			if(command.getString("command").equalsIgnoreCase("clientudptestok")) {
+				logger.log(Level.FINER, "Client: " + udp.getRemoteSocketAddress() + " recieved testpacket from port: " + udp.getLocalPort());
+				udpVerified = true;
+			}
+		} catch (JSONException e) {
+			logger.log(Level.WARNING, "failed to read command ");
 		}
 	}
 }
