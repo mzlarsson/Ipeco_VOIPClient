@@ -75,7 +75,7 @@ public class Building {
 	 */
 	public void addClient(Client client, int roomid){
 		//TODO error handling if invalid roomid
-		sync(client);
+
 		rooms.get(roomid).addClient(client);
 		JSONObject json = new JSONObject();
 		try {
@@ -91,7 +91,7 @@ public class Building {
 
 		postUpdate(json.toString());
 		logger.log(Level.INFO, "Added client " + client.toString() + " to room " + roomid);
-
+		sync(client);
 	}
 	/**
 	 * Move a Client between rooms

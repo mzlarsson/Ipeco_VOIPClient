@@ -42,6 +42,9 @@ public class SocketWriter implements Runnable{
             public void handleMessage(Message msg){
                 switch (msg.what){
                     case 0:
+                        Log.d("TLS", "sending disconnect");
+                        printWriter.print("{\"command\":\"disconnect\"}");
+                        printWriter.flush();
                         close();
                         break;
                     case 1:
@@ -67,5 +70,6 @@ public class SocketWriter implements Runnable{
     private void close(){
         Looper.myLooper().quit();
         printWriter.close();
+
     }
 }

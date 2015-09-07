@@ -72,19 +72,29 @@ public class TCPHandler extends Thread{
 
 			}
 		} catch(EOFException eofe){
-			receivedCommand("");
+			receivedCommand("{\"command\":\"disconnected\"}");
 		} catch(SocketTimeoutException e){
 			logger.log(Level.SEVERE, "Got Socket Timeout. Removing client");
-			receivedCommand("");
+			receivedCommand("{\"command\":\"disconnected\"}");
 		} catch(SocketException e){
 			//Only log if the handler is not terminated
 			if(isRunning){
 				logger.log(Level.SEVERE, e.getMessage());
 			}
-			receivedCommand("");
+			receivedCommand("{\"command\":\"disconnected\"}");
 		}catch (IOException e) {
-			receivedCommand("");
+			receivedCommand("{\"command\":\"disconnected\"}");
 			logger.log(Level.SEVERE,e.getMessage());
+		}finally{
+			try {
+				bufferedReader.close();
+				printWriter.close();
+				clientSocket.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 		}
 	}
 
@@ -104,7 +114,10 @@ public class TCPHandler extends Thread{
 	public void sendCommand(String command){
 		logger.log(Level.FINER,command);
 		printWriter.println(command);
-		printWriter.flush();
+		if(printWriter.checkError()){
+			receivedCommand("{\"command\":\"disconnect\"}");
+		}
+
 	}
 
 	/**

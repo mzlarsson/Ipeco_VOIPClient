@@ -126,7 +126,21 @@ public class Client implements CommandHandler, NetworkUser {
 
 	@Override
 	public void handleCommand(String string) {
-		//TODO change if there should be commands that only go here
-		ch.handleCommand(string);
+		try {
+			JSONObject json = new JSONObject(string);
+			switch(json.getString("command")){
+			case "disconnect":
+				json.put("userid", this.clientID);
+				ch.handleCommand(json.toString());
+				break;
+			default:
+				ch.handleCommand(string);
+				break;
+			}
+
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
