@@ -11,12 +11,8 @@ import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
-import se.chalmers.fleetspeak.eventbus.EventBus;
-import se.chalmers.fleetspeak.eventbus.EventBusEvent;
-import se.chalmers.fleetspeak.eventbus.IEventBusSubscriber;
-import se.chalmers.fleetspeak.util.UserInfoPacket;
 
-public class ServerGUIRoomController implements IEventBusSubscriber{
+public class ServerGUIRoomController{
 
 	@FXML
 	private VBox root;
@@ -31,7 +27,6 @@ public class ServerGUIRoomController implements IEventBusSubscriber{
 	private Image allRoomsIcon, roomIcon;
 	
 	public ServerGUIRoomController(){
-		EventBus.getInstance().addSubscriber(this);
 		clientRooms = new HashMap<Integer, Integer>();
 		clientNames = new HashMap<Integer, String>();
 
@@ -180,31 +175,6 @@ public class ServerGUIRoomController implements IEventBusSubscriber{
 		}
 			
 		return null;
-	}
-
-	@Override
-	public void eventPerformed(EventBusEvent event) {
-		if(event.getReciever().equals("broadcast")){
-			String cmd = event.getCommand().getCommand();
-			if(cmd.equals("addedUser")){
-				UserInfoPacket user = (UserInfoPacket)event.getCommand().getKey();
-				registerClient(user.getID(), user.getRoomID());
-			}else if(cmd.equals("changedUsername")){
-				renameClient((Integer)event.getCommand().getKey(), (String)event.getCommand().getValue());
-			}else if(cmd.equals("changedRoomName")){
-				renameRoom((Integer)event.getCommand().getKey(), (String)event.getCommand().getValue());
-			}else if(cmd.equals("movedUser")){
-				moveClient((Integer)event.getCommand().getKey(), (Integer)event.getCommand().getValue());
-			}else if(cmd.equals("createdRoom")){
-				registerRoom((Integer)event.getCommand().getKey(), (String)event.getCommand().getValue());
-			}else if(cmd.equals("removedUser")){
-				removeClient((Integer)event.getCommand().getKey());
-			}else if(cmd.equals("removedRoom")){
-				removeRoom((Integer)event.getCommand().getKey());
-			}else{
-				System.out.println("Wtf...?");
-			}
-		}
 	}
 	
 	

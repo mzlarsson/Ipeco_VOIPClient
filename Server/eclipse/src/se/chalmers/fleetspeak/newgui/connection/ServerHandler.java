@@ -8,9 +8,10 @@ import java.security.KeyStore;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import se.chalmers.fleetspeak.newgui.connection.Authenticator.AuthenticatorListener;
-import se.chalmers.fleetspeak.util.Command;
-import se.chalmers.fleetspeak.util.UserInfoPacket;
 
 public class ServerHandler {
 	
@@ -18,33 +19,35 @@ public class ServerHandler {
 	
 	private TCPHandler tcp;
 	private UDPHandler udp;
-	private UserInfoPacket userInfo;
+	private String username;
+	private int userID;
 	
-	private ServerHandler(TCPHandler tcp, UDPHandler udp, UserInfoPacket userInfo){
+	private ServerHandler(TCPHandler tcp, UDPHandler udp, String username, int userID){
 		this.tcp = tcp;
 		this.udp = udp;
-		this.userInfo = userInfo;
+		this.username = username;
+		this.userID = userID;
 	}
 	
 	public String getUsername(){
-		return userInfo.getName();
+		return username;
 	}
 	
 	public int getUserID(){
-		return userInfo.getID();
+		return userID;
 	}
 	
-	public int getUserRoomID(){
-		return userInfo.getRoomID();
+	public Integer getUserRoomID(){
+		return null;
 	}
 	
 	public void setCommandHandler(CommandHandler handler){
 		tcp.setCommandHandler(handler);
 	}
 	
-	public void sendCommand(Command c){
-		if(c != null){
-			tcp.send(c);
+	public void sendCommand(String json){
+		if(json != null){
+			tcp.send(json);
 		}
 	}
 	
@@ -80,7 +83,7 @@ public class ServerHandler {
 				
 				@Override
 				public void authenticationDone() {
-					server = new ServerHandler(tcp, authenticator.getUDPHandler(), authenticator.getUserInfo());
+					server = new ServerHandler(tcp, authenticator.getUDPHandler(), authenticator.getAlias(), authenticator.getUserID());
 					listener.onConnect();
 				}
 			});
@@ -92,7 +95,11 @@ public class ServerHandler {
 	
 	public static void disconnect(){
 		if(server != null){
-			server.sendCommand(new Command("disconnect", null, null));
+			try {
+				server.sendCommand(new JSONObject().put("command", "disconnect").toString());
+			} catch (JSONException e) {
+				System.out.println("Could not send disconnect: [JSONException] "+e.getMessage());
+			}
 			server.terminate();
 			server = null;
 		}

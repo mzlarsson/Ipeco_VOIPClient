@@ -1,7 +1,6 @@
 package se.chalmers.fleetspeak.newgui.core;
 
 import se.chalmers.fleetspeak.newgui.connection.CommandHandler;
-import se.chalmers.fleetspeak.util.Command;
 
 public class Building implements CommandHandler{
 	
@@ -12,8 +11,8 @@ public class Building implements CommandHandler{
 	}
 
 	@Override
-	public void commandReceived(Command cmd) {
-		System.out.println("Building got command: "+cmd);
+	public void commandReceived(String json) {
+		System.out.println("Building got command: "+json);
 	}
 	
 	

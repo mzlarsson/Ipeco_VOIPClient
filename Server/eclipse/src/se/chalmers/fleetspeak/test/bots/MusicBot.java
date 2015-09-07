@@ -11,9 +11,11 @@ import java.util.Random;
 
 import javax.swing.Timer;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import se.chalmers.fleetspeak.network.udp.RTPHandler;
 import se.chalmers.fleetspeak.test.sound.SongHandler;
-import se.chalmers.fleetspeak.util.Command;
 import se.chalmers.fleetspeak.util.RtpPackageHandler;
 
 public class MusicBot extends Thread {
@@ -59,17 +61,28 @@ public class MusicBot extends Thread {
 		
 		//Fix all stuff
 		if(stunStatus==STUN_STATUS_DONE || stunStatus>-1000){
-			tcpBot.send(new Command("clientUdpTestOk", null, null));
+			JSONObject obj = new JSONObject();
+			try {
+				obj.put("command", "clientUdpTestOk");
+			} catch (JSONException e) {}
+			tcpBot.send(obj.toString());
 			sleep(1000);
+			
 			System.out.println("Entering music room");
-			moveToMusicRoom();
+			try {
+				moveToMusicRoom();
+			} catch (JSONException e) {
+				System.out.println("Could not enter music room: [JSONException] "+e.getMessage());
+			}
 			sleep(1000);
+			
 			int playTimes = 5;
 			for(int i = 0; i<playTimes; i++){
 				System.out.println(i==0?"Playing audio":"Starting over"+(i+1==playTimes?" (last time)":""));		//Info message.
 				playRandomAudioOverIP();
 				sleep(1000);
 			}
+			
 			System.out.println("Audio playing done. Disconnecting...");
 			leaveAndCleanUp();
 		}else{
@@ -154,12 +167,18 @@ public class MusicBot extends Thread {
 		this.stunStatus = status;
 	}
 	
-	private void moveToMusicRoom(){
+	private void moveToMusicRoom() throws JSONException{
 		Integer roomID = tcpBot.getRoomID(musicRoomName);
 		if(roomID == null){
-			tcpBot.send(new Command("movenewroom", musicRoomName, null));
+			JSONObject obj = new JSONObject();
+			obj.put("command", "movenewroom");
+			obj.put("name", musicRoomName);
+			tcpBot.send(obj.toString());
 		}else{
-			tcpBot.send(new Command("move", roomID, null));
+			JSONObject obj = new JSONObject();
+			obj.put("command", "move");
+			obj.put("id", roomID);
+			tcpBot.send(obj.toString());
 		}
 	}
 	
@@ -193,7 +212,13 @@ public class MusicBot extends Thread {
 	
 	private void leaveAndCleanUp(){
 		rtp.terminate();
-		tcpBot.send(new Command("disconnect", null, null));
+		try {
+			JSONObject obj = new JSONObject();
+			obj.put("command", "disconnect");
+			tcpBot.send(obj.toString());
+		} catch (JSONException e) {
+			System.out.println("Could not disconnect: [JSONException] "+e.getMessage());
+		}
 		tcpBot.close();
 	}
 	
