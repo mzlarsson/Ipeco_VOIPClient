@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.newgui.core;
+package se.chalmers.fleetspeak.newgui.connection;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -8,8 +8,9 @@ import java.security.KeyStore;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
 
-import se.chalmers.fleetspeak.newgui.core.Authenticator.AuthenticatorListener;
+import se.chalmers.fleetspeak.newgui.connection.Authenticator.AuthenticatorListener;
 import se.chalmers.fleetspeak.util.Command;
+import se.chalmers.fleetspeak.util.UserInfoPacket;
 
 public class ServerHandler {
 	
@@ -17,10 +18,24 @@ public class ServerHandler {
 	
 	private TCPHandler tcp;
 	private UDPHandler udp;
+	private UserInfoPacket userInfo;
 	
-	private ServerHandler(TCPHandler tcp, UDPHandler udp){
+	private ServerHandler(TCPHandler tcp, UDPHandler udp, UserInfoPacket userInfo){
 		this.tcp = tcp;
 		this.udp = udp;
+		this.userInfo = userInfo;
+	}
+	
+	public String getUsername(){
+		return userInfo.getName();
+	}
+	
+	public int getUserID(){
+		return userInfo.getID();
+	}
+	
+	public int getUserRoomID(){
+		return userInfo.getRoomID();
 	}
 	
 	public void setCommandHandler(CommandHandler handler){
@@ -44,11 +59,11 @@ public class ServerHandler {
 
 	public static void connect(String ip, int port, String username, String password, ConnectionListener listener){
 		Socket tlsSocket = getTLSSocket(ip, port);
-		System.out.println("Got socket");
 		if(tlsSocket == null){
 			listener.onConnectionFailure("Error starting TLS");
 			return;
 		}
+		System.out.println("Got socket");
 		
 		System.out.println("Initiating data tests");
 		try {
@@ -65,7 +80,7 @@ public class ServerHandler {
 				
 				@Override
 				public void authenticationDone() {
-					server = new ServerHandler(tcp, authenticator.getUDPHandler());
+					server = new ServerHandler(tcp, authenticator.getUDPHandler(), authenticator.getUserInfo());
 					listener.onConnect();
 				}
 			});
@@ -95,7 +110,6 @@ public class ServerHandler {
 			return ssl.getSocketFactory().createSocket(host, port);
 		}catch(Exception e){
 			System.out.println("Got fucking exception while creating TLS socket. ");
-			e.printStackTrace();
 			return null;
 		}
 	}

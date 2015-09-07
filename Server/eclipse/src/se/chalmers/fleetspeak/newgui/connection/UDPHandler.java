@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.newgui.core;
+package se.chalmers.fleetspeak.newgui.connection;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -39,6 +39,7 @@ public class UDPHandler extends Thread{
 	}
 	
 	public void run(){
+		Thread.currentThread().setName("UDPHandler");
 		//Perform stun
 		doStun();
 
@@ -66,6 +67,7 @@ public class UDPHandler extends Thread{
 			Thread udpListener = new Thread(new Runnable(){
 				@Override
 				public void run() {
+					Thread.currentThread().setName("UDP Stun receiver");
 					DatagramPacket p = new DatagramPacket(new byte[172], 172, serverIP, serverPort);
 					try{
 						Timer timeoutTimer = new Timer(5000, new ActionListener(){

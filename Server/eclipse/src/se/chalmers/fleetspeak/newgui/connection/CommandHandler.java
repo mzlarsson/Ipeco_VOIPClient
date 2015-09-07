@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.newgui.core;
+package se.chalmers.fleetspeak.newgui.connection;
 
 import se.chalmers.fleetspeak.util.Command;
 

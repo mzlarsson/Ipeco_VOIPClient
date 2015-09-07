@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<fx:root fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="32.0" prefWidth="299.0" styleClass="container" stylesheets="@stylesheet.css" type="javafx.scene.layout.Pane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <ImageView fx:id="loginStatusView" fitHeight="32.0" fitWidth="32.0" layoutX="14.0" pickOnBounds="true" preserveRatio="true" />
+      <Label fx:id="usernameLabel" layoutX="52.0" prefHeight="32.0" prefWidth="242.0" text="Username" />
+   </children>
+</fx:root>

@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.newgui.core;
+package se.chalmers.fleetspeak.newgui.connection;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -6,6 +6,7 @@ import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import se.chalmers.fleetspeak.util.Command;
@@ -22,6 +23,7 @@ public class TCPHandler {
 	private ObjectInputStream in;
 	private ObjectOutputStream out;
 	private boolean running;
+	private Executor executor;
 	
 	//Data receiver
 	private CommandHandler handler;
@@ -35,6 +37,7 @@ public class TCPHandler {
 		
 		
 		Runnable reader = () -> {
+			Thread.currentThread().setName("TCPHandler: Read");
 			Object obj;
 			while(running){
 				try {
@@ -50,7 +53,7 @@ public class TCPHandler {
 			}
 		};
 		this.running = true;
-		Executor executor = Executors.newSingleThreadExecutor();
+		executor = Executors.newSingleThreadExecutor();
 		executor.execute(reader);
 	}
 	
@@ -81,6 +84,10 @@ public class TCPHandler {
 			}
 		} catch (IOException e) {
 			logger.severe("Could not close socket");
+		}
+		
+		if(executor != null && executor instanceof ExecutorService){
+			((ExecutorService)executor).shutdown();
 		}
 	}
 }

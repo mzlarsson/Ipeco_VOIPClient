@@ -1,8 +1,27 @@
 .background{
-	-fx-background-color:#ffffff;
-	-fx-background-image:url("bg.jpg");
+	-fx-background-color: white;
+       /* #f2f2f2e5,
+        linear-gradient(#f2f2f2e5 0%, #ffffffcf 2%, #322929cf 93%, #322929cf 100%);*/
+}
+
+.container{
+	-fx-background-color:transparent;
+}
+.scroll-pane, .vbox{
+	-fx-background-color:white;
 }
 
 .button{
 	
+}
+
+#menuPane{
+	-fx-border-width:0 1 0 0;
+	-fx-border-style:solid;
+	-fx-border-color:#aaaaaa;
+}
+.menuSection{
+	-fx-border-width:0 0 1 0;
+	-fx-border-style:solid;
+	-fx-border-color:#aaaaaa;
 }

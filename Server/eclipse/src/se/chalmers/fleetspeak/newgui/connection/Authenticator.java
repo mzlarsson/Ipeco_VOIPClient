@@ -1,8 +1,9 @@
-package se.chalmers.fleetspeak.newgui.core;
+package se.chalmers.fleetspeak.newgui.connection;
 
-import se.chalmers.fleetspeak.newgui.core.UDPHandler.StunListener;
-import se.chalmers.fleetspeak.newgui.core.UDPHandler.StunStatus;
+import se.chalmers.fleetspeak.newgui.connection.UDPHandler.StunListener;
+import se.chalmers.fleetspeak.newgui.connection.UDPHandler.StunStatus;
 import se.chalmers.fleetspeak.util.Command;
+import se.chalmers.fleetspeak.util.UserInfoPacket;
 
 public class Authenticator implements CommandHandler, StunListener{
 	
@@ -11,6 +12,7 @@ public class Authenticator implements CommandHandler, StunListener{
 	private UDPHandler udp;
 	private String username;
 	private String password;
+	private UserInfoPacket userInfo;
 	
 	//Status
 	private AuthenticatorListener listener;
@@ -36,6 +38,10 @@ public class Authenticator implements CommandHandler, StunListener{
 		return failed;
 	}
 	
+	public UserInfoPacket getUserInfo(){
+		return userInfo;
+	}
+	
 	public UDPHandler getUDPHandler(){
 		return udp;
 	}
@@ -45,12 +51,17 @@ public class Authenticator implements CommandHandler, StunListener{
 		System.out.println("Got command "+cmd);
 		switch(cmd.getCommand().toLowerCase()){
 			case "sendauthenticationdetails":	tcp.send(new Command("authenticationDetails", username, password));break;
+			case "setinfo":						setInfo((UserInfoPacket)cmd.getKey());break;
 			case "initiatesoundport":			udp = new UDPHandler(tcp.getIP(), (int)cmd.getKey(), (byte)cmd.getValue());
 												udp.setStunListener(this);
 												udp.start();
 												break;
 			case "authenticationresult":		setResult(!(boolean)cmd.getKey());break;
 		}
+	}
+
+	private void setInfo(UserInfoPacket userInfo) {
+		this.userInfo = userInfo;
 	}
 
 	private void setResult(boolean failed){
