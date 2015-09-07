@@ -56,7 +56,7 @@ public class TLSConnector{
             Socket sslSocket = null;
             if(strings.length == 2){
                 Log.i(LOGTAG, "trying to connect to " + strings[0] + strings[1]);
-                sslSocket =  SocketFactory.getSocket(strings[0], Integer.parseInt(strings[1]));
+                sslSocket =  SocketFactory.getSSLSocket(strings[0], Integer.parseInt(strings[1]));
                 Log.i(LOGTAG, "socket created");
             }
             return sslSocket;
@@ -67,11 +67,6 @@ public class TLSConnector{
             if(sslSocket != null){
 
                 socket = sslSocket;
-                try {
-                    socket.startHandshake();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
                 try {
                     socketReader = new SocketReader(sslSocket.getInputStream(), new Messenger(responseHandler));
                     socketWriter = new SocketWriter(sslSocket.getOutputStream(), responseHandler);
