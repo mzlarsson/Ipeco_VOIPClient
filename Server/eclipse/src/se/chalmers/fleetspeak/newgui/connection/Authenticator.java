@@ -14,7 +14,6 @@ public class Authenticator implements CommandHandler, StunListener{
 	private String username;
 	private String password;
 	
-	private String alias;
 	private int userID;
 	
 	//Status
@@ -35,10 +34,6 @@ public class Authenticator implements CommandHandler, StunListener{
 		return udp;
 	}
 	
-	public String getAlias(){
-		return alias;
-	}
-	
 	public int getUserID(){
 		return userID;
 	}
@@ -53,14 +48,15 @@ public class Authenticator implements CommandHandler, StunListener{
 													sendObj.put("command", "authenticationDetails");
 													sendObj.put("username", username);
 													sendObj.put("password", password);
+													sendObj.put("work", obj.getInt("work"));
+													sendObj.put("clienttype", "android");
 													tcp.send(sendObj.toString());break;
-				case "setinfo":						this.username = obj.getString("alias");
-													this.userID = obj.getInt("id");break;
+				case "setinfo":						this.userID = obj.getInt("userid");break;
 				case "initiatesoundport":			udp = new UDPHandler(tcp.getIP(), obj.getInt("port"), Byte.parseByte(obj.getString("controlcode")));
 													udp.setStunListener(this);
 													udp.start();
 													break;
-				case "authenticationresult":		setResult(!obj.getBoolean("authenticationResult"));break;
+				case "authenticationresult":		setResult(!obj.getBoolean("result"));break;
 			}
 		}catch(JSONException e){
 			System.out.println("Got invalid command: [JSONException] "+e.getMessage());

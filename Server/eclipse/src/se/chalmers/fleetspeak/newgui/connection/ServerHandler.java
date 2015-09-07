@@ -19,26 +19,16 @@ public class ServerHandler {
 	
 	private TCPHandler tcp;
 	private UDPHandler udp;
-	private String username;
 	private int userID;
 	
-	private ServerHandler(TCPHandler tcp, UDPHandler udp, String username, int userID){
+	private ServerHandler(TCPHandler tcp, UDPHandler udp, int userID){
 		this.tcp = tcp;
 		this.udp = udp;
-		this.username = username;
 		this.userID = userID;
 	}
-	
-	public String getUsername(){
-		return username;
-	}
-	
+
 	public int getUserID(){
 		return userID;
-	}
-	
-	public Integer getUserRoomID(){
-		return null;
 	}
 	
 	public void setCommandHandler(CommandHandler handler){
@@ -83,7 +73,7 @@ public class ServerHandler {
 				
 				@Override
 				public void authenticationDone() {
-					server = new ServerHandler(tcp, authenticator.getUDPHandler(), authenticator.getAlias(), authenticator.getUserID());
+					server = new ServerHandler(tcp, authenticator.getUDPHandler(), authenticator.getUserID());
 					listener.onConnect();
 				}
 			});

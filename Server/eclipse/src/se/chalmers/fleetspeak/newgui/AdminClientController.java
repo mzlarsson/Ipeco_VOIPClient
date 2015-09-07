@@ -7,7 +7,7 @@ import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import se.chalmers.fleetspeak.newgui.ClientPane.ClientChangeHandler;
@@ -17,7 +17,7 @@ import se.chalmers.fleetspeak.newgui.core.Building;
 public class AdminClientController implements ClientChangeHandler{
 	
 	@FXML
-	private Pane root;
+	private AnchorPane root;
 	@FXML
 	private VBox adminList;
 

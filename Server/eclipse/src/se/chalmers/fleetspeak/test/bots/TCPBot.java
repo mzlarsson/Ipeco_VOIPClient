@@ -82,12 +82,12 @@ class TCPBot extends Thread{
 		JSONObject obj = new JSONObject(json);
 		
 		switch(obj.getString("command").toLowerCase()){
-			case "setinfo":			System.out.println(name+":\n\tClient info: [name:"+obj.getString("alias")+", ID:"+obj.getInt("id")+", roomID:"+obj.getInt("roomID"));break;
+			case "setinfo":			System.out.println(name+":\n\tClient info: [ID:"+obj.getInt("userid")+"]");break;
 			case "addeduser":		System.out.println(name+":\n\tUPDATE: Added user");break;
 			case "changedusername":	System.out.println(name+":\n\tUPDATE: Changed username");break;
 			case "changedroomname":	System.out.println(name+":\n\tUPDATE: Changed room name");break;
 			case "moveduser":		System.out.println(name+":\n\tUPDATE: Moved user");break;
-			case "createdroom":		rooms.put(obj.getString("name"), obj.getInt("id"));
+			case "createdroom":		rooms.put(obj.getString("roomname"), obj.getInt("roomid"));
 									System.out.println(name+":\n\tUPDATE: Created room");break;
 			case "removeduser":		System.out.println(name+":\n\tUPDATE: Removed user");break;
 			case "removedroom":		String roomName = null;
@@ -107,9 +107,12 @@ class TCPBot extends Thread{
 			case "sendauthenticationdetails":	JSONObject authObj = new JSONObject();
 												authObj.put("command", "authenticationDetails");
 												authObj.put("username", "bottenanja");
-												authObj.put("password", "magicPassword");
+												authObj.put("password", "");
+												authObj.put("work", obj.getInt("work"));
+												authObj.put("clienttype", "android");
 												send(authObj.toString());
-			case "authenticationresult":	if(obj.getBoolean("authenticationresult")){
+											break;
+			case "authenticationresult":	if(obj.getBoolean("result")){
 												tlsStatus = TLS_STATUS_DONE;
 											}else{
 												System.out.println("Did not authenticate: "+obj.getString("rejection"));
@@ -145,6 +148,7 @@ class TCPBot extends Thread{
 	protected void send(String json){
 		System.out.println("Sending:\n\tCommand:"+json);
 		out.println(json);
+		out.flush();
 	}
 	
 	public void close(){

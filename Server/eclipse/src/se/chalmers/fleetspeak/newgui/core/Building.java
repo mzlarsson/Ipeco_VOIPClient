@@ -6,8 +6,8 @@ public class Building implements CommandHandler{
 	
 	private static Building building;
 	
-	private Building(String username, int id, int roomID){
-		System.out.println("Starting Building for "+username+" [ID "+id+"]");
+	private Building(int id){
+		System.out.println("Starting Building for [ID "+id+"]");
 	}
 
 	@Override
@@ -16,9 +16,9 @@ public class Building implements CommandHandler{
 	}
 	
 	
-	public static Building getInstance(String username, int id, int roomID){
+	public static Building getInstance(int id){
 		if(building == null){
-			building = new Building(username, id, roomID);
+			building = new Building(id);
 		}
 		
 		return building;

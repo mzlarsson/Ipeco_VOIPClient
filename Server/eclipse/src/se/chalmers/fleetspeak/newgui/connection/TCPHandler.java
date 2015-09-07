@@ -63,9 +63,10 @@ public class TCPHandler {
 	}
 	
 	public void send(String json){
-		System.out.println("Sending "+json);
 		if(out != null){
+			System.out.println("Sending "+json);
 			out.println(json);
+			out.flush();
 		}
 	}
 	

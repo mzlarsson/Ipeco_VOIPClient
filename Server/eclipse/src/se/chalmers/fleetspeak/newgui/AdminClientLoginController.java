@@ -104,7 +104,7 @@ public class AdminClientLoginController implements ConnectionListener{
 	public void onConnect() {
 		showLoading(false);
 		ServerHandler server = ServerHandler.getConnectedServer();
-		Building building = Building.getInstance(server.getUsername(), server.getUserID(), server.getUserRoomID());
+		Building building = Building.getInstance(server.getUserID());
 		server.setCommandHandler(building);
 		Platform.runLater(() -> {
 			FXUtil.switchLayout(getStage(), "adminclient");

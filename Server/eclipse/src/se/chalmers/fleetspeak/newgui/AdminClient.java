@@ -21,7 +21,7 @@ public class AdminClient extends Application{
         	ServerHandler.disconnect();
         });
         
-        FXUtil.switchLayout(primaryStage, "adminclient");//_login");
+        FXUtil.switchLayout(primaryStage, "adminclient_login");
     }
 
     public static void main(String[] args) {
