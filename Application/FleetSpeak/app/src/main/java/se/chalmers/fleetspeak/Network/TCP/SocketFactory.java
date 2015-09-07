@@ -6,6 +6,7 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.Socket;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -31,7 +32,7 @@ public class SocketFactory {
     }
 
 
-    public static SSLSocketFactory getSocketFactory(){
+    public static Socket getSSLSocket(String ip, int port){
         SSLSocketFactory socketFactory = null;
         try {
             KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
@@ -47,6 +48,7 @@ public class SocketFactory {
             Log.i("TLS", sslContext.getProtocol());
             sslContext.init(null, tmf.getTrustManagers(), null);
             socketFactory = sslContext.getSocketFactory();
+            return socketFactory.createSocket(ip, port );
         }catch(KeyStoreException e){
             e.printStackTrace();
         } catch (CertificateException e) {
@@ -59,7 +61,16 @@ public class SocketFactory {
             e.printStackTrace();
         }
 
-        return socketFactory;
+        return null;
+    }
+
+    public static Socket getSocket(String ip, int port){
+        try {
+            return new Socket(ip,port);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 

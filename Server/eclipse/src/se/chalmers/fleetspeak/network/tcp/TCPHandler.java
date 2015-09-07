@@ -11,8 +11,6 @@ import java.net.SocketTimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.net.ssl.SSLException;
-
 import se.chalmers.fleetspeak.core.CommandHandler;
 import se.chalmers.fleetspeak.eventbus.EventBus;
 import se.chalmers.fleetspeak.eventbus.EventBusEvent;
@@ -50,8 +48,6 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 			objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
 			objectInputStream = new ObjectInputStream(clientSocket.getInputStream());
 			logger.log(Level.FINE,"Got streams");
-		}catch(SSLException e){
-			e.printStackTrace();
 		}
 		catch (IOException e) {
 			logger.log(Level.WARNING,e.getMessage());
