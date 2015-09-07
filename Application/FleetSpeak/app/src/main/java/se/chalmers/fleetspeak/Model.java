@@ -30,7 +30,7 @@ public class Model {
     private SoundOutputController soundOutputController;
 
     String username ="";
-    String password ="fuck you";
+    String password ="";
 
 
 
