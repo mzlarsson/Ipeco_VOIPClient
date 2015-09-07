@@ -37,6 +37,6 @@
     <string name="lobby">Lobby</string>
     <string name="Chatroom">Chatroom</string>
     <string name="reconnect">Reconnect</string>
-    <string name="sRoom">'s room</string>
+    <string name="sRoom">\'s room</string>
 
 </resources>
