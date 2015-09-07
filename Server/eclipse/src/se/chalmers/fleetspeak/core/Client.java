@@ -2,13 +2,14 @@ package se.chalmers.fleetspeak.core;
 
 import java.net.InetAddress;
 import java.util.concurrent.BlockingQueue;
-import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import se.chalmers.fleetspeak.network.tcp.TCPHandler;
 import se.chalmers.fleetspeak.network.udp.RTPHandler;
 import se.chalmers.fleetspeak.sound.BufferedAudioStream;
-import se.chalmers.fleetspeak.util.Command;
 import se.chalmers.fleetspeak.util.UserInfoPacket;
 
 /**
@@ -43,12 +44,20 @@ public class Client implements CommandHandler, NetworkUser {
 		this.ip = ip;
 		this.tcp = tcph;
 		this.tcp.setCommandHandler(this);
-		this.tcp.sendCommand(new Command("setInfo", getInfoPacket(), null));
+		JSONObject json = new JSONObject();
+		try {
+			json.put("command" , "setinfo");
+			json.put("userid", clientID);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		this.tcp.sendCommand(json.toString());
 	}
 
 	@Override
-	public void sendCommand(Command c){
-		tcp.sendCommand(c);
+	public void sendCommand(String command){
+		tcp.sendCommand(command);
 	}
 
 	@Override
@@ -113,24 +122,6 @@ public class Client implements CommandHandler, NetworkUser {
 		return rtp.getOutputBuffer();
 	}
 
-	@Override
-	public void handleCommand(Command c) {
-		logger.log(Level.FINER,"[Client]userid: "+ clientID + "s Got command " + c.getCommand() + " key "+ c.getKey() + " value "+ c.getValue());
-		switch(c.getCommand().toLowerCase()){
-		case "move":
-			ch.handleCommand(new Command("moveclient", clientID, c.getKey()));
-			break;
-		case "movenewroom":
-			ch.handleCommand(new Command("movenewroom", clientID, c.getKey()));
-			break;
-		case "disconnect":
-			tcp.terminate();
-			ch.handleCommand(new Command("disconnect", clientID,null));
-			break;
-		default:
-			ch.handleCommand(c);
-		}
-	}
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
@@ -138,5 +129,12 @@ public class Client implements CommandHandler, NetworkUser {
 	@Override
 	public String toString() {
 		return "Client: name=" + alias + ", clientID=" + clientID + ", ip=" + ip;
+	}
+
+
+	@Override
+	public void handleCommand(String string) {
+		//TODO change if there should be commands that only go here
+		ch.handleCommand(string);
 	}
 }

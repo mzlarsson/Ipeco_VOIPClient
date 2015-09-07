@@ -62,6 +62,9 @@ public class TLSConnectionHandler{
 			try{
 				logger.log(Level.FINER, "Wainting for client");
 				clientSocket = (SSLSocket) serverSocket.accept();
+				logger.log(Level.FINER, "Starting TLS handshake");
+				clientSocket.startHandshake();
+				logger.log(Level.FINER, "Finished TLS handshake");
 				logger.log(Level.INFO,"created socket" + clientSocket.getSession().getProtocol());
 				clientCreator.addNewClient(clientSocket);
 			}catch(SSLException e){
