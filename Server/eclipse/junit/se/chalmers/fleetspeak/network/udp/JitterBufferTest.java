@@ -14,23 +14,23 @@ public class JitterBufferTest {
 	public void setUp() throws Exception {
 		byte[] b = new byte[0];
 		p1 = new RTPPacket((short) 0, 0, b);
-		p2 = new RTPPacket((short) 1, 40, b);
-		p3 = new RTPPacket((short) 2, 80, b);
-		p4 = new RTPPacket((short) 3, 110, b);
+		p2 = new RTPPacket((short) 1, 20, b);
+		p3 = new RTPPacket((short) 2, 40, b);
+		p4 = new RTPPacket((short) 3, 50, b);
 		p12 = new RTPPacket((short) 0, 0, b);
-		p22 = new RTPPacket((short) 1, 80, b);
-		p32 = new RTPPacket((short) 2, 165, b);
+		p22 = new RTPPacket((short) 1, 40, b);
+		p32 = new RTPPacket((short) 2, 85, b);
 	}
 
 	@Test
 	public void testReadEmpty() {
-		buf = new JitterBuffer(80);
+		buf = new JitterBuffer(40);
 		assertNull(buf.read());
 	}
 
 	@Test
 	public void testReadNonEmptyNonReady() {
-		buf = new JitterBuffer(80);
+		buf = new JitterBuffer(40);
 		buf.write(p1);
 		assertNull(buf.read());
 		buf.write(p2);
@@ -39,7 +39,7 @@ public class JitterBufferTest {
 
 	@Test
 	public void testReadReady() {
-		buf = new JitterBuffer(80);
+		buf = new JitterBuffer(40);
 		buf.write(p1);
 		assertNull(buf.read());
 		buf.write(p2);
@@ -50,7 +50,7 @@ public class JitterBufferTest {
 
 	@Test
 	public void testReadFullToEmptyNoSilentPackages() {
-		buf = new JitterBuffer(80);
+		buf = new JitterBuffer(40);
 		buf.write(p1);
 		buf.write(p2);
 		buf.write(p3);
@@ -61,7 +61,7 @@ public class JitterBufferTest {
 
 	@Test
 	public void testRearrange() {
-		buf = new JitterBuffer(80);
+		buf = new JitterBuffer(40);
 		buf.write(p1);
 		buf.write(p3);
 		buf.write(p2);
@@ -72,7 +72,7 @@ public class JitterBufferTest {
 
 	@Test
 	public void testSilentTimeBuilding() {
-		buf = new JitterBuffer(160);
+		buf = new JitterBuffer(80);
 		buf.write(p12);
 		buf.write(p22);
 		buf.write(p32);					// JitterBuffer should be ready now
@@ -84,7 +84,7 @@ public class JitterBufferTest {
 	
 	@Test
 	public void testSilentDroppedBuilding() {
-		buf = new JitterBuffer(80);
+		buf = new JitterBuffer(40);
 		buf.write(p1);
 		buf.write(p2);
 		buf.write(p4);					// JitterBuffer should be ready now
