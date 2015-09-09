@@ -6,9 +6,10 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import se.ipeco.fleetspeak.management.connection.ServerHandler;
 import se.ipeco.fleetspeak.management.core.Building;
+import se.ipeco.fleetspeak.management.gui.FXUtil;
 import se.ipeco.fleetspeak.management.util.Log;
 
-public class AdminClient extends Application{
+public class Main extends Application{
 	
 
     @Override
@@ -21,7 +22,7 @@ public class AdminClient extends Application{
         	ServerHandler.disconnect();
         });
         
-        FXUtil.switchLayout(primaryStage, "adminclient");//_login");
+        FXUtil.switchLayout(primaryStage, "login");
     }
 
     public static void main(String[] args) {

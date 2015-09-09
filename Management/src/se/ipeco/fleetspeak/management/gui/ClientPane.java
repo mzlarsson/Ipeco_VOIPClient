@@ -1,4 +1,4 @@
-package se.ipeco.fleetspeak.management;
+package se.ipeco.fleetspeak.management.gui;
 
 import java.io.IOException;
 

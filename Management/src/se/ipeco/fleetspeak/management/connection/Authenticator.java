@@ -41,6 +41,11 @@ public class Authenticator implements CommandHandler, StunListener{
 	@Override
 	public void commandReceived(String json) {
 		System.out.println("Got command "+json);
+		if(json == null){
+			System.out.println("Ignoring empty command.");
+			return;
+		}
+		
 		try{
 			JSONObject obj = new JSONObject(json);
 			switch(obj.getString("command").toLowerCase()){
@@ -56,7 +61,7 @@ public class Authenticator implements CommandHandler, StunListener{
 													udp.setStunListener(this);
 													udp.start();
 													break;
-				case "authenticationresult":		setResult(!obj.getBoolean("result"));break;
+				case "authenticationresult":		setResult(!obj.getBoolean("result"), (obj.has("rejection")?obj.getString("rejection"):null));break;
 			}
 		}catch(JSONException e){
 			System.out.println("Got invalid command: [JSONException] "+e.getMessage());
@@ -64,10 +69,10 @@ public class Authenticator implements CommandHandler, StunListener{
 		}
 	}
 
-	private void setResult(boolean failed){
+	private void setResult(boolean failed, String msg){
 		if(listener != null){
 			if(failed){
-				listener.authenticationFailed("Authentification failed. Check username/password combination");
+				listener.authenticationFailed("Authentification failed. "+msg);
 			}else{
 				listener.authenticationDone();
 			}
@@ -86,6 +91,15 @@ public class Authenticator implements CommandHandler, StunListener{
 			if(listener != null){
 				listener.authenticationFailed("STUN failed");
 			}
+		}
+	}
+	
+	public void terminate(){
+		if(udp != null){
+			udp.terminate();
+		}
+		if(tcp != null){
+			tcp.terminate();
 		}
 	}
 

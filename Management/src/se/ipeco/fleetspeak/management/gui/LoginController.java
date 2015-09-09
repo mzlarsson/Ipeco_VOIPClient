@@ -1,4 +1,4 @@
-package se.ipeco.fleetspeak.management;
+package se.ipeco.fleetspeak.management.gui;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -15,7 +15,7 @@ import se.ipeco.fleetspeak.management.connection.ConnectionListener;
 import se.ipeco.fleetspeak.management.connection.ServerHandler;
 import se.ipeco.fleetspeak.management.core.Building;
 
-public class AdminClientLoginController implements ConnectionListener{
+public class LoginController implements ConnectionListener{
 
 	@FXML
 	private TextField serverIPField;
@@ -107,7 +107,7 @@ public class AdminClientLoginController implements ConnectionListener{
 		Building building = Building.getInstance(server.getUserID());
 		server.setCommandHandler(building);
 		Platform.runLater(() -> {
-			FXUtil.switchLayout(getStage(), "adminclient");
+			FXUtil.switchLayout(getStage(), "main");
 		});
 	}
 

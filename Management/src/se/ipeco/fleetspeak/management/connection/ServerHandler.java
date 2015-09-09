@@ -68,6 +68,8 @@ public class ServerHandler {
 				
 				@Override
 				public void authenticationFailed(String msg) {
+					//Close all half-open streams
+					authenticator.terminate();
 					listener.onConnectionFailure("Authentification failed.");
 				}
 				

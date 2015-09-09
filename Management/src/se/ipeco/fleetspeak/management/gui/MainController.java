@@ -1,4 +1,4 @@
-package se.ipeco.fleetspeak.management;
+package se.ipeco.fleetspeak.management.gui;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -10,11 +10,11 @@ import javafx.scene.Node;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import se.ipeco.fleetspeak.management.ClientPane.ClientChangeHandler;
 import se.ipeco.fleetspeak.management.connection.ServerHandler;
 import se.ipeco.fleetspeak.management.core.Building;
+import se.ipeco.fleetspeak.management.gui.ClientPane.ClientChangeHandler;
 
-public class AdminClientController implements ClientChangeHandler{
+public class MainController implements ClientChangeHandler{
 	
 	@FXML
 	private AnchorPane root;
@@ -66,6 +66,6 @@ public class AdminClientController implements ClientChangeHandler{
 		System.out.println("Disconnecting.");
 		ServerHandler.disconnect();
 		Building.terminate();
-		FXUtil.switchLayout((Stage)root.getScene().getWindow(), "adminclient_login");
+		FXUtil.switchLayout((Stage)root.getScene().getWindow(), "login");
 	}
 }
