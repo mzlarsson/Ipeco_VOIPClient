@@ -138,6 +138,19 @@ public class Building {
 			}
 			postUpdate(json.toString());
 			logger.log(Level.INFO, "Removed client id: " + clientid + " Alias: " + c.getName());
+
+			if(rooms.get(roomid).canDelete()){
+				IRoom room = rooms.remove(roomid);
+				JSONObject roomJson = new JSONObject();
+				try{
+					roomJson.put("command", "removedroom");
+					roomJson.put("roomid", roomid);
+				}catch(JSONException e){
+					e.printStackTrace();
+				}
+				postUpdate(roomJson.toString());
+				logger.log(Level.INFO, "Removed room id: " + room.getId() + " name: " + room.getName());
+			}
 		}
 	}
 
