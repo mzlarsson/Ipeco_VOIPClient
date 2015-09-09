@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.newgui.connection;
+package se.ipeco.fleetspeak.management.connection;
 
 import java.io.BufferedReader;
 import java.io.IOException;

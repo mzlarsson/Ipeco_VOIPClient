@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.newgui;
+package se.ipeco.fleetspeak.management;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -10,9 +10,9 @@ import javafx.scene.Node;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import se.chalmers.fleetspeak.newgui.ClientPane.ClientChangeHandler;
-import se.chalmers.fleetspeak.newgui.connection.ServerHandler;
-import se.chalmers.fleetspeak.newgui.core.Building;
+import se.ipeco.fleetspeak.management.ClientPane.ClientChangeHandler;
+import se.ipeco.fleetspeak.management.connection.ServerHandler;
+import se.ipeco.fleetspeak.management.core.Building;
 
 public class AdminClientController implements ClientChangeHandler{
 	

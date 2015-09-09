@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.newgui;
+package se.ipeco.fleetspeak.management;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -11,9 +11,9 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
-import se.chalmers.fleetspeak.newgui.connection.ConnectionListener;
-import se.chalmers.fleetspeak.newgui.connection.ServerHandler;
-import se.chalmers.fleetspeak.newgui.core.Building;
+import se.ipeco.fleetspeak.management.connection.ConnectionListener;
+import se.ipeco.fleetspeak.management.connection.ServerHandler;
+import se.ipeco.fleetspeak.management.core.Building;
 
 public class AdminClientLoginController implements ConnectionListener{
 

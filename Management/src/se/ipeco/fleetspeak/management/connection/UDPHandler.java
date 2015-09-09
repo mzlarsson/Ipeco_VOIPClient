@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.newgui.connection;
+package se.ipeco.fleetspeak.management.connection;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

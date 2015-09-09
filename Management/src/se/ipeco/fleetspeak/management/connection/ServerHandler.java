@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.newgui.connection;
+package se.ipeco.fleetspeak.management.connection;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -11,7 +11,7 @@ import javax.net.ssl.TrustManagerFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import se.chalmers.fleetspeak.newgui.connection.Authenticator.AuthenticatorListener;
+import se.ipeco.fleetspeak.management.connection.Authenticator.AuthenticatorListener;
 
 public class ServerHandler {
 	

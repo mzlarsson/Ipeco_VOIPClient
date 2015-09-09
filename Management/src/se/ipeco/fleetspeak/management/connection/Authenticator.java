@@ -1,10 +1,10 @@
-package se.chalmers.fleetspeak.newgui.connection;
+package se.ipeco.fleetspeak.management.connection;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import se.chalmers.fleetspeak.newgui.connection.UDPHandler.StunListener;
-import se.chalmers.fleetspeak.newgui.connection.UDPHandler.StunStatus;
+import se.ipeco.fleetspeak.management.connection.UDPHandler.StunListener;
+import se.ipeco.fleetspeak.management.connection.UDPHandler.StunStatus;
 
 public class Authenticator implements CommandHandler, StunListener{
 	

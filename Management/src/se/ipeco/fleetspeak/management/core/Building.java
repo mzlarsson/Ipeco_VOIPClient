@@ -1,6 +1,6 @@
-package se.chalmers.fleetspeak.newgui.core;
+package se.ipeco.fleetspeak.management.core;
 
-import se.chalmers.fleetspeak.newgui.connection.CommandHandler;
+import se.ipeco.fleetspeak.management.connection.CommandHandler;
 
 public class Building implements CommandHandler{
 	

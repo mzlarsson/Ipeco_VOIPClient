@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.newgui;
+package se.ipeco.fleetspeak.management;
 
 import java.io.InputStream;
 import java.util.HashMap;
