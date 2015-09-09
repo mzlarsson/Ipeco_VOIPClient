@@ -16,7 +16,6 @@ import org.json.JSONObject;
 
 import se.chalmers.fleetspeak.network.udp.RTPHandler;
 import se.chalmers.fleetspeak.test.sound.SongHandler;
-import se.chalmers.fleetspeak.util.RtpPackageHandler;
 
 public class MusicBot extends Thread {
 	
@@ -31,7 +30,6 @@ public class MusicBot extends Thread {
 
 	//Connection values
 	private TCPBot tcpBot;
-	private RtpPackageHandler handler;
 	private int localPort = new Random().nextInt(2000)+2000;		// 2000 <= localPort < 4000
 	private int stunStatus = STUN_STATUS_UNINITIATED;
 
@@ -43,9 +41,6 @@ public class MusicBot extends Thread {
 	public MusicBot(String name, String ip, int port){
 		this.tcpBot = new TCPBot(name, ip, port);
 		tcpBot.start();
-		
-		handler = RtpPackageHandler.createHandler();
-		handler.setTimeInterval(sendFreq);
 	}
 	
 	@Override
