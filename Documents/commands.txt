@@ -1,0 +1,83 @@
+All commands that we currently use
+Server requesting authenticationdetails
+{
+"command":"sendauthenticationdetails",
+"work":[String] Random string that needs to be resent with response
+}
+Client responding with auth details
+{
+"command":"autheticationdetails",
+"username":[String],
+"password":[String],
+"work":[String], Copy [work] from auth request
+"clienttype":[String] type of device client are using use "android","desktop" 
+}
+Result of a connection atempt
+{
+"command":"authenticaitonresult",
+"result":[Boolean],
+"rejection":[String] Reason for a rejection, can be skipped when result=true
+}
+Gives the clients its id 
+{
+"command":"setinfo",
+"userid":[Integer]
+}
+Server informing client abount new user
+{
+"command":"addeduser",
+"userid":[Integer],
+"username":[String],
+"roomid":[Integer]
+}
+Server informing client about new name of a room
+{
+"command":"changedroomname",
+"roomid":[Integer],
+"roomname":[String]
+}
+Server informing client about movement of user
+{
+"command":"moveduser",
+"userid":[Integer],
+"currentroom":[Integer], the room the user is in
+"destinationroom":[Integer] the room to move the user to
+}
+Server informing client about creation of new room
+{
+"command":"createdroom",
+"roomid":[Integer],
+"roomname":[String]
+}
+Server informing client about disconnection of another client
+{
+"command":"removeduser",
+"userid":[Integer],
+"roomid":[Integer] room that the client was in
+}
+Server informing client about the removal of a room
+{
+"command":"removedroom",
+"roomid":[Integer]
+}
+Server requests client to start STUN
+{
+"command":"initiatesoundport",
+"controlcode":[String], should be converted to a byte 
+"port":[Integer] port server is listening for packets on
+}
+Client informing it want to create and move to a new room
+{
+"command":"movenewroom",
+"userid":[Integer],
+"currentroom":[Integer],
+"roomname":[String] Name of the new room
+}
+Client requesting to move 
+{
+"command":"moveclient",
+"userid":[Integer],
+"currentroom":[Integer], current room of user
+"destinationroom":[Integer] destination of 
+}
+
