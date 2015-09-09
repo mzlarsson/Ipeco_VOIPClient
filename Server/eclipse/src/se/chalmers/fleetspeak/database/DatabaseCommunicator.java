@@ -2,11 +2,10 @@ package se.chalmers.fleetspeak.database;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Properties;
-import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -43,15 +42,19 @@ public class DatabaseCommunicator {
 	 * Adds a user to the database.
 	 * @param username The unique username of the user.
 	 * @param alias The alias of the user.
+	 * @param password A password has on the form "<iterations>:<salt(hex)>:<password hash(hex)>"
 	 * @return null if successfully added, a string with the error if not.
 	 */
-	public String addUser(String username, String alias) {
+	public String addUser(String username, String alias, String password) {
 		String error = null;
-		Statement st = null;
+		PreparedStatement st = null;
 		try {
-			st = conn.createStatement();
-			int addedUsers = doUpdate("INSERT INTO users (username, alias) VALUES ('"
-					+ username + "', '" + alias + "');", st);
+			st = conn.prepareStatement("INSERT INTO users (username, alias, password) "
+					+ "VALUES (?, ?, ?);");
+			st.setString(1, username);
+			st.setString(2, alias);
+			st.setString(3, password);
+			int addedUsers = st.executeUpdate();
 			if (addedUsers != 1) {
 				error = "No errors but " + addedUsers + " users were added instead of 1.";
 			}
@@ -99,11 +102,11 @@ public class DatabaseCommunicator {
 	 */
 	private String deleteUser(String idOrUsername, boolean isID) {
 		String error = null;
-		Statement st = null;
+		PreparedStatement st = null;
 		try {
-			st = conn.createStatement();
-			int deletedUsers = doUpdate("DELETE FROM users WHERE "
-					+ (isID?"id":"username") + " = '" + idOrUsername + "';", st);
+			st = conn.prepareStatement("DELETE FROM users WHERE " + (isID?"id":"username") + " = ?;");
+			st.setString(1, idOrUsername);
+			int deletedUsers = st.executeUpdate();
 			if (deletedUsers == 0) {
 				error = "The user " + (isID?"with ID ":"") + idOrUsername + " does not exist.";
 			} else if (deletedUsers != 1) {
@@ -133,11 +136,11 @@ public class DatabaseCommunicator {
 			return new UserInfo(tmpIDs, username+tmpIDs, username+(tmpIDs++), "", "");
 		}
 		UserInfo user = null;
-		Statement st = null;
+		PreparedStatement st = null;
 		try {
-			st = conn.createStatement();
-			ResultSet rs = doQuery("SELECT * FROM users "
-					+ "WHERE username = '"+username+"'", st);
+			st = conn.prepareStatement("SELECT * FROM users WHERE username = ?;");
+			st.setString(1, username);
+			ResultSet rs = st.executeQuery();
 			if (rs.next()) {
 				user = new UserInfo(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4));
 			}
@@ -159,43 +162,9 @@ public class DatabaseCommunicator {
 	}
 
 	/**
-	 * A query method to reduce code redundancy.
-	 * @param query The SQL-query to be sent to the server.
-	 * @param st The Statement to on which to execute the query.
-	 * @return The ResultSet from the processed query.
-	 * @throws SQLException The exception from a failed query for error handling.
-	 */
-	private ResultSet doQuery(String query, Statement st) throws SQLException {
-		ResultSet rs = null;
-		try {
-			rs = st.executeQuery(query);
-		} catch (SQLException e) {
-			throw e;
-		}
-		return rs;
-	}
-
-	/**
-	 * An update method to reduce code redundancy.
-	 * @param query The SQL-query containing INSERT, UPDATE or DELETE to be sent to the server.
-	 * @param st The Statement to on which to execute the query.
-	 * @return The number of rows affected by the update.
-	 * @throws SQLException The exception from a failed query for error handling.
-	 */
-	private int doUpdate(String query, Statement st) throws SQLException {
-		int affectedRows = 0;
-		try {
-			affectedRows = st.executeUpdate(query);
-		} catch (SQLException e) {
-			throw e;
-		}
-		return affectedRows;
-	}
-
-	/**
 	 * Closes all connections and frees all resources used.
 	 */
-	private void terminate() {
+	public void terminate() {
 		try {
 			if(conn!=null) {
 				conn.close();
@@ -229,30 +198,5 @@ public class DatabaseCommunicator {
 			}
 			return connection;
 		}
-	}
-
-	//FIXME temporary main method to easily test the class.
-	public static void main(String[] args) {
-		DatabaseCommunicator dc = DatabaseCommunicator.getInstance();
-		Scanner in = new Scanner(System.in);
-		String input = "";
-		while (!input.equals("q")) {
-			input = in.nextLine();
-			if (input.toLowerCase().startsWith("finduser")) {
-				String[] params = input.split(" ");
-				UserInfo result = dc.findUser(params[1]);
-				System.out.println(result!=null?result:"Not found");
-			} else if (input.toLowerCase().startsWith("adduser")) {
-				String[] params = input.split(" ");
-				String result = dc.addUser(params[1], params[2]);
-				System.out.println(result!=null?result:"OK");
-			} else if (input.toLowerCase().startsWith("deleteuser")) {
-				String[] params = input.split(" ");
-				String result = dc.deleteUser(params[1]);
-				System.out.println(result!=null?result:"OK");
-			}
-		}
-		in.close();
-		dc.terminate();
 	}
 }
