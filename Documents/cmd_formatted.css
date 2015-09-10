@@ -1,0 +1,19 @@
+#dataTable{
+	border-spacing:0;
+}
+#dataTable tr.dark{
+	background-color:#000000;
+	color:#00FF00;
+}
+#dataTable tr.light{
+	background-color:#EEEE50;
+	color:#000000;
+}
+#dataTable td{
+	text-align:center;
+	height:50px;
+}
+#dataTable td.info{
+	text-align:left;
+	padding-left:10px;
+}

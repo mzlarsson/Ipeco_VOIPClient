@@ -1,0 +1,104 @@
+<html>
+	<head>
+		<link href='cmd_formatted.css' type='text/css' rel='stylesheet'/>
+		<title>Commands</title>
+	</head>
+	<body>
+		<table id = 'dataTable'>
+			<tr class='light'>
+				<td class='info'>Server requesting authenticationdetails</td>
+				<td><b>command</b><br>sendauthenticationdetails</td>
+				<td><b>work</b><br>[String] Random string that needs to be resent with response</td>
+				<td colspan='3'>&nbsp;</td>
+			</tr>
+			<tr class='dark'>
+				<td class='info'>Client responding with auth details</td>
+				<td><b>command</b><br>autheticationdetails</td>
+				<td><b>username</b><br>[String]</td>
+				<td><b>password</b><br>[String]</td>
+				<td><b>work</b><br>[String], Copy [work] from auth request</td>
+				<td><b>clienttype</b><br>[String] type of device client are using use "android","desktop" </td>
+				<td colspan='0'>&nbsp;</td>
+			</tr>
+			<tr class='light'>
+				<td class='info'>Result of a connection atempt</td>
+				<td><b>command</b><br>authenticaitonresult</td>
+				<td><b>result</b><br>[Boolean]</td>
+				<td><b>rejection</b><br>[String] Reason for a rejection, can be skipped when result=true</td>
+				<td colspan='2'>&nbsp;</td>
+			</tr>
+			<tr class='dark'>
+				<td class='info'>Gives the clients its id </td>
+				<td><b>command</b><br>setinfo</td>
+				<td><b>userid</b><br>[Integer]</td>
+				<td colspan='3'>&nbsp;</td>
+			</tr>
+			<tr class='light'>
+				<td class='info'>Server informing client abount new user</td>
+				<td><b>command</b><br>addeduser</td>
+				<td><b>userid</b><br>[Integer]</td>
+				<td><b>username</b><br>[String]</td>
+				<td><b>roomid</b><br>[Integer]</td>
+				<td colspan='1'>&nbsp;</td>
+			</tr>
+			<tr class='dark'>
+				<td class='info'>Server informing client about new name of a room</td>
+				<td><b>command</b><br>changedroomname</td>
+				<td><b>roomid</b><br>[Integer]</td>
+				<td><b>roomname</b><br>[String]</td>
+				<td colspan='2'>&nbsp;</td>
+			</tr>
+			<tr class='light'>
+				<td class='info'>Server informing client about movement of user</td>
+				<td><b>command</b><br>moveduser</td>
+				<td><b>userid</b><br>[Integer]</td>
+				<td><b>currentroom</b><br>[Integer], the room the user is in</td>
+				<td><b>destinationroom</b><br>[Integer] the room to move the user to</td>
+				<td colspan='1'>&nbsp;</td>
+			</tr>
+			<tr class='dark'>
+				<td class='info'>Server informing client about creation of new room</td>
+				<td><b>command</b><br>createdroom</td>
+				<td><b>roomid</b><br>[Integer]</td>
+				<td><b>roomname</b><br>[String]</td>
+				<td colspan='2'>&nbsp;</td>
+			</tr>
+			<tr class='light'>
+				<td class='info'>Server informing client about disconnection of another client</td>
+				<td><b>command</b><br>removeduser</td>
+				<td><b>userid</b><br>[Integer]</td>
+				<td><b>roomid</b><br>[Integer] room that the client was in</td>
+				<td colspan='2'>&nbsp;</td>
+			</tr>
+			<tr class='dark'>
+				<td class='info'>Server informing client about the removal of a room</td>
+				<td><b>command</b><br>removedroom</td>
+				<td><b>roomid</b><br>[Integer]</td>
+				<td colspan='3'>&nbsp;</td>
+			</tr>
+			<tr class='light'>
+				<td class='info'>Server requests client to start STUN</td>
+				<td><b>command</b><br>initiatesoundport</td>
+				<td><b>controlcode</b><br>[String], should be converted to a byte </td>
+				<td><b>port</b><br>[Integer] port server is listening for packets on</td>
+				<td colspan='2'>&nbsp;</td>
+			</tr>
+			<tr class='dark'>
+				<td class='info'>Client informing it want to create and move to a new room</td>
+				<td><b>command</b><br>movenewroom</td>
+				<td><b>userid</b><br>[Integer]</td>
+				<td><b>currentroom</b><br>[Integer]</td>
+				<td><b>roomname</b><br>[String] Name of the new room</td>
+				<td colspan='1'>&nbsp;</td>
+			</tr>
+			<tr class='light'>
+				<td class='info'>Client requesting to move </td>
+				<td><b>command</b><br>moveclient</td>
+				<td><b>userid</b><br>[Integer]</td>
+				<td><b>currentroom</b><br>[Integer], current room of user</td>
+				<td><b>destinationroom</b><br>[Integer] destination of </td>
+				<td colspan='1'>&nbsp;</td>
+			</tr>
+		</table>
+	</body>
+</html>
