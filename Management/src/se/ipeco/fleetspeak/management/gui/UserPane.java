@@ -2,10 +2,9 @@ package se.ipeco.fleetspeak.management.gui;
 
 import java.io.IOException;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -16,15 +15,16 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
+import se.ipeco.fleetspeak.management.core.User;
 
-public class ClientPane extends Pane{
+public class UserPane extends Pane{
 	
 	//Data
-	private int id;
+	private User user;
 	private ObjectProperty<LoginStatus> loginStatus;
-	private StringProperty usernameProperty;
+	private LoginStatus initialLoginStatus;
 	
-	private ClientChangeHandler handler;
+	private UserChangeHandler handler;
 
 	@FXML
 	private Pane root;
@@ -33,12 +33,16 @@ public class ClientPane extends Pane{
 	@FXML
 	private Label usernameLabel;
 	
-	public ClientPane(int id, String name){
-		this.id = id;
-		this.usernameProperty = new SimpleStringProperty(name);
+	public UserPane(User user){
+		this(user, LoginStatus.LOGGED_OUT);
+	}
+	
+	public UserPane(User user, LoginStatus status){
+		this.user = user;
+		this.initialLoginStatus = (status==null?LoginStatus.LOGGED_OUT:status);
 		this.loginStatus = new SimpleObjectProperty<LoginStatus>();
 		
-		FXMLLoader loader = new FXMLLoader(this.getClass().getClassLoader().getResource("clientpane.fxml"));
+		FXMLLoader loader = new FXMLLoader(this.getClass().getClassLoader().getResource("userpane.fxml"));
 		loader.setRoot(this);
 		loader.setController(this);
 		
@@ -51,20 +55,23 @@ public class ClientPane extends Pane{
 	}
 	
 	public void initialize(){
-		usernameLabel.textProperty().bind(usernameProperty.concat(" ["+id+"]"));
+		usernameLabel.textProperty().bind(Bindings.concat(user.usernameProperty(), " [", user.idProperty(), "]"));
 		loginStatus.addListener((ObservableValue<? extends LoginStatus> observable, LoginStatus oldValue, LoginStatus newValue) -> {
+			if(newValue != null){
 				loginStatusView.setImage(newValue.getImage());
+			}
 		});
-		loginStatus.set(LoginStatus.LOGGED_OUT);
+		
+		loginStatus.set(initialLoginStatus);
 	}
 	
 	private void initContextMenu(){
 		ContextMenu menu = new ContextMenu();
 		MenuItem removeItem = new MenuItem("Remove");
-		final ClientPane thisPane = this;
+		final UserPane thisPane = this;
 		removeItem.setOnAction((ActionEvent event) -> {
 			if(handler != null){
-				handler.removeClient(thisPane);
+				handler.removeUser(thisPane);
 			}
 		});
 		menu.getItems().add(removeItem);
@@ -81,7 +88,7 @@ public class ClientPane extends Pane{
 		usernameLabel.setContextMenu(menu);
 	}
 	
-	public void setChangeHandler(ClientChangeHandler handler){
+	public void setChangeHandler(UserChangeHandler handler){
 		if(this.handler == null){
 			initContextMenu();
 		}
@@ -89,20 +96,8 @@ public class ClientPane extends Pane{
 		this.handler = handler;
 	}
 	
-	public int getID(){
-		return id;
-	}
-	
-	public void setUsername(String username){
-		usernameProperty.set(username);
-	}
-	
-	public String getUsername(){
-		return usernameProperty.get();
-	}
-	
-	public StringProperty usernameProperty(){
-		return usernameProperty;
+	public User getUser(){
+		return user;
 	}
 	
 	public void setLoginStatus(LoginStatus status){
@@ -134,9 +129,9 @@ public class ClientPane extends Pane{
 		}
 	}
 	
-	public interface ClientChangeHandler{
+	public interface UserChangeHandler{
 		
-		public void removeClient(ClientPane p);
+		public void removeUser(UserPane p);
 		
 	}
 }

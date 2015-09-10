@@ -30,13 +30,15 @@
          <children>
             <Pane layoutX="299.0" prefHeight="666.0" prefWidth="981.0">
                <children>
-                  <Pane layoutX="278.0" layoutY="268.0" styleClass="container" stylesheets="@stylesheet.css">
+                  <Pane layoutX="172.0" layoutY="14.0" prefHeight="131.0" prefWidth="629.0" styleClass="container" stylesheets="@stylesheet.css">
                      <children>
-                        <Button alignment="CENTER" layoutX="232.0" layoutY="79.0" mnemonicParsing="false" onAction="#disconnect" prefHeight="52.0" prefWidth="194.0" text="Disconnect" />
-                        <Button alignment="CENTER" layoutY="79.0" mnemonicParsing="false" onAction="#addRandomAdmin" prefHeight="52.0" prefWidth="194.0" text="Add admin" />
-                        <Label alignment="CENTER" layoutX="63.0" layoutY="14.0" prefHeight="52.0" prefWidth="300.0" text="INLOGGAD!" />
+                        <Button alignment="CENTER" layoutX="218.0" layoutY="79.0" mnemonicParsing="false" onAction="#goToMatz" prefHeight="52.0" prefWidth="194.0" text="Flyg till Matz" />
+                        <Button alignment="CENTER" layoutY="79.0" mnemonicParsing="false" onAction="#addRandomAdmin" prefHeight="52.0" prefWidth="194.0" text="Add administrator" />
+                        <Label alignment="CENTER" layoutX="165.0" layoutY="14.0" prefHeight="52.0" prefWidth="300.0" text="INLOGGAD!" />
+                        <Button alignment="CENTER" layoutX="435.0" layoutY="79.0" mnemonicParsing="false" onAction="#disconnect" prefHeight="52.0" prefWidth="194.0" text="Disconnect" />
                      </children>
                   </Pane>
+                  <Pane fx:id="mapContainer" layoutX="141.0" layoutY="152.0" prefHeight="500.0" prefWidth="700.0" />
                </children>
             </Pane>
             <Pane id="menuPane" prefWidth="300.0" stylesheets="@stylesheet.css">
@@ -67,11 +69,18 @@
                         <String fx:value="menuSection" />
                      </styleClass>
                   </Pane>
-                  <Pane layoutY="302.0" prefHeight="366.0" prefWidth="300.0" styleClass="menuSection" stylesheets="@stylesheet.css">
+                  <Pane fx:id="roomStructure" layoutY="302.0" prefWidth="300.0" stylesheets="@stylesheet.css">
                      <children>
-                        <Label alignment="CENTER" layoutX="97.0" layoutY="143.0" prefHeight="61.0" prefWidth="106.0" text="GROUPS" />
+                        <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" layoutY="5.0" prefHeight="353.0" prefWidth="297.0" styleClass="container" stylesheets="@stylesheet.css">
+                           <content>
+                              <VBox fx:id="roomStructureBox" style="-fx-background-color: white;" styleClass="vbox" stylesheets="@stylesheet.css" />
+                           </content>
+                        </ScrollPane>
                      </children>
-                  </Pane>
+                     <styleClass>
+                        <String fx:value="menuSection" />
+                        <String fx:value="container" />
+                     </styleClass></Pane>
                </children>
             </Pane>
          </children>
