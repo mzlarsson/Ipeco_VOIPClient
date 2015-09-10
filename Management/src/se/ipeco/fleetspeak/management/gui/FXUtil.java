@@ -3,8 +3,8 @@ package se.ipeco.fleetspeak.management.gui;
 import java.io.IOException;
 
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 public class FXUtil {
@@ -14,7 +14,7 @@ public class FXUtil {
             // Load root layout from fxml file.
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(FXUtil.class.getClassLoader().getResource(name+".fxml"));
-            Pane rootLayout = (Pane) loader.load();
+            Parent rootLayout = loader.load();
             
             // Show the scene containing the root layout.
             Scene scene = new Scene(rootLayout);
