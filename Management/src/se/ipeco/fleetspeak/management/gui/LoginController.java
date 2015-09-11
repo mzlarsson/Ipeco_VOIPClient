@@ -35,6 +35,7 @@ public class LoginController implements ConnectionListener{
 			if(!oldProp && newProp){
 				if(serverIPField.getText().length()==0){
 					serverIPField.setText(serverIPField.getPromptText());
+//					serverIPField.setText("localhost");
 			    	loginPropertyChanged();
 				}
 				serverIPField.selectAll();

@@ -11,6 +11,12 @@ import se.ipeco.fleetspeak.management.util.Log;
 
 public class Main extends Application{
 	
+	private static Application currentApplication;
+	
+	public Main(){
+		super();
+		currentApplication = this;
+	}
 
     @Override
     public void start(Stage primaryStage) {
@@ -25,6 +31,10 @@ public class Main extends Application{
         FXUtil.switchLayout(primaryStage, "login");
     }
 
+    public static Application getCurrentApplication(){
+    	return currentApplication;
+    }
+    
     public static void main(String[] args) {
     	Log.start();
     	launch();

@@ -1,14 +1,14 @@
 package se.ipeco.fleetspeak.management.gui;
 
-import java.util.Random;
-
 import javafx.application.Platform;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import se.ipeco.fleetspeak.management.connection.ServerHandler;
 import se.ipeco.fleetspeak.management.core.Building;
@@ -36,20 +36,13 @@ public class MainController implements UserChangeHandler, BuildingChangeListener
 			Building.getRunningBuilding().setBuildingChangeListener(this);
 		}
 		
-		mapView = new MapView();
+		mapView = new MapView(650, 450);
 		mapContainer.getChildren().add(mapView);
-	}
-	
-	public void addRandomAdmin(){
-		String[] names = {"Pelle", "Arne", "Sune", "Nano", "Volt", "Pihl", "Whoopsi Daisy", "Andreas Pettersson", "Poop"};
-		int id = new Random().nextInt(names.length);
-//		addAdmin(id, names[id]);
-		if(Building.hasRunningBuilding()){
-			Building.getRunningBuilding().printState();
-		}
-		
-		RoomPane p = new RoomPane(new Room(id, names[id]+"s room"));
-		roomStructureBox.getChildren().add(p);
+		mapView.loadedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean wasLoaded, Boolean isLoaded) -> {
+			if(isLoaded){
+				mapView.addPopup(57.687325, 11.978694, "Idegr6");
+			}
+		});
 	}
 	
 	public void addAdmin(int id, String name){
@@ -108,9 +101,13 @@ public class MainController implements UserChangeHandler, BuildingChangeListener
 		});
 	}
 	
+	public void clearMap(){
+		mapView.clearMap();
+	}
+	
 	public void goToMatz(){
 		mapView.moveToLocation(57.680830, 11.985843);
-		mapView.addPopup(57.680830, 11.985843, "H&auml;r bor Matz!", true);
+		mapView.addCircle(57.680830, 11.985843, 20, Color.RED, "H&auml;r bor Matz!");
 	}
 	
 	public void disconnect(){
