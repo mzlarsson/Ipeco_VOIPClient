@@ -1,7 +1,9 @@
 package se.chalmers.fleetspeak.core;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.util.concurrent.BlockingQueue;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.json.JSONException;
@@ -47,15 +49,18 @@ public class Client implements CommandHandler, NetworkUser {
 		try {
 			json.put("command" , "setinfo");
 			json.put("userid", clientID);
+			sendCommand(json.toString());
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (IOException e) {
+			logger.log(Level.WARNING, "Caught IOException when sending setinfo, userid. Message: "
+					+ e.getMessage());
 		}
-		this.tcp.sendCommand(json.toString());
 	}
 
 	@Override
-	public void sendCommand(String command){
+	public void sendCommand(String command) throws IOException{
 		tcp.sendCommand(command);
 	}
 

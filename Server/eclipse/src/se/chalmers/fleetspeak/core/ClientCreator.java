@@ -1,5 +1,6 @@
 package se.chalmers.fleetspeak.core;
 
+import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -65,12 +66,14 @@ public class ClientCreator implements AuthenticatorListener{
 			json.put("command" , "authenticationresult");
 			json.put("result", false);
 			json.put("rejection", errorMsg);
+			authenticator.getTCPHandler().sendCommand(json.toString());
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (IOException e) {
+			logger.log(Level.WARNING, "Caught IOException when sending authenticationresult, false. Message: "
+					+ e.getMessage() + " terminating client");
 		}
-
-		authenticator.getTCPHandler().sendCommand(json.toString());
 		authenticator.terminate();
 		logger.log(Level.FINER, errorMsg);
 		authenticators.remove(authenticator);

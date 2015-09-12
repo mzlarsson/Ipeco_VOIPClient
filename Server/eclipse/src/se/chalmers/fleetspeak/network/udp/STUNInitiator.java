@@ -67,10 +67,10 @@ public class STUNInitiator extends Thread implements CommandHandler{
 			e1.printStackTrace();
 		}
 
-		tcp.sendCommand(json.toString());
-		DatagramPacket verificationPacket = new DatagramPacket(new byte[1], 1);
-		logger.log(Level.FINER, "Sent control code to client and waiting for response on port: " + udp.getLocalPort());
 		try {
+			tcp.sendCommand(json.toString());
+			DatagramPacket verificationPacket = new DatagramPacket(new byte[1], 1);
+			logger.log(Level.FINER, "Sent control code to client and waiting for response on port: " + udp.getLocalPort());
 			udp.setSoTimeout(responseTimeoutTime); // If it exceeds this time we assume the response packet was blocked on the way.
 			udp.receive(verificationPacket);
 			udp.setSoTimeout(0);
