@@ -30,11 +30,12 @@ public class Main extends Application{
         	ServerHandler.disconnect();
         });
         
-//        FXUtil.switchLayout(primaryStage, "login");
-        sneakIn(primaryStage);
+        FXUtil.switchLayout(primaryStage, "login");
+//        sneakIn(primaryStage);
     }
     
-    private void sneakIn(Stage stage){
+    @SuppressWarnings("unused")
+	private void sneakIn(Stage stage){
 		ServerHandler.connect("localhost", 8867, "n", "", new ConnectionListener(){
 
 			@Override

@@ -47,10 +47,6 @@ public class MainController implements UserChangeHandler, BuildingChangeListener
 				mapView.addPopup(57.687325, 11.978694, "Idegr6");
 			}
 		});
-		
-//		for(int i = 0; i<10; i++){
-//			addAdmin(i, "Bot"+i);
-//		}
 	}
 	
 	public void addAdmin(int id, String name){

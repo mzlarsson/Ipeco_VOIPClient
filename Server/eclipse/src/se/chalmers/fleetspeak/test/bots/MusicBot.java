@@ -8,6 +8,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.Random;
+import java.util.concurrent.Executors;
 
 import javax.swing.Timer;
 
@@ -26,7 +27,7 @@ public class MusicBot extends Thread {
 	
 	//Static values
 	private final static String musicRoomName = "Music Hangaround";
-	private static final int sendFreq = 10;
+	private static final int sendFreq = 20;
 
 	//Connection values
 	private TCPBot tcpBot;
@@ -55,10 +56,10 @@ public class MusicBot extends Thread {
 		rtp = new RTPHandler(socket);
 		
 		//Fix all stuff
-		if(stunStatus==STUN_STATUS_DONE || stunStatus>-1000){
+		if(stunStatus==STUN_STATUS_DONE){
 			JSONObject obj = new JSONObject();
 			try {
-				obj.put("command", "clientUdpTestOk");
+				obj.put("command", "clientudptestok");
 			} catch (JSONException e) {}
 			tcpBot.send(obj.toString());
 			sleep(1000);
@@ -70,6 +71,16 @@ public class MusicBot extends Thread {
 				System.out.println("Could not enter music room: [JSONException] "+e.getMessage());
 			}
 			sleep(1000);
+			
+			//Do haxxor
+			Executors.newSingleThreadExecutor().execute(() -> {
+				byte[] b = new byte[332];
+				b[1] = 0;
+				b[2] = 7;
+				System.out.println("Handling");
+				rtp.handlePacket(b);
+				System.out.println("Handling done");
+			});
 			
 			int playTimes = 5;
 			for(int i = 0; i<playTimes; i++){
@@ -163,16 +174,21 @@ public class MusicBot extends Thread {
 	}
 	
 	private void moveToMusicRoom() throws JSONException{
-		Integer roomID = tcpBot.getRoomID(musicRoomName);
+		int num = new Random().nextInt(100);
+		Integer roomID = tcpBot.getRoomID(musicRoomName+num);
 		if(roomID == null){
 			JSONObject obj = new JSONObject();
 			obj.put("command", "movenewroom");
-			obj.put("name", musicRoomName);
+			obj.put("userid", tcpBot.getUserID());
+			obj.put("currentroom", tcpBot.getRoom());
+			obj.put("roomname", musicRoomName+num);
 			tcpBot.send(obj.toString());
 		}else{
 			JSONObject obj = new JSONObject();
-			obj.put("command", "move");
-			obj.put("id", roomID);
+			obj.put("command", "moveclient");
+			obj.put("userid", tcpBot.getUserID());
+			obj.put("currentroom", tcpBot.getRoom());
+			obj.put("destinationroom", roomID);
 			tcpBot.send(obj.toString());
 		}
 	}

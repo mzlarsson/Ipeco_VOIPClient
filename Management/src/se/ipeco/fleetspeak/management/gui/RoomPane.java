@@ -64,12 +64,9 @@ public class RoomPane extends AnchorPane{
 		Platform.runLater(() -> {
 			userContainer.getChildren().clear();
 			for(User u : users){
-				for(int i = 0; i<15; i++){
-					UserPane p = new UserPane(u, LoginStatus.LOGGED_IN);
-					userContainer.getChildren().add(p);
-				}
+				UserPane p = new UserPane(u, LoginStatus.LOGGED_IN);
+				userContainer.getChildren().add(p);
 			}
-			System.out.println(roomNameLabel.getLayoutX()+", "+roomNameLabel.getLayoutY());
 		});
 	}
 	

@@ -34,8 +34,8 @@ public class LoginController implements ConnectionListener{
 		serverIPField.focusedProperty().addListener((ObservableValue<? extends Boolean> value, Boolean oldProp, Boolean newProp) -> {
 			if(!oldProp && newProp){
 				if(serverIPField.getText().length()==0){
-//					serverIPField.setText(serverIPField.getPromptText());
-					serverIPField.setText("localhost");
+					serverIPField.setText(serverIPField.getPromptText());
+//					serverIPField.setText("localhost");
 			    	loginPropertyChanged();
 				}
 				serverIPField.selectAll();

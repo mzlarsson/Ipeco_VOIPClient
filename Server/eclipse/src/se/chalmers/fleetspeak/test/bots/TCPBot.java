@@ -25,12 +25,14 @@ class TCPBot extends Thread{
 	protected static final int TLS_STATUS_UNINITIATED = -1;
 	
 	private String name;
+	private int id;
 	
 	private BufferedReader in;
 	private PrintWriter out;
 	private Socket socket;
 	private boolean isRunning;
 	
+	private Map<Integer, Integer> clientPosition;
 	private Map<String, Integer> rooms;
 	private int soundPort;
 	private int controlCode;
@@ -39,6 +41,7 @@ class TCPBot extends Thread{
 	
 	public TCPBot(String name, String serverIP, int serverPort){
 		this.name = name;
+		this.clientPosition = new HashMap<Integer, Integer>();
 		this.rooms = new HashMap<String, Integer>();
 		this.soundPort = -1;
 		try {
@@ -82,14 +85,18 @@ class TCPBot extends Thread{
 		JSONObject obj = new JSONObject(json);
 		
 		switch(obj.getString("command").toLowerCase()){
-			case "setinfo":			System.out.println(name+":\n\tClient info: [ID:"+obj.getInt("userid")+"]");break;
-			case "addeduser":		System.out.println(name+":\n\tUPDATE: Added user");break;
+			case "setinfo":			System.out.println(name+":\n\tClient info: [ID:"+obj.getInt("userid")+"]");
+									this.id = obj.getInt("userid");break;
+			case "addeduser":		clientPosition.put(obj.getInt("userid"), obj.getInt("roomid"));
+									System.out.println(name+":\n\tUPDATE: Added user");break;
 			case "changedusername":	System.out.println(name+":\n\tUPDATE: Changed username");break;
 			case "changedroomname":	System.out.println(name+":\n\tUPDATE: Changed room name");break;
-			case "moveduser":		System.out.println(name+":\n\tUPDATE: Moved user");break;
+			case "moveduser":		clientPosition.put(obj.getInt("userid"), obj.getInt("destinationroom"));
+									System.out.println(name+":\n\tUPDATE: Moved user");break;
 			case "createdroom":		rooms.put(obj.getString("roomname"), obj.getInt("roomid"));
 									System.out.println(name+":\n\tUPDATE: Created room");break;
-			case "removeduser":		System.out.println(name+":\n\tUPDATE: Removed user");break;
+			case "removeduser":		clientPosition.remove(obj.getInt("userid"));
+									System.out.println(name+":\n\tUPDATE: Removed user");break;
 			case "removedroom":		String roomName = null;
 									int id = obj.getInt("id");
 									for(String key : rooms.keySet()){
@@ -105,10 +112,9 @@ class TCPBot extends Thread{
 										this.controlCode = obj.getInt("controlcode");
 										this.hasControlCode = true;break;
 			case "sendauthenticationdetails":	JSONObject authObj = new JSONObject();
-												authObj.put("command", "authenticationDetails");
+												authObj.put("command", "authenticationdetails");
 												authObj.put("username", "bottenanja");
 												authObj.put("password", "");
-												authObj.put("work", obj.getInt("work"));
 												authObj.put("clienttype", "android");
 												send(authObj.toString());
 											break;
@@ -135,6 +141,14 @@ class TCPBot extends Thread{
 	
 	protected int getControlCode(){
 		return controlCode;
+	}
+	
+	protected int getUserID(){
+		return id;
+	}
+	
+	protected int getRoom(){
+		return clientPosition.get(getUserID());
 	}
 	
 	protected boolean hasControlCode(){
@@ -177,7 +191,7 @@ class TCPBot extends Thread{
 			
 			return ssl.getSocketFactory().createSocket(host, port);
 		}catch(Exception e){
-			System.out.println("Got fucking exception while creating TLS socket. ");
+			System.out.println("Got an exception while creating TLS socket. ");
 			e.printStackTrace();
 			return null;
 		}

@@ -108,7 +108,7 @@ public class ServerHandler {
 			
 			return ssl.getSocketFactory().createSocket(host, port);
 		}catch(Exception e){
-			System.out.println("Got fucking exception while creating TLS socket. ");
+			System.out.println("Got an exception while creating TLS socket. ");
 			return null;
 		}
 	}

@@ -23,7 +23,7 @@ public class FXUtil {
             	stage.show();
             }
             
-            stage.setResizable(false);
+//            stage.setResizable(false);
         	stage.sizeToScene();
         	stage.centerOnScreen();
         } catch (IOException e) {

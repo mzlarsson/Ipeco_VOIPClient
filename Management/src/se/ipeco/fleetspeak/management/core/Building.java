@@ -73,7 +73,7 @@ public class Building implements CommandHandler{
 		Room r = rooms.remove(roomID);
 		if(r != null){
 			if(listener != null){
-				listener.addedRoom(r);
+				listener.removedRoom(r);
 			}
 		}
 	}

@@ -50,10 +50,9 @@ public class Authenticator implements CommandHandler, StunListener{
 			JSONObject obj = new JSONObject(json);
 			switch(obj.getString("command").toLowerCase()){
 				case "sendauthenticationdetails":	JSONObject sendObj = new JSONObject();
-													sendObj.put("command", "authenticationDetails");
+													sendObj.put("command", "authenticationdetails");
 													sendObj.put("username", username);
 													sendObj.put("password", password);
-													sendObj.put("work", obj.getInt("work"));
 													sendObj.put("clienttype", "android");
 													tcp.send(sendObj.toString());break;
 				case "setinfo":						this.userID = obj.getInt("userid");break;
@@ -83,7 +82,7 @@ public class Authenticator implements CommandHandler, StunListener{
 	public void stunDone(StunStatus status) {
 		if(status == StunStatus.DONE){
 			try {
-				tcp.send(new JSONObject().put("command", "clientUdpTestOk").toString());
+				tcp.send(new JSONObject().put("command", "clientudptestok").toString());
 			} catch (JSONException e) {
 				System.out.println("Could not send clientUdpTestOk: [JSONException] "+e.getMessage());
 			}
