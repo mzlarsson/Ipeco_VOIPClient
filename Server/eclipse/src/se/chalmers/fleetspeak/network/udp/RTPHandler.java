@@ -130,8 +130,12 @@ public class RTPHandler implements PacketReceiver, BufferedAudioStream{
 	}
 	
 	private void terminateEncoders() {
-		encoder.terminate();
-		decoder.terminate();		
+		if (encoder != null) {	
+			encoder.terminate();
+		}
+		if (decoder != null) {
+			decoder.terminate();	
+		}
 	}
 
 	// Help method for setAudioType.
