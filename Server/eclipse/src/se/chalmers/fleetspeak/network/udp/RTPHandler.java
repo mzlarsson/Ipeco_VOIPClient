@@ -96,12 +96,14 @@ public class RTPHandler implements PacketReceiver, BufferedAudioStream{
 	private void setAudioType(AudioType at) {
 		switch(at) {
 		case PCMU:
+			terminateEncoders();
 			encoder = new PCMUEncoder();
 			decoder = new PCMUDecoder();
 			updateCompoponents(at);
 			break;
 		case OPUS_WB:
 			try {
+				terminateEncoders();
 				encoder = new OpusEncoder(at.getFramesizeMs());	//TODO	Verify if sample-rate == framesize in milliseconds,
 				decoder = new OpusDecoder(at.getFramesizeMs());	//		if it is Hz then this will not work.
 			} catch (OpusException e) {
@@ -112,6 +114,7 @@ public class RTPHandler implements PacketReceiver, BufferedAudioStream{
 			break;
 		case OPUS_NB:
 			try {
+				terminateEncoders();
 				encoder = new OpusEncoder(at.getFramesizeMs());	//TODO	Verify if sample-rate == framesize in milliseconds,
 				decoder = new OpusDecoder(at.getFramesizeMs());	//		if it is Hz then this will not work.
 			} catch (OpusException e) {
@@ -125,11 +128,14 @@ public class RTPHandler implements PacketReceiver, BufferedAudioStream{
 					+ " RTP payload-type: " + at + " is not supported");
 		}
 	}
+	
+	private void terminateEncoders() {
+		encoder.terminate();
+		decoder.terminate();		
+	}
 
 	// Help method for setAudioType.
 	private void updateCompoponents(AudioType at) {
-		encoder.close();
-		decoder.terminate();
 		currAudioType = at;
 		udp.setPacketSize(RTPPacket.HEADER_SIZE+at.getMaxLength());
 		jitter.flush();

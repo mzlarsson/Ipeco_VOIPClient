@@ -27,7 +27,7 @@ public class OpusEncoder implements Encoder{
 		return Arrays.copyOf(outdata, length);
 	}
 	
-	public void close(){
+	public void terminate(){
 		Opus.encoder_destroy(encoder);
 	}
 	

@@ -64,7 +64,7 @@ public class ClientAuthenticator implements Authenticator, CommandHandler{
 		} catch (JSONException e) {
 			failedAuthentication("Data is not in the correct JSON format");
 		}
-		if (command.equals("sendauthenticationdetails")) {
+		if (command.equalsIgnoreCase("authenticationdetails")) {
 			UserInfo user = DatabaseCommunicator.getInstance().findUser(username);
 			if (user != null) {
 				if (password.equals("")) {  //FIXME This is to temporary ignore passwords.
@@ -83,8 +83,10 @@ public class ClientAuthenticator implements Authenticator, CommandHandler{
 					}
 				}
 			} else {
-				failedAuthentication("Unknown username and password combination");				
+				failedAuthentication("Unknown username and password combination");		
 			}
+		} else {
+			failedAuthentication("Unknown command: " + command + " received instead of authenticationdetails");
 		}
 	}
 

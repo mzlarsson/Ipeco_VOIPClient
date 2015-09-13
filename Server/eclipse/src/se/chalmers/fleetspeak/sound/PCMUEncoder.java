@@ -13,5 +13,5 @@ public class PCMUEncoder implements Encoder {
 	}
 
 	@Override
-	public void close(){}
+	public void terminate(){}
 }
