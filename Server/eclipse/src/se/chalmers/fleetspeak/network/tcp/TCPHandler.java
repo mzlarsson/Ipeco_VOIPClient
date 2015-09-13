@@ -110,12 +110,13 @@ public class TCPHandler extends Thread{
 	/**
 	 * Tries to send a command to the socket.
 	 * @param command The Command to be sent.
+	 * @throws IOException Throws exception if PrinterWriter failed to send a string.
 	 */
-	public void sendCommand(String command){
+	public void sendCommand(String command) throws IOException{
 		logger.log(Level.FINER,command);
 		printWriter.println(command);
 		if(printWriter.checkError()){
-			receivedCommand("{\"command\":\"disconnect\"}");
+			throw new IOException("PrinterWriter got an error");
 		}
 
 	}

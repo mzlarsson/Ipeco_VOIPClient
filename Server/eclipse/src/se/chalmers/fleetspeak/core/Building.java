@@ -172,12 +172,11 @@ public class Building {
 				json.put("command", "createdroom");
 				json.put("roomid", id);
 				json.put("roomname", room.getName());
+				c.sendCommand(json.toString());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-
-			c.sendCommand(json.toString());
 			room.sync(c);
 		});
 	}

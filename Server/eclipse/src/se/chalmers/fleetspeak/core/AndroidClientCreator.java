@@ -1,5 +1,6 @@
 package se.chalmers.fleetspeak.core;
 
+import java.io.IOException;
 import java.net.DatagramSocket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -44,11 +45,15 @@ public class AndroidClientCreator implements STUNListener {
 		try {
 			json.put("command", "authenticationResult");
 			json.put("result", true);
+			client.sendCommand(json.toString());
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (IOException e) {
+			logger.log(Level.WARNING, "Caught IOException when sending authenticationresult, true. Message: "
+					+ e.getMessage() + " terminating client");
+			client.terminate();
 		}
-		client.sendCommand(json.toString());
 		logger.log(Level.INFO, "A new person joined id: " + client.getClientID() + " Alias: " + client.getName());
 		building.addClient(client, targetRoom);		
 	}

@@ -1,9 +1,11 @@
 package se.chalmers.fleetspeak.core;
 
+import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import se.chalmers.fleetspeak.util.IDFactory;
@@ -72,7 +74,21 @@ public class Room implements CommandHandler, IRoom{
 	 */
 	@Override
 	public void postUpdate(String c){
-		clients.forEach((id, client) -> client.sendCommand(c));
+		for (Client client : clients.values()) {
+			try {
+				client.sendCommand(c);
+			} catch (IOException e) {
+				JSONObject json = new JSONObject();
+				try {
+					json.put("command", "disconnect");
+					json.put("userid", client.getClientID());
+				} catch (JSONException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				handleCommand(json.toString());
+			}
+		}
 	}
 
 	@Override
@@ -85,11 +101,11 @@ public class Room implements CommandHandler, IRoom{
 				json.put("userid", client.getClientID());
 				json.put("username", client.getName());
 				json.put("roomid", this.id);
+				c.sendCommand(json.toString());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			c.sendCommand(json.toString());
 		});
 	}
 

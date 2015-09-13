@@ -7,13 +7,14 @@ import java.util.concurrent.Executors;
 
 import se.chalmers.fleetspeak.audio.FleetspeakAudioException;
 import se.chalmers.fleetspeak.audio.sound.AudioInputProcessor;
+import se.chalmers.fleetspeak.audio.sound.AudioType;
 
 /**
  * Created by Nieo on 25/08/15.
  */
 public class RTPHandler implements Runnable, PacketReceiver, BufferedAudioStream{
 
-    private static final int TIME_BETWEEN_PACKAGES = 20;
+    private int frameSizeMs = 20;
 
     private final Executor executor;
     private boolean isRunning;
@@ -24,6 +25,7 @@ public class RTPHandler implements Runnable, PacketReceiver, BufferedAudioStream
     private AudioInputProcessor audioInputProcessor;
 
     private JitterBuffer buffer;
+    private AudioType currAudioType = AudioType.OPUS_WB;    //TODO We probably want to be able to change this dynamically.
 
     public RTPHandler(UDPConnector udpConnector) {
         buffer = new JitterBuffer(100);
@@ -51,7 +53,7 @@ public class RTPHandler implements Runnable, PacketReceiver, BufferedAudioStream
         while (isRunning){
             try {
                 data = audioInputProcessor.readBuffer();
-                udpConnector.sendPacket(new RTPPacket(sequenceNumber++, getNextTimestamp(), data).toByteArraySimple());
+                udpConnector.sendPacket(new RTPPacket(currAudioType, sequenceNumber++, getNextTimestamp(), data).toByteArrayDetailed());
                 //buffer.write(new RTPPacket(sequenceNumber++,System.currentTimeMillis(),data));
                 //Log.d("RTPHandler", +data.length + " " + (sequenceNumber-1) +  " send " + data.length +" and time "+System.currentTimeMillis());
             } catch (InterruptedException e) {
@@ -62,10 +64,10 @@ public class RTPHandler implements Runnable, PacketReceiver, BufferedAudioStream
 
     private long getNextTimestamp() {
         long curr = System.currentTimeMillis();
-        if(Math.abs(curr-timestamp)>(10*TIME_BETWEEN_PACKAGES)) {
+        if(Math.abs(curr-timestamp)>(5* frameSizeMs)) {
             timestamp = curr;
         } else {
-            timestamp += TIME_BETWEEN_PACKAGES;
+            timestamp += frameSizeMs;
         }
         return timestamp;
     }

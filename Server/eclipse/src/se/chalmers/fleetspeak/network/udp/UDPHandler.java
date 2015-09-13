@@ -19,7 +19,6 @@ public class UDPHandler extends Thread{
 	private volatile boolean isRunning = false;
 	private Logger logger;
 	private DatagramPacket receivePacket, outgoingPacket;
-	private int packetSize;
 	private PacketReceiver receiver;
 	
 	/**
@@ -31,8 +30,7 @@ public class UDPHandler extends Thread{
 		super("UDPHandler:port"+socket.getLocalPort());
 		logger = Logger.getLogger("Debug");
 		this.socket = socket;
-		this.packetSize = packetSize;
-		receivePacket = new DatagramPacket(new byte[this.packetSize], this.packetSize);
+		receivePacket = new DatagramPacket(new byte[packetSize], packetSize);
 		if (socket.isConnected()) {
 			outgoingPacket = new DatagramPacket(new byte[packetSize], packetSize, socket.getRemoteSocketAddress());
 		} else {
@@ -87,7 +85,7 @@ public class UDPHandler extends Thread{
 	 * @param packetSize The size of the read-array in number of bytes.
 	 */
 	public void setPacketSize(int packetSize) {
-		this.packetSize = packetSize;
+		receivePacket.setData(new byte[packetSize]);
 	}
 	
 	/**

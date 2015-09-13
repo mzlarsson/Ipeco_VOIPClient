@@ -2,6 +2,8 @@ package se.chalmers.fleetspeak.sound.opus;
 
 import org.jitsi.impl.neomedia.codec.audio.opus.Opus;
 
+import se.chalmers.fleetspeak.sound.Decoder;
+
 public class OpusDecoder implements Decoder{
 
 	private long decoder;
@@ -18,12 +20,12 @@ public class OpusDecoder implements Decoder{
 	}
 	
 	public byte[] decode(byte[] indata){
-		byte[] outdata = new byte[indata.length];
+		byte[] outdata = new byte[Constants.DEFAULT_MIXING_ARRAY_SIZE];
 		Opus.decode(decoder, indata, 0, indata.length, outdata, 0, outdata.length, 0);
 		return outdata;
 	}
 	
-	public void close(){
+	public void terminate(){
 		Opus.decoder_destroy(decoder);
 	}
 	

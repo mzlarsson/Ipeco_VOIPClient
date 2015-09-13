@@ -1,6 +1,10 @@
 package se.chalmers.fleetspeak.sound.opus;
 
+import java.util.Arrays;
+
 import org.jitsi.impl.neomedia.codec.audio.opus.Opus;
+
+import se.chalmers.fleetspeak.sound.Encoder;
 
 public class OpusEncoder implements Encoder{
 
@@ -19,8 +23,8 @@ public class OpusEncoder implements Encoder{
 	
 	public byte[] encode(byte[] indata){
 		byte[] outdata = new byte[indata.length];
-		Opus.encode(encoder, indata, 0, indata.length, outdata, 0, outdata.length);
-		return outdata;
+		int length = Opus.encode(encoder, indata, 0, indata.length, outdata, 0, outdata.length);
+		return Arrays.copyOf(outdata, length);
 	}
 	
 	public void close(){

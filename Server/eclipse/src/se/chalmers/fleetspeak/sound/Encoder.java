@@ -1,7 +1,8 @@
-package se.chalmers.fleetspeak.sound.opus;
+package se.chalmers.fleetspeak.sound;
 
 public interface Encoder {
 
 	public byte[] encode(byte[] indata);
+	public void close();
 	
 }
