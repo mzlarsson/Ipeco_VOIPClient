@@ -11,19 +11,19 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import se.ipeco.fleetspeak.management.core.Room;
 import se.ipeco.fleetspeak.management.core.User;
 import se.ipeco.fleetspeak.management.gui.UserPane.LoginStatus;
 
-public class RoomPane extends Pane{
+public class RoomPane extends AnchorPane{
 	
 	private Room room;
 	private BooleanProperty clientsHiddenProperty;
 	
 	@FXML
-	private Pane root;
+	private AnchorPane root;
 	@FXML
 	private ImageView expandIcon;
 	@FXML
@@ -64,9 +64,12 @@ public class RoomPane extends Pane{
 		Platform.runLater(() -> {
 			userContainer.getChildren().clear();
 			for(User u : users){
-				UserPane p = new UserPane(u, LoginStatus.LOGGED_IN);
-				userContainer.getChildren().add(p);
+				for(int i = 0; i<15; i++){
+					UserPane p = new UserPane(u, LoginStatus.LOGGED_IN);
+					userContainer.getChildren().add(p);
+				}
 			}
+			System.out.println(roomNameLabel.getLayoutX()+", "+roomNameLabel.getLayoutY());
 		});
 	}
 	

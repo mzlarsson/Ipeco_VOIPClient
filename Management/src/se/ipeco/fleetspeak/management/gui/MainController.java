@@ -22,6 +22,10 @@ public class MainController implements UserChangeHandler, BuildingChangeListener
 	@FXML
 	private AnchorPane root;
 	@FXML
+	private Pane contentRoot;
+	@FXML
+	private AnchorPane buttonPane;
+	@FXML
 	private VBox adminList;
 	@FXML
 	private VBox roomStructureBox;
@@ -43,6 +47,10 @@ public class MainController implements UserChangeHandler, BuildingChangeListener
 				mapView.addPopup(57.687325, 11.978694, "Idegr6");
 			}
 		});
+		
+//		for(int i = 0; i<10; i++){
+//			addAdmin(i, "Bot"+i);
+//		}
 	}
 	
 	public void addAdmin(int id, String name){
@@ -100,6 +108,15 @@ public class MainController implements UserChangeHandler, BuildingChangeListener
 			adminList.getChildren().remove(p);
 		});
 	}
+	
+	
+	public void buttonFieldToggled(){
+		System.out.println("toggeling button field");
+		boolean visible = !buttonPane.isVisible();
+		buttonPane.setVisible(visible);
+		buttonPane.setManaged(visible);
+	}
+	
 	
 	public void clearMap(){
 		mapView.clearMap();

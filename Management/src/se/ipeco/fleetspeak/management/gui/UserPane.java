@@ -14,10 +14,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.AnchorPane;
 import se.ipeco.fleetspeak.management.core.User;
 
-public class UserPane extends Pane{
+public class UserPane extends AnchorPane{
 	
 	//Data
 	private User user;
@@ -27,7 +27,7 @@ public class UserPane extends Pane{
 	private UserChangeHandler handler;
 
 	@FXML
-	private Pane root;
+	private AnchorPane root;
 	@FXML
 	private ImageView loginStatusView;
 	@FXML

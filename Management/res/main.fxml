@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="680.0" prefWidth="1280.0" styleClass="container" stylesheets="@stylesheet.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="se.ipeco.fleetspeak.management.gui.MainController">
+<AnchorPane prefHeight="800.0" prefWidth="1600.0" styleClass="container" stylesheets="@stylesheet.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="se.ipeco.fleetspeak.management.gui.MainController">
    <children>
       <MenuBar prefHeight="32.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <menus>
@@ -19,6 +20,11 @@
               <MenuItem mnemonicParsing="false" text="Delete" />
             </items>
           </Menu>
+            <Menu mnemonicParsing="false" text="Window">
+               <items>
+                  <CheckMenuItem mnemonicParsing="false" onAction="#buttonFieldToggled" selected="true" text="Button field" />
+               </items>
+            </Menu>
           <Menu mnemonicParsing="false" text="Help">
             <items>
               <MenuItem mnemonicParsing="false" text="About" />
@@ -26,9 +32,64 @@
           </Menu>
         </menus>
       </MenuBar>
-      <AnchorPane fx:id="root" layoutY="32.0" prefHeight="668.0" prefWidth="1280.0" styleClass="container" stylesheets="@stylesheet.css" AnchorPane.topAnchor="32.0">
-         <children>
-            <Pane layoutX="299.0" prefHeight="666.0" prefWidth="981.0">
+      <SplitPane dividerPositions="0.18" layoutY="32.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="32.0">
+         <items>
+            <AnchorPane id="menuPane" minWidth="120.0" stylesheets="@stylesheet.css">
+               <children>
+                  <VBox styleClass="vbox" stylesheets="@stylesheet.css" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <AnchorPane fx:id="buttonPane" stylesheets="@stylesheet.css">
+                           <children>
+                              <HBox alignment="CENTER" layoutX="126.0" layoutY="57.0" AnchorPane.bottomAnchor="57.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="57.0">
+                                 <children>
+                                    <Label alignment="CENTER" layoutX="126.0" layoutY="57.0" text="Buttons" />
+                                 </children>
+                              </HBox>
+                           </children>
+                           <styleClass>
+                              <String fx:value="menuSection" />
+                              <String fx:value="container" />
+                           </styleClass>
+                        </AnchorPane>
+                        <VBox alignment="TOP_CENTER" stylesheets="@stylesheet.css">
+                           <children>
+                              <Label alignment="CENTER" minHeight="-Infinity" prefHeight="37.0" text="Administrators">
+                                 <VBox.margin>
+                                    <Insets />
+                                 </VBox.margin>
+                              </Label>
+                              <ScrollPane fx:id="scroller" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" prefHeight="131.0" prefViewportHeight="167.0" prefViewportWidth="297.0" prefWidth="147.0" styleClass="container" stylesheets="@stylesheet.css" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="3.0" AnchorPane.topAnchor="40.0">
+                                 <content>
+                                    <VBox fx:id="adminList" stylesheets="@stylesheet.css">
+                                       <styleClass>
+                                          <String fx:value="container" />
+                                          <String fx:value="vbox" />
+                                       </styleClass>
+                                    </VBox>
+                                 </content>
+                                 <VBox.margin>
+                                    <Insets bottom="3.0" />
+                                 </VBox.margin>
+                              </ScrollPane>
+                           </children>
+                           <styleClass>
+                              <String fx:value="menuSection" />
+                              <String fx:value="vbox" />
+                           </styleClass>
+                        </VBox>
+                        <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" layoutY="3.0" styleClass="container" stylesheets="@stylesheet.css" AnchorPane.bottomAnchor="3.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="3.0" AnchorPane.topAnchor="3.0">
+                           <content>
+                              <VBox fx:id="roomStructureBox" styleClass="vbox" stylesheets="@stylesheet.css" />
+                           </content>
+                           <VBox.margin>
+                              <Insets top="3.0" />
+                           </VBox.margin>
+                        </ScrollPane>
+                     </children>
+                  </VBox>
+               </children>
+            </AnchorPane>
+            <Pane fx:id="contentRoot" prefHeight="666.0" prefWidth="981.0" styleClass="container" stylesheets="@stylesheet.css">
                <children>
                   <Pane layoutX="172.0" layoutY="14.0" prefHeight="131.0" prefWidth="629.0" styleClass="container" stylesheets="@stylesheet.css">
                      <children>
@@ -41,49 +102,7 @@
                   <Pane fx:id="mapContainer" layoutX="141.0" layoutY="152.0" prefHeight="500.0" prefWidth="700.0" />
                </children>
             </Pane>
-            <Pane id="menuPane" prefWidth="300.0" stylesheets="@stylesheet.css">
-               <children>
-                  <Pane prefHeight="134.0" prefWidth="300.0" styleClass="menuSection" stylesheets="@stylesheet.css">
-                     <children>
-                        <Label alignment="CENTER" layoutX="72.0" layoutY="46.0" prefHeight="42.0" prefWidth="144.0" text="Buttons" />
-                     </children>
-                  </Pane>
-                  <Pane layoutY="134.0" prefHeight="170.0" stylesheets="@stylesheet.css">
-                     <children>
-                        <ScrollPane fx:id="scroller" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" layoutX="1.0" layoutY="1.0" prefHeight="167.0" prefViewportHeight="167.0" prefViewportWidth="297.0" prefWidth="297.0" styleClass="container" stylesheets="@stylesheet.css">
-                           <content>
-                              <VBox fx:id="adminList" prefHeight="168.0" prefWidth="297.0" stylesheets="@stylesheet.css">
-                                 <children>
-                                    <Label alignment="CENTER" prefHeight="37.0" prefWidth="300.0" text="Administrators" />
-                                 </children>
-                                 <styleClass>
-                                    <String fx:value="container" />
-                                    <String fx:value="vbox" />
-                                 </styleClass>
-                              </VBox>
-                           </content>
-                        </ScrollPane>
-                     </children>
-                     <styleClass>
-                        <String fx:value="container" />
-                        <String fx:value="menuSection" />
-                     </styleClass>
-                  </Pane>
-                  <Pane fx:id="roomStructure" layoutY="302.0" prefWidth="300.0" stylesheets="@stylesheet.css">
-                     <children>
-                        <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" layoutY="5.0" prefHeight="353.0" prefWidth="297.0" styleClass="container" stylesheets="@stylesheet.css">
-                           <content>
-                              <VBox fx:id="roomStructureBox" style="-fx-background-color: white;" styleClass="vbox" stylesheets="@stylesheet.css" />
-                           </content>
-                        </ScrollPane>
-                     </children>
-                     <styleClass>
-                        <String fx:value="menuSection" />
-                        <String fx:value="container" />
-                     </styleClass></Pane>
-               </children>
-            </Pane>
-         </children>
-      </AnchorPane>
+         </items>
+      </SplitPane>
    </children>
 </AnchorPane>

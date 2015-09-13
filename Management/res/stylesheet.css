@@ -16,9 +16,9 @@
 }
 
 #menuPane{
-	-fx-border-width:0 1 0 0;
+	/*-fx-border-width:0 1 0 0;
 	-fx-border-style:solid;
-	-fx-border-color:#aaaaaa;
+	-fx-border-color:#aaaaaa;*/
 }
 .menuSection{
 	-fx-border-width:0 0 1 0;
