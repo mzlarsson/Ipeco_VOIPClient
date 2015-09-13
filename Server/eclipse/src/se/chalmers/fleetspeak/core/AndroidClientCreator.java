@@ -43,7 +43,7 @@ public class AndroidClientCreator implements STUNListener {
 		client.setRTPHandler(new RTPHandler(socket));
 		JSONObject json = new JSONObject();
 		try {
-			json.put("command", "authenticationResult");
+			json.put("command", "authenticationresult");
 			json.put("result", true);
 			client.sendCommand(json.toString());
 		} catch (JSONException e) {

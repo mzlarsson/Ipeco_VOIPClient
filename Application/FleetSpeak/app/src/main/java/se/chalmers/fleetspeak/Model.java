@@ -136,7 +136,7 @@ public class Model {
                     break;
                 case MessageValues.UDPCONNECTOR:
                     Log.i("Commandhandler", "got a udpconnector");
-                    connector.sendMessage("{\"command\":\"clientUdpTestOk\"}");
+                    connector.sendMessage("{\"command\":\"clientudptestok\"}");
                     rtpHandler = new RTPHandler((UDPConnector)msg.obj);
                     soundOutputController = new SoundOutputController(rtpHandler);
                     break;
@@ -173,7 +173,6 @@ public class Model {
                                 Log.d("auth", username);
                                 JSONObject command = new JSONObject();
                                 command.put("command", "autheticationdetails");
-                                command.put("work", json.getString("work"));
                                 command.put("username", username);
                                 command.put("password", password);
                                 command.put("clienttype", "android");

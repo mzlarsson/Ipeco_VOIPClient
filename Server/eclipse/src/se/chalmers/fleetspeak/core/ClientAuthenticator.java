@@ -43,7 +43,7 @@ public class ClientAuthenticator implements Authenticator, CommandHandler{
 	 */
 	public void start() {
 		try {
-			tcp.sendCommand("{\"command\":\"sendAuthenticationDetails\"}");
+			tcp.sendCommand("{\"command\":\"sendauthenticationdetails\"}");
 		} catch (IOException e) {
 			failedAuthentication("Client dropped");
 		}

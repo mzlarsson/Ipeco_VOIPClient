@@ -59,7 +59,7 @@ public class STUNInitiator extends Thread implements CommandHandler{
 		boolean isWaitingForResponse = false;
 		JSONObject json = new JSONObject();
 		try {
-			json.put("command","initiateSoundPort");
+			json.put("command","initiatesoundport");
 			json.put("port", udp.getLocalPort());
 			json.put("controlcode", "" + ctrlCode);
 		} catch (JSONException e1) {
