@@ -57,6 +57,7 @@ public class RTPHandler implements PacketReceiver, BufferedAudioStream{
 		udp.setReceiver(this);
 		udp.start();
 
+		setAudioType(AudioType.OPUS_NB);
 		executor = Executors.newSingleThreadExecutor();
 		executor.execute(sender);
 	}
@@ -71,9 +72,14 @@ public class RTPHandler implements PacketReceiver, BufferedAudioStream{
 
 	@Override
 	public void handlePacket(byte[] packet){
-		RTPPacket p = new RTPPacket(packet);
-		AudioType at = p.payloadType;
-		if (p.seqNumber!=0 || p.timestamp!=0) {
+		RTPPacket p = null;
+		try {
+			p = new RTPPacket(packet);
+		} catch (IllegalArgumentException ex) {
+			logger.log(Level.FINEST, "Read packet was not on a valid RTP form: " + ex.getMessage());
+		}
+		if (p != null) {
+			AudioType at = p.payloadType;
 			if (at != currAudioType) { // If the AudioType has changed we switch encoder/decoder and drop the packet since it was most likely read wrong.
 				setAudioType(at);
 			} else {
@@ -104,8 +110,8 @@ public class RTPHandler implements PacketReceiver, BufferedAudioStream{
 		case OPUS_WB:
 			try {
 				terminateEncoders();
-				encoder = new OpusEncoder(at.getSampleRate());
-				decoder = new OpusDecoder(at.getSampleRate());
+				encoder = new OpusEncoder(at.getSampleRate(), at.getFrameSize());
+				decoder = new OpusDecoder(at.getSampleRate(), at.getFrameSize());
 			} catch (OpusException e) {
 				logger.log(Level.SEVERE, "OpusException while creating a OpusEncoder/-Decoder "
 						+ "for: " + at + " in thread: " + Thread.currentThread().getName());
@@ -115,8 +121,8 @@ public class RTPHandler implements PacketReceiver, BufferedAudioStream{
 		case OPUS_NB:
 			try {
 				terminateEncoders();
-				encoder = new OpusEncoder(at.getSampleRate());
-				decoder = new OpusDecoder(at.getSampleRate());
+				encoder = new OpusEncoder(at.getSampleRate(), at.getFrameSize());
+				decoder = new OpusDecoder(at.getSampleRate(), at.getFrameSize());
 			} catch (OpusException e) {
 				logger.log(Level.SEVERE, "OpusException while creating a OpusEncoder/-Decoder "
 						+ "for: " + at + " in thread: " + Thread.currentThread().getName());
@@ -143,7 +149,7 @@ public class RTPHandler implements PacketReceiver, BufferedAudioStream{
 		currAudioType = at;
 		udp.setPacketSize(RTPPacket.HEADER_SIZE+at.getMaxLength());
 		jitter.flush();
-		jitter.setFrameSizeMs(at.getFramesizeMs());
+		jitter.setFrameSizeMs(at.getTimeBetweenSamples());
 	}
 	
 	/**

@@ -9,13 +9,15 @@ import se.chalmers.fleetspeak.sound.Encoder;
 public class OpusEncoder implements Encoder{
 
 	private long encoder;
+	private int frameSize;
 	
 	public OpusEncoder() throws OpusException{
-		this(Constants.DEFAULT_SAMPLE_RATE);
+		this(Constants.DEFAULT_SAMPLE_RATE, Constants.DEFAULT_FRAME_SIZE);
 	}
 	
-	public OpusEncoder(int sampleRate) throws OpusException{
+	public OpusEncoder(int sampleRate, int frameSize) throws OpusException{
 		encoder = Opus.encoder_create(sampleRate, 1);
+		this.frameSize = frameSize;
 		if(encoder == 0){
 			throw new OpusException("Could not initiate encoder");
 		}
@@ -23,7 +25,7 @@ public class OpusEncoder implements Encoder{
 	
 	public byte[] encode(byte[] indata){
 		byte[] outdata = new byte[indata.length];
-		int length = Opus.encode(encoder, indata, 0, indata.length, outdata, 0, outdata.length);
+		int length = Opus.encode(encoder, indata, 0, frameSize, outdata, 0, outdata.length);
 		return Arrays.copyOf(outdata, length);
 	}
 	

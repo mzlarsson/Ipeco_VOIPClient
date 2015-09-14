@@ -54,7 +54,7 @@ public class JitterBuffer{
 	 * @param packet The RTPPacket to be added to the queue.
 	 */
 	public void write(RTPPacket packet) {
-		if((short)(packet.seqNumber - lastReadSeqNbr) > 0) {
+		if(((short)(packet.seqNumber - lastReadSeqNbr) > 0) || (packet.seqNumber>0 && lastReadSeqNbr<0)) {
 			buffer.offer(packet);
 			if(isFullyBuffered()) {
 				if (!ready) {
