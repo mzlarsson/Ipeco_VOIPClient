@@ -7,19 +7,21 @@ package se.chalmers.fleetspeak.sound;
  */
 public enum AudioType {
 
-	PCMU(0, 320, 20),
-	OPUS_WB(80, 80, 20),
-	OPUS_NB(81, 40, 20),
-	NONE(-1, 0, 0);
+	PCMU(0, 320, 20, 8000),
+	OPUS_WB(80, 80, 20, 16000),
+	OPUS_NB(81, 40, 20, 8000),
+	NONE(-1, 0, 0, 0);
 	
 	private final int payloadType;
 	private final int maxLength;
 	private final int framesizeMs;
+	private final int sampleRate;
 	
-	private AudioType(int payloadType, int maxLength, int framesizeMs) {
+	private AudioType(int payloadType, int maxLength, int framesizeMs, int sampleRate) {
 		this.payloadType = payloadType;
 		this.maxLength = maxLength;
 		this.framesizeMs = framesizeMs;
+		this.sampleRate = sampleRate;
 	}
 	
 	/**
@@ -58,5 +60,13 @@ public enum AudioType {
 	 */
 	public int getFramesizeMs() {
 		return framesizeMs;
+	}
+	
+	/**
+	 * The sample rate of the audio (Hz)
+	 * @return The time sample rate
+	 */
+	public int getSampleRate() {
+		return sampleRate;
 	}
 }

@@ -104,8 +104,8 @@ public class RTPHandler implements PacketReceiver, BufferedAudioStream{
 		case OPUS_WB:
 			try {
 				terminateEncoders();
-				encoder = new OpusEncoder(at.getFramesizeMs());	//TODO	Verify if sample-rate == framesize in milliseconds,
-				decoder = new OpusDecoder(at.getFramesizeMs());	//		if it is Hz then this will not work.
+				encoder = new OpusEncoder(at.getSampleRate());
+				decoder = new OpusDecoder(at.getSampleRate());
 			} catch (OpusException e) {
 				logger.log(Level.SEVERE, "OpusException while creating a OpusEncoder/-Decoder "
 						+ "for: " + at + " in thread: " + Thread.currentThread().getName());
@@ -115,8 +115,8 @@ public class RTPHandler implements PacketReceiver, BufferedAudioStream{
 		case OPUS_NB:
 			try {
 				terminateEncoders();
-				encoder = new OpusEncoder(at.getFramesizeMs());	//TODO	Verify if sample-rate == framesize in milliseconds,
-				decoder = new OpusDecoder(at.getFramesizeMs());	//		if it is Hz then this will not work.
+				encoder = new OpusEncoder(at.getSampleRate());
+				decoder = new OpusDecoder(at.getSampleRate());
 			} catch (OpusException e) {
 				logger.log(Level.SEVERE, "OpusException while creating a OpusEncoder/-Decoder "
 						+ "for: " + at + " in thread: " + Thread.currentThread().getName());
