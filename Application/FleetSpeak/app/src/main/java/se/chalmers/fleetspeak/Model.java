@@ -172,7 +172,7 @@ public class Model {
                             case "sendauthenticationdetails":
                                 Log.d("auth", username);
                                 JSONObject command = new JSONObject();
-                                command.put("command", "autheticationdetails");
+                                command.put("command", "authenticationdetails");
                                 command.put("username", username);
                                 command.put("password", password);
                                 command.put("clienttype", "android");
