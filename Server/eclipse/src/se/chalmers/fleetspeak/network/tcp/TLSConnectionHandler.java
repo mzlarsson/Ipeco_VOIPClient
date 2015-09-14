@@ -29,6 +29,7 @@ public class TLSConnectionHandler{
 	private int port;
 	private ClientCreator clientCreator;
 	private Executor executor;
+	private ExecutorService handshakeThreads;
 	private Logger logger = Logger.getLogger("Debug");
 
 	private ServerSocket serverSocket = null;
@@ -40,6 +41,7 @@ public class TLSConnectionHandler{
 		clientCreator = cc;
 		executor = Executors.newSingleThreadExecutor();
 		executor.execute(connectionListener);
+		handshakeThreads = Executors.newFixedThreadPool(10);
 	}
 
 	Runnable connectionListener = ()->{
@@ -56,17 +58,22 @@ public class TLSConnectionHandler{
 		}else{
 			logger.log(Level.SEVERE, "Failed to create serverSocket");
 		}
-		SSLSocket clientSocket;
 		while(running){
 
 			try{
 				logger.log(Level.FINER, "Wainting for client");
-				clientSocket = (SSLSocket) serverSocket.accept();
-				logger.log(Level.FINER, "Starting TLS handshake");
-				clientSocket.startHandshake();
-				logger.log(Level.FINER, "Finished TLS handshake");
-				logger.log(Level.INFO,"created socket" + clientSocket.getSession().getProtocol());
-				clientCreator.addNewClient(clientSocket);
+				final SSLSocket clientSocket = (SSLSocket) serverSocket.accept();
+				handshakeThreads.execute(() -> {
+					logger.log(Level.FINER, "Starting TLS handshake");
+					try{
+						clientSocket.startHandshake();
+					}catch (IOException e){
+						e.printStackTrace();
+					}
+					logger.log(Level.FINER, "Finished TLS handshake");
+					logger.log(Level.INFO,"created socket" + clientSocket.getSession().getProtocol());
+					clientCreator.addNewClient(clientSocket);
+				});
 			}catch(SSLException e){
 				e.printStackTrace();
 			}catch(IOException e){

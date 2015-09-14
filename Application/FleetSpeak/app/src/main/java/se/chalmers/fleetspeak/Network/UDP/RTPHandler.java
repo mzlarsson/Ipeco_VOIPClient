@@ -25,7 +25,7 @@ public class RTPHandler implements Runnable, PacketReceiver, BufferedAudioStream
     private AudioInputProcessor audioInputProcessor;
 
     private JitterBuffer buffer;
-    private AudioType currAudioType = AudioType.OPUS_WB;    //TODO We probably want to be able to change this dynamically.
+    private AudioType currAudioType = AudioType.OPUS_NB;    //TODO We probably want to be able to change this dynamically.
 
     public RTPHandler(UDPConnector udpConnector) {
         buffer = new JitterBuffer(100);

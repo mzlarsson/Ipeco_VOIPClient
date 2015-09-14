@@ -160,7 +160,7 @@ public class Model {
                                 building.addRoom(json.getInt("roomid"), json.getString("roomname"));
                                 break;
                             case "removeduser":
-                                building.removeUser(json.getInt("userid"), json.getInt(""));
+                                building.removeUser(json.getInt("userid"), json.getInt("roomid"));
                                 break;
                             case "removedroom":
                                 building.removeRoom(json.getInt("roomid"));
