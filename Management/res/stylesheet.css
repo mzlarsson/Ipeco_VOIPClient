@@ -11,25 +11,14 @@
 	-fx-background-color:white;
 }
 
-.button{
-	
-}
-
-#menuPane{
-	-fx-border-width:0 1 0 0;
-	-fx-border-style:solid;
-	-fx-border-color:#aaaaaa;
-}
-.menuSection{
-	-fx-border-width:0 0 1 0;
-	-fx-border-style:solid;
-	-fx-border-color:#aaaaaa;
-}
-
 .split-pane > .split-pane-divider{
 	-fx-background-color:transparent;
 	-fx-padding: 0 0.4em 0 0.4em; 
 }
 .split-pane{
 	-fx-background-color:transparent;
+}
+
+.button{
+	
 }

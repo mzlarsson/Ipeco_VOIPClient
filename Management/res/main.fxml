@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.net.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
@@ -34,75 +35,13 @@
       </MenuBar>
       <SplitPane dividerPositions="0.18" layoutY="32.0" stylesheets="@stylesheet.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="32.0">
          <items>
-            <AnchorPane id="menuPane" minWidth="120.0" stylesheets="@stylesheet.css">
-               <children>
-                  <SplitPane fx:id="menuPaneWrapper" dividerPositions="0.1, 0.45" orientation="VERTICAL" stylesheets="@stylesheet.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                     <items>
-                        <AnchorPane fx:id="buttonPane" stylesheets="@stylesheet.css">
-                           <children>
-                              <HBox alignment="CENTER" layoutX="126.0" layoutY="57.0" AnchorPane.bottomAnchor="57.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="57.0">
-                                 <children>
-                                    <Label alignment="CENTER" layoutX="126.0" layoutY="57.0" text="Buttons" />
-                                 </children>
-                              </HBox>
-                           </children>
-                           <styleClass>
-                              <String fx:value="menuSection" />
-                              <String fx:value="container" />
-                           </styleClass>
-                        </AnchorPane>
-                        <VBox alignment="TOP_CENTER" stylesheets="@stylesheet.css">
-                           <children>
-                              <Label alignment="CENTER" minHeight="-Infinity" prefHeight="37.0" text="Administrators">
-                                 <VBox.margin>
-                                    <Insets />
-                                 </VBox.margin>
-                              </Label>
-                              <ScrollPane fx:id="scroller" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" prefHeight="131.0" prefViewportHeight="167.0" prefViewportWidth="297.0" prefWidth="147.0" styleClass="container" stylesheets="@stylesheet.css" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="3.0" AnchorPane.topAnchor="40.0">
-                                 <content>
-                                    <VBox fx:id="adminList" stylesheets="@stylesheet.css">
-                                       <styleClass>
-                                          <String fx:value="container" />
-                                          <String fx:value="vbox" />
-                                       </styleClass>
-                                    </VBox>
-                                 </content>
-                                 <VBox.margin>
-                                    <Insets bottom="3.0" />
-                                 </VBox.margin>
-                              </ScrollPane>
-                           </children>
-                           <styleClass>
-                              <String fx:value="menuSection" />
-                              <String fx:value="vbox" />
-                           </styleClass>
-                        </VBox>
-                        <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" layoutY="3.0" styleClass="container" stylesheets="@stylesheet.css" AnchorPane.bottomAnchor="3.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="3.0" AnchorPane.topAnchor="3.0">
-                           <content>
-                              <VBox fx:id="roomStructureBox" styleClass="vbox" stylesheets="@stylesheet.css" />
-                           </content>
-                           <VBox.margin>
-                              <Insets top="3.0" />
-                           </VBox.margin>
-                        </ScrollPane>
-                     </items>
-                  </SplitPane>
-               </children>
-            </AnchorPane>
-            <Pane fx:id="contentRoot" styleClass="container" stylesheets="@stylesheet.css">
-               <children>
-                  <Pane layoutX="172.0" layoutY="14.0" prefHeight="131.0" prefWidth="629.0" styleClass="container" stylesheets="@stylesheet.css">
-                     <children>
-                        <Button alignment="CENTER" layoutX="218.0" layoutY="79.0" mnemonicParsing="false" onAction="#goToMatz" prefHeight="52.0" prefWidth="194.0" text="Flyg till Matz" />
-                        <Button alignment="CENTER" layoutY="79.0" mnemonicParsing="false" onAction="#clearMap" prefHeight="52.0" prefWidth="194.0" text="Clear all map stuff" />
-                        <Label alignment="CENTER" layoutX="165.0" layoutY="14.0" prefHeight="52.0" prefWidth="300.0" text="INLOGGAD!" />
-                        <Button alignment="CENTER" layoutX="435.0" layoutY="79.0" mnemonicParsing="false" onAction="#disconnect" prefHeight="52.0" prefWidth="194.0" text="Disconnect" />
-                     </children>
-                  </Pane>
-                  <Pane fx:id="mapContainer" layoutX="141.0" layoutY="152.0" prefHeight="500.0" prefWidth="700.0" />
-               </children>
-            </Pane>
+            <AnchorPane fx:id="menuPane" minWidth="120.0" />
+            <AnchorPane fx:id="contentRoot" styleClass="container" />
          </items>
       </SplitPane>
    </children>
+   
+   <stylesheets>
+      <URL value="@stylesheet.css" />
+   </stylesheets>
 </AnchorPane>

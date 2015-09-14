@@ -3,6 +3,7 @@ package se.ipeco.fleetspeak.management.gui;
 import java.io.IOException;
 
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -30,5 +31,17 @@ public class FXUtil {
             e.printStackTrace();
         }
     }
+	
+	public static Node getNode(String name){		
+		try {
+            // Load root layout from fxml file.
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(FXUtil.class.getClassLoader().getResource(name+".fxml"));
+            return (Node)loader.load();
+        } catch (IOException e) {
+            System.out.println("Could not load component ["+name+"]: "+e.getMessage());
+            return null;
+        }
+	}
 	
 }

@@ -1,141 +1,51 @@
 package se.ipeco.fleetspeak.management.gui;
 
-import javafx.application.Platform;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.SplitPane;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.stage.Stage;
-import se.ipeco.fleetspeak.management.connection.ServerHandler;
-import se.ipeco.fleetspeak.management.core.Building;
-import se.ipeco.fleetspeak.management.core.Building.BuildingChangeListener;
-import se.ipeco.fleetspeak.management.core.Room;
-import se.ipeco.fleetspeak.management.core.User;
-import se.ipeco.fleetspeak.management.gui.UserPane.UserChangeHandler;
 
-public class MainController implements UserChangeHandler, BuildingChangeListener{
+public class MainController{
+	
+	private static MainController instance;
 	
 	@FXML
 	private AnchorPane root;
 	@FXML
-	private SplitPane menuPaneWrapper;
+	private AnchorPane menuPane;
 	@FXML
-	private Pane contentRoot;
-	@FXML
-	private AnchorPane buttonPane;
-	@FXML
-	private VBox adminList;
-	@FXML
-	private VBox roomStructureBox;
-	@FXML
-	private Pane mapContainer;
-	
-	private MapView mapView;
+	private AnchorPane contentRoot;
 
+	public MainController(){
+		instance = this;
+	}
+	
 	public void initialize(){
 		System.out.println("In admin client controller.");
-		if(Building.hasRunningBuilding()){
-			Building.getRunningBuilding().setBuildingChangeListener(this);
-		}
 		
-		mapView = new MapView(650, 450);
-		mapContainer.getChildren().add(mapView);
-		mapView.loadedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean wasLoaded, Boolean isLoaded) -> {
-			if(isLoaded){
-				mapView.addPopup(57.687325, 11.978694, "Idegr6");
-			}
-		});
+		//Init menu
+		menuPane.getChildren().add(FXUtil.getNode("sidemenu"));
+		
+		//Init content
+		setContent(FXUtil.getNode("tmpcontent"));
 	}
 	
 	public void addAdmin(int id, String name){
-		Platform.runLater(() -> {
-			UserPane p = new UserPane(new User(id, name));
-			p.setChangeHandler(this);
-			adminList.getChildren().add(p);
-		});
+		SideMenuController.getInstance().addAdmin(id, name);
 	}
 	
 	public void removeAdmin(int id){
-		ObservableList<Node> admins = adminList.getChildren();
-		for(int i = 0; i<admins.size(); i++){
-			if(admins.get(i) instanceof UserPane){
-				if(((UserPane)admins.get(i)).getUser().getID()==id){
-					final int index = i;
-					Platform.runLater(() -> {
-						adminList.getChildren().remove(index);
-					});
-					return;
-				}
-			}
-		}
-	}
-
-
-	@Override
-	public void addedRoom(Room r) {
-		Platform.runLater(() -> {
-			RoomPane p = new RoomPane(r);
-			roomStructureBox.getChildren().add(p);
-		});
-	}
-
-	@Override
-	public void removedRoom(Room r) {
-		Platform.runLater(() -> {
-			Node roomPane = null;
-			for(Node n : roomStructureBox.getChildren()){
-				if(n instanceof RoomPane && ((RoomPane)n).getRoom().equals(r)){
-					roomPane = n;
-					break;
-				}
-			}
-			
-			if(roomPane != null){
-				roomStructureBox.getChildren().remove(roomPane);
-			}
-		});
-	}
-	
-	@Override
-	public void removeUser(UserPane p) {
-		Platform.runLater(() -> {
-			adminList.getChildren().remove(p);
-		});
+		SideMenuController.getInstance().removeAdmin(id);
 	}
 	
 	
 	public void buttonFieldToggled(){
-		System.out.println("toggeling button field");
-		boolean visible = !buttonPane.isVisible();
-		buttonPane.setVisible(visible);
-//		buttonPane.setManaged(visible);
-		if(visible){
-			menuPaneWrapper.getItems().add(0, buttonPane);
-			menuPaneWrapper.getDividers().get(0).setPosition(0.2);
-		}else{
-			menuPaneWrapper.getItems().remove(buttonPane);
+		SideMenuController.getInstance().toggleButtonView();
+	}
+	
+	public static void setContent(Node contentNode){
+		instance.contentRoot.getChildren().clear();
+		if(contentNode != null){
+			instance.contentRoot.getChildren().add(contentNode);
 		}
-	}
-	
-	
-	public void clearMap(){
-		mapView.clearMap();
-	}
-	
-	public void goToMatz(){
-		mapView.moveToLocation(57.680830, 11.985843);
-		mapView.addCircle(57.680830, 11.985843, 20, Color.RED, "H&auml;r bor Matz!");
-	}
-	
-	public void disconnect(){
-		System.out.println("Disconnecting.");
-		ServerHandler.disconnect();
-		Building.terminate();
-		FXUtil.switchLayout((Stage)root.getScene().getWindow(), "login");
 	}
 }
