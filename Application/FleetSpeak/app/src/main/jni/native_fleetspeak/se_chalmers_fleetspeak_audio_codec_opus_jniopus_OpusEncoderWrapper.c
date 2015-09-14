@@ -75,6 +75,6 @@ opus_encoder_destroy((OpusEncoder *) (intptr_t)(opusInstance));
 JNIEXPORT jint JNICALL Java_se_chalmers_fleetspeak_audio_codec_opus_jniopus_OpusEncoderWrapper_ctl
         (JNIEnv *env, jclass jc, jlong opusInstance, jint request)
 {
-  int error = opus_encoder_ctl((OpusEncoder *) (intptr_t)(opusInstance), OPUS_SET_BITRATE(request));
+  int error = opus_encoder_ctl((OpusEncoder *) (intptr_t)(opusInstance), OPUS_SET_VBR_CONSTRAINT(request));
   return error;
 }

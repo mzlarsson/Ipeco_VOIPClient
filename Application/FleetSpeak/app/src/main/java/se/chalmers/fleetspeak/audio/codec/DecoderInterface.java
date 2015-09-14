@@ -5,5 +5,6 @@ package se.chalmers.fleetspeak.audio.codec;
  */
 public interface DecoderInterface {
 
+    public byte[] decode(byte[] encoded, int offset);
 
 }

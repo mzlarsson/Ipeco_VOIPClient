@@ -9,6 +9,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import se.chalmers.fleetspeak.audio.FleetspeakAudioException;
+import se.chalmers.fleetspeak.audio.codec.EncoderInterface;
 import se.chalmers.fleetspeak.audio.codec.opus.collection.OpusDecoder;
 import se.chalmers.fleetspeak.audio.codec.opus.collection.OpusEncoder;
 
@@ -25,7 +26,7 @@ public class AudioInputProcessor implements Runnable {
     private BlockingQueue<byte[]> processBuffer;
 
 
-    OpusEncoder opusEncoder;
+    EncoderInterface opusEncoder;
     private SoundInputController soundInputController;
 
 

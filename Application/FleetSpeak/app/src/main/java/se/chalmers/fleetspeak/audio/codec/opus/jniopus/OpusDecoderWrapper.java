@@ -5,6 +5,10 @@ package se.chalmers.fleetspeak.audio.codec.opus.jniopus;
  */
 public class OpusDecoderWrapper {
 
+    static{
+        System.loadLibrary("NativeAudio");
+    }
+
     /**
      *  Gets the size of an OpusDecoder structure.
      * @param channels Number of channels. This must be 1 or 2.

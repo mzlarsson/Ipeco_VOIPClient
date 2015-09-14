@@ -4,6 +4,7 @@ import android.media.AudioTrack;
 import android.os.Process;
 import android.util.Log;
 
+import java.nio.ByteBuffer;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -21,6 +22,7 @@ public class SoundOutputController implements Runnable {
 
     private boolean soundIsPlaying;
     private AudioOutputProcessor audioOutputProcessor;
+    private ByteBuffer echoBuffer;
 
     private Executor executor;
     private SoundConstants s;
