@@ -82,6 +82,10 @@ class TCPBot extends Thread{
 	
 	private void processCommand(String json) throws JSONException{
 		System.out.println("Test got:\n\tCommand:"+json);
+		if(json == null){
+			System.out.println("Got null command. Ignored it.");
+			return;
+		}
 		JSONObject obj = new JSONObject(json);
 		
 		switch(obj.getString("command").toLowerCase()){
@@ -98,7 +102,7 @@ class TCPBot extends Thread{
 			case "removeduser":		clientPosition.remove(obj.getInt("userid"));
 									System.out.println(name+":\n\tUPDATE: Removed user");break;
 			case "removedroom":		String roomName = null;
-									int id = obj.getInt("id");
+									int id = obj.getInt("roomid");
 									for(String key : rooms.keySet()){
 										if(rooms.get(key) == id){
 											roomName = key;break;
