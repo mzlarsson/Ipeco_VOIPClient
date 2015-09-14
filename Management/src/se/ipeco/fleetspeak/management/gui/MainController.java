@@ -5,6 +5,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.SplitPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -21,6 +22,8 @@ public class MainController implements UserChangeHandler, BuildingChangeListener
 	
 	@FXML
 	private AnchorPane root;
+	@FXML
+	private SplitPane menuPaneWrapper;
 	@FXML
 	private Pane contentRoot;
 	@FXML
@@ -110,7 +113,13 @@ public class MainController implements UserChangeHandler, BuildingChangeListener
 		System.out.println("toggeling button field");
 		boolean visible = !buttonPane.isVisible();
 		buttonPane.setVisible(visible);
-		buttonPane.setManaged(visible);
+//		buttonPane.setManaged(visible);
+		if(visible){
+			menuPaneWrapper.getItems().add(0, buttonPane);
+			menuPaneWrapper.getDividers().get(0).setPosition(0.2);
+		}else{
+			menuPaneWrapper.getItems().remove(buttonPane);
+		}
 	}
 	
 	

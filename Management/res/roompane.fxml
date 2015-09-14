@@ -27,7 +27,7 @@
       </ImageView>
       <VBox fx:id="userContainer" layoutY="50.0" styleClass="vbox" stylesheets="@stylesheet.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
          <padding>
-            <Insets bottom="6.0" left="20.0" />
+            <Insets bottom="12.0" left="20.0" />
          </padding>
       </VBox>
    </children>

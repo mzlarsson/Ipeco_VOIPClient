@@ -32,12 +32,12 @@
           </Menu>
         </menus>
       </MenuBar>
-      <SplitPane dividerPositions="0.18" layoutY="32.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="32.0">
+      <SplitPane dividerPositions="0.18" layoutY="32.0" stylesheets="@stylesheet.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="32.0">
          <items>
             <AnchorPane id="menuPane" minWidth="120.0" stylesheets="@stylesheet.css">
                <children>
-                  <VBox styleClass="vbox" stylesheets="@stylesheet.css" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                     <children>
+                  <SplitPane fx:id="menuPaneWrapper" dividerPositions="0.1, 0.45" orientation="VERTICAL" stylesheets="@stylesheet.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <items>
                         <AnchorPane fx:id="buttonPane" stylesheets="@stylesheet.css">
                            <children>
                               <HBox alignment="CENTER" layoutX="126.0" layoutY="57.0" AnchorPane.bottomAnchor="57.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="57.0">
@@ -85,11 +85,11 @@
                               <Insets top="3.0" />
                            </VBox.margin>
                         </ScrollPane>
-                     </children>
-                  </VBox>
+                     </items>
+                  </SplitPane>
                </children>
             </AnchorPane>
-            <Pane fx:id="contentRoot" prefHeight="666.0" prefWidth="981.0" styleClass="container" stylesheets="@stylesheet.css">
+            <Pane fx:id="contentRoot" styleClass="container" stylesheets="@stylesheet.css">
                <children>
                   <Pane layoutX="172.0" layoutY="14.0" prefHeight="131.0" prefWidth="629.0" styleClass="container" stylesheets="@stylesheet.css">
                      <children>
