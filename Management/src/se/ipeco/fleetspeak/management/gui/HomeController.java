@@ -4,11 +4,8 @@ import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.stage.Stage;
-import se.ipeco.fleetspeak.management.connection.ServerHandler;
-import se.ipeco.fleetspeak.management.core.Building;
 
-public class TmpContentController {
+public class HomeController {
 
 	@FXML
 	private Pane root;
@@ -17,12 +14,7 @@ public class TmpContentController {
 	
 	private MapView mapView;
 	
-	public TmpContentController(){
-		System.out.println("TMP CONTENT");
-	}
-	
 	public void initialize(){
-		System.out.println("Hello");
 		mapView = new MapView(650, 450);
 		mapContainer.getChildren().add(mapView);
 		mapView.loadedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean wasLoaded, Boolean isLoaded) -> {
@@ -46,9 +38,6 @@ public class TmpContentController {
 	}
 	
 	public void disconnect(){
-		System.out.println("Disconnecting.");
-		ServerHandler.disconnect();
-		Building.terminate();
-		FXUtil.switchLayout((Stage)root.getScene().getWindow(), "login");
+		MainController.showDisconnectScreen();
 	}
 }

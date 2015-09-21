@@ -6,9 +6,13 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.sun.istack.internal.logging.Logger;
 
@@ -43,6 +47,16 @@ public class TCPHandler {
 					json = in.readLine();
 					if(handler != null){
 						handler.commandReceived(json);
+					}
+				} catch(SocketException e){
+					if(handler != null){
+						try {
+							JSONObject obj = new JSONObject();
+							obj.put("command", "lostconnection");
+							handler.commandReceived(obj.toString());
+						} catch (JSONException je) {
+							System.out.println("Could not notify connection lost");
+						}
 					}
 				} catch(IOException ioe){
 					logger.warning("IO Exception while reading object from TCP");

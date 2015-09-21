@@ -3,6 +3,7 @@ package se.ipeco.fleetspeak.management.connection;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.net.SocketException;
 import java.security.KeyStore;
 
 import javax.net.ssl.SSLContext;
@@ -55,6 +56,12 @@ public class ServerHandler {
 		if(tlsSocket == null){
 			listener.onConnectionFailure("Error starting TLS");
 			return;
+		}else{
+			try {
+				tlsSocket.setSoTimeout(5);
+			} catch (SocketException e) {
+				System.out.println("Could not set timeout time");
+			}
 		}
 		System.out.println("Got socket");
 		

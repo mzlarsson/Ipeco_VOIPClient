@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox fx:id="root" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" styleClass="vbox" stylesheets="@stylesheet.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="se.ipeco.fleetspeak.management.gui.ReallyDisconnectController">
+   <children>
+      <Label text="Do you really want to disconnect?">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Label>
+      <HBox alignment="CENTER">
+         <children>
+            <Button cancelButton="true" mnemonicParsing="false" onAction="#goBack" prefHeight="50.0" prefWidth="116.0" styleClass="noButton" text="No" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="0.0">
+               <HBox.margin>
+                  <Insets right="70.0" />
+               </HBox.margin>
+            </Button>
+            <Button mnemonicParsing="false" onAction="#disconnect" prefHeight="50.0" prefWidth="116.0" styleClass="yesButton" text="Yes" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="0.0">
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+            </Button>
+         </children>
+         <VBox.margin>
+            <Insets top="25.0" />
+         </VBox.margin>
+      </HBox>
+   </children>
+</VBox>

@@ -40,6 +40,7 @@ public class Building implements CommandHandler{
 				case "removedroom":		removeRoom(obj.getInt("roomid"));break;
 				case "changedroomname":	changeRoomName(obj.getInt("roomid"), obj.getString("roomname"));break;
 				case "moveduser":		moveUser(obj.getInt("userid"), obj.getInt("currentroom"), obj.getInt("destinationroom"));break;
+				case "lostconnection":	lostConnection();break;
 			}
 		} catch (JSONException e) {
 			System.out.println("Caught json error: [JSONException] "+e.getMessage());
@@ -114,6 +115,12 @@ public class Building implements CommandHandler{
 		}
 	}
 	
+	private void lostConnection(){
+		if(listener != null){
+			listener.lostConnection();
+		}
+	}
+	
 	public void printState(){
 		System.out.println("Building containing "+rooms.size()+" rooms");
 		for(Room room : rooms.values()){
@@ -147,5 +154,6 @@ public class Building implements CommandHandler{
 	public interface BuildingChangeListener{
 		public void addedRoom(Room r);
 		public void removedRoom(Room r);
+		public void lostConnection();
 	}
 }

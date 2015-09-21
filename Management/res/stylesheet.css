@@ -4,6 +4,20 @@
         linear-gradient(#f2f2f2e5 0%, #ffffffcf 2%, #322929cf 93%, #322929cf 100%);*/
 }
 
+.toolbar{
+	-fx-background-color:#00660077;
+}
+.toolbarButton{
+	-fx-background-color:transparent;
+	-fx-focus-color: transparent;
+	-fx-faint-focus-color:transparent;
+	-fx-inner-border:transparent;
+}
+.toolbarButton:hover{
+	-fx-background-color:#00000088;
+	-fx-cursor:hand;
+}
+
 .container{
 	-fx-background-color:transparent;
 }
@@ -17,8 +31,4 @@
 }
 .split-pane{
 	-fx-background-color:transparent;
-}
-
-.button{
-	
 }

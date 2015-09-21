@@ -1,17 +1,16 @@
 package se.ipeco.fleetspeak.management.gui;
 
-import se.ipeco.fleetspeak.management.core.Building;
-import se.ipeco.fleetspeak.management.core.Room;
-import se.ipeco.fleetspeak.management.core.User;
-import se.ipeco.fleetspeak.management.core.Building.BuildingChangeListener;
-import se.ipeco.fleetspeak.management.gui.UserPane.UserChangeHandler;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.SplitPane;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import se.ipeco.fleetspeak.management.core.Building;
+import se.ipeco.fleetspeak.management.core.Building.BuildingChangeListener;
+import se.ipeco.fleetspeak.management.core.Room;
+import se.ipeco.fleetspeak.management.core.User;
+import se.ipeco.fleetspeak.management.gui.UserPane.UserChangeHandler;
 
 public class SideMenuController implements UserChangeHandler, BuildingChangeListener{
 
@@ -19,8 +18,6 @@ public class SideMenuController implements UserChangeHandler, BuildingChangeList
 	
 	@FXML
 	private SplitPane root;
-	@FXML
-	private AnchorPane buttonPane;
 	@FXML
 	private VBox adminList;
 	@FXML
@@ -89,22 +86,14 @@ public class SideMenuController implements UserChangeHandler, BuildingChangeList
 	}
 	
 	@Override
+	public void lostConnection(){
+		MainController.setContent(FXUtil.getNode("connectionlost"));
+	}
+	
+	@Override
 	public void removeUser(UserPane p) {
 		Platform.runLater(() -> {
 			adminList.getChildren().remove(p);
 		});
-	}
-	
-	public void toggleButtonView(){
-		System.out.println("toggeling button field");
-		boolean visible = !buttonPane.isVisible();
-		buttonPane.setVisible(visible);
-//		buttonPane.setManaged(visible);
-		if(visible){
-			root.getItems().add(0, buttonPane);
-			root.getDividers().get(0).setPosition(0.2);
-		}else{
-			root.getItems().remove(buttonPane);
-		}
 	}
 }

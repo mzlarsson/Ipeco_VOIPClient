@@ -34,8 +34,8 @@ public class LoginController implements ConnectionListener{
 		serverIPField.focusedProperty().addListener((ObservableValue<? extends Boolean> value, Boolean oldProp, Boolean newProp) -> {
 			if(!oldProp && newProp){
 				if(serverIPField.getText().length()==0){
-//					serverIPField.setText(serverIPField.getPromptText());
-					serverIPField.setText("localhost");
+					serverIPField.setText(serverIPField.getPromptText());
+//					serverIPField.setText("localhost");
 			    	loginPropertyChanged();
 				}
 				serverIPField.selectAll();
@@ -108,7 +108,7 @@ public class LoginController implements ConnectionListener{
 		Building building = Building.getInstance(server.getUserID());
 		server.setCommandHandler(building);
 		Platform.runLater(() -> {
-			FXUtil.switchLayout(getStage(), "main");
+			FXUtil.switchLayout(getStage(), "main", true);
 		});
 	}
 
