@@ -72,18 +72,18 @@ public class TCPHandler extends Thread{
 
 			}
 		} catch(EOFException eofe){
-			receivedCommand("{\"command\":\"disconnected\"}");
+			receivedCommand("{\"command\":\"disconnect\"}");
 		} catch(SocketTimeoutException e){
 			logger.log(Level.SEVERE, "Got Socket Timeout. Removing client");
-			receivedCommand("{\"command\":\"disconnected\"}");
+			receivedCommand("{\"command\":\"disconnect\"}");
 		} catch(SocketException e){
 			//Only log if the handler is not terminated
 			if(isRunning){
 				logger.log(Level.SEVERE, e.getMessage());
 			}
-			receivedCommand("{\"command\":\"disconnected\"}");
+			receivedCommand("{\"command\":\"disconnect\"}");
 		}catch (IOException e) {
-			receivedCommand("{\"command\":\"disconnected\"}");
+			receivedCommand("{\"command\":\"disconnect\"}");
 			logger.log(Level.SEVERE,e.getMessage());
 		}finally{
 			try {

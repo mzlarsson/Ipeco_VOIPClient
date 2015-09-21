@@ -14,13 +14,13 @@ public enum AudioType {
 	
 	private final int payloadType;
 	private final int maxLength;
-	private final int framesizeMs;
+	private final int timeBetweenSamples;
 	private final int sampleRate;
 	
-	private AudioType(int payloadType, int maxLength, int framesizeMs, int sampleRate) {
+	private AudioType(int payloadType, int maxLength, int timeBetweenSamples, int sampleRate) {
 		this.payloadType = payloadType;
 		this.maxLength = maxLength;
-		this.framesizeMs = framesizeMs;
+		this.timeBetweenSamples = timeBetweenSamples;
 		this.sampleRate = sampleRate;
 	}
 	
@@ -58,8 +58,16 @@ public enum AudioType {
 	 * The time between each sample/packet
 	 * @return The time between each sample/packet
 	 */
-	public int getFramesizeMs() {
-		return framesizeMs;
+	public int getTimeBetweenSamples() {
+		return timeBetweenSamples;
+	}
+	
+	/**
+	 * The time between each sample/packet
+	 * @return The time between each sample/packet
+	 */
+	public int getFrameSize() {
+		return (sampleRate*timeBetweenSamples)/1000;
 	}
 	
 	/**

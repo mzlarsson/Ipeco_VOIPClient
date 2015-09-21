@@ -82,8 +82,13 @@ public class RTPHandler implements Runnable, PacketReceiver, BufferedAudioStream
 
     @Override
     public void handlePacket(byte[] bytes) {
-        RTPPacket packet = new RTPPacket(bytes);
-        if(packet.timestamp != 0 || packet.seqNumber != 0) {
+        RTPPacket packet = null;
+        try {
+            packet = new RTPPacket(bytes);
+        } catch (IllegalArgumentException ex) {
+            Log.w("rtp", "Read packet was not on a valid RTP form: " + ex.getMessage());
+        }
+        if(packet != null && packet.payloadType == currAudioType) {
             buffer.write(packet);
             //Log.d("RTPHandler", packet.getPayload().length + " " + packet.seqNumber + " recv " + printPacket(packet.getPayload()));
         }
