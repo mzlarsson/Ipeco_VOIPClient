@@ -65,8 +65,8 @@ public class LocationHandler {
             }
 
         };
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0,
-                0, locationListener);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000,
+                10, locationListener);
     }
 
     private void updateTruckList(){

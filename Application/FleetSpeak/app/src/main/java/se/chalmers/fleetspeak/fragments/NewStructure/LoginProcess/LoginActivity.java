@@ -1,5 +1,6 @@
 package se.chalmers.fleetspeak.fragments.NewStructure.LoginProcess;
 
+import android.content.res.Configuration;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -38,23 +39,21 @@ public class LoginActivity extends ActionBarActivity implements TruckStateListen
         locationHandler.addTruckListener(this);
         carmode = locationHandler.getCarMode();
         setContentView(R.layout.activity_login);
+        fragmentManager = getSupportFragmentManager();
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        prefEdit = prefs.edit();
+
         if(this.getIntent().hasExtra("error")){
                 error = this.getIntent().getStringExtra("error");
         }else{
                 error = null;
         }
-        prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        prefEdit = prefs.edit();
         String defaultUsername = this.getApplicationContext().getString(R.string.username_text);
         username = prefs.getString("username", defaultUsername);
         password = prefs.getString("password", "");
-        fragmentManager = getSupportFragmentManager();
         TruckDataHandler.addListener(this);
         carmode = TruckDataHandler.getInstance().getTruckMode();
         setStartFragment(carmode);
-
-
-
     }
 
 
@@ -169,5 +168,24 @@ public class LoginActivity extends ActionBarActivity implements TruckStateListen
     public void onBackPressed(){
         Log.d("LoginActivity", " back pressed");
         this.finish();
+    }
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        setContentView(R.layout.activity_login);
+        if(this.getIntent().hasExtra("error")){
+            error = this.getIntent().getStringExtra("error");
+        }else{
+            error = null;
+        }
+        String defaultUsername = this.getApplicationContext().getString(R.string.username_text);
+        username = prefs.getString("username", defaultUsername);
+        password = prefs.getString("password", "");
+        TruckDataHandler.addListener(this);
+        carmode = TruckDataHandler.getInstance().getTruckMode();
+        setStartFragment(carmode);
+    }
+    protected void onSaveInstanceState(Bundle outState) {
+        //No call for super(). Bug on API Level > 11.
     }
 }

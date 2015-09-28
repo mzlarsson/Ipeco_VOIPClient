@@ -1,5 +1,6 @@
     package se.chalmers.fleetspeak.fragments.NewStructure.ConnectedProcess;
 
+    import android.content.res.Configuration;
     import android.content.res.Resources;
     import android.support.v7.app.ActionBar;
     import android.content.Intent;
@@ -338,5 +339,10 @@
         }
         public Resources getRecources(){
            return getResources();
+        }
+
+        public void onConfigurationChanged(Configuration newConfig){
+            super.onConfigurationChanged(newConfig);
+            setContentView(R.layout.activity_connection);
         }
     }
