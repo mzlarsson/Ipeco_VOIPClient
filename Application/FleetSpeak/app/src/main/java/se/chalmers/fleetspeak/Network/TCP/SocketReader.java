@@ -5,10 +5,11 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.util.concurrent.Executor;
+import java.io.InputStreamReader;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import se.chalmers.fleetspeak.util.MessageValues;
@@ -19,10 +20,10 @@ import se.chalmers.fleetspeak.util.MessageValues;
 public class SocketReader implements Runnable{
 
     private Messenger messenger;
-    private ObjectInputStream objectInputStream;
+    private BufferedReader bufferedReader;
     private InputStream inputStream;
-    private Executor executor;
-    private Boolean reading;
+    private ExecutorService executor;
+    private volatile boolean reading;
 
     public SocketReader(InputStream inputStream, Messenger messenger){
         this.inputStream = inputStream;
@@ -34,25 +35,27 @@ public class SocketReader implements Runnable{
     @Override
     public void run() {
         Thread.currentThread().setName("SocketReaderThread");
-        try {
-            objectInputStream = new ObjectInputStream(inputStream);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        Object readObject;
+        bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+        String readLine;
         reading = true;
-        while(reading){
+        Log.i("SocketReader", "start reading");
+
             try {
-                if((readObject = objectInputStream.readObject()) != null){
-                    Message msg = Message.obtain(null, MessageValues.COMMAND, readObject);
-                    messenger.send(msg);
+                while(reading) {
+                    readLine = bufferedReader.readLine();
+                    Log.d("SocketReader", "" + readLine);
+                    if(readLine != null) {
+                        Message msg = Message.obtain(null, MessageValues.COMMAND, readLine);
+                        messenger.send(msg);
+                    }else{
+                        Log.e("SocketReader", "socket crashed " );
+                        messenger.send(Message.obtain(null, MessageValues.DISCONNECTED));
+                        reading = false;
+                    }
                 }
-                Thread.sleep(100);
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
             } catch (IOException e) {
                 try {
-                    Log.e("SocketReader", "socket crashed");
+                    Log.e("SocketReader", "socket crashed " + e.getMessage());
                     messenger.send(Message.obtain(null, MessageValues.DISCONNECTED));
                 } catch (RemoteException e1) {
                     e1.printStackTrace();
@@ -60,20 +63,20 @@ public class SocketReader implements Runnable{
                 stop();
             } catch (RemoteException e) {
                 e.printStackTrace();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            }finally {
+                try {
+                    bufferedReader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
             }
-        }
+
     }
 
     public void stop(){
         reading = false;
-        try {
-            objectInputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+        Log.d("TLS", "stopped reader");
 
     }
 

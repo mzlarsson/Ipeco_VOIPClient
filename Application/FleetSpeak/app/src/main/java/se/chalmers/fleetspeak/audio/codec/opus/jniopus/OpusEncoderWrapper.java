@@ -6,7 +6,7 @@ package se.chalmers.fleetspeak.audio.codec.opus.jniopus;
 public class OpusEncoderWrapper {
 
     static{
-        System.loadLibrary("Opus");
+        System.loadLibrary("NativeAudio");
     }
 
     /**

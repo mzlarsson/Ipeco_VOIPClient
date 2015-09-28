@@ -8,13 +8,15 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.Random;
+import java.util.concurrent.Executors;
 
 import javax.swing.Timer;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import se.chalmers.fleetspeak.network.udp.RTPHandler;
 import se.chalmers.fleetspeak.test.sound.SongHandler;
-import se.chalmers.fleetspeak.util.Command;
-import se.chalmers.fleetspeak.util.RtpPackageHandler;
 
 public class MusicBot extends Thread {
 	
@@ -25,11 +27,10 @@ public class MusicBot extends Thread {
 	
 	//Static values
 	private final static String musicRoomName = "Music Hangaround";
-	private static final int sendFreq = 10;
+	private static final int sendFreq = 20;
 
 	//Connection values
 	private TCPBot tcpBot;
-	private RtpPackageHandler handler;
 	private int localPort = new Random().nextInt(2000)+2000;		// 2000 <= localPort < 4000
 	private int stunStatus = STUN_STATUS_UNINITIATED;
 
@@ -41,9 +42,6 @@ public class MusicBot extends Thread {
 	public MusicBot(String name, String ip, int port){
 		this.tcpBot = new TCPBot(name, ip, port);
 		tcpBot.start();
-		
-		handler = RtpPackageHandler.createHandler();
-		handler.setTimeInterval(sendFreq);
 	}
 	
 	@Override
@@ -58,18 +56,39 @@ public class MusicBot extends Thread {
 		rtp = new RTPHandler(socket);
 		
 		//Fix all stuff
-		if(stunStatus==STUN_STATUS_DONE || stunStatus>-1000){
-			tcpBot.send(new Command("clientUdpTestOk", null, null));
+		if(stunStatus==STUN_STATUS_DONE){
+			JSONObject obj = new JSONObject();
+			try {
+				obj.put("command", "clientudptestok");
+			} catch (JSONException e) {}
+			tcpBot.send(obj.toString());
 			sleep(1000);
+			
 			System.out.println("Entering music room");
-			moveToMusicRoom();
+			try {
+				moveToMusicRoom();
+			} catch (JSONException e) {
+				System.out.println("Could not enter music room: [JSONException] "+e.getMessage());
+			}
 			sleep(1000);
+			
+			//Do haxxor
+			Executors.newSingleThreadExecutor().execute(() -> {
+				byte[] b = new byte[332];
+				b[1] = 0;
+				b[2] = 7;
+				System.out.println("Handling");
+				rtp.handlePacket(b);
+				System.out.println("Handling done");
+			});
+			
 			int playTimes = 5;
 			for(int i = 0; i<playTimes; i++){
 				System.out.println(i==0?"Playing audio":"Starting over"+(i+1==playTimes?" (last time)":""));		//Info message.
 				playRandomAudioOverIP();
 				sleep(1000);
 			}
+			
 			System.out.println("Audio playing done. Disconnecting...");
 			leaveAndCleanUp();
 		}else{
@@ -154,12 +173,23 @@ public class MusicBot extends Thread {
 		this.stunStatus = status;
 	}
 	
-	private void moveToMusicRoom(){
-		Integer roomID = tcpBot.getRoomID(musicRoomName);
+	private void moveToMusicRoom() throws JSONException{
+		int num = new Random().nextInt(100);
+		Integer roomID = tcpBot.getRoomID(musicRoomName+num);
 		if(roomID == null){
-			tcpBot.send(new Command("movenewroom", musicRoomName, null));
+			JSONObject obj = new JSONObject();
+			obj.put("command", "movenewroom");
+			obj.put("userid", tcpBot.getUserID());
+			obj.put("currentroom", tcpBot.getRoom());
+			obj.put("roomname", musicRoomName+num);
+			tcpBot.send(obj.toString());
 		}else{
-			tcpBot.send(new Command("move", roomID, null));
+			JSONObject obj = new JSONObject();
+			obj.put("command", "moveclient");
+			obj.put("userid", tcpBot.getUserID());
+			obj.put("currentroom", tcpBot.getRoom());
+			obj.put("destinationroom", roomID);
+			tcpBot.send(obj.toString());
 		}
 	}
 	
@@ -193,7 +223,13 @@ public class MusicBot extends Thread {
 	
 	private void leaveAndCleanUp(){
 		rtp.terminate();
-		tcpBot.send(new Command("disconnect", null, null));
+		try {
+			JSONObject obj = new JSONObject();
+			obj.put("command", "disconnect");
+			tcpBot.send(obj.toString());
+		} catch (JSONException e) {
+			System.out.println("Could not disconnect: [JSONException] "+e.getMessage());
+		}
 		tcpBot.close();
 	}
 	

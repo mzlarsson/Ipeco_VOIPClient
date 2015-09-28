@@ -1,9 +1,10 @@
 package se.chalmers.fleetspeak.network.tcp;
 
+import java.io.BufferedReader;
 import java.io.EOFException;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
@@ -11,13 +12,7 @@ import java.net.SocketTimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.net.ssl.SSLException;
-
 import se.chalmers.fleetspeak.core.CommandHandler;
-import se.chalmers.fleetspeak.eventbus.EventBus;
-import se.chalmers.fleetspeak.eventbus.EventBusEvent;
-import se.chalmers.fleetspeak.eventbus.IEventBusSubscriber;
-import se.chalmers.fleetspeak.util.Command;
 
 /**
  * For handling of TCP connections with the andriod app
@@ -25,12 +20,11 @@ import se.chalmers.fleetspeak.util.Command;
  * @author Nieo, Patrik Haar
  */
 
-public class TCPHandler extends Thread implements IEventBusSubscriber {
+public class TCPHandler extends Thread{
 
-	private boolean synced = false;
 	private Socket clientSocket;
-	private ObjectOutputStream objectOutputStream;
-	private ObjectInputStream objectInputStream;
+	private PrintWriter printWriter;
+	private BufferedReader bufferedReader;
 	private boolean isRunning = false;
 	private CommandHandler ch;
 	private Logger logger;
@@ -47,17 +41,14 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 		try {
 
 			logger.log(Level.FINE,"Trying to get streams");
-			objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
-			objectInputStream = new ObjectInputStream(clientSocket.getInputStream());
+			printWriter = new PrintWriter(clientSocket.getOutputStream());
+			bufferedReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 			logger.log(Level.FINE,"Got streams");
-		}catch(SSLException e){
-			e.printStackTrace();
 		}
 		catch (IOException e) {
 			logger.log(Level.WARNING,e.getMessage());
 			e.printStackTrace();
 		}
-		EventBus.getInstance().addSubscriber(this);
 	}
 
 
@@ -67,40 +58,50 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 	@Override
 	public void run() {
 		isRunning = true;
+		String read;
 		try {
-			while (isRunning && objectInputStream != null) {
+			while (isRunning && bufferedReader != null) {
 				logger.log(Level.FINER,"trying to read");
-				Object o = objectInputStream.readObject();
 
-				if (o.getClass() == Command.class) {
-					receivedCommand((Command) o);
-				} else {
-					logger.log(Level.SEVERE, "Found a non-Command object: " + o.getClass().toString());
+				read = bufferedReader.readLine();
+				if(read != null){
+					receivedCommand(read);
+				}else{
+					isRunning = false;
 				}
+
 			}
 		} catch(EOFException eofe){
-			receivedCommand(new Command("disconnect", null, null));
+			receivedCommand("{\"command\":\"disconnect\"}");
 		} catch(SocketTimeoutException e){
 			logger.log(Level.SEVERE, "Got Socket Timeout. Removing client");
-			receivedCommand(new Command("disconnect", null, null));
+			receivedCommand("{\"command\":\"disconnect\"}");
 		} catch(SocketException e){
 			//Only log if the handler is not terminated
 			if(isRunning){
 				logger.log(Level.SEVERE, e.getMessage());
 			}
-			receivedCommand(new Command("disconnect", null, null));
+			receivedCommand("{\"command\":\"disconnect\"}");
 		}catch (IOException e) {
-			receivedCommand(new Command("disconnect", null, null));
+			receivedCommand("{\"command\":\"disconnect\"}");
 			logger.log(Level.SEVERE,e.getMessage());
-		} catch (ClassNotFoundException e) {
-			logger.log(Level.FINE,"[TCPHandler]" + e.getMessage());
+		}finally{
+			try {
+				bufferedReader.close();
+				printWriter.close();
+				clientSocket.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 		}
 	}
 
-	private void receivedCommand(Command c) {
+	private void receivedCommand(String command) {
 		if (ch != null) {
-			logger.log(Level.FINE,  c.getCommand());
-			ch.handleCommand(c);
+			logger.log(Level.FINE,  command);
+			ch.handleCommand(command);
 		} else {
 			logger.log(Level.SEVERE, "Received a Command without a set CommandHandler");
 		}
@@ -109,18 +110,15 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 	/**
 	 * Tries to send a command to the socket.
 	 * @param command The Command to be sent.
+	 * @throws IOException Throws exception if PrinterWriter failed to send a string.
 	 */
-	public void sendCommand(Command command){
-		try{
-			logger.log(Level.FINER,"Sending Command: [ " + command.toString()+ " ]");
-			objectOutputStream.writeObject(command);
-		} catch(SocketException e){
-			if(command==null || !command.getCommand().equals("userDisconnected")){
-				//receivedCommand(new Command("disconnect", null, null));
-			}
-		} catch(IOException e){
-			logger.log(Level.SEVERE, e.getMessage());
+	public void sendCommand(String command) throws IOException{
+		logger.log(Level.FINER,command);
+		printWriter.println(command);
+		if(printWriter.checkError()){
+			throw new IOException("PrinterWriter got an error");
 		}
+
 	}
 
 	/**
@@ -139,12 +137,11 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 		this.ch = ch;
 	}
 	/**
-	 * Stops the TCPHandler. Unsubscribes the TCPHandler from the Eventbus and closes the clientSocket.
+	 * Stops the TCPHandler
 	 * @return If the clientSocket was successfully closed returns true, else false.
 	 */
 	public boolean terminate() {
 		isRunning = false;
-		EventBus.getInstance().removeSubscriber(this);
 		try {
 			if (clientSocket != null) {
 				clientSocket.close();
@@ -155,14 +152,4 @@ public class TCPHandler extends Thread implements IEventBusSubscriber {
 		}
 	}
 
-
-	@Override
-	public void eventPerformed(EventBusEvent event) {
-		// Will forward the command to its client if this event starts with broadcast and the actor is this class or null.
-		if (event.getReciever().startsWith("broadcast")) {
-			if(synced){
-				sendCommand(event.getCommand());
-			}
-		}
-	}
 }

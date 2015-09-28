@@ -4,7 +4,6 @@ import android.util.Log;
 
 import se.chalmers.fleetspeak.audio.FleetspeakAudioException;
 import se.chalmers.fleetspeak.audio.codec.DecoderInterface;
-import se.chalmers.fleetspeak.audio.codec.opus.OpusConstants;
 import se.chalmers.fleetspeak.audio.codec.opus.jniopus.OpusDecoderWrapper;
 import se.chalmers.fleetspeak.audio.sound.SoundConstants;
 
@@ -15,11 +14,12 @@ import se.chalmers.fleetspeak.audio.sound.SoundConstants;
 public class OpusDecoder implements DecoderInterface {
 
     private long opusDecoder;
-
+    private SoundConstants s;
     public OpusDecoder(){
+        s = SoundConstants.getCurrent();
         try{
-            create(OpusConstants.SAMPLE_RATE.value(),
-                    OpusConstants.CHANNELS.value());
+            create(s.getSampleRate(),
+                    s.getChannels());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -34,15 +34,12 @@ public class OpusDecoder implements DecoderInterface {
     }
 
     public byte[] decode(byte[] opusEncoded, int offset){
-        byte[] pcmDecoded = new byte[SoundConstants.INPUT_FRAME_SIZE.value()];
-        int frameSize = OpusConstants.FRAME_SIZE.value();
+        byte[] pcmDecoded = new byte[s.getPCMSize()];
+        int frameSize = s.getFrameSize();
         int read = OpusDecoderWrapper.decode(this.opusDecoder, opusEncoded, offset, opusEncoded.length,
                 pcmDecoded, 0,frameSize , 0);
-
         if(read <= 0){
             Log.d("OPUS", "Failed to encode with :" + read);
-        }else{
-            System.arraycopy(pcmDecoded, 0, pcmDecoded, 0, read);
         }
         return pcmDecoded;
     }

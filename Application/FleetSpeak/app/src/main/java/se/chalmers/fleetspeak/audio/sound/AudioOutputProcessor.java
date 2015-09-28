@@ -8,6 +8,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import se.chalmers.fleetspeak.Network.UDP.BufferedAudioStream;
 import se.chalmers.fleetspeak.Network.UDP.RTPHandler;
+import se.chalmers.fleetspeak.audio.codec.DecoderInterface;
 import se.chalmers.fleetspeak.audio.codec.opus.collection.OpusDecoder;
 
 /**
@@ -16,7 +17,7 @@ import se.chalmers.fleetspeak.audio.codec.opus.collection.OpusDecoder;
 public class AudioOutputProcessor implements Runnable {
 
     private final Executor executor;
-    private OpusDecoder opusDecoder;
+    private DecoderInterface opusDecoder;
     private RTPHandler rtpHandler;
     private boolean isProcessing;
     private LinkedBlockingQueue<byte[]> outputBuffer;
@@ -46,7 +47,7 @@ public class AudioOutputProcessor implements Runnable {
             encoded = outputStream.read();
             try {
                 if(encoded != null) {
-                    outputBuffer.put(opusDecoder.decode(encoded, 0));
+                    outputBuffer.put(opusDecoder.decode(encoded,0));
                 }else{
                     //TODO cant process nulls takes way to much proccessing power
                     Thread.sleep(1);

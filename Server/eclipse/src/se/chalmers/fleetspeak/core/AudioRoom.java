@@ -5,7 +5,6 @@ import java.util.logging.Logger;
 
 import se.chalmers.fleetspeak.sound.Mixer;
 import se.chalmers.fleetspeak.sound.MixerFactory;
-import se.chalmers.fleetspeak.util.Command;
 
 public class AudioRoom implements IRoom {
 
@@ -13,7 +12,7 @@ public class AudioRoom implements IRoom {
 	private Mixer mixer;
 	private Thread mixerThread;
 	private Logger logger;
-	
+
 	private int nbrOfClients = 0;
 	private String roomName;
 
@@ -28,7 +27,7 @@ public class AudioRoom implements IRoom {
 		mixerThread = new Thread(mixer, "Mixer "+roomName);
 		mixerThread.start();
 	}
-	
+
 	@Override
 	public void addClient(Client client) {
 		room.addClient(client);
@@ -52,7 +51,7 @@ public class AudioRoom implements IRoom {
 		} else {
 			logger.log(Level.SEVERE, "Client was null when removedClient was called");
 		}
-		
+
 		return c;
 	}
 
@@ -77,7 +76,7 @@ public class AudioRoom implements IRoom {
 	}
 
 	@Override
-	public void postUpdate(Command c) {
+	public void postUpdate(String c) {
 		room.postUpdate(c);
 	}
 
@@ -85,7 +84,7 @@ public class AudioRoom implements IRoom {
 	public void sync(Client c) {
 		room.sync(c);
 	}
-	
+
 	@Override
 	public void terminate(){
 		if (mixer!=null) {

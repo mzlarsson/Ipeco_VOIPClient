@@ -1,6 +1,6 @@
 package se.chalmers.fleetspeak.core;
 
-import java.net.DatagramSocket;
+import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,11 +8,11 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import se.chalmers.fleetspeak.database.UserInfo;
 import se.chalmers.fleetspeak.network.tcp.TCPHandler;
-import se.chalmers.fleetspeak.network.udp.RTPHandler;
-import se.chalmers.fleetspeak.network.udp.STUNInitiator;
-import se.chalmers.fleetspeak.util.Command;
 
 /**
  * A sort of instantiated factory for the client creation process.
@@ -21,20 +21,17 @@ import se.chalmers.fleetspeak.util.Command;
  *
  * @author Patrik Haar
  */
-public class ClientCreator implements AuthenticatorListener, CommandHandler{
+public class ClientCreator implements AuthenticatorListener{
 
 	private List<ClientAuthenticator> authenticators;
 	private Logger logger;
-	private Building building;
-
-	//TODO Add to config file
-	private int targetRoom = 1;
+	private AndroidClientCreator andCreator;
 
 	/**
 	 * Constructor for a ClientCreator.
 	 */
 	public ClientCreator(Building building) {
-		this.building = building;
+		andCreator = new AndroidClientCreator(building);
 		logger = Logger.getLogger("Debug");
 		authenticators = Collections.synchronizedList(new ArrayList<ClientAuthenticator>());
 	}
@@ -46,45 +43,40 @@ public class ClientCreator implements AuthenticatorListener, CommandHandler{
 	public void addNewClient(Socket clientSocket) {
 		ClientAuthenticator ca = new ClientAuthenticator(new TCPHandler(clientSocket));
 		authenticators.add(ca);
-		ca.addAuthenticatorListener(this);
+		ca.setAuthenticatorListener(this);
 		ca.start();
 	}
-	
-	@Override
-	public void authenticationSuccessful(Object authorizedObject, Authenticator authenticator) {
-		if (authenticator.getClass() == ClientAuthenticator.class) {
-			ClientAuthenticator ca = (ClientAuthenticator)authenticator;
-			if (authorizedObject != null) {
-				UserInfo ui = (UserInfo)authorizedObject;
-				TCPHandler tcph = ca.getTCPHandler();
-				Client client = new Client(ui.getID(), ui.getAlias(), ca.getTCPHandler().getInetAddress(), tcph);
-				establishUDPConnection(client);
-				//TODO this should be checked together with name/pwd
-				/*if (RoomHandler.getInstance().findClient(ui.getID()) == null) {
 
-				} else {
-					logger.log(Level.INFO, "User with id: " + ui.getID() + " allready exists on the server and was denied access.");
-				}*/
-			} else {
-				logger.log(Level.WARNING, "ClientAuthenticator: " + ca + " accepted a user not in the database.");
-			}
-			authenticators.remove(ca);
-		} else {
-			logger.log(Level.WARNING, "Unknown '" + authenticator.getClass() + "' was found when '" + ClientAuthenticator.class + "' was expected.");
+	@Override
+	public void authenticationSuccessful(String userType, UserInfo authorizedUser, ClientAuthenticator authenticator) {
+		switch(userType) {
+		case "android":
+			andCreator.newAndroidClient(authorizedUser, authenticator.getTCPHandler());
+			break;
+		default:
+			logger.log(Level.WARNING, "Support for " + userType + "-clients are not implemented yet");
 		}
+		authenticators.remove(authenticator);
 	}
 
 	@Override
-	public void authenticationFailed(String errorMsg, Authenticator authenticator) {
-		if (authenticator.getClass() == ClientAuthenticator.class) {
-			ClientAuthenticator ca = (ClientAuthenticator)authenticator;
-			ca.getTCPHandler().sendCommand(new Command("authenticationResult", false, errorMsg));
-			ca.terminate();
-			logger.log(Level.FINER, errorMsg);
-			authenticators.remove(ca);
-		} else {
-			logger.log(Level.WARNING, "Unknown '" + authenticator.getClass() + "' was found when '" + ClientAuthenticator.class + "' was expected.");
+	public void authenticationFailed(String errorMsg, ClientAuthenticator authenticator) {
+		JSONObject json = new JSONObject();
+		try {
+			json.put("command" , "authenticationresult");
+			json.put("result", false);
+			json.put("rejection", errorMsg);
+			authenticator.getTCPHandler().sendCommand(json.toString());
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			logger.log(Level.WARNING, "Caught IOException when sending authenticationresult, false. Message: "
+					+ e.getMessage() + " terminating client");
 		}
+		authenticator.terminate();
+		logger.log(Level.FINER, errorMsg);
+		authenticators.remove(authenticator);
 	}
 
 	/**
@@ -95,25 +87,5 @@ public class ClientCreator implements AuthenticatorListener, CommandHandler{
 			ca.terminate();
 		}
 		authenticators.clear();
-	}
-
-	private void establishUDPConnection(Client client) {
-		STUNInitiator stun = new STUNInitiator(client, client.getClientID());
-		stun.addCommandHandler(this);
-		stun.start();
-	}
-
-	private void finalizeClient(Client client, DatagramSocket socket) {
-		client.setRTPHandler(new RTPHandler(socket));
-		client.sendCommand(new Command("authenticationResult", true, "Successful authentication"));
-		logger.log(Level.INFO, "A new person joined id: " + client.getClientID() + " Alias: " + client.getName());
-		building.addClient(client, targetRoom);		
-	}
-	
-	@Override
-	public void handleCommand(Command c) {
-		if (c.getCommand().toLowerCase().equals("datagramsocketstun")) {
-			finalizeClient((Client)c.getKey(), (DatagramSocket)c.getValue());
-		}
 	}
 }

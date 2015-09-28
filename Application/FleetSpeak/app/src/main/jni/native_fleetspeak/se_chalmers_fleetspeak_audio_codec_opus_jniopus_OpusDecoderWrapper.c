@@ -38,32 +38,22 @@ JNIEXPORT jlong JNICALL Java_se_chalmers_fleetspeak_audio_codec_opus_jniopus_Opu
 JNIEXPORT jint JNICALL Java_se_chalmers_fleetspeak_audio_codec_opus_jniopus_OpusDecoderWrapper_decode
   (JNIEnv *env, jclass jc, jlong opusInstance, jbyteArray opusInData, jint opusInDataOffset, jint inputLength, jbyteArray pcmOutData, jint pcmOutDataOffset, jint frameSize, jint fec)
 {
-    opus_int16 status = 0;
+    jbyte *encodedData = (*env)->GetPrimitiveArrayCritical(env, opusInData, 0);
 
-    if(opusInData != NULL) {
-        jbyte *encodedData = (*env)->GetByteArrayElements(env, opusInData, 0);
-        jbyte *decodedData = (*env)->GetByteArrayElements(env, pcmOutData, 0);
-        status = opus_decode(
-                (OpusDecoder *)(intptr_t)(opusInstance),
-                (unsigned char *) (encodedData + opusInDataOffset),
-                inputLength,
-                (opus_int16 *) (decodedData + pcmOutDataOffset),
-                frameSize,
-                fec);
-        (*env)->ReleaseByteArrayElements(env, opusInData, encodedData, JNI_ABORT);
-        (*env)->ReleaseByteArrayElements(env, pcmOutData, decodedData, 0);
-    }else{
-        jbyte *decodedData = (*env)->GetByteArrayElements(env, pcmOutData, 0);
-        status = opus_decode(
-                (OpusDecoder *)(intptr_t)(opusInstance),
-                NULL,
-                0,
-                (opus_int16 *) (decodedData + pcmOutDataOffset),
-                frameSize,
-                1);
-    }
+    jbyte *decodedData = (*env)->GetPrimitiveArrayCritical(env, pcmOutData, 0);
 
-  return (int) status;
+    int status = opus_decode(
+            (OpusDecoder *) (intptr_t)(opusInstance),
+            (unsigned char *) (encodedData + opusInDataOffset),
+            inputLength,
+            (opus_int16 *) (decodedData),
+            frameSize,
+            fec);
+    (*env)->ReleasePrimitiveArrayCritical(env, pcmOutData, decodedData, 0);
+
+    (*env)->ReleasePrimitiveArrayCritical(env, opusInData, encodedData,JNI_ABORT);
+
+    return (status);
 }
 
 /*

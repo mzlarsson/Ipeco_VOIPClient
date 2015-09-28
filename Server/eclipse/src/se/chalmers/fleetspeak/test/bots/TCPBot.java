@@ -1,9 +1,10 @@
 package se.chalmers.fleetspeak.test.bots;
 
+import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -14,7 +15,8 @@ import java.util.Map;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
 
-import se.chalmers.fleetspeak.util.Command;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 class TCPBot extends Thread{
 
@@ -23,12 +25,14 @@ class TCPBot extends Thread{
 	protected static final int TLS_STATUS_UNINITIATED = -1;
 	
 	private String name;
+	private int id;
 	
-	private ObjectInputStream in;
-	private ObjectOutputStream out;
+	private BufferedReader in;
+	private PrintWriter out;
 	private Socket socket;
 	private boolean isRunning;
 	
+	private Map<Integer, Integer> clientPosition;
 	private Map<String, Integer> rooms;
 	private int soundPort;
 	private int controlCode;
@@ -37,13 +41,14 @@ class TCPBot extends Thread{
 	
 	public TCPBot(String name, String serverIP, int serverPort){
 		this.name = name;
+		this.clientPosition = new HashMap<Integer, Integer>();
 		this.rooms = new HashMap<String, Integer>();
 		this.soundPort = -1;
 		try {
 			socket = getTLSSocket(serverIP, serverPort);
 			if(socket != null){
-				in = new ObjectInputStream(socket.getInputStream());
-				out = new ObjectOutputStream(socket.getOutputStream());
+				in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+				out = new PrintWriter(socket.getOutputStream());
 			}else{
 				System.out.println("No connecting. Closing.");
 				System.exit(0);
@@ -60,32 +65,44 @@ class TCPBot extends Thread{
 	public void run(){
 		isRunning = true;
 		try {
+			String input = null;
 			while (isRunning && in != null) {
-				Object o = in.readObject();
-				Command c = (Command)o;
-				processCommand(c);
+				try {
+					input = in.readLine();
+					processCommand(input);
+				} catch (JSONException e) {
+					System.out.println("Got JSONException: "+e.getMessage());
+					System.out.println("\tJSON: "+input);
+				}
 			}
 		}catch(IOException ioe){
 			System.out.println("IO error: "+ioe.getMessage());
-		} catch (ClassNotFoundException e) {
-			System.out.println("Class not found: "+e.getMessage());
 		}
 	}
 	
-	private void processCommand(Command c){
-		System.out.println("Test got:\n\tCommand:["+c.getCommand()+", key:"+(c.getKey()==null?"null":c.getKey())+", value:"+(c.getValue()==null?"null":c.getValue())+"]");
+	private void processCommand(String json) throws JSONException{
+		System.out.println("Test got:\n\tCommand:"+json);
+		if(json == null){
+			System.out.println("Got null command. Ignored it.");
+			return;
+		}
+		JSONObject obj = new JSONObject(json);
 		
-		switch(c.getCommand().toLowerCase()){
-			case "setid":			System.out.println(name+":\n\tClient setting ID to "+c.getKey());break;
-			case "addeduser":		System.out.println(name+":\n\tUPDATE: Added user");break;
+		switch(obj.getString("command").toLowerCase()){
+			case "setinfo":			System.out.println(name+":\n\tClient info: [ID:"+obj.getInt("userid")+"]");
+									this.id = obj.getInt("userid");break;
+			case "addeduser":		clientPosition.put(obj.getInt("userid"), obj.getInt("roomid"));
+									System.out.println(name+":\n\tUPDATE: Added user");break;
 			case "changedusername":	System.out.println(name+":\n\tUPDATE: Changed username");break;
 			case "changedroomname":	System.out.println(name+":\n\tUPDATE: Changed room name");break;
-			case "moveduser":		System.out.println(name+":\n\tUPDATE: Moved user");break;
-			case "createdroom":		rooms.put((String)c.getValue(), (Integer)c.getKey());
+			case "moveduser":		clientPosition.put(obj.getInt("userid"), obj.getInt("destinationroom"));
+									System.out.println(name+":\n\tUPDATE: Moved user");break;
+			case "createdroom":		rooms.put(obj.getString("roomname"), obj.getInt("roomid"));
 									System.out.println(name+":\n\tUPDATE: Created room");break;
-			case "removeduser":		System.out.println(name+":\n\tUPDATE: Removed user");break;
+			case "removeduser":		clientPosition.remove(obj.getInt("userid"));
+									System.out.println(name+":\n\tUPDATE: Removed user");break;
 			case "removedroom":		String roomName = null;
-									int id = (Integer)c.getKey();
+									int id = obj.getInt("roomid");
 									for(String key : rooms.keySet()){
 										if(rooms.get(key) == id){
 											roomName = key;break;
@@ -95,13 +112,20 @@ class TCPBot extends Thread{
 									System.out.println(name+":\n\tUPDATE: Removed room");break;
 			case "initiatesoundport":	System.out.println("setting status");
 										tlsStatus = TLS_STATUS_DONE;
-										this.soundPort = (Integer)c.getKey();
-										this.controlCode = (byte)c.getValue();
+										this.soundPort = obj.getInt("port");
+										this.controlCode = obj.getInt("controlcode");
 										this.hasControlCode = true;break;
-			case "sendauthenticationdetails":	send(new Command("authenticationDetails", "bottenanja", null));break;
-			case "authenticationresult":	if(c.getKey().getClass()==boolean.class && (boolean)(c.getKey())){
+			case "sendauthenticationdetails":	JSONObject authObj = new JSONObject();
+												authObj.put("command", "authenticationdetails");
+												authObj.put("username", "bottenanja");
+												authObj.put("password", "");
+												authObj.put("clienttype", "android");
+												send(authObj.toString());
+											break;
+			case "authenticationresult":	if(obj.getBoolean("result")){
 												tlsStatus = TLS_STATUS_DONE;
 											}else{
+												System.out.println("Did not authenticate: "+obj.getString("rejection"));
 												tlsStatus = TLS_STATUS_BROKEN;
 											}break;
 		}
@@ -123,6 +147,14 @@ class TCPBot extends Thread{
 		return controlCode;
 	}
 	
+	protected int getUserID(){
+		return id;
+	}
+	
+	protected int getRoom(){
+		return clientPosition.get(getUserID());
+	}
+	
 	protected boolean hasControlCode(){
 		return hasControlCode;
 	}
@@ -131,13 +163,10 @@ class TCPBot extends Thread{
 		return rooms.get(name);
 	}
 	
-	protected void send(Command com){
-		System.out.println("Sending:\n\tCommand:["+com.getCommand()+", key:"+com.getKey()+", value:"+com.getValue()+"]");
-		try {
-			out.writeObject(com);
-		} catch (IOException e) {
-			System.out.println("Could not send data...");
-		}
+	protected void send(String json){
+		System.out.println("Sending:\n\tCommand:"+json);
+		out.println(json);
+		out.flush();
 	}
 	
 	public void close(){
@@ -166,7 +195,7 @@ class TCPBot extends Thread{
 			
 			return ssl.getSocketFactory().createSocket(host, port);
 		}catch(Exception e){
-			System.out.println("Got fucking exception while creating TLS socket. ");
+			System.out.println("Got an exception while creating TLS socket. ");
 			e.printStackTrace();
 			return null;
 		}

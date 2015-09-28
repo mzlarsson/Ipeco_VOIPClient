@@ -5,14 +5,10 @@ import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-
-import se.chalmers.fleetspeak.util.Command;
-import se.chalmers.fleetspeak.util.MessageValues;
 
 /**
  * Created by Nieo on 17/08/15.
@@ -21,7 +17,7 @@ public class SocketWriter implements Runnable{
 
     private String LOGTAG = "SocketWriter";
 
-    private ObjectOutputStream objectOutputStream;
+    private PrintWriter printWriter;
     private OutputStream outputStream;
     private Handler writerHandler;
     private Handler errorHandler;
@@ -40,27 +36,21 @@ public class SocketWriter implements Runnable{
     @Override
     public void run() {
         Thread.currentThread().setName("SocketWriterThread");
-        try {
-            objectOutputStream = new ObjectOutputStream(outputStream);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        printWriter = new PrintWriter(outputStream);
         Looper.prepare();
         writerHandler = new Handler(){
             public void handleMessage(Message msg){
                 switch (msg.what){
                     case 0:
+                        Log.d("TLS", "sending disconnect");
+                        printWriter.print("{\"command\":\"disconnect\"}");
+                        printWriter.flush();
                         close();
                         break;
                     case 1:
-                        Command c =(Command) msg.obj;
-                        Log.d(LOGTAG, c.getCommand() + " " + c.getKey());
-                        try {
-                            objectOutputStream.writeObject(msg.obj);
-                        } catch (IOException e) {
-                            Log.e(LOGTAG, "IOException " + e.getMessage());
-                            errorHandler.sendEmptyMessage(MessageValues.DISCONNECTED);
-                        }
+                        Log.d(LOGTAG, "writing to Stream");
+                        printWriter.println(msg.obj);
+                        printWriter.flush();
                         break;
                     default:
                         Log.e(LOGTAG, "Unknown message type " + msg.what);
@@ -79,10 +69,7 @@ public class SocketWriter implements Runnable{
 
     private void close(){
         Looper.myLooper().quit();
-        try{
-            objectOutputStream.close();
-        }catch (IOException e){
-            e.printStackTrace();
-        }
+        printWriter.close();
+
     }
 }

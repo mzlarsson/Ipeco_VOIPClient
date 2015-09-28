@@ -1,12 +1,18 @@
 package se.chalmers.fleetspeak.core;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import se.chalmers.fleetspeak.database.DatabaseCommunicator;
 import se.chalmers.fleetspeak.database.UserInfo;
 import se.chalmers.fleetspeak.network.tcp.TCPHandler;
-import se.chalmers.fleetspeak.util.Command;
+import se.chalmers.fleetspeak.util.PasswordHash;
 
 /**
  * A class that will communicate with a connection until it has successfully
@@ -17,15 +23,16 @@ import se.chalmers.fleetspeak.util.Command;
 public class ClientAuthenticator implements Authenticator, CommandHandler{
 
 	private TCPHandler tcp;
+	private Logger logger;
 
-	private List<AuthenticatorListener> listeners;
+	private AuthenticatorListener listener;
 
 	/**
 	 * Constructor for a ClientAuthenticator.
 	 * @param clientSocket The socket with the new connection to authorize.
 	 */
 	public ClientAuthenticator(TCPHandler tcp) {
-		listeners = new ArrayList<AuthenticatorListener>();
+		logger = Logger.getLogger("Debug");
 		this.tcp = tcp;
 		tcp.setCommandHandler(this);
 		tcp.start();
@@ -35,37 +42,56 @@ public class ClientAuthenticator implements Authenticator, CommandHandler{
 	 * Starts the authentication process.
 	 */
 	public void start() {
-		tcp.sendCommand(new Command("sendAuthenticationDetails", null, null));
+		try {
+			tcp.sendCommand("{\"command\":\"sendauthenticationdetails\"}");
+		} catch (IOException e) {
+			failedAuthentication("Client dropped");
+		}
 	}
+	
 	/**
 	 * Checks if the response from the connection matches with the information in the database.
 	 * @param authCommand The response from the connection.
-	 * @return true if accepted, false if not.
 	 */
-	private boolean authenticate(Command authCommand) {
-		if (authCommand.getCommand().toLowerCase().equals("authenticationdetails")
-				&& authCommand.getKey().getClass() == String.class) {
-			String username = (String)authCommand.getKey();
+	private void authenticate(String authCommand) {
+		String command = null, username = null, password = null, clientType = null;
+		try {
+			JSONObject commandString = new JSONObject(authCommand);
+			command = commandString.getString("command");
+			username = commandString.getString("username");
+			password = commandString.getString("password");
+			clientType = commandString.getString("clienttype");
+		} catch (JSONException e) {
+			failedAuthentication("Data is not in the correct JSON format");
+		}
+		if (command.equalsIgnoreCase("authenticationdetails")) {
 			UserInfo user = DatabaseCommunicator.getInstance().findUser(username);
 			if (user != null) {
-				for (AuthenticatorListener al : listeners) {
-					al.authenticationSuccessful(user, this);
+				if (password.equals("")) {  //FIXME This is to temporary ignore passwords.
+					listener.authenticationSuccessful(clientType, user, this);					
+				} else {
+					try {
+						if (PasswordHash.validatePassword(password, user.getPassword())) {
+							listener.authenticationSuccessful(clientType, user, this);
+						} else {
+							failedAuthentication("Unknown username and password combination");
+						}
+					} catch (NoSuchAlgorithmException e) {
+						logger.log(Level.SEVERE, "Caught an exception: " + e.getMessage());
+					} catch (InvalidKeySpecException e) {
+						logger.log(Level.SEVERE, "Caught an exception: " + e.getMessage());
+					}
 				}
-				return true;
 			} else {
-				failedAuthentication("Unknown username and password combination");
-				return false;
+				failedAuthentication("Unknown username and password combination");		
 			}
 		} else {
-			failedAuthentication("Response is of an unknown format: " + authCommand.toString());
-			return false;
+			failedAuthentication("Unknown command: " + command + " received instead of authenticationdetails");
 		}
 	}
 
 	private void failedAuthentication(String errorMsg) {
-		for (AuthenticatorListener al : listeners) {
-			al.authenticationFailed(errorMsg, this);
-		}
+		listener.authenticationFailed(errorMsg, this);
 	}
 
 	/**
@@ -84,17 +110,13 @@ public class ClientAuthenticator implements Authenticator, CommandHandler{
 	}
 
 	@Override
-	public void addAuthenticatorListener(AuthenticatorListener listener) {
-		listeners.add(listener);
+	public void setAuthenticatorListener(AuthenticatorListener listener) {
+		this.listener = listener;
 	}
-
-	@Override
-	public void removeAuthenticatorListener(AuthenticatorListener listener) {
-		listeners.remove(listener);
-	}
-
-	@Override
-	public void handleCommand(Command c) {
-		authenticate(c);
+	
+	public void handleCommand(String c) {
+		if(c != null) {
+			authenticate(c);
+		}
 	}
 }

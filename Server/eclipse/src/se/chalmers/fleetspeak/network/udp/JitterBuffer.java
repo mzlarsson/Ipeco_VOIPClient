@@ -19,8 +19,8 @@ import java.util.logging.Logger;
  */
 public class JitterBuffer{
 
-	private static final int SOUND_ARRAY_SIZE = 320;
-	private static final int TIME_BETWEEN_SAMPLES = 10;
+	private static final int DEFAULT_TIME_BETWEEN_SAMPLES = 20;
+	private static final int TIME_IGNORE_MULTIPIER = 3;
 	
 	private JitterBufferQueue buffer;
 	private short lastReadSeqNbr = -1;
@@ -28,7 +28,8 @@ public class JitterBuffer{
 	private boolean ready, buildMode;
 	private Logger logger;
 
-	private long bufferTime;
+	private int bufferTime;
+	private int frameSizeMs;
 	
 	/**
 	 * Constructs a JitterBuffer which delays the media in favor of consistency
@@ -37,10 +38,15 @@ public class JitterBuffer{
 	 * delay to the processing of the media equal to the buffer time. 
 	 * @param bufferTime The delay the JitterBuffer has to work with in milliseconds.
 	 */
-	public JitterBuffer(long bufferTime) {
+	public JitterBuffer(int bufferTime) {
+		this(bufferTime, DEFAULT_TIME_BETWEEN_SAMPLES);
+	}
+	
+	public JitterBuffer(int bufferTime, int frameSizeMs) {
 		logger = Logger.getLogger("Debug");
 		buffer = new JitterBufferQueue();
 		this.bufferTime = bufferTime;
+		this.frameSizeMs = frameSizeMs;
 	}
 	
 	/**
@@ -48,7 +54,7 @@ public class JitterBuffer{
 	 * @param packet The RTPPacket to be added to the queue.
 	 */
 	public void write(RTPPacket packet) {
-		if((short)(packet.seqNumber - lastReadSeqNbr) > 0) {
+		if(((short)(packet.seqNumber - lastReadSeqNbr) > 0) || (packet.seqNumber>0 && lastReadSeqNbr<0)) {
 			buffer.offer(packet);
 			if(isFullyBuffered()) {
 				if (!ready) {
@@ -85,18 +91,18 @@ public class JitterBuffer{
 				RTPPacket tmp = buffer.peek();
 				if (tmp != null) {
 					if (tmp.seqNumber == ((short)(lastReadSeqNbr + 1))) {
-						if (tmp.timestamp - 4*TIME_BETWEEN_SAMPLES <= lastReadtimestamp) { // 2*timestamp to compensate for variations.
+						if (tmp.timestamp - TIME_IGNORE_MULTIPIER*frameSizeMs <= lastReadtimestamp) { // x*timestamp to compensate for variations.
 							p = buffer.poll();
 						} else {
 							logger.log(Level.FINEST, "(" + Thread.currentThread().getName() + ")[Buildmode] Returned null to reader due to too big of a time difference between package "
 									+ lastReadSeqNbr + "-" + (lastReadSeqNbr+1) + " (" + (tmp.timestamp-lastReadtimestamp) + ")");
-							lastReadtimestamp += TIME_BETWEEN_SAMPLES;
+							lastReadtimestamp += frameSizeMs;
 						}
 					} else {
 						logger.log(Level.FINEST, "(" + Thread.currentThread().getName() + ")[Buildmode] Returned null to reader due to unmatching sequence numbers, expected "
 								+ (lastReadSeqNbr+1) + " but next was " + (tmp.seqNumber));
 						lastReadSeqNbr += 1;
-						lastReadtimestamp += TIME_BETWEEN_SAMPLES;
+						lastReadtimestamp += frameSizeMs;
 					}
 				} else {
 					ready = false;
@@ -112,11 +118,33 @@ public class JitterBuffer{
 		return p;
 	}
 
-	private boolean isFullyBuffered() {
-		return buffer.getBufferedTime() >= bufferTime;
+	/**
+	 * Sets the delay of the jitterbuffer has to correct potential errors in the buffer.
+	 * @param bufferTime Time in milliseconds.
+	 */
+	public void setBufferTime(int bufferTime) {
+		this.bufferTime = bufferTime;
 	}
 	
-	public int getSoundArraySize() {
-		return SOUND_ARRAY_SIZE;
+	/**
+	 * Sets the time between the packets to enable silent building of the buffer.
+	 * @param frameSize The time between packets in milliseconds.
+	 */
+	public void setFrameSizeMs(int frameSize) {
+		this.frameSizeMs = frameSize;
+	}
+	
+	/**
+	 * Flush the jitter buffer to empty it of all current packets.
+	 */
+	public void flush() {
+		while(ready) {
+			read();
+		}
+		lastReadSeqNbr = Short.MIN_VALUE;
+	}
+	
+	private boolean isFullyBuffered() {
+		return buffer.getBufferedTime() >= bufferTime;
 	}
 }

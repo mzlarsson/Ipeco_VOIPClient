@@ -1,12 +1,16 @@
 package se.chalmers.fleetspeak.network.udp;
 
+import se.chalmers.fleetspeak.sound.AudioType;
+
 public class JitterBufferQueue {
 
 	private Node head, tail;
 	private Object lock;
 	
 	public JitterBufferQueue(){
-		RTPPacket p = new RTPPacket(new byte[12]);
+		byte[] b = new byte[12];
+		b[1] = (byte) (0x7f & AudioType.NONE.getPayloadType());
+		RTPPacket p = new RTPPacket(b);
 		p.seqNumber = -1;
 		p.timestamp = -1;
 		head = new Node(p, null, null);

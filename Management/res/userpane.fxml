@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+
+<fx:root fx:id="root" styleClass="container" stylesheets="@stylesheet.css" type="AnchorPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Label fx:id="usernameLabel" layoutX="46.0" layoutY="6.0" text="Username" AnchorPane.leftAnchor="46.0" AnchorPane.topAnchor="6.0" />
+      <ImageView fx:id="loginStatusView" fitHeight="32.0" fitWidth="32.0" layoutX="14.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="0.0" />
+   </children>
+</fx:root>

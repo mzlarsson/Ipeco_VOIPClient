@@ -8,9 +8,7 @@ import android.os.RemoteException;
 import android.util.Log;
 
 import java.io.IOException;
-
-import javax.net.ssl.SSLException;
-import javax.net.ssl.SSLSocket;
+import java.net.Socket;
 
 import se.chalmers.fleetspeak.util.MessageValues;
 
@@ -21,7 +19,7 @@ public class TLSConnector{
 
     private String LOGTAG = "TLSConnector";
 
-    private SSLSocket socket;
+    private volatile Socket socket;
     private Handler responseHandler;
     private Messenger writeMessenger;
 
@@ -39,11 +37,14 @@ public class TLSConnector{
         new SocketCreator().execute(ip, ""+port);
     }
 
-    public void sendMessage(Object message){
-
+    public void sendMessage(String message){
         try {
-            Log.d(LOGTAG, "sending message");
-            writeMessenger.send(Message.obtain(null,1,message));
+            Log.d(LOGTAG, "sending message " + message);
+            if(socket.isConnected()) {
+                writeMessenger.send(Message.obtain(null, 1, message));
+            }else{
+                disconnect();
+            }
         } catch (RemoteException e) {
             Log.e(LOGTAG, "failed to send message: " + e.getMessage());
         }
@@ -52,31 +53,21 @@ public class TLSConnector{
         new SocketDestroyer().execute();
     }
 
-    private class SocketCreator extends AsyncTask<String,  Void, SSLSocket>{
+    private class SocketCreator extends AsyncTask<String,  Void, Socket>{
 
         @Override
-        protected SSLSocket doInBackground(String... strings) {
-            SSLSocket sslSocket = null;
+        protected Socket doInBackground(String... strings) {
+            Socket sslSocket = null;
             if(strings.length == 2){
-                try {
-                    Log.i(LOGTAG, "trying to connect to " + strings[0] + strings[1]);
-                    sslSocket = (SSLSocket) SocketFactory.getSocketFactory().createSocket(strings[0], Integer.parseInt(strings[1]));
-
-                    Log.i(LOGTAG, sslSocket.getSession().getProtocol());
-
-                    Log.i(LOGTAG, "socket created");
-                }catch(SSLException e){
-
-                }
-                catch (IOException e) {
-
-                }
+                Log.i(LOGTAG, "trying to connect to " + strings[0] + strings[1]);
+                sslSocket =  SocketFactory.getSSLSocket(strings[0], Integer.parseInt(strings[1]));
+                Log.i(LOGTAG, "socket created");
             }
             return sslSocket;
         }
 
         @Override
-        protected void onPostExecute(SSLSocket sslSocket){
+        protected void onPostExecute(Socket sslSocket){
             if(sslSocket != null){
 
                 socket = sslSocket;
@@ -107,15 +98,21 @@ public class TLSConnector{
         protected Void doInBackground(Void... voids) {
             Log.d(LOGTAG, "Stopping reader");
             socketReader.stop();
+            socketReader = null;
             try {
                 writeMessenger.send(Message.obtain(null,0));
+                writeMessenger = null;
                 Log.d(LOGTAG, "Stopping writer");
             } catch (RemoteException e) {
                 e.printStackTrace();
+            } catch (IllegalStateException e){
+                e.printStackTrace();
             }
+
             try {
                 Log.d(LOGTAG, "trying to close socket");
                 socket.close();
+                socket = null;
                 Log.d(LOGTAG, "Closed socket");
             } catch (IOException e) {
                 e.printStackTrace();

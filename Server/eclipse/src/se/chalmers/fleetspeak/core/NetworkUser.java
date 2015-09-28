@@ -1,10 +1,11 @@
 package se.chalmers.fleetspeak.core;
 
-import se.chalmers.fleetspeak.util.Command;
+import java.io.IOException;
+
 
 public interface NetworkUser {
 
-	public void sendCommand(Command c);
-	
+	public void sendCommand(String command) throws IOException;
+
 	public void setCommandHandler(CommandHandler ch);
 }

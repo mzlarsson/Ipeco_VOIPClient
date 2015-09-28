@@ -4,6 +4,9 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 import se.chalmers.fleetspeak.Network.TCP.TLSConnector;
@@ -11,9 +14,7 @@ import se.chalmers.fleetspeak.Network.UDP.RTPHandler;
 import se.chalmers.fleetspeak.Network.UDP.STUNInitiator;
 import se.chalmers.fleetspeak.Network.UDP.UDPConnector;
 import se.chalmers.fleetspeak.audio.sound.SoundOutputController;
-import se.chalmers.fleetspeak.util.Command;
 import se.chalmers.fleetspeak.util.MessageValues;
-import se.chalmers.fleetspeak.util.UserInfoPacket;
 
 /**
  * Created by Nieo on 08/03/15.
@@ -29,6 +30,7 @@ public class Model {
     private SoundOutputController soundOutputController;
 
     String username ="";
+    String password ="";
 
 
 
@@ -70,7 +72,8 @@ public class Model {
             connector.disconnect();
             if(soundOutputController != null)
                 soundOutputController.destroy();
-            rtpHandler.terminate();
+            if(rtpHandler != null)
+                rtpHandler.terminate();
             state = State.not_connected;
             Log.d("Model", " set state to not connected");
         }else{
@@ -82,8 +85,11 @@ public class Model {
         if(state == State.authenticated &&
                 roomid != building.getCurrentRoom()){
             Log.d("Model", "Moving to " + roomid);
-            building.moveUser(building.getUserid(), building.getCurrentRoom(),roomid);
-            connector.sendMessage(new Command("move", building.getCurrentRoom(),roomid));
+            connector.sendMessage("{\"command\":\"moveclient\"," +
+                    "\"userid\":\"" + building.getUserid() + "\", " +
+                    "\"currentroom\":\"" + building.getCurrentRoom() + "\"," +
+                    "\"destinationroom\":\"" + roomid + "\"}");
+            building.moveUser(building.getUserid(), building.getCurrentRoom(), roomid);
         }
         Log.d("Model", roomid + " " + building.getCurrentRoom() );
     }
@@ -91,7 +97,10 @@ public class Model {
         Log.d("Model", state.toString());
         if(state == State.authenticated) {
             Log.d("Model", "Moving to " + roomname);
-            connector.sendMessage(new Command("movenewroom", roomname, null));
+            connector.sendMessage("{\"command\":\"movenewroom\"," +
+                    "\"userid\":\"" + building.getUserid() + "\", " +
+                    "\"currentroom\":\"" + building.getCurrentRoom() + "\"," +
+                    "\"roomname\":\"" + roomname + "\"}");
         }
     }
     public void setNewHandler(Handler handler){
@@ -117,7 +126,8 @@ public class Model {
                 case MessageValues.DISCONNECTED:
                     callbackHandler.sendEmptyMessage(MessageValues.DISCONNECTED);
                     state = State.not_connected;
-                    rtpHandler.terminate();
+                    if(rtpHandler != null)
+                        rtpHandler.terminate();
                     break;
                 case MessageValues.CONNECTIONFAILED:
 
@@ -126,58 +136,67 @@ public class Model {
                     break;
                 case MessageValues.UDPCONNECTOR:
                     Log.i("Commandhandler", "got a udpconnector");
-                    connector.sendMessage(new Command("clientUdpTestOk", null, null));
+                    connector.sendMessage("{\"command\":\"clientudptestok\"}");
                     rtpHandler = new RTPHandler((UDPConnector)msg.obj);
                     soundOutputController = new SoundOutputController(rtpHandler);
                     break;
-                case MessageValues.COMMAND:
+                case MessageValues.COMMAND:                    
+                    try {
+                        JSONObject json = new JSONObject((String)msg.obj);
+                        Log.d("Model", "Command recieved" + json.getString("command"));
+                        switch (json.getString("command").toLowerCase()) {
+                            case "setinfo":
+                                building.setUserid(json.getInt("userid"));
+                                break;
+                            case "addeduser":
+                                building.addUser(json.getInt("userid"),json.getString("username"), json.getInt("roomid"));
+                                break;
+                            case "changedroomname":
+                                building.changeRoomName(json.getInt("roomid"), json.getString("roomname"));
+                            case "moveduser":
+                                building.moveUser(json.getInt("userid"), json.getInt("currentroom"), json.getInt("destinationroom"));
+                                break;
+                            case "createdroom":
+                                building.addRoom(json.getInt("roomid"), json.getString("roomname"));
+                                break;
+                            case "removeduser":
+                                building.removeUser(json.getInt("userid"), json.getInt("roomid"));
+                                break;
+                            case "removedroom":
+                                building.removeRoom(json.getInt("roomid"));
+                                break;
+                            case "initiatesoundport":
+                                byte b = Byte.parseByte(json.getString("controlcode"));
+                                new STUNInitiator(connector.getIP(),json.getInt("port"), b, commandHandler);
+                                break;
+                            case "sendauthenticationdetails":
+                                Log.d("auth", username);
+                                JSONObject command = new JSONObject();
+                                command.put("command", "authenticationdetails");
+                                command.put("username", username);
+                                command.put("password", password);
+                                command.put("clienttype", "android");
+                                
+                                connector.sendMessage(command.toString());
+                                break;
+                            case "authenticationresult":
+                                if (json.getBoolean("result")) { // true if successfully authenticated
+                                    state = State.authenticated;
+                                    callbackHandler.sendEmptyMessage(MessageValues.AUTHENTICATED);
 
-                Command command = (Command) msg.obj;
-                String sCommand = command.getCommand();
-                Log.i("Commandhandler", "Got the command " + sCommand + "(" + command.getKey() + "," + command.getValue() + ")");
-
-                switch (sCommand.toLowerCase()) {
-                    case "setinfo":
-                        building.setUserInfo(((UserInfoPacket) command.getKey()).getID());
-                        break;
-                    case "addeduser":
-                        UserInfoPacket user = (UserInfoPacket) command.getKey();
-                        int roomid = (int) command.getValue();
-                        building.addUser(user.getID(), user.getName(), roomid);
-                        break;
-                    case "changedroomname":
-                        building.changeRoomName((Integer) command.getKey(), (String) command.getValue());
-                    case "moveduser":
-                        String[] rooms = ((String) command.getValue()).split(",");
-                        building.moveUser((Integer) command.getKey(), Integer.parseInt(rooms[0]), Integer.parseInt(rooms[1]));
-                        break;
-                    case "createdroom":
-                        building.addRoom((Integer) command.getKey(), (String) command.getValue());
-                        break;
-                    case "removeduser":
-                        building.removeUser((Integer) command.getKey(), (Integer) command.getValue());
-                        break;
-                    case "removedroom":
-                        building.removeRoom((Integer) command.getKey());
-                        break;
-                    case "initiatesoundport":
-                        new STUNInitiator(connector.getIP(),(int)command.getKey(),(byte)command.getValue(), commandHandler);
-                        break;
-                    case "sendauthenticationdetails":
-                        Log.d("auth", username);
-                        connector.sendMessage(new Command("authenticationdetails", username, null));
-                        break;
-                    case "authenticationresult":
-                        if ((boolean) command.getKey()) { // true if successfully authenticated
-                            state = State.authenticated;
-                            callbackHandler.sendEmptyMessage(MessageValues.AUTHENTICATED);
-
-                        } else {
-                            state = State.not_connected;
-                            callbackHandler.sendMessage(Message.obtain(null, MessageValues.AUTHENTICATIONFAILED, command.getValue())); // .getValue contains the reason for rejection
+                                } else {
+                                    state = State.not_connected;
+                                    callbackHandler.sendMessage(Message.obtain(null, MessageValues.AUTHENTICATIONFAILED, json.getString("rejection"))); // .getValue contains the reason for rejection
+                                }
+                                break;
                         }
-                        break;
-                }
+                    } catch (JSONException e) {
+                       Log.e("Model", "JSONException " + e.getMessage()); 
+                    } catch (NullPointerException e){
+                        Log.e("Model", "Probably failed to parse JSON " + msg.obj);
+                    }
+                    
+                
 
                 break;
             }

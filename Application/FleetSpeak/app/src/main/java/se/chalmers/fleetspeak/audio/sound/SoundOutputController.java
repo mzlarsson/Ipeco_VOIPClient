@@ -10,14 +10,6 @@ import java.util.concurrent.Executors;
 
 import se.chalmers.fleetspeak.Network.UDP.RTPHandler;
 
-import static se.chalmers.fleetspeak.audio.sound.SoundConstants.AUDIO_ENCODING;
-import static se.chalmers.fleetspeak.audio.sound.SoundConstants.AUDIO_OUT_BUFFER_SIZE;
-import static se.chalmers.fleetspeak.audio.sound.SoundConstants.BYTEBUFFER_OUT_SIZE;
-import static se.chalmers.fleetspeak.audio.sound.SoundConstants.OUTPUT_CHANNEL_CONFIG;
-import static se.chalmers.fleetspeak.audio.sound.SoundConstants.SAMPLE_RATE;
-import static se.chalmers.fleetspeak.audio.sound.SoundConstants.SESSION_ID;
-import static se.chalmers.fleetspeak.audio.sound.SoundConstants.STREAM_TYPE;
-
 /**
  * A class for playing PCMU sound from a buffer
  * Created by Fridgeridge on 2015-06-20.
@@ -25,30 +17,30 @@ import static se.chalmers.fleetspeak.audio.sound.SoundConstants.STREAM_TYPE;
 public class SoundOutputController implements Runnable {
 
     private AudioTrack audioTrack;
-    private volatile ByteBuffer byteBuffer;
 
 
 
     private boolean soundIsPlaying;
     private AudioOutputProcessor audioOutputProcessor;
+    private ByteBuffer echoBuffer;
 
     private Executor executor;
-
+    private SoundConstants s;
     public SoundOutputController(RTPHandler rtpHandler){
+        s = SoundConstants.getCurrent();
         audioOutputProcessor = new AudioOutputProcessor(rtpHandler);
         audioTrack = new AudioTrack(
-                STREAM_TYPE.value(),
-                SAMPLE_RATE.value(),
-                OUTPUT_CHANNEL_CONFIG.value(),
-                AUDIO_ENCODING.value(),
-                AUDIO_OUT_BUFFER_SIZE.value(),
-                SESSION_ID.value()
+                s.getStreamType(),
+                s.getSampleRate(),
+                s.getOutputChannelConfig(),
+                s.getEncoding(),
+                s.getOutputBufferSize(),
+                s.getSessionID()
         );
 
         if( audioTrack.getState() == AudioTrack.STATE_UNINITIALIZED) {
             throw new ExceptionInInitializerError("AudioTrack couldn't initialize");
         }
-        byteBuffer = ByteBuffer.allocateDirect(BYTEBUFFER_OUT_SIZE.value());
         executor = Executors.newFixedThreadPool(2);
         executor.execute(this);
        /* executor.execute(new Runnable() {

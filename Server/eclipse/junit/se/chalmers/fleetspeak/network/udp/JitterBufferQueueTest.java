@@ -5,6 +5,8 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
+import se.chalmers.fleetspeak.sound.AudioType;
+
 public class JitterBufferQueueTest {
 
 	JitterBufferQueue q = new JitterBufferQueue();
@@ -14,9 +16,9 @@ public class JitterBufferQueueTest {
 	public void before() {
 		q = new JitterBufferQueue();
 		byte[] b = new byte[0];
-		first = new RTPPacket((short) 0, 0, b);
-		second = new RTPPacket((short) 1, 20, b);
-		third = new RTPPacket((short) 2, 40, b);
+		first = new RTPPacket(AudioType.NONE, (short) 0, 0, b);
+		second = new RTPPacket(AudioType.NONE, (short) 1, 20, b);
+		third = new RTPPacket(AudioType.NONE, (short) 2, 40, b);
 	}
 	
 	@Test

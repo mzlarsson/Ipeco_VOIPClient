@@ -1,0 +1,34 @@
+.background{
+	-fx-background-color: white;
+       /* #f2f2f2e5,
+        linear-gradient(#f2f2f2e5 0%, #ffffffcf 2%, #322929cf 93%, #322929cf 100%);*/
+}
+
+.toolbar{
+	-fx-background-color:#00660077;
+}
+.toolbarButton{
+	-fx-background-color:transparent;
+	-fx-focus-color: transparent;
+	-fx-faint-focus-color:transparent;
+	-fx-inner-border:transparent;
+}
+.toolbarButton:hover{
+	-fx-background-color:#00000088;
+	-fx-cursor:hand;
+}
+
+.container{
+	-fx-background-color:transparent;
+}
+.scroll-pane, .vbox{
+	-fx-background-color:white;
+}
+
+.split-pane > .split-pane-divider{
+	-fx-background-color:transparent;
+	-fx-padding: 0 0.4em 0 0.4em; 
+}
+.split-pane{
+	-fx-background-color:transparent;
+}

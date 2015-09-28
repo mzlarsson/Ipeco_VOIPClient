@@ -1,15 +1,17 @@
 package se.chalmers.fleetspeak.core;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.util.concurrent.BlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import se.chalmers.fleetspeak.network.tcp.TCPHandler;
 import se.chalmers.fleetspeak.network.udp.RTPHandler;
 import se.chalmers.fleetspeak.sound.BufferedAudioStream;
-import se.chalmers.fleetspeak.util.Command;
-import se.chalmers.fleetspeak.util.UserInfoPacket;
 
 /**
  * A class that handles all connectors with the app
@@ -43,24 +45,28 @@ public class Client implements CommandHandler, NetworkUser {
 		this.ip = ip;
 		this.tcp = tcph;
 		this.tcp.setCommandHandler(this);
-		this.tcp.sendCommand(new Command("setInfo", getInfoPacket(), null));
+		JSONObject json = new JSONObject();
+		try {
+			json.put("command" , "setinfo");
+			json.put("userid", clientID);
+			sendCommand(json.toString());
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			logger.log(Level.WARNING, "Caught IOException when sending setinfo, userid. Message: "
+					+ e.getMessage());
+		}
 	}
 
 	@Override
-	public void sendCommand(Command c){
-		tcp.sendCommand(c);
+	public void sendCommand(String command) throws IOException{
+		tcp.sendCommand(command);
 	}
 
 	@Override
 	public void setCommandHandler(CommandHandler ch){
 		this.ch = ch;
-	}
-	/**
-	 * Gets the information of the client in a bundle.
-	 * @return The information of the client.
-	 */
-	public UserInfoPacket getInfoPacket() {
-		return new UserInfoPacket(clientID, alias);
 	}
 
 	/**
@@ -113,24 +119,6 @@ public class Client implements CommandHandler, NetworkUser {
 		return rtp.getOutputBuffer();
 	}
 
-	@Override
-	public void handleCommand(Command c) {
-		logger.log(Level.FINER,"[Client]userid: "+ clientID + "s Got command " + c.getCommand() + " key "+ c.getKey() + " value "+ c.getValue());
-		switch(c.getCommand().toLowerCase()){
-		case "move":
-			ch.handleCommand(new Command("moveclient", clientID, c.getKey()));
-			break;
-		case "movenewroom":
-			ch.handleCommand(new Command("movenewroom", clientID, c.getKey()));
-			break;
-		case "disconnect":
-			tcp.terminate();
-			ch.handleCommand(new Command("disconnect", clientID,null));
-			break;
-		default:
-			ch.handleCommand(c);
-		}
-	}
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
@@ -138,5 +126,26 @@ public class Client implements CommandHandler, NetworkUser {
 	@Override
 	public String toString() {
 		return "Client: name=" + alias + ", clientID=" + clientID + ", ip=" + ip;
+	}
+
+
+	@Override
+	public void handleCommand(String string) {
+		try {
+			JSONObject json = new JSONObject(string);
+			switch(json.getString("command")){
+			case "disconnect":
+				json.put("userid", this.clientID);
+				ch.handleCommand(json.toString());
+				break;
+			default:
+				ch.handleCommand(string);
+				break;
+			}
+
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

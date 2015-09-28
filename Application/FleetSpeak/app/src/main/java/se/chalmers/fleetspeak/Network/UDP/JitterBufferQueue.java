@@ -1,14 +1,19 @@
 package se.chalmers.fleetspeak.Network.UDP;
 
+import se.chalmers.fleetspeak.audio.sound.AudioType;
+
 /**
- * Created by Nieo on 29/08/15.
+ * @author Patrik Haar
  */
 public class JitterBufferQueue {
+
     private Node head, tail;
     private Object lock;
 
     public JitterBufferQueue(){
-        RTPPacket p = new RTPPacket(new byte[12]);
+        byte[] b = new byte[12];
+        b[1] = (byte) (0x7f & AudioType.NONE.getPayloadType());
+        RTPPacket p = new RTPPacket(b);
         p.seqNumber = -1;
         p.timestamp = -1;
         head = new Node(p, null, null);
@@ -19,7 +24,7 @@ public class JitterBufferQueue {
     public void offer(RTPPacket e){
         synchronized (lock) {
             Node n = tail;
-            while (head != tail && ((short) (e.seqNumber - n.e.seqNumber)) < 0) {
+            while(head != tail && ((short)(e.seqNumber - n.e.seqNumber)) < 0){
                 n = n.previous;
             }
             Node newNode = new Node(e, n, n.next);
@@ -29,6 +34,31 @@ public class JitterBufferQueue {
             } else {
                 n.next.previous = newNode;
             }
+            //FIXME Temporary bad-ass printout.
+//			System.out.print("[" + System.currentTimeMillis() + "]-[" + e.seqNumber + "]-[" + e.timestamp + "]-------------------------------------------");
+//			int l = String.valueOf(e.seqNumber).length();
+//			for (int i=6; i>l; i--) {
+//				System.out.print("-");
+//			}
+//			System.out.print("\n|");
+//			boolean full = false;
+//			short seq = 0;;
+//			n = head;
+//			for(int i=0; i<20; i++) {
+//				full = false;
+//				if (i == 0) {
+//					seq = n.next.e.seqNumber;
+//				}
+//				if(n.next!=null) {
+//					n = n.next;
+//					if(!(n.e.seqNumber>(seq++))) {
+//						full = true;
+//					}
+//				}
+//				System.out.print(" " + (full?"X":" ") + " |");
+//			}
+//			System.out.println();
+//			System.out.println("---------------------------------------------------------------------------------");
         }
     }
 
@@ -77,5 +107,4 @@ public class JitterBufferQueue {
             this.next = next;
         }
     }
-
 }

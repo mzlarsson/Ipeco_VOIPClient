@@ -9,6 +9,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import se.chalmers.fleetspeak.audio.FleetspeakAudioException;
+import se.chalmers.fleetspeak.audio.codec.EncoderInterface;
+import se.chalmers.fleetspeak.audio.codec.opus.collection.OpusDecoder;
 import se.chalmers.fleetspeak.audio.codec.opus.collection.OpusEncoder;
 
 
@@ -24,7 +26,7 @@ public class AudioInputProcessor implements Runnable {
     private BlockingQueue<byte[]> processBuffer;
 
 
-    OpusEncoder opusEncoder;
+    EncoderInterface opusEncoder;
     private SoundInputController soundInputController;
 
 
@@ -43,6 +45,7 @@ public class AudioInputProcessor implements Runnable {
 
     @Override
     public void run() {
+        android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_AUDIO);
         Thread.currentThread().setName("AudioInputProcessorThread");
         Log.i(LOGTAG, "working started " + Thread.currentThread().getName());
         isProcessing = true;
@@ -52,7 +55,12 @@ public class AudioInputProcessor implements Runnable {
 
             try {
                 sound = soundInputController.readBuffer();
-                processBuffer.put(opusEncoder.encode(sound, 0));
+                if(sound !=null) {
+                    byte[] encoded = opusEncoder.encode(sound, 0);
+                    processBuffer.put(encoded);
+                }else{
+                    Thread.sleep(1);
+                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

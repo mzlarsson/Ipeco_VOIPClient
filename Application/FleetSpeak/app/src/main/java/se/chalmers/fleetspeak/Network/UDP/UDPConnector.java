@@ -37,7 +37,7 @@ public class UDPConnector implements Runnable{
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
-        receivePacket = new DatagramPacket(new byte[332],332);
+        receivePacket = new DatagramPacket(new byte[52],52);
 
         executor = Executors.newSingleThreadExecutor();
         executor.execute(this);
@@ -79,6 +79,14 @@ public class UDPConnector implements Runnable{
             Log.e("UDP", "udp socket is closed");
             terminate();
         }
+    }
+
+    /**
+     * Set the size of the packets the UDPHandler will read from the incoming udp-traffic.
+     * @param packetSize The size of the read-array in number of bytes.
+     */
+    public void setPacketSize(int packetSize) {
+        receivePacket.setData(new byte[packetSize]);
     }
 
     public void setReceiver(PacketReceiver receiver) {
