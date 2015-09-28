@@ -60,7 +60,7 @@ public enum SoundConstants {
     };
 
     public static SoundConstants getCurrent() {
-        return LOW;
+        return MID;
     }
 
     public int getEncoding() {
