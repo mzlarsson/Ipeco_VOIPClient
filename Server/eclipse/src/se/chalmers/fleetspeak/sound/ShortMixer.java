@@ -31,7 +31,7 @@ public class ShortMixer extends SimpleMixer{
 				for(int j = 0; j+1<maxDataLength; j+=2){												//Mix every other byte (every short). (Make sure we have a complete pair.)
 					mixedData = 0;
 					for(int k = 0; k<members; k++){														//By traversing all members sound
-						if(data[k].length>j+1 && k != i){												//Except themself (or empty signals)
+						if(data[k] != null && data[k].length>j+1 && k != i){												//Except themself (or empty signals)
 							mixedData += bytesToShort(data[k][j+1], data[k][j]);						//And perform a+b on the signal
 						}
 					}
