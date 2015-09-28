@@ -19,15 +19,14 @@ public class MixerFactory {
 	 * @return A valid mixer instance
 	 */
 	public static Mixer getDefaultMixer(){
-		return new SuperEnhancedShortMixer(frequency);
+		return new OptimizedShortMixer(frequency);
 	}
 	
 	public static Mixer getMixerByName(String name){
 		switch(name){
-			case "short":	return new ShortMixer(frequency);
-			case "enhanced":return new EnhancedShortMixer(frequency);
-			case "super":	return new SuperEnhancedShortMixer(frequency);
-			default:		return getDefaultMixer();
+			case "short":		return new ShortMixer(frequency);
+			case "optimized":	return new OptimizedShortMixer(frequency);
+			default:			return getDefaultMixer();
 		}
 	}
 	
