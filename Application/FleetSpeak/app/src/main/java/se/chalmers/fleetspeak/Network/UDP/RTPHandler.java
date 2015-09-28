@@ -25,11 +25,12 @@ public class RTPHandler implements Runnable, PacketReceiver, BufferedAudioStream
     private AudioInputProcessor audioInputProcessor;
 
     private JitterBuffer buffer;
-    private AudioType currAudioType = AudioType.OPUS_NB;    //TODO We probably want to be able to change this dynamically.
+    private AudioType currAudioType = AudioType.OPUS_WB;    //TODO We probably want to be able to change this dynamically.
 
     public RTPHandler(UDPConnector udpConnector) {
         buffer = new JitterBuffer(100);
         this.udpConnector = udpConnector;
+        udpConnector.setPacketSize(currAudioType.getMaxLength()+RTPPacket.HEADER_SIZE);
         sequenceNumber = 0;
         try {
             this.audioInputProcessor = new AudioInputProcessor();
@@ -54,7 +55,7 @@ public class RTPHandler implements Runnable, PacketReceiver, BufferedAudioStream
             try {
                 data = audioInputProcessor.readBuffer();
                 udpConnector.sendPacket(new RTPPacket(currAudioType, sequenceNumber++, getNextTimestamp(), data).toByteArrayDetailed());
-                //buffer.write(new RTPPacket(sequenceNumber++,System.currentTimeMillis(),data));
+                //buffer.write(new RTPPacket(currAudioType, sequenceNumber++, getNextTimestamp(),data));
                 //Log.d("RTPHandler", +data.length + " " + (sequenceNumber-1) +  " send " + data.length +" and time "+System.currentTimeMillis());
             } catch (InterruptedException e) {
                 e.printStackTrace();
