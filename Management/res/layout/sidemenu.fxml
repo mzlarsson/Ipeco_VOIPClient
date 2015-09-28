@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<SplitPane id="menuPane" fx:id="root" dividerPositions="0.4" orientation="VERTICAL" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="se.ipeco.fleetspeak.management.gui.SideMenuController">
+	<items>
+		<VBox alignment="TOP_CENTER">
+		   <children>
+			  <Label alignment="CENTER" minHeight="-Infinity" prefHeight="37.0" text="Administrators">
+				 <VBox.margin>
+					<Insets />
+				 </VBox.margin>
+			  </Label>
+			  <ScrollPane fx:id="scroller" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" prefHeight="131.0" prefViewportHeight="167.0" prefViewportWidth="297.0" prefWidth="147.0" styleClass="container" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="3.0" AnchorPane.topAnchor="40.0">
+				 <content>
+					<VBox fx:id="adminList">
+					   <styleClass>
+						  <String fx:value="container" />
+						  <String fx:value="vbox" />
+					   </styleClass>
+					</VBox>
+				 </content>
+				 <VBox.margin>
+					<Insets bottom="3.0" />
+				 </VBox.margin>
+			  </ScrollPane>
+		   </children>
+		   <styleClass>
+			  <String fx:value="menuSection" />
+			  <String fx:value="vbox" />
+		   </styleClass>
+		</VBox>
+		<ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" layoutY="3.0" styleClass="container" AnchorPane.bottomAnchor="3.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="3.0" AnchorPane.topAnchor="3.0">
+		   <content>
+			  <VBox fx:id="roomStructureBox" styleClass="vbox" />
+		   </content>
+		   <VBox.margin>
+			  <Insets top="3.0" />
+		   </VBox.margin>
+		</ScrollPane>
+	</items>
+   <stylesheets>
+      <URL value="@stylesheet.css" />
+      <URL value="@menu.css" />
+   </stylesheets>
+</SplitPane>

@@ -13,6 +13,8 @@ import java.util.logging.Logger;
  */
 
 public abstract class AbstractMixer implements Mixer{
+	
+	private Logger logger = Logger.getLogger("Debug");
 
 	private List<BufferedAudioStream> streams;
 	private List<BlockingQueue<byte[]>> outStreams;
@@ -50,7 +52,7 @@ public abstract class AbstractMixer implements Mixer{
 				}
 			}
 			
-			//Fix timing
+//			Fix timing
 			if(nextMixTime>System.currentTimeMillis()){
 				try {
 					Thread.sleep(nextMixTime-System.currentTimeMillis());
@@ -60,7 +62,7 @@ public abstract class AbstractMixer implements Mixer{
 					e.printStackTrace();
 				}
 			}else{
-				Logger.getLogger("Debug").severe("A mixer is behind!");
+				logger.severe("A mixer is behind!");
 			}
 		}
 	}
@@ -102,10 +104,6 @@ public abstract class AbstractMixer implements Mixer{
 		byte[][] data = new byte[streams.size()][];
 		for(int i = 0; i<streams.size(); i++){
 			data[i] = streams.get(i).read();
-			
-			if(data[i] == null){
-				data[i] = new byte[0];
-			}
 		}
 		
 		return data;
