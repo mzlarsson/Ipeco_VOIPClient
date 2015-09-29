@@ -50,6 +50,7 @@ public class InRoomFragment extends AppConnectFragment {
         userList.itemRemoved(user);
     }
     public void resetList(List<User> list){
+        if(userList != null)
         userList.resetList(list);
     }
 

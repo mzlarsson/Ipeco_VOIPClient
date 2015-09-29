@@ -97,6 +97,14 @@
                 super.onCreate(savedInstanceState);
                 Bundle extras = this.getIntent().getExtras();
                 setContentView(R.layout.activity_connection);
+                model = ModelFactory.getModel(updateHandler);
+                if( !model.isAuthenticated()){
+                    Log.d("ConnectionActivity", " Connected");
+                    model.connect(username ,password);
+                }else{
+                    lobbyFragment.isConnected(true);
+                }
+
                 viewPager = (CViewPager)findViewById(R.id.pager);
                 viewPager.setId(R.id.pager);
                 viewPager.setAdapter(new PagerAdapter(getSupportFragmentManager()));
@@ -122,16 +130,11 @@
                 username=  extras.getString("username");
                 lobbyFragment = new LobbyFragment();
                 inRoomFragment = new InRoomFragment();
-                model = ModelFactory.getModel(updateHandler);
+                backFragment = new BackFragment();
                 Log.d("ConnectionActivity", " Checking if connected");
-                if( !model.isAuthenticated()){
-                    Log.d("ConnectionActivity", " Connected");
-                    model.connect(username ,password);
 
-                }else{
-                    lobbyFragment.isConnected(true);
-                }
                 username = (String)extras.get("username");
+
 
                 TruckDataHandler.addListener(this);
                 carMode = TruckDataHandler.getInstance().getTruckMode();
@@ -291,6 +294,7 @@
             }
         @Override
         public void onTabSelected(ActionBar.Tab tab, android.support.v4.app.FragmentTransaction fragmentTransaction) {
+            Log.d("ConnectionActivity", " clicked tab" + tab.getPosition());
             viewPager.setCurrentItem(tab.getPosition());
         }
 
@@ -319,8 +323,6 @@
                         return inRoomFragment;
                     }else if (arg == 2){
                         Log.d("ConnectionActivity"," Back called");
-                        if(backFragment == null)
-                            backFragment = new BackFragment();
                         return backFragment;
                     }
                     return null;
@@ -341,8 +343,4 @@
            return getResources();
         }
 
-        public void onConfigurationChanged(Configuration newConfig){
-            super.onConfigurationChanged(newConfig);
-            setContentView(R.layout.activity_connection);
-        }
-    }
+}

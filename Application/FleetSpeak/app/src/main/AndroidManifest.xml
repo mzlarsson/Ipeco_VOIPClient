@@ -23,7 +23,6 @@
             android:name=".fragments.NewStructure.LoginProcess.LoginActivity"
             android:label="@string/title_activity_login"
             android:noHistory="true"
-            android:configChanges="keyboardHidden|orientation|screenSize"
             >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

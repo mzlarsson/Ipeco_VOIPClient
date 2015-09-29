@@ -169,22 +169,7 @@ public class LoginActivity extends ActionBarActivity implements TruckStateListen
         Log.d("LoginActivity", " back pressed");
         this.finish();
     }
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        setContentView(R.layout.activity_login);
-        if(this.getIntent().hasExtra("error")){
-            error = this.getIntent().getStringExtra("error");
-        }else{
-            error = null;
-        }
-        String defaultUsername = this.getApplicationContext().getString(R.string.username_text);
-        username = prefs.getString("username", defaultUsername);
-        password = prefs.getString("password", "");
-        TruckDataHandler.addListener(this);
-        carmode = TruckDataHandler.getInstance().getTruckMode();
-        setStartFragment(carmode);
-    }
+
     protected void onSaveInstanceState(Bundle outState) {
         //No call for super(). Bug on API Level > 11.
     }
