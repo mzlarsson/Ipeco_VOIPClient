@@ -37,7 +37,7 @@ JNIEXPORT jlong JNICALL Java_se_chalmers_fleetspeak_audio_codec_opus_jniopus_Opu
  * Signature: (J[BII[BII)I
  */
 JNIEXPORT jint JNICALL Java_se_chalmers_fleetspeak_audio_codec_opus_jniopus_OpusEncoderWrapper_encode
-  (JNIEnv *env, jclass jc, jlong encoder, jbyteArray pcmInData, jint pcmInDataOffset, jint pcmSampleRate, jbyteArray opusOutData, jint opusOutDataOffset, jint outputLength)
+  (JNIEnv *env, jclass jc, jlong encoder, jbyteArray pcmInData, jint pcmInDataOffset, jint frameSize, jbyteArray opusOutData, jint opusOutDataOffset, jint outputLength)
 {
   jbyte *audioInData;
   jbyte *audioOutData;
@@ -47,7 +47,7 @@ JNIEXPORT jint JNICALL Java_se_chalmers_fleetspeak_audio_codec_opus_jniopus_Opus
 
   int encodedBytes = opus_encode((OpusEncoder *)(intptr_t)(encoder),
                                    (opus_int16 *)(audioInData),
-                                   pcmSampleRate,
+                                   frameSize,
                                    (unsigned char *) (audioOutData),
                                    outputLength);
     (*env)->ReleasePrimitiveArrayCritical(env, opusOutData, audioOutData, 0);

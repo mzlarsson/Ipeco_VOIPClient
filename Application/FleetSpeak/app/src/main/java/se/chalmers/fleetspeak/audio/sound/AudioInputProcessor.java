@@ -12,6 +12,7 @@ import se.chalmers.fleetspeak.audio.FleetspeakAudioException;
 import se.chalmers.fleetspeak.audio.codec.EncoderInterface;
 import se.chalmers.fleetspeak.audio.codec.opus.collection.OpusDecoder;
 import se.chalmers.fleetspeak.audio.codec.opus.collection.OpusEncoder;
+import se.chalmers.fleetspeak.audio.processing.AudioProcessor;
 
 
 /**
@@ -25,13 +26,14 @@ public class AudioInputProcessor implements Runnable {
     boolean isProcessing;
     private BlockingQueue<byte[]> processBuffer;
 
-
     EncoderInterface opusEncoder;
+    AudioProcessor audioProcessor;
     private SoundInputController soundInputController;
 
 
     public AudioInputProcessor() throws FleetspeakAudioException {
-        opusEncoder = new OpusEncoder();
+        //opusEncoder = new OpusEncoder();
+        audioProcessor = new AudioProcessor();
         soundInputController = new SoundInputController();
         processBuffer = new LinkedBlockingQueue<>(10);//TODO Fix as a importable constant
         Log.i(LOGTAG, "initiated");
@@ -50,13 +52,15 @@ public class AudioInputProcessor implements Runnable {
         Log.i(LOGTAG, "working started " + Thread.currentThread().getName());
         isProcessing = true;
 
-        byte[] sound;
+        byte[] sound, echo;
         while (isProcessing) {
 
             try {
+                echo = new byte[1];
                 sound = soundInputController.readBuffer();
                 if(sound !=null) {
-                    byte[] encoded = opusEncoder.encode(sound, 0);
+                    //byte[] encoded = opusEncoder.encode(sound,0);
+                    byte[] encoded = audioProcessor.process(sound,0, echo,0);
                     processBuffer.put(encoded);
                 }else{
                     Thread.sleep(1);

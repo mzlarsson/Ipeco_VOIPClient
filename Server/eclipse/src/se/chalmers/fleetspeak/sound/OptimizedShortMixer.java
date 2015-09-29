@@ -1,9 +1,11 @@
 package se.chalmers.fleetspeak.sound;
 
+import java.util.Arrays;
 
-public class EnhancedShortMixer extends SimpleMixer{
 
-	protected EnhancedShortMixer(int mixingInterval) {
+public class OptimizedShortMixer extends SimpleMixer{
+
+	protected OptimizedShortMixer(int mixingInterval) {
 		super(mixingInterval);
 	}
 	
@@ -22,16 +24,26 @@ public class EnhancedShortMixer extends SimpleMixer{
 		}else if(data.length>2){
 			int maxDataLength = getMaxDataLength(data);
 			
+			int[] talking = new int[data.length];
+			int nbrOfTalking = 0;
+			for(int i = 0; i<data.length; i++){
+				if(data[i] != null && data[i].length==maxDataLength){
+					talking[nbrOfTalking++] = i;
+				}
+			}
+			
+			//Adjust length
+			talking = Arrays.copyOf(talking, nbrOfTalking);
+			
 			//Preprocess
 			int[] baseMix = new int[maxDataLength/2];
 			byte[] silentMix = new byte[maxDataLength];
-			for(int i = 0; i<baseMix.length; i+=2){
-				for(int j = 0; j<members; j++){
-					if(data[j] != null && data[j].length>i){
-						baseMix[i] += bytesToShort(data[j][i+1], data[j][i]);				//Uses little endian
-					}
+			for(int i = 0; i<baseMix.length; i++){
+				//Add all talkers
+				for(int currentTalker : talking){
+					baseMix[i] += bytesToShort(data[currentTalker][2*i+1], data[currentTalker][2*i]);				//Uses little endian
 				}
-				insertLittleEndianShort(silentMix, i, setShortRoof(baseMix[i]));
+				insertLittleEndianShort(silentMix, 2*i, setShortRoof(baseMix[i]));
 			}
 			
 			byte[][] mixed = new byte[members][maxDataLength];
@@ -39,7 +51,7 @@ public class EnhancedShortMixer extends SimpleMixer{
 			for(int i = 0; i<members; i++){																//For every member
 				if(data[i] == null){
 					//User is silent
-					data[i] = silentMix;
+					mixed[i] = silentMix;
 				}else{
 					//User sounds in any way
 					int byteIndex;
