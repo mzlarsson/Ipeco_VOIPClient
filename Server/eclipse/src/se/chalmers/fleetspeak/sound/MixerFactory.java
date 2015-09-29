@@ -7,6 +7,8 @@ package se.chalmers.fleetspeak.sound;
  */
 
 public class MixerFactory {
+	
+	private static final int frequency = 20;
 
 	private MixerFactory(){}
 	
@@ -17,7 +19,15 @@ public class MixerFactory {
 	 * @return A valid mixer instance
 	 */
 	public static Mixer getDefaultMixer(){
-		return new ShortMixer(20);
+		return new OptimizedShortMixer(frequency);
+	}
+	
+	public static Mixer getMixerByName(String name){
+		switch(name){
+			case "short":		return new ShortMixer(frequency);
+			case "optimized":	return new OptimizedShortMixer(frequency);
+			default:			return getDefaultMixer();
+		}
 	}
 	
 }

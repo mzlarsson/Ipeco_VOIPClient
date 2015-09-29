@@ -17,6 +17,7 @@ public interface Mixer extends Runnable{
 	 * @param stream The stream to remove
 	 */
 	public void removeStream(BufferedAudioStream stream);
+
 	
 	/**
 	 * Closes the mixer and removes all input/output streams.

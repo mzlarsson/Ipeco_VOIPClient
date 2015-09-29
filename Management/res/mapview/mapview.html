@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Ipeco Map View</title>
+	<meta charset="utf-8" />
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.5/leaflet.css" />
+	<style type = "text/css">
+		span.link{
+			color:#0078A8;
+			text-decoration:underline;
+		}
+		span.link:hover{
+			cursor:hand;
+			cursor:pointer;
+		}
+	</style>
+</head>
+<body>
+	<div id="map" style="width: 650px; height: 450px">
+		Loading map...
+	</div>
+
+	<script src="http://cdn.leafletjs.com/leaflet-0.7.5/leaflet.js"></script>
+	<script>
+		window.mapObjects = [];
+	
+		function load(width, height){
+			var mapObject = document.getElementById("map");
+			if(typeof width != "undefined" && typeof height != "undefined"){
+				mapObject.style.width = width+"px";
+				mapObject.style.height = height+"px";
+			}
+			
+			window.map = L.map('map').setView([57.687325, 11.978694], 18);
+			var accessToken = 'pk.eyJ1IjoiaXBlY28iLCJhIjoiNTExZjAyYjIwYWJjNjJkZjBkMmMzMGEwM2QxNjI1M2IifQ.OFMzkCXq3Fj84VWQsiuerQ';
+			L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token='+accessToken, {
+				maxZoom: 18,
+				attribution: 'Map data &copy; <span class="link" onclick="gotoOMS();">OpenStreetMap</span> contributors, ' +
+					'<span class="link" onclick="gotoCC();">CC-BY-SA</span>, ' +
+					'Imagery © <span class="link" onclick="gotoMapbox();">Mapbox</span>',
+				id: 'ipeco.ndh6ohp5',
+				accessToken: accessToken
+			}).addTo(map);
+			
+			map.on("layeradd", function(e){mapObjects.push(e.layer);});
+		}
+
+		
+		function moveToLocation(latitude, longitude, zoom){
+			if(typeof latitude != "undefined" && typeof longitude != "undefined"){
+				map.setView([latitude, longitude], zoom);
+			}
+		}
+		
+		function addCircle(latitude, longitude, size, color, text){
+			var circle = L.circle([latitude, longitude], size, {
+				color: color,
+				fillColor: color,
+				fillOpacity: 0.5
+			});
+			circle.addTo(map).bindPopup(text);
+		}
+		
+		function addPopup(latitude, longitude, text, show){
+			if(typeof latitude != "undefined" && typeof longitude != "undefined"){
+				if(typeof text == "undefined"){
+					text = "";
+				}
+				if(typeof show == "undefined"){
+					show = true;
+				}
+				
+				var marker = L.marker([latitude, longitude]);
+				var p = marker.addTo(map).bindPopup(text);
+				if(show){
+					p.openPopup();
+				}
+			}
+		}
+		
+		function clearMapObjects(){
+			var i;
+			for(i = 0; i<window.mapObjects.length; i++){
+				map.removeLayer(window.mapObjects[i]);
+			}
+			
+			window.mapObjects = [];
+		}
+		
+		function gotoOMS(){
+			managementApp.gotoLink("http://openstreetmap.org");
+		}
+		
+		function gotoCC(){
+			managementApp.gotoLink("http://creativecommons.org/licenses/by-sa/2.0/");
+		}
+		
+		function gotoMapbox(){
+			managementApp.gotoLink("http://mapbox.com");
+		}
+		
+		function replaceLeafletLinkToExternal(){
+			//Find data
+			var parentDiv = document.getElementsByClassName("leaflet-control-attribution")[0];
+			
+			//Create new link object
+			var leafletLink = document.createElement("span");
+			leafletLink.className = "link";
+			leafletLink.setAttribute("onclick", "managementApp.gotoLink('http://leafletjs.com');")
+			leafletLink.innerHTML = "Leaflet";
+			
+			//Replace to perform outer call.
+			parentDiv.removeChild(parentDiv.childNodes[0]);
+			parentDiv.insertBefore(leafletLink, parentDiv.childNodes[0]);
+		}
+
+		
+		
+		function getMethods(obj) {
+		  var result = [];
+		  for (var id in obj) {
+			try {
+			  if (true || typeof(obj[id]) == "function") {
+				result.push(id + ": " + obj[id].toString());
+			  }
+			} catch (err) {
+			  result.push(id + ": inaccessible");
+			}
+		  }
+		  return result;
+		}
+	</script>
+</body>
+</html>

@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="src" path="res"/>
+	<classpathentry excluding="icons/|layout/|mapview/|style/" kind="src" path="res"/>
+	<classpathentry kind="src" path="res/icons"/>
+	<classpathentry kind="src" path="res/layout"/>
+	<classpathentry kind="src" path="res/mapview"/>
+	<classpathentry kind="src" path="res/style"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="libs/java-json.jar"/>
 	<classpathentry kind="output" path="bin"/>

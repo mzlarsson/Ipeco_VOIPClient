@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import java.net.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox alignment="CENTER" styleClass="vbox" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="se.ipeco.fleetspeak.management.gui.ConnectionLostController">
+   <children>
+      <Label text="Connection has been lost.">
+         <font>
+            <Font size="18.0" />
+         </font></Label>
+      <Label text="Giving up on reconnecting in:">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <Label fx:id="timeLeftLabel" text="[time]">
+         <font>
+            <Font size="28.0" />
+         </font>
+      </Label>
+   </children>
+   
+   <stylesheets>
+      <URL value="@stylesheet.css" />
+   </stylesheets>
+</VBox>

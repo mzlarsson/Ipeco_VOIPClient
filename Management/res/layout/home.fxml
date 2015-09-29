@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<Pane fx:id="root" styleClass="container" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="se.ipeco.fleetspeak.management.gui.HomeController">
+   <children>
+	  <Pane layoutX="172.0" layoutY="14.0" prefHeight="131.0" prefWidth="863.0" styleClass="container" stylesheets="@stylesheet.css">
+		 <children>
+			<Button alignment="CENTER" layoutX="218.0" layoutY="79.0" mnemonicParsing="false" onAction="#goToMatz" prefHeight="52.0" prefWidth="194.0" text="Flyg till Matz" />
+			<Button alignment="CENTER" layoutY="79.0" mnemonicParsing="false" onAction="#clearMap" prefHeight="52.0" prefWidth="194.0" text="Clear all map stuff" />
+			<Label alignment="CENTER" layoutX="165.0" layoutY="14.0" prefHeight="52.0" prefWidth="300.0" text="INLOGGAD!" />
+			<Button alignment="CENTER" layoutX="435.0" layoutY="79.0" mnemonicParsing="false" onAction="#disconnect" prefHeight="52.0" prefWidth="194.0" text="Disconnect" />
+            <Button layoutX="651.0" layoutY="79.0" mnemonicParsing="false" onAction="#changeView" prefHeight="52.0" prefWidth="194.0" text="Change view" />
+		 </children>
+	  </Pane>
+	  <Pane fx:id="mapContainer" layoutX="141.0" layoutY="152.0" prefHeight="500.0" prefWidth="700.0" />
+   </children>
+   
+   <stylesheets>
+      <URL value="@stylesheet.css" />
+   </stylesheets>
+</Pane>
