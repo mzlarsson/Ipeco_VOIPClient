@@ -13,7 +13,7 @@ extern "C" {
  * Signature: (JJJI[BI[BI[BI)I
  */
 JNIEXPORT jint JNICALL Java_se_chalmers_fleetspeak_audio_processing_NativeAudioProcessor_processAll
-  (JNIEnv *, jclass, jlong, jlong, jlong, jint, jbyteArray, jint, jbyteArray, jint, jbyteArray, jint);
+        (JNIEnv *, jclass, jint, jbyteArray, jint, jbyteArray, jint, jbyteArray, jint);
 
 /*
  * Class:     se_chalmers_fleetspeak_audio_processing_NativeAudioProcessor
@@ -21,7 +21,7 @@ JNIEXPORT jint JNICALL Java_se_chalmers_fleetspeak_audio_processing_NativeAudioP
  * Signature: (JJJ)I
  */
 JNIEXPORT jint JNICALL Java_se_chalmers_fleetspeak_audio_processing_NativeAudioProcessor_setup
-  (JNIEnv *, jclass, jlong, jlong, jlong);
+        (JNIEnv *, jclass, jlong, jlong, jlong);
 
 /*
  * Class:     se_chalmers_fleetspeak_audio_processing_NativeAudioProcessor
@@ -29,7 +29,7 @@ JNIEXPORT jint JNICALL Java_se_chalmers_fleetspeak_audio_processing_NativeAudioP
  * Signature: (JIJ)I
  */
 JNIEXPORT jint JNICALL Java_se_chalmers_fleetspeak_audio_processing_NativeAudioProcessor_processorCTL
-  (JNIEnv *, jclass, jlong, jint, jlong);
+        (JNIEnv *, jclass, jlong, jint, jlong);
 
 /*
  * Class:     se_chalmers_fleetspeak_audio_processing_NativeAudioProcessor
@@ -37,7 +37,7 @@ JNIEXPORT jint JNICALL Java_se_chalmers_fleetspeak_audio_processing_NativeAudioP
  * Signature: (JI)I
  */
 JNIEXPORT jint JNICALL Java_se_chalmers_fleetspeak_audio_processing_NativeAudioProcessor_encoderCTL
-  (JNIEnv *, jclass, jlong, jint);
+        (JNIEnv *, jclass, jlong, jint);
 
 /*
  * Class:     se_chalmers_fleetspeak_audio_processing_NativeAudioProcessor
@@ -45,7 +45,7 @@ JNIEXPORT jint JNICALL Java_se_chalmers_fleetspeak_audio_processing_NativeAudioP
  * Signature: (JIJ)I
  */
 JNIEXPORT jint JNICALL Java_se_chalmers_fleetspeak_audio_processing_NativeAudioProcessor_echoCTL
-  (JNIEnv *, jclass, jlong, jint, jlong);
+        (JNIEnv *, jclass, jlong, jint, jlong);
 
 /*
  * Class:     se_chalmers_fleetspeak_audio_processing_NativeAudioProcessor
@@ -53,7 +53,7 @@ JNIEXPORT jint JNICALL Java_se_chalmers_fleetspeak_audio_processing_NativeAudioP
  * Signature: (J[BII[BII)I
  */
 JNIEXPORT jint JNICALL Java_se_chalmers_fleetspeak_audio_processing_NativeAudioProcessor_encodeToOpus
-  (JNIEnv *, jclass, jlong, jbyteArray, jint, jint, jbyteArray, jint, jint);
+        (JNIEnv *, jclass, jlong, jbyteArray, jint, jint, jbyteArray, jint, jint);
 
 /*
  * Class:     se_chalmers_fleetspeak_audio_processing_NativeAudioProcessor
@@ -61,7 +61,7 @@ JNIEXPORT jint JNICALL Java_se_chalmers_fleetspeak_audio_processing_NativeAudioP
  * Signature: (J[B[B[B)V
  */
 JNIEXPORT void JNICALL Java_se_chalmers_fleetspeak_audio_processing_NativeAudioProcessor_cancellation
-  (JNIEnv *, jclass, jlong, jbyteArray, jbyteArray, jbyteArray);
+(JNIEnv *, jclass, jlong, jbyteArray, jbyteArray, jbyteArray);
 
 /*
  * Class:     se_chalmers_fleetspeak_audio_processing_NativeAudioProcessor
@@ -69,7 +69,7 @@ JNIEXPORT void JNICALL Java_se_chalmers_fleetspeak_audio_processing_NativeAudioP
  * Signature: (J[B)I
  */
 JNIEXPORT jint JNICALL Java_se_chalmers_fleetspeak_audio_processing_NativeAudioProcessor_run
-  (JNIEnv *, jclass, jlong, jbyteArray);
+        (JNIEnv *, jclass, jlong, jbyteArray);
 
 /*
  * Class:     se_chalmers_fleetspeak_audio_processing_NativeAudioProcessor
@@ -77,7 +77,7 @@ JNIEXPORT jint JNICALL Java_se_chalmers_fleetspeak_audio_processing_NativeAudioP
  * Signature: (JJJ)V
  */
 JNIEXPORT void JNICALL Java_se_chalmers_fleetspeak_audio_processing_NativeAudioProcessor_destroy
-  (JNIEnv *, jclass, jlong, jlong, jlong);
+(JNIEnv *, jclass, jlong, jlong, jlong);
 
 /*
  * Class:     se_chalmers_fleetspeak_audio_processing_NativeAudioProcessor
@@ -85,7 +85,7 @@ JNIEXPORT void JNICALL Java_se_chalmers_fleetspeak_audio_processing_NativeAudioP
  * Signature: (II)J
  */
 JNIEXPORT jlong JNICALL Java_se_chalmers_fleetspeak_audio_processing_NativeAudioProcessor_createOpusEncoder
-  (JNIEnv *, jclass, jint, jint);
+        (JNIEnv *, jclass, jint, jint);
 
 /*
  * Class:     se_chalmers_fleetspeak_audio_processing_NativeAudioProcessor
@@ -93,7 +93,7 @@ JNIEXPORT jlong JNICALL Java_se_chalmers_fleetspeak_audio_processing_NativeAudio
  * Signature: (II)J
  */
 JNIEXPORT jlong JNICALL Java_se_chalmers_fleetspeak_audio_processing_NativeAudioProcessor_createSpeexProcessor
-  (JNIEnv *, jclass, jint, jint);
+        (JNIEnv *, jclass, jint, jint);
 
 /*
  * Class:     se_chalmers_fleetspeak_audio_processing_NativeAudioProcessor
@@ -101,7 +101,7 @@ JNIEXPORT jlong JNICALL Java_se_chalmers_fleetspeak_audio_processing_NativeAudio
  * Signature: (II)J
  */
 JNIEXPORT jlong JNICALL Java_se_chalmers_fleetspeak_audio_processing_NativeAudioProcessor_createSpeexEchoState
-  (JNIEnv *, jclass, jint, jint);
+        (JNIEnv *, jclass, jint, jint);
 
 #ifdef __cplusplus
 }

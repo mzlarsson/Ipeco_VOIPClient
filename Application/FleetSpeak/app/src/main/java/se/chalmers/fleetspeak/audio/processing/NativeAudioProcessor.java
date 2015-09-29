@@ -6,12 +6,18 @@ package se.chalmers.fleetspeak.audio.processing;
  */
 public class NativeAudioProcessor {
 
+    static{
+        System.loadLibrary("NativeAudio");
+    }
 
     /*
     Applies AEC, noise reduction and OPUS encoding to a PCM sample.
      */
-    public native static int processAll(long opusEncoder, long speexEchoState, long speexProcessorState, int sampleRate, byte[] src, int srcOffset, byte[] play, int playOffset, byte[] output, int outputLength );
+    public native static int processAll(int frameSize, byte[] src, int srcOffset, byte[] play, int playOffset, byte[] output, int outputLength);
 
+    /*
+    Sets up the different processors with relevant settings and CTL-functions;
+     */
     public native static int setup(long opusEncoder, long speexEchoState, long speexProcessorState);
 
     public native static int processorCTL(long speexProcessorState, int request, long ptr);
