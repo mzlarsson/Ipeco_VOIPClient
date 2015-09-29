@@ -1,6 +1,8 @@
 package se.ipeco.fleetspeak.management.core;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,11 +18,12 @@ public class Building implements CommandHandler{
 	private Logger logger = Logger.getLogger(this.getClass());
 	
 	private HashMap<Integer, Room> rooms;
-	private BuildingChangeListener listener;
+	private List<BuildingChangeListener> listeners;
 	
 	private Building(int id){
 		System.out.println("Starting Building for [ID "+id+"]");
 		rooms = new HashMap<Integer, Room>();
+		listeners = new ArrayList<BuildingChangeListener>();
 	}
 
 	@Override
@@ -47,9 +50,9 @@ public class Building implements CommandHandler{
 		}
 	}
 	
-	public void setBuildingChangeListener(BuildingChangeListener listener){
-		this.listener = listener;
+	public void addBuildingChangeListener(BuildingChangeListener listener){
 		if(listener != null){
+			listeners.add(listener);
 			//Sync all old values
 			for(Room room : rooms.values()){
 				listener.addedRoom(room);
@@ -61,7 +64,7 @@ public class Building implements CommandHandler{
 		Room r = new Room(roomID, roomName);
 		rooms.put(roomID, r);
 		
-		if(listener != null){
+		for(BuildingChangeListener listener : listeners){
 			listener.addedRoom(r);
 		}
 	}
@@ -73,7 +76,7 @@ public class Building implements CommandHandler{
 	private void removeRoom(int roomID) {
 		Room r = rooms.remove(roomID);
 		if(r != null){
-			if(listener != null){
+			for(BuildingChangeListener listener : listeners){
 				listener.removedRoom(r);
 			}
 		}
@@ -116,7 +119,7 @@ public class Building implements CommandHandler{
 	}
 	
 	private void lostConnection(){
-		if(listener != null){
+		for(BuildingChangeListener listener : listeners){
 			listener.lostConnection();
 		}
 	}
@@ -146,6 +149,7 @@ public class Building implements CommandHandler{
 
 	public static void terminate(){
 		if(building != null){
+			building.listeners.clear();
 			building = null;
 		}
 	}

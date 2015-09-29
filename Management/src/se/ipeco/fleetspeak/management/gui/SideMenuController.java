@@ -10,7 +10,9 @@ import se.ipeco.fleetspeak.management.core.Building;
 import se.ipeco.fleetspeak.management.core.Building.BuildingChangeListener;
 import se.ipeco.fleetspeak.management.core.Room;
 import se.ipeco.fleetspeak.management.core.User;
-import se.ipeco.fleetspeak.management.gui.UserPane.UserChangeHandler;
+import se.ipeco.fleetspeak.management.gui.custom.RoomPane;
+import se.ipeco.fleetspeak.management.gui.custom.UserPane;
+import se.ipeco.fleetspeak.management.gui.custom.UserPane.UserChangeHandler;
 
 public class SideMenuController implements UserChangeHandler, BuildingChangeListener{
 
@@ -29,7 +31,7 @@ public class SideMenuController implements UserChangeHandler, BuildingChangeList
 	
 	public void initialize(){
 		if(Building.hasRunningBuilding()){
-			Building.getRunningBuilding().setBuildingChangeListener(this);
+			Building.getRunningBuilding().addBuildingChangeListener(this);
 		}
 	}
 	

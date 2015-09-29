@@ -1,5 +1,6 @@
 package se.ipeco.fleetspeak.management.gui;
 
+import se.ipeco.fleetspeak.management.gui.custom.MapView;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.layout.Pane;

@@ -1,4 +1,4 @@
-package se.ipeco.fleetspeak.management.gui;
+package se.ipeco.fleetspeak.management.gui.custom;
 
 import java.io.IOException;
 
@@ -16,6 +16,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import se.ipeco.fleetspeak.management.core.User;
+import se.ipeco.fleetspeak.management.gui.IconLoader;
 
 public class UserPane extends AnchorPane{
 	
@@ -34,14 +35,18 @@ public class UserPane extends AnchorPane{
 	private Label usernameLabel;
 	
 	public UserPane(User user){
-		this(user, LoginStatus.LOGGED_OUT);
+		this(user, LoginStatus.LOGGED_IN);
 	}
 	
 	public UserPane(User user, LoginStatus status){
 		this.user = user;
-		this.initialLoginStatus = (status==null?LoginStatus.LOGGED_OUT:status);
+		this.initialLoginStatus = (status==null?LoginStatus.LOGGED_IN:status);
 		this.loginStatus = new SimpleObjectProperty<LoginStatus>();
 		
+		loadPane();
+	}
+	
+	protected void loadPane(){
 		FXMLLoader loader = new FXMLLoader(this.getClass().getClassLoader().getResource("userpane.fxml"));
 		loader.setRoot(this);
 		loader.setController(this);

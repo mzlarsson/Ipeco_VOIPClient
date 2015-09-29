@@ -54,6 +54,11 @@ public class MainController{
 		Node currentContent = null;
 		if(contentRoot.getChildren().size()>0){
 			currentContent = contentRoot.getChildren().get(0);
+			
+			//Ignore if already disconnect screen
+			if(currentContent.getId() != null && currentContent.getId().equals("disconnectScreen")){
+				return;
+			}
 		}
 		ReallyDisconnectController.setBackPage(currentContent);
 		

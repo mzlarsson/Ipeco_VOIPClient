@@ -57,6 +57,8 @@ public class FXUtil {
             return loadedNode;
         } catch (IOException e) {
             System.out.println("Could not load component ["+name+"]: "+e.getMessage());
+            
+            e.printStackTrace();
             return null;
         }
 	}

@@ -11,6 +11,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.web.WebView;
+import netscape.javascript.JSException;
 import netscape.javascript.JSObject;
 import se.ipeco.fleetspeak.management.Main;
 
@@ -27,6 +28,10 @@ public class MapView extends AnchorPane{
 	private ReadOnlyBooleanWrapper loadedProperty;
 	private int width, height;
 
+	public MapView(){
+		this(600, 450);
+	}
+	
 	public MapView(int width, int height){
 		this.width = width;
 		this.height = height;
@@ -62,7 +67,12 @@ public class MapView extends AnchorPane{
 				//Load leaflet with correct size
 				this.setWidth(width);
 				this.setHeight(width);
-				mapView.getEngine().executeScript("load("+width+","+height+");");
+				try{
+					System.out.println(width+", "+height);
+					mapView.getEngine().executeScript("load("+width+","+height+");");
+				}catch(JSException e){
+					System.out.println("Failed to load specific width/height on map");
+				}
 
 				//Transform dynamically added leaflet link to internal link standard
 				mapView.getEngine().executeScript("replaceLeafletLinkToExternal();");

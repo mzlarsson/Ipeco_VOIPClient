@@ -1,4 +1,4 @@
-package se.ipeco.fleetspeak.management.gui;
+package se.ipeco.fleetspeak.management.gui.custom;
 
 import java.io.IOException;
 import java.util.List;
@@ -15,12 +15,18 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import se.ipeco.fleetspeak.management.core.Room;
 import se.ipeco.fleetspeak.management.core.User;
-import se.ipeco.fleetspeak.management.gui.UserPane.LoginStatus;
+import se.ipeco.fleetspeak.management.gui.FXUtil;
+import se.ipeco.fleetspeak.management.gui.FXUtil.Function;
+import se.ipeco.fleetspeak.management.gui.IconLoader;
+import se.ipeco.fleetspeak.management.gui.MainController;
+import se.ipeco.fleetspeak.management.gui.RoomDisplayController;
+import se.ipeco.fleetspeak.management.gui.custom.UserPane.LoginStatus;
 
 public class RoomPane extends AnchorPane{
 	
 	private Room room;
 	private BooleanProperty clientsHiddenProperty;
+	private boolean controlsEnabled = true;
 	
 	@FXML
 	private AnchorPane root;
@@ -31,13 +37,27 @@ public class RoomPane extends AnchorPane{
 	@FXML
 	private VBox userContainer;
 
+	public RoomPane(){
+		this(null);
+	}
+	
 	public RoomPane(Room room){
-		this.room = room;
-		this.room.nbrOfUsersProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
-			updateUsers();
-		});
-		this.clientsHiddenProperty = new SimpleBooleanProperty(true);
-		
+		setRoom(room);
+	}
+	
+	public void setRoom(Room room){
+		if(room != null){
+			this.room = room;
+			this.room.nbrOfUsersProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
+				updateUsers();
+			});
+			this.clientsHiddenProperty = new SimpleBooleanProperty(true);
+			
+			loadPane();
+		}
+	}
+	
+	protected void loadPane(){
 		FXMLLoader loader = new FXMLLoader(this.getClass().getClassLoader().getResource("roompane.fxml"));
 		loader.setRoot(this);
 		loader.setController(this);
@@ -64,22 +84,40 @@ public class RoomPane extends AnchorPane{
 		Platform.runLater(() -> {
 			userContainer.getChildren().clear();
 			for(User u : users){
-				UserPane p = new UserPane(u, LoginStatus.LOGGED_IN);
+				UserPane p = getUserPane(u, LoginStatus.LOGGED_IN);
 				userContainer.getChildren().add(p);
 			}
 		});
 	}
 	
+	protected UserPane getUserPane(User u, LoginStatus status){
+		return new UserPane(u, status);
+	}
+	
 	public void toggleExpand(){
-		//Only on double click
-		boolean show = !clientsHiddenProperty.get();
-		expandIcon.setImage(IconLoader.loadImage(show?"collapse_32x32.png":"expand_32x32.png"));
-		userContainer.setManaged(show);
-		userContainer.setVisible(show);
-		clientsHiddenProperty.set(show);
+		if(controlsEnabled){
+			boolean show = !clientsHiddenProperty.get();
+			expandIcon.setImage(IconLoader.loadImage(show?"collapse_32x32.png":"expand_32x32.png"));
+			userContainer.setManaged(show);
+			userContainer.setVisible(show);
+			clientsHiddenProperty.set(show);
+		}
 	}
 	
 	public void sendToMainScreen(){
-		System.out.println("To main");
+		if(controlsEnabled){
+			MainController.setContent(FXUtil.getNode("largeroom", new Function() {
+				@Override
+				public <T> void perform(T controller) {
+					if(controller instanceof RoomDisplayController){
+						((RoomDisplayController)controller).setRoom(room);
+					}
+				}
+			}));
+		}
+	}
+	
+	public void setControlsEnabled(boolean enabled){
+		this.controlsEnabled = enabled;
 	}
 }
