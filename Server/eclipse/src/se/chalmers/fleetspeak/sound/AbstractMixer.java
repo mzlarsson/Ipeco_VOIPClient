@@ -46,7 +46,9 @@ public abstract class AbstractMixer implements Mixer{
 			byte[][] data = getMixed();
 			for(int i = 0; i<data.length; i++){
 				try {
-					outStreams.get(i).put(data[i]);
+					if(data[i]!=null){
+						outStreams.get(i).put(data[i]);
+					}
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
