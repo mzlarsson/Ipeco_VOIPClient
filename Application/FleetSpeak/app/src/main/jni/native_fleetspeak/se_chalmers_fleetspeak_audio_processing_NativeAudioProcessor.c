@@ -3,17 +3,51 @@
 #include <opus.h>
 #include <speex/speex_echo.h>
 #include <speex/speex_preprocess.h>
+#include <stdlib.h>
+
+
+static int _soundThreshold = (320*200);
+static int _frameSize;
+
+static OpusEncoder* _opusEncoder;
+static SpeexEchoState* _speexEchoState;
+static SpeexPreprocessState* _speexProcessorState;
+
 
 /*
  * Method:    processAll
  * Signature: (JJJI[BI[BI[BI)I
  */
 JNIEXPORT jint JNICALL Java_se_chalmers_fleetspeak_audio_processing_NativeAudioProcessor_processAll
-        (JNIEnv *env, jclass jc, jlong opusEncoder, jlong speexEchoState, jlong speexProcessorState,
-         jint sampleRate, jbyteArray src, jint srcOffset, jbyteArray play, jint playOffset,
+        (JNIEnv *env, jclass jc,
+         jint frameSize, jbyteArray src, jint srcOffset, jbyteArray play, jint playOffset,
          jbyteArray output, jint outputLength)
 {
+    jbyte *audioInData;
+    jbyte *audioOutData;
 
+    audioInData = (*env)->GetPrimitiveArrayCritical(env, src, 0);
+    audioOutData = (*env)->GetPrimitiveArrayCritical(env, output, 0);
+
+
+    int length = (*env)->GetArrayLength(env, src);
+
+    if(!isAudible(audioInData,length)){
+        (*env)->ReleasePrimitiveArrayCritical(env, output, audioOutData, 0);
+        (*env)->ReleasePrimitiveArrayCritical(env, src, audioInData, JNI_ABORT);
+        return -10;
+    }
+
+    int encodedBytes = opus_encode( _opusEncoder,
+                                   (opus_int16 *)(audioInData),
+                                   (frameSize),
+                                   (unsigned char *) (audioOutData),
+                                   outputLength);
+
+
+    (*env)->ReleasePrimitiveArrayCritical(env, output, audioOutData, 0);
+    (*env)->ReleasePrimitiveArrayCritical(env, src, audioInData, JNI_ABORT);
+    return encodedBytes;
 }
 
 /*
@@ -24,7 +58,16 @@ JNIEXPORT jint JNICALL Java_se_chalmers_fleetspeak_audio_processing_NativeAudioP
 JNIEXPORT jint JNICALL Java_se_chalmers_fleetspeak_audio_processing_NativeAudioProcessor_setup
         (JNIEnv *env, jclass jc, jlong opusEncoder, jlong speexEchoState, jlong speexProcessorState)
 {
+    int encodeStatus, echoStatus, processorStatus;
+    void *data;
 
+    processorStatus = speex_preprocess_ctl(
+            (SpeexPreprocessState *) (intptr_t)(speexProcessorState),
+            SPEEX_PREPROCESS_SET_AGC_LEVEL,
+            data
+    );
+
+    return 0;
 }
 
 /*
@@ -65,7 +108,7 @@ JNIEXPORT jint JNICALL Java_se_chalmers_fleetspeak_audio_processing_NativeAudioP
  */
 JNIEXPORT jint JNICALL Java_se_chalmers_fleetspeak_audio_processing_NativeAudioProcessor_encodeToOpus
         (JNIEnv *env, jclass jc, jlong opusEncoder, jbyteArray pcmInData, jint pcmInDataOffset,
-         jint pcmSampleRate, jbyteArray opusOutData, jint opusOutDataOffset, jint outputLength)
+         jint frameSize, jbyteArray opusOutData, jint opusOutDataOffset, jint outputLength)
 {
     jbyte *audioInData;
     jbyte *audioOutData;
@@ -73,9 +116,9 @@ JNIEXPORT jint JNICALL Java_se_chalmers_fleetspeak_audio_processing_NativeAudioP
     audioInData = (*env)->GetPrimitiveArrayCritical(env, pcmInData, 0);
     audioOutData = (*env)->GetPrimitiveArrayCritical(env, opusOutData, 0);
 
-    int encodedBytes = opus_encode((OpusEncoder * )(intptr_t)(opusEncoder),
+    int encodedBytes = opus_encode((OpusEncoder *)(intptr_t)(opusEncoder),
                                    (opus_int16 * )(audioInData),
-                                   pcmSampleRate,
+                                   frameSize,
                                    (unsigned char *) (audioOutData),
                                    outputLength);
     (*env)->ReleasePrimitiveArrayCritical(env, opusOutData, audioOutData, 0);
@@ -130,9 +173,11 @@ JNIEXPORT jlong JNICALL Java_se_chalmers_fleetspeak_audio_processing_NativeAudio
     int error;
     OpusEncoder *opusEncoder = opus_encoder_create(sampleRate, channels, OPUS_APPLICATION_VOIP, &error);
 
-    if(OPUS_OK != error)
-        opusEncoder = 0;
-    return (jlong) (intptr_t) (opusEncoder);
+if(OPUS_OK != error) {
+    opusEncoder = 0;
+}
+_opusEncoder = opusEncoder;
+return (jlong) (intptr_t) (opusEncoder);
 }
 
 /*
@@ -143,7 +188,11 @@ JNIEXPORT jlong JNICALL Java_se_chalmers_fleetspeak_audio_processing_NativeAudio
 JNIEXPORT jlong JNICALL Java_se_chalmers_fleetspeak_audio_processing_NativeAudioProcessor_createSpeexProcessor
         (JNIEnv *env, jclass jc, jint frameSize, jint sampleRate)
 {
+    _frameSize = frameSize;
+    _soundThreshold = _frameSize*200;
+
     SpeexPreprocessState *sps = speex_preprocess_state_init(frameSize, sampleRate);
+    _speexProcessorState = sps;
     return  (jlong) (intptr_t) (sps);
 }
 
@@ -156,5 +205,26 @@ JNIEXPORT jlong JNICALL Java_se_chalmers_fleetspeak_audio_processing_NativeAudio
         (JNIEnv *env, jclass jc, jint frameSize, jint filterLength)
 {
     SpeexEchoState *ses = speex_echo_state_init(frameSize, filterLength);
+    _speexEchoState = ses;
     return  (jlong) (intptr_t) (ses);
 }
+
+
+
+int isAudible
+        (const jbyte *audio, int length)
+{
+    int audioSum = 0;
+    int counter = 0;
+
+    while(counter < length)
+    {
+        audioSum += abs( ((int) ((*(audio+1) << 8)|(*audio & 0xFF))));//TODO see if 16bit enc. will affect value.
+        audio += 2;
+
+        if(audioSum >(_soundThreshold));
+            return 1;
+    }
+    return 0;
+}
+

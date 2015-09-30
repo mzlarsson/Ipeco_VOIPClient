@@ -6,15 +6,14 @@
     >
     <TextView
         android:layout_width="wrap_content"
-        android:textSize="50sp"
+        android:textSize="60sp"
         android:id="@+id/userName"
         android:text="@string/username_text"
         android:layout_height="wrap_content"
         android:singleLine="true"
         android:layout_above="@+id/error_text"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="68dp"
-        android:layout_marginTop="100dp" />
+        android:layout_marginBottom="68dp" />
     <TextView
         android:layout_width="310dp"
         android:layout_height="wrap_content"
@@ -24,7 +23,8 @@
         android:layout_weight="0.15"
         android:textColor="#fffff5ff"
         android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:textSize="30sp" />
     <Button
         android:text="@string/connect_text"
         android:id="@+id/connectionButton"
@@ -37,7 +37,8 @@
         android:shadowDx="0"
         android:shadowDy="0"
         android:shadowRadius="5" android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignRight="@+id/error_text"
+        android:layout_alignLeft="@+id/error_text" />
     />
 
 

@@ -43,7 +43,7 @@ public class OpusEncoder implements EncoderInterface {
         if(read <= 0){
             Log.d("OPUS", "Failed to encode with :"+read);
         }else{
-                tmp =  new byte[read];
+            tmp =  new byte[read];
             System.arraycopy(opusEncoded, 0, tmp, 0, read);
         }
         return tmp;

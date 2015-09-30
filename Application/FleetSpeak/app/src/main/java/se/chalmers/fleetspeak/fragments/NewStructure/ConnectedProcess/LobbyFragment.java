@@ -134,7 +134,9 @@ public class LobbyFragment extends AppConnectFragment {
         roomList.removeItem(room);
     }
     public void resetList(List<Room> list){
-        roomList.resetList(list);
+        if(roomList != null) {
+            roomList.resetList(list);
+        }
     }
     public void isConnected(boolean b){
         if(b){
