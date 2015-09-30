@@ -98,6 +98,8 @@
                 Bundle extras = this.getIntent().getExtras();
                 setContentView(R.layout.activity_connection);
                 model = ModelFactory.getModel(updateHandler);
+                password = extras.getString("password");
+                username=  extras.getString("username");
                 if( !model.isAuthenticated()){
                     Log.d("ConnectionActivity", " Connected");
                     model.connect(username ,password);
@@ -126,15 +128,11 @@
                     }
                 });
 
-                password = extras.getString("password");
-                username=  extras.getString("username");
+
                 lobbyFragment = new LobbyFragment();
                 inRoomFragment = new InRoomFragment();
                 backFragment = new BackFragment();
                 Log.d("ConnectionActivity", " Checking if connected");
-
-                username = (String)extras.get("username");
-
 
                 TruckDataHandler.addListener(this);
                 carMode = TruckDataHandler.getInstance().getTruckMode();
