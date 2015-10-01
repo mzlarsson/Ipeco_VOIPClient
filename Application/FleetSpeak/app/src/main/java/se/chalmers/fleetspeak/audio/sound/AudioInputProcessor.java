@@ -59,9 +59,10 @@ public class AudioInputProcessor implements Runnable {
                 echo = new byte[1];
                 sound = soundInputController.readBuffer();
                 if(sound !=null) {
-                    //byte[] encoded = opusEncoder.encode(sound,0);
                     byte[] encoded = audioProcessor.process(sound,0, echo,0);
-                    processBuffer.put(encoded);
+                    if(encoded != null) {
+                        processBuffer.put(encoded);
+                    }
                 }else{
                     Thread.sleep(1);
                 }

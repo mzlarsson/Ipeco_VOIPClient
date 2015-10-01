@@ -66,6 +66,8 @@ public class SoundOutputController implements Runnable {
     public synchronized void destroy(){
         soundIsPlaying = false;
         if(audioTrack != null){
+            audioTrack.flush();
+            audioTrack.stop();
             audioTrack.release();
         }
         if(audioOutputProcessor != null)

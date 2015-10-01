@@ -30,9 +30,11 @@ JNIEXPORT jint JNICALL Java_se_chalmers_fleetspeak_audio_processing_NativeAudioP
     audioOutData = (*env)->GetPrimitiveArrayCritical(env, output, 0);
 
 
-    int length = (*env)->GetArrayLength(env, src);
+    int vod = speex_preprocess_run( _speexProcessorState,
+                                    (spx_int16_t *) (audioInData));
 
-    if(!isAudible(audioInData,length)){
+    //If there's speech detected
+    if(!vod){
         (*env)->ReleasePrimitiveArrayCritical(env, output, audioOutData, 0);
         (*env)->ReleasePrimitiveArrayCritical(env, src, audioInData, JNI_ABORT);
         return -10;
@@ -59,15 +61,37 @@ JNIEXPORT jint JNICALL Java_se_chalmers_fleetspeak_audio_processing_NativeAudioP
         (JNIEnv *env, jclass jc, jlong opusEncoder, jlong speexEchoState, jlong speexProcessorState)
 {
     int encodeStatus, echoStatus, processorStatus;
-    void *data;
 
+    //Turn on DeNoise
+    processorStatus = 1;
     processorStatus = speex_preprocess_ctl(
-            (SpeexPreprocessState *) (intptr_t)(speexProcessorState),
-            SPEEX_PREPROCESS_SET_AGC_LEVEL,
-            data
+            _speexProcessorState,
+            SPEEX_PREPROCESS_SET_DENOISE,
+            &processorStatus
     );
 
-    return 0;
+    processorStatus = 70;//Default is 35
+    processorStatus = speex_preprocess_ctl(
+            _speexProcessorState,
+            SPEEX_PREPROCESS_SET_PROB_START,
+            &processorStatus
+    );
+
+    processorStatus = 40;//Default is 20
+    processorStatus = speex_preprocess_ctl(
+            _speexProcessorState,
+            SPEEX_PREPROCESS_SET_PROB_CONTINUE,
+            &processorStatus
+    );
+
+    processorStatus = 1;
+    processorStatus = speex_preprocess_ctl(
+            _speexProcessorState,
+            SPEEX_PREPROCESS_SET_VAD,
+            &processorStatus
+    );
+
+    return 1;
 }
 
 /*

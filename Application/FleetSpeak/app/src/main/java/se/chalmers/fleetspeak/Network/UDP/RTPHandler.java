@@ -65,7 +65,7 @@ public class RTPHandler implements Runnable, PacketReceiver, BufferedAudioStream
 
     private long getNextTimestamp() {
         long curr = System.currentTimeMillis();
-        if(Math.abs(curr-timestamp)>(5* frameSizeMs)) {
+        if(Math.abs(curr-timestamp)>(2*frameSizeMs)) {
             timestamp = curr;
         } else {
             timestamp += frameSizeMs;
