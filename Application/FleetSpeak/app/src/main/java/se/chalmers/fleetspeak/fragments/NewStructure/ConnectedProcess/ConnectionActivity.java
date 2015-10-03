@@ -331,11 +331,21 @@
                     return 3;
                 }
             }
-
+        @Override
+        protected void onPause(){
+            Log.d("Connection", "Paused");
+            super.onPause();
+        }
+        @Override
+        protected void onResume(){
+            Log.d("Connection", "Resuming");
+            super.onResume();
+        }
         @Override
         protected void onDestroy() {
-            super.onDestroy();
+            Log.d("Connection", "onDestroy is called");
             model.disconnect();
+            super.onDestroy();
         }
         public Resources getRecources(){
            return getResources();
