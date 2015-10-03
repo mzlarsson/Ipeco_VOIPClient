@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- WARNING: Eclipse auto-generated file.
+              Any modifications will be overwritten.
+              To include a user specific buildfile here, simply create one in the same
+              directory with the processing instruction <?eclipse.ant.import?>
+              as the first entry and export the buildfile again. --><project basedir="." default="build" name="DTServer">
+    <property environment="env"/>
+    <property name="junit.output.dir" value="junit"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.8"/>
+    <property name="source" value="1.8"/>
+    <path id="JUnit 4.libraryclasspath">
+        <pathelement location="../../../../../../Applications/eclipse/plugins/org.junit_4.11.0.v201303080030/junit.jar"/>
+        <pathelement location="../../../../../../Applications/eclipse/plugins/org.hamcrest.core_1.3.0.v201303031735.jar"/>
+    </path>
+    <path id="DTServer.classpath">
+        <pathelement location="bin"/>
+        <path refid="JUnit 4.libraryclasspath"/>
+        <pathelement location="libs/jna.jar"/>
+        <pathelement location="libs/postgresql-9.4-1201.jdbc41.jar"/>
+        <pathelement location="libs/richtextfx-fat-0.6.3.jar"/>
+        <pathelement location="libs/java-json.jar"/>
+    </path>
+    <target name="init">
+        <mkdir dir="bin"/>
+        <copy includeemptydirs="false" todir="bin">
+            <fileset dir="src">
+                <exclude name="**/*.launch"/>
+                <exclude name="**/*.xtend"/>
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+        <copy includeemptydirs="false" todir="bin">
+            <fileset dir="junit">
+                <exclude name="**/*.launch"/>
+                <exclude name="**/*.xtend"/>
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+        <copy includeemptydirs="false" todir="bin">
+            <fileset dir="res">
+                <exclude name="**/*.launch"/>
+                <exclude name="**/*.xtend"/>
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="clean">
+        <delete dir="bin"/>
+    </target>
+    <target depends="clean" name="cleanall"/>
+    <target depends="build-subprojects,build-project" name="build"/>
+    <target name="build-subprojects"/>
+    <target depends="init" name="build-project">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
+            <src path="src"/>
+            <src path="junit"/>
+            <src path="res"/>
+            <classpath refid="DTServer.classpath"/>
+        </javac>
+    </target>
+    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
+    <target name="DTServer">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="se.chalmers.fleetspeak.database.DatabaseCommunicatorTest" todir="${junit.output.dir}"/>
+            <test name="se.chalmers.fleetspeak.network.udp.JitterBufferQueueTest" todir="${junit.output.dir}"/>
+            <test name="se.chalmers.fleetspeak.network.udp.JitterBufferTest" todir="${junit.output.dir}"/>
+            <test name="se.chalmers.fleetspeak.network.udp.RTPPacketTest" todir="${junit.output.dir}"/>
+            <test name="se.chalmers.fleetspeak.sound.MixerTest" todir="${junit.output.dir}"/>
+            <test name="se.chalmers.fleetspeak.util.PasswordHashTest" todir="${junit.output.dir}"/>
+            <classpath refid="DTServer.classpath"/>
+        </junit>
+    </target>
+    <target name="JitterBufferQueueTest">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="se.chalmers.fleetspeak.network.udp.JitterBufferQueueTest" todir="${junit.output.dir}"/>
+            <classpath refid="DTServer.classpath"/>
+        </junit>
+    </target>
+    <target name="JitterBufferTest">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="se.chalmers.fleetspeak.network.udp.JitterBufferTest" todir="${junit.output.dir}"/>
+            <classpath refid="DTServer.classpath"/>
+        </junit>
+    </target>
+    <target name="RouterTest">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="se.chalmers.fleetspeak.test.RouterTest" todir="${junit.output.dir}"/>
+            <classpath refid="DTServer.classpath"/>
+        </junit>
+    </target>
+    <target name="ServerConsole">
+        <java classname="se.chalmers.fleetspeak.ServerConsole" failonerror="true" fork="yes">
+            <jvmarg line="-Djava.library.path=libs/native/darwin"/>
+            <classpath refid="DTServer.classpath"/>
+        </java>
+    </target>
+    <target name="ServerGUI">
+        <java classname="se.chalmers.fleetspeak.gui.ServerGUI" failonerror="true" fork="yes">
+            <classpath refid="DTServer.classpath"/>
+        </java>
+    </target>
+    <target name="junitreport">
+        <junitreport todir="${junit.output.dir}">
+            <fileset dir="${junit.output.dir}">
+                <include name="TEST-*.xml"/>
+            </fileset>
+            <report format="frames" todir="${junit.output.dir}"/>
+        </junitreport>
+    </target>
+</project>
