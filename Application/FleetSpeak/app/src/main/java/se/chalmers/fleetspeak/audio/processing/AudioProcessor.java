@@ -40,7 +40,7 @@ public class AudioProcessor {
         );
 
         if( read <=0){
-            Log.d("AudioProcess", "Failed to encode with :" + read);
+            //Log.d("AudioProcess", "Failed to encode with :" + read);
         }else{
             tmp =  new byte[read];
             System.arraycopy(processed, 0, tmp, 0, read);
