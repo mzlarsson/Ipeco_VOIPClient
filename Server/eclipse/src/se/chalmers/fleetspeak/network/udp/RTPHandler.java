@@ -35,7 +35,7 @@ public class RTPHandler implements PacketReceiver, BufferedAudioStream{
 	private Executor executor;
 	private Logger logger;
 
-	private AudioType currAudioType = AudioType.NONE;
+	private AudioType currAudioType = AudioType.OPUS_WB;
 	private UDPHandler udp;
 	private JitterBuffer jitter;
 	private Encoder encoder;
@@ -57,7 +57,7 @@ public class RTPHandler implements PacketReceiver, BufferedAudioStream{
 		udp.setReceiver(this);
 		udp.start();
 
-		setAudioType(AudioType.OPUS_NB);
+		setAudioType(currAudioType);
 		executor = Executors.newSingleThreadExecutor();
 		executor.execute(sender);
 	}
@@ -167,8 +167,7 @@ public class RTPHandler implements PacketReceiver, BufferedAudioStream{
 		return p!=null ? decoder.decode(p.getPayload()) : null;
 		//XXX Opus decoding supports null packets which would make it try to predict one,
 		//XXX however this would mean we are mixing additional extra data when the client
-		//XXX is not sending any. More research is required, if it only attempts this a
-		//XXX few times in a row it might be worth using.
+		//XXX is not sending any. Can write this manually in the java part of the decoder.
 	}
 
 	Runnable sender = () ->{

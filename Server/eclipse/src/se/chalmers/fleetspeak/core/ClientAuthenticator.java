@@ -61,32 +61,32 @@ public class ClientAuthenticator implements Authenticator, CommandHandler{
 			username = commandString.getString("username");
 			password = commandString.getString("password");
 			clientType = commandString.getString("clienttype");
-		} catch (JSONException e) {
-			failedAuthentication("Data is not in the correct JSON format");
-		}
-		if (command.equalsIgnoreCase("authenticationdetails")) {
-			UserInfo user = DatabaseCommunicator.getInstance().findUser(username);
-			if (user != null) {
-				if (password.equals("")) {  //FIXME This is to temporary ignore passwords.
-					listener.authenticationSuccessful(clientType, user, this);					
-				} else {
-					try {
-						if (PasswordHash.validatePassword(password, user.getPassword())) {
-							listener.authenticationSuccessful(clientType, user, this);
-						} else {
-							failedAuthentication("Unknown username and password combination");
+			if (command.equalsIgnoreCase("authenticationdetails")) {
+				UserInfo user = DatabaseCommunicator.getInstance().findUser(username);
+				if (user != null) {
+					if (password.equals("")) {  //FIXME This is to temporary ignore passwords.
+						listener.authenticationSuccessful(clientType, user, this);					
+					} else {
+						try {
+							if (PasswordHash.validatePassword(password, user.getPassword())) {
+								listener.authenticationSuccessful(clientType, user, this);
+							} else {
+								failedAuthentication("Unknown username and password combination");
+							}
+						} catch (NoSuchAlgorithmException e) {
+							logger.log(Level.SEVERE, "Caught an exception: " + e.getMessage());
+						} catch (InvalidKeySpecException e) {
+							logger.log(Level.SEVERE, "Caught an exception: " + e.getMessage());
 						}
-					} catch (NoSuchAlgorithmException e) {
-						logger.log(Level.SEVERE, "Caught an exception: " + e.getMessage());
-					} catch (InvalidKeySpecException e) {
-						logger.log(Level.SEVERE, "Caught an exception: " + e.getMessage());
 					}
+				} else {
+					failedAuthentication("Unknown username and password combination");		
 				}
 			} else {
-				failedAuthentication("Unknown username and password combination");		
+				failedAuthentication("Unknown command: " + command + " received instead of authenticationdetails");
 			}
-		} else {
-			failedAuthentication("Unknown command: " + command + " received instead of authenticationdetails");
+		} catch (JSONException e) {
+			failedAuthentication("Data is not in the correct JSON format");
 		}
 	}
 

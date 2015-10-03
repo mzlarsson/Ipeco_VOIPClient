@@ -39,7 +39,6 @@ public class TCPHandler extends Thread{
 		logger = Logger.getLogger("Debug");
 		this.clientSocket = clientSocket;
 		try {
-
 			logger.log(Level.FINE,"Trying to get streams");
 			printWriter = new PrintWriter(clientSocket.getOutputStream());
 			bufferedReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
@@ -58,7 +57,7 @@ public class TCPHandler extends Thread{
 	@Override
 	public void run() {
 		isRunning = true;
-		String read;
+		String read = null;
 		try {
 			while (isRunning && bufferedReader != null) {
 				logger.log(Level.FINER,"trying to read");
@@ -67,6 +66,7 @@ public class TCPHandler extends Thread{
 				if(read != null){
 					receivedCommand(read);
 				}else{
+					receivedCommand("{\"command\":\"disconnect\"}");
 					isRunning = false;
 				}
 
@@ -118,7 +118,6 @@ public class TCPHandler extends Thread{
 		if(printWriter.checkError()){
 			throw new IOException("PrinterWriter got an error");
 		}
-
 	}
 
 	/**
@@ -141,6 +140,7 @@ public class TCPHandler extends Thread{
 	 * @return If the clientSocket was successfully closed returns true, else false.
 	 */
 	public boolean terminate() {
+		System.out.println("Terminated");
 		isRunning = false;
 		try {
 			if (clientSocket != null) {
