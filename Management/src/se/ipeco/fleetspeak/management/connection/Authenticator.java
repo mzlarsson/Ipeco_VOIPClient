@@ -71,7 +71,7 @@ public class Authenticator implements CommandHandler, StunListener{
 	private void setResult(boolean failed, String msg){
 		if(listener != null){
 			if(failed){
-				listener.authenticationFailed("Authentification failed. "+msg);
+				listener.authenticationFailed(msg);
 			}else{
 				listener.authenticationDone();
 			}

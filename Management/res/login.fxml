@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="430.0" prefWidth="450.0" styleClass="background" stylesheets="@stylesheet.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="se.ipeco.fleetspeak.management.gui.LoginController">
+   <children>
+      <Label alignment="CENTER" layoutX="40.0" layoutY="33.0" prefHeight="53.0" prefWidth="372.0" styleClass="header" stylesheets="@stylesheet.css" text="Fleetspeak server">
+         <font>
+            <Font size="28.0" />
+         </font>
+      </Label>
+      <VBox fx:id="contentBox" alignment="CENTER" layoutX="46.0" layoutY="86.0">
+         <children>
+            <HBox>
+               <children>
+                  <Label alignment="CENTER" layoutX="38.0" layoutY="86.0" prefHeight="41.0" prefWidth="220.0" text="Server IP">
+                     <font>
+                        <Font name="System Bold" size="15.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets right="20.0" />
+                     </HBox.margin>
+                  </Label>
+                  <Label alignment="CENTER" layoutX="282.0" layoutY="86.0" prefHeight="41.0" prefWidth="120.0" text="Port">
+                     <font>
+                        <Font name="System Bold" size="15.0" />
+                     </font>
+                  </Label>
+               </children>
+            </HBox>
+            <HBox layoutX="44.0" layoutY="127.0">
+               <children>
+                  <TextField id="serverField" fx:id="serverIPField" layoutX="44.0" layoutY="127.0" onKeyReleased="#loginPropertyChanged" prefHeight="53.0" prefWidth="220.0" promptText="46.239.103.195" styleClass="loginField" stylesheets="@stylesheet.css">
+                     <HBox.margin>
+                        <Insets right="20.0" />
+                     </HBox.margin>
+                  </TextField>
+                  <TextField id="portField" fx:id="serverPortField" layoutX="282.0" layoutY="127.0" onKeyReleased="#loginPropertyChanged" prefHeight="53.0" prefWidth="120.0" promptText="8867" styleClass="loginField" stylesheets="@stylesheet.css" />
+               </children>
+               <VBox.margin>
+                  <Insets bottom="10.0" />
+               </VBox.margin>
+            </HBox>
+            <TextField id="usernameField" fx:id="usernameField" alignment="CENTER" layoutX="46.0" layoutY="186.0" onKeyReleased="#loginPropertyChanged" prefHeight="53.0" prefWidth="360.0" promptText="Username" styleClass="loginField" stylesheets="@stylesheet.css">
+               <VBox.margin>
+                  <Insets bottom="10.0" />
+               </VBox.margin>
+            </TextField>
+            <PasswordField id="passwordField" fx:id="passwordField" alignment="CENTER" layoutX="46.0" layoutY="245.0" onKeyReleased="#loginPropertyChanged" prefHeight="53.0" prefWidth="360.0" promptText="Password" styleClass="loginField" stylesheets="@stylesheet.css">
+               <VBox.margin>
+                  <Insets bottom="20.0" />
+               </VBox.margin>
+            </PasswordField>
+            <AnchorPane>
+               <children>
+                  <ImageView fx:id="loadingOverlay" fitHeight="41.0" fitWidth="47.0" layoutX="112.0" layoutY="6.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                     <image>
+                        <Image url="@loading.gif" />
+                     </image>
+                  </ImageView>
+                  <HBox alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <Button fx:id="loginButton" contentDisplay="CENTER" disable="true" mnemonicParsing="false" onAction="#login" prefHeight="53.0" prefWidth="157.0" stylesheets="@stylesheet.css" text="Login" />
+                     </children>
+                  </HBox>
+               </children>
+            </AnchorPane>
+         </children>
+      </VBox>
+   </children>
+</Pane>

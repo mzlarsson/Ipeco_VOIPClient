@@ -54,7 +54,7 @@ public class ServerHandler {
 	public static void connect(String ip, int port, String username, String password, ConnectionListener listener){
 		Socket tlsSocket = getTLSSocket(ip, port);
 		if(tlsSocket == null){
-			listener.onConnectionFailure("Error starting TLS");
+			listener.onConnectionFailure("Could not establish a connection. Check IP and port.");
 			return;
 		}else{
 			try {
@@ -77,7 +77,7 @@ public class ServerHandler {
 				public void authenticationFailed(String msg) {
 					//Close all half-open streams
 					authenticator.terminate();
-					listener.onConnectionFailure("Authentification failed.");
+					listener.onConnectionFailure(msg);
 				}
 				
 				@Override
@@ -87,7 +87,7 @@ public class ServerHandler {
 				}
 			});
 		} catch (IOException e) {
-			listener.onConnectionFailure("Could not connect to server");
+			listener.onConnectionFailure("Could not connect to server: Unknown error.");
 			return;
 		}
 	}

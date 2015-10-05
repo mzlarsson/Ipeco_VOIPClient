@@ -41,12 +41,12 @@ public class TCPHandler {
 		
 		Runnable reader = () -> {
 			Thread.currentThread().setName("TCPHandler: Read");
-			String json = null;
+			String indata = null;
 			while(running){
 				try {
-					json = in.readLine();
-					if(handler != null){
-						handler.commandReceived(json);
+					indata = in.readLine();
+					if(indata != null && !indata.equals("ping") && handler != null){
+						handler.commandReceived(indata);
 					}
 				} catch(SocketException e){
 					if(handler != null){

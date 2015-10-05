@@ -7,9 +7,11 @@ import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import se.ipeco.fleetspeak.management.connection.ConnectionListener;
 import se.ipeco.fleetspeak.management.connection.ServerHandler;
@@ -29,13 +31,15 @@ public class LoginController implements ConnectionListener{
 	private Button loginButton;
 	@FXML
 	private ImageView loadingOverlay;
+	@FXML
+	private VBox contentBox;
 	
 	public void initialize(){
 		serverIPField.focusedProperty().addListener((ObservableValue<? extends Boolean> value, Boolean oldProp, Boolean newProp) -> {
 			if(!oldProp && newProp){
 				if(serverIPField.getText().length()==0){
-//					serverIPField.setText(serverIPField.getPromptText());
-					serverIPField.setText("localhost");
+					serverIPField.setText(serverIPField.getPromptText());
+//					serverIPField.setText("localhost");
 			    	loginPropertyChanged();
 				}
 				serverIPField.selectAll();
@@ -92,13 +96,27 @@ public class LoginController implements ConnectionListener{
 	}
 	
 	private void showLoading(boolean show){
-		System.out.println((show?"Showing":"Hiding")+" loading icon");
 		loadingOverlay.setVisible(show);
 		loginButton.setDisable(show);
 		serverIPField.setDisable(show);
 		serverPortField.setDisable(show);
 		usernameField.setDisable(show);
 		passwordField.setDisable(show);
+	}
+	
+	private void showError(String msg){
+		Platform.runLater(() -> {
+			//Reuse previous error msg?
+			if(contentBox.getChildren().size()>0 && contentBox.getChildren().get(0).getStyleClass().contains("errorMsg")){
+				((Label)contentBox.getChildren().get(0)).setText(msg);
+			}else{
+				Label label = new Label(msg);
+				label.getStyleClass().add("errorMsg");
+				label.setWrapText(true);
+				label.setMaxWidth(contentBox.getWidth());
+				contentBox.getChildren().add(0, label);
+			}
+		});
 	}
 
 	@Override
@@ -114,7 +132,7 @@ public class LoginController implements ConnectionListener{
 
 	@Override
 	public void onConnectionFailure(String msg) {
-		System.out.println("Failure: "+msg);
+		showError(msg);
 		showLoading(false);
 	}
 	
