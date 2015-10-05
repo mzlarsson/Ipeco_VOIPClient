@@ -17,7 +17,7 @@ import se.ipeco.fleetspeak.management.core.Room;
 import se.ipeco.fleetspeak.management.core.User;
 import se.ipeco.fleetspeak.management.gui.FXUtil;
 import se.ipeco.fleetspeak.management.gui.FXUtil.Function;
-import se.ipeco.fleetspeak.management.gui.IconLoader;
+import se.ipeco.fleetspeak.management.gui.ImageLoader;
 import se.ipeco.fleetspeak.management.gui.MainController;
 import se.ipeco.fleetspeak.management.gui.RoomDisplayController;
 import se.ipeco.fleetspeak.management.gui.custom.UserPane.LoginStatus;
@@ -97,7 +97,7 @@ public class RoomPane extends AnchorPane{
 	public void toggleExpand(){
 		if(controlsEnabled){
 			boolean show = !clientsHiddenProperty.get();
-			expandIcon.setImage(IconLoader.loadImage(show?"collapse_32x32.png":"expand_32x32.png"));
+			expandIcon.setImage(ImageLoader.loadImage(show?"collapse_32x32.png":"expand_32x32.png"));
 			userContainer.setManaged(show);
 			userContainer.setVisible(show);
 			clientsHiddenProperty.set(show);

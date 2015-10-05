@@ -5,14 +5,14 @@ import java.util.HashMap;
 
 import javafx.scene.image.Image;
 
-public class IconLoader {
+public class ImageLoader {
 
 	private static HashMap<String, Image> images = new HashMap<String, Image>();
 	
 	public static Image loadImage(String name){
 		Image im = images.get(name);
 		if(im == null){
-			InputStream in = IconLoader.class.getClassLoader().getResourceAsStream(name);
+			InputStream in = ImageLoader.class.getClassLoader().getResourceAsStream(name);
 			System.out.println(in);
 			if(in != null){
 				im = new Image(in);
