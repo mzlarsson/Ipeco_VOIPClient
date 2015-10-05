@@ -17,7 +17,7 @@
               <menus>
                 <Menu text="File">
                   <items>
-                    <MenuItem onAction="#close" text="Log out">
+                    <MenuItem onAction="#logout" text="Log out">
                            <accelerator>
                               <KeyCodeCombination alt="UP" code="W" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
                            </accelerator>
@@ -72,11 +72,11 @@
                         </ImageView>
                      </graphic>
                   </Button>
-                  <Button mnemonicParsing="false" onAction="#close" styleClass="toolbarButton">
+                  <Button mnemonicParsing="false" onAction="#logout" styleClass="toolbarButton">
                      <graphic>
                         <ImageView fitHeight="42.0" fitWidth="42.0" pickOnBounds="true" preserveRatio="true" styleClass="container">
                            <image>
-                              <Image url="@toolbaricon_disconnect.png" />
+                              <Image url="@toolbaricon_logout.png" />
                            </image>
                         </ImageView>
                      </graphic>

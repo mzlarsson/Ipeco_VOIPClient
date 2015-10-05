@@ -11,6 +11,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.Stage;
 import se.ipeco.fleetspeak.management.connection.ServerHandler;
 import se.ipeco.fleetspeak.management.core.Building;
 
@@ -102,21 +103,9 @@ public class MainController{
 								"About Fleetspeak", ImageLoader.loadImage("fleetspeak.png"));
 	}
 	
-	public void close(){
-		//Save current content as memory if user does not connect.
-		Node currentContent = null;
-		if(contentRoot.getChildren().size()>0){
-			currentContent = contentRoot.getChildren().get(0);
-			
-			//Ignore if already disconnect screen
-			if(currentContent.getId() != null && currentContent.getId().equals("disconnectScreen")){
-				return;
-			}
-		}
-		ReallyDisconnectController.setBackPage(currentContent);
-		
-		//Ask if he/she really wants to connect
-		setContent(FXUtil.getNode("reallydisconnect"));
+	public void logout(){
+		disconnect();
+		FXUtil.switchLayout((Stage)root.getScene().getWindow(), "login");
 	}
 	
 	public void exit(){
@@ -131,12 +120,6 @@ public class MainController{
 				instance.contentRoot.getChildren().add(contentNode);
 			}
 		});
-	}
-	
-	public static void showDisconnectScreen(){
-		if(instance != null){
-			instance.close();
-		}
 	}
 	
 	public static void disconnect(){
