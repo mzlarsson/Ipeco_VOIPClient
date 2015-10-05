@@ -36,7 +36,7 @@ public class OpusDecoder implements Decoder{
 			nbr_predicted = 0;
 		}
 		byte[] outdata = new byte[Constants.DEFAULT_MIXING_ARRAY_SIZE];
-		Opus.decode(decoder, indata, 0, indata!=null?indata.length:0, outdata, 0, frameSize, FEC);
+		Opus.decode(decoder, indata, 0, indata.length, outdata, 0, frameSize, FEC);
 		return outdata;			
 	}
 	
