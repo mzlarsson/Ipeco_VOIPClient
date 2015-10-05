@@ -17,6 +17,8 @@ WITH (
 );
 ALTER TABLE users
   OWNER TO postgres;
+ALTER SEQUENCE users_id_seq
+  RESTART WITH 10000;
 
 CREATE TABLE rooms
 (
