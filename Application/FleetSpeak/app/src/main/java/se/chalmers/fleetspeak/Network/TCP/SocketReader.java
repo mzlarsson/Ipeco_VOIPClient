@@ -45,8 +45,10 @@ public class SocketReader implements Runnable{
                     readLine = bufferedReader.readLine();
                     Log.d("SocketReader", "" + readLine);
                     if(readLine != null) {
-                        Message msg = Message.obtain(null, MessageValues.COMMAND, readLine);
-                        messenger.send(msg);
+                        if (!readLine.equals("ping")) {
+                            Message msg = Message.obtain(null, MessageValues.COMMAND, readLine);
+                            messenger.send(msg);
+                        }
                     }else{
                         Log.e("SocketReader", "socket crashed " );
                         messenger.send(Message.obtain(null, MessageValues.DISCONNECTED));
