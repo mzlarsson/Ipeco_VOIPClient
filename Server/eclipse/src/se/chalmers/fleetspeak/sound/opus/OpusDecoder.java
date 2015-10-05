@@ -6,8 +6,10 @@ import se.chalmers.fleetspeak.sound.Decoder;
 
 public class OpusDecoder implements Decoder{
 
+	private static final int MAX_DROPPED_IN_A_ROW = 2;
+	
 	private long decoder;
-	private int frameSize;
+	private int frameSize, nbr_predicted;
 	
 	public OpusDecoder() throws OpusException{
 		this(Constants.DEFAULT_SAMPLE_RATE, Constants.DEFAULT_FRAME_SIZE);
@@ -22,9 +24,20 @@ public class OpusDecoder implements Decoder{
 	}
 	
 	public byte[] decode(byte[] indata){
+		int FEC = 0;
+		if (indata == null) {
+			if (nbr_predicted++ < MAX_DROPPED_IN_A_ROW) {
+				FEC = 1;
+				indata = new byte[0];
+			} else {
+				return null;
+			}
+		} else {
+			nbr_predicted = 0;
+		}
 		byte[] outdata = new byte[Constants.DEFAULT_MIXING_ARRAY_SIZE];
-		Opus.decode(decoder, indata, 0, indata.length, outdata, 0, frameSize, 0);
-		return outdata;
+		Opus.decode(decoder, indata, 0, indata!=null?indata.length:0, outdata, 0, frameSize, FEC);
+		return outdata;			
 	}
 	
 	public void terminate(){
