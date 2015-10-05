@@ -10,7 +10,7 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="430.0" prefWidth="450.0" styleClass="background" stylesheets="@stylesheet.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="se.ipeco.fleetspeak.management.gui.LoginController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="450.0" prefWidth="450.0" styleClass="background" stylesheets="@stylesheet.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="se.ipeco.fleetspeak.management.gui.LoginController">
    <children>
       <Label alignment="CENTER" layoutX="40.0" layoutY="33.0" prefHeight="53.0" prefWidth="372.0" styleClass="header" stylesheets="@stylesheet.css" text="Fleetspeak server">
          <font>
@@ -56,9 +56,21 @@
             </TextField>
             <PasswordField id="passwordField" fx:id="passwordField" alignment="CENTER" layoutX="46.0" layoutY="245.0" onKeyReleased="#loginPropertyChanged" prefHeight="53.0" prefWidth="360.0" promptText="Password" styleClass="loginField" stylesheets="@stylesheet.css">
                <VBox.margin>
-                  <Insets bottom="20.0" />
+                  <Insets bottom="10.0" />
                </VBox.margin>
             </PasswordField>
+            <VBox>
+               <children>
+                  <CheckBox fx:id="autoLoginCheckbox" mnemonicParsing="false" text="Auto login">
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
+                  </CheckBox>
+               </children>
+               <VBox.margin>
+                  <Insets bottom="20.0" />
+               </VBox.margin>
+            </VBox>
             <AnchorPane>
                <children>
                   <ImageView fx:id="loadingOverlay" fitHeight="41.0" fitWidth="47.0" layoutX="112.0" layoutY="6.0" pickOnBounds="true" preserveRatio="true" visible="false">

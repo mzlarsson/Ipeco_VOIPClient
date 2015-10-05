@@ -13,7 +13,6 @@ public class ImageLoader {
 		Image im = images.get(name);
 		if(im == null){
 			InputStream in = ImageLoader.class.getClassLoader().getResourceAsStream(name);
-			System.out.println(in);
 			if(in != null){
 				im = new Image(in);
 				if(im != null){

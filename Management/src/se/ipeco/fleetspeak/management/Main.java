@@ -1,12 +1,8 @@
 package se.ipeco.fleetspeak.management;
 
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import se.ipeco.fleetspeak.management.connection.ConnectionListener;
-import se.ipeco.fleetspeak.management.connection.ServerHandler;
-import se.ipeco.fleetspeak.management.core.Building;
 import se.ipeco.fleetspeak.management.gui.FXUtil;
 import se.ipeco.fleetspeak.management.gui.ImageLoader;
 import se.ipeco.fleetspeak.management.gui.MainController;
@@ -30,28 +26,7 @@ public class Main extends Application{
         	MainController.disconnect();
         });
         
-//        FXUtil.switchLayout(primaryStage, "login");
-        sneakIn(primaryStage);
-    }
-    
-	private void sneakIn(Stage stage){
-		ServerHandler.connect("46.239.103.195", 8867, "v", "", new ConnectionListener(){
-
-			@Override
-			public void onConnect() {
-				ServerHandler server = ServerHandler.getConnectedServer();
-				Building building = Building.getInstance(server.getUserID());
-				server.setCommandHandler(building);
-				Platform.runLater(() -> {
-					FXUtil.switchLayout(stage, "main");
-				});
-			}
-
-			@Override
-			public void onConnectionFailure(String msg) {
-				System.out.println("Failed to connect. Closing.");
-			}
-		});
+        FXUtil.switchLayout(primaryStage, "login");
     }
 
     public static Application getCurrentApplication(){
