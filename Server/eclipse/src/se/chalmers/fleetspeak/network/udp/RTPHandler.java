@@ -35,7 +35,7 @@ public class RTPHandler implements PacketReceiver, BufferedAudioStream{
 	private Executor executor;
 	private Logger logger;
 
-	private AudioType currAudioType = AudioType.OPUS_WB;
+	private AudioType currAudioType = AudioType.PCMU;
 	private UDPHandler udp;
 	private JitterBuffer jitter;
 	private Encoder encoder;

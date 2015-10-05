@@ -22,10 +22,13 @@ import se.chalmers.fleetspeak.core.CommandHandler;
 
 public class TCPHandler extends Thread{
 
+	private static final int TIMEOUT_TIME = 15000;
+	
 	private Socket clientSocket;
 	private PrintWriter printWriter;
 	private BufferedReader bufferedReader;
 	private boolean isRunning = false;
+	private long lastContact;
 	private CommandHandler ch;
 	private Logger logger;
 
@@ -59,10 +62,27 @@ public class TCPHandler extends Thread{
 		isRunning = true;
 		String read = null;
 		try {
+			clientSocket.setSoTimeout(TIMEOUT_TIME); // Keep-alive messages is initiated if more than 15 seconds pass without contact.
 			while (isRunning && bufferedReader != null) {
 				logger.log(Level.FINER,"trying to read");
 
-				read = bufferedReader.readLine();
+				try {
+					read = bufferedReader.readLine();
+				} catch(SocketTimeoutException e){
+					long timeDiff = System.currentTimeMillis()-lastContact;
+					if (timeDiff > 2*TIMEOUT_TIME) {
+						throw e;
+					} else if (timeDiff > TIMEOUT_TIME) {
+						new Thread() {
+							public void run() {
+								try {
+									sendCommand("ping"); // Sending ping in a new thread since it might block if something fails.
+								} catch (IOException e) {}
+							}
+						}.start();
+					}
+					continue;
+				}
 				if(read != null){
 					receivedCommand(read);
 				}else{
@@ -91,19 +111,21 @@ public class TCPHandler extends Thread{
 				printWriter.close();
 				clientSocket.close();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.log(Level.SEVERE, e.getMessage());
 			}
 
 		}
 	}
 
 	private void receivedCommand(String command) {
-		if (ch != null) {
-			logger.log(Level.FINE,  command);
-			ch.handleCommand(command);
-		} else {
-			logger.log(Level.SEVERE, "Received a Command without a set CommandHandler");
+		lastContact = System.currentTimeMillis();
+		if (!command.equals("pong")) { // TODO Ignores pong responses but there might not be a need for the client to respond at all, the server should fail to send the ping message if not reachable.
+			if (ch != null) {
+				logger.log(Level.FINE,  command);
+				ch.handleCommand(command);
+			} else {
+				logger.log(Level.SEVERE, "Received a Command without a set CommandHandler");
+			}
 		}
 	}
 
@@ -117,6 +139,8 @@ public class TCPHandler extends Thread{
 		printWriter.println(command);
 		if(printWriter.checkError()){
 			throw new IOException("PrinterWriter got an error");
+		} else {
+			lastContact = System.currentTimeMillis();
 		}
 	}
 
@@ -135,12 +159,12 @@ public class TCPHandler extends Thread{
 	public void setCommandHandler(CommandHandler ch) {
 		this.ch = ch;
 	}
+	
 	/**
 	 * Stops the TCPHandler
 	 * @return If the clientSocket was successfully closed returns true, else false.
 	 */
 	public boolean terminate() {
-		System.out.println("Terminated");
 		isRunning = false;
 		try {
 			if (clientSocket != null) {
@@ -151,5 +175,4 @@ public class TCPHandler extends Thread{
 			return false;
 		}
 	}
-
 }
