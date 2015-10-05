@@ -34,10 +34,15 @@ public class OpusDecoder implements DecoderInterface {
     }
 
     public byte[] decode(byte[] opusEncoded, int offset){
+        int FEC = 0;
+        if (opusEncoded == null) {
+            opusEncoded = new byte[0];
+            FEC = 1;
+        }
         byte[] pcmDecoded = new byte[s.getPCMSize()];
         int frameSize = s.getFrameSize();
-        int read = OpusDecoderWrapper.decode(this.opusDecoder, opusEncoded, offset, opusEncoded.length,
-                pcmDecoded, 0,frameSize , 0);
+        int read = OpusDecoderWrapper.decode(this.opusDecoder, opusEncoded, offset,
+                opusEncoded.length, pcmDecoded, 0,frameSize , FEC);
         if(read <= 0){
             Log.d("OPUS", "Failed to encode with :" + read);
         }

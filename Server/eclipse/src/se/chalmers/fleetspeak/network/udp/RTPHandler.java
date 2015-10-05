@@ -164,10 +164,7 @@ public class RTPHandler implements PacketReceiver, BufferedAudioStream{
 	@Override
 	public byte[] read() {
 		RTPPacket p = jitter.read();
-		return p!=null ? decoder.decode(p.getPayload()) : null;
-		//XXX Opus decoding supports null packets which would make it try to predict one,
-		//XXX however this would mean we are mixing additional extra data when the client
-		//XXX is not sending any. Can write this manually in the java part of the decoder.
+		return decoder.decode(p!=null?p.getPayload():null);
 	}
 
 	Runnable sender = () ->{
