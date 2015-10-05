@@ -50,6 +50,7 @@ public class FXUtil {
 		stage.getIcons().add(icon);
 		stage.initModality(Modality.WINDOW_MODAL);
 		stage.initOwner(parentWindow);
+		stage.setResizable(false);
 		stage.show();
 	}
 	
