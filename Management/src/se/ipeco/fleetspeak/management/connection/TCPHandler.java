@@ -7,14 +7,14 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Logger;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import com.sun.istack.internal.logging.Logger;
 
 public class TCPHandler {
 	
@@ -32,11 +32,12 @@ public class TCPHandler {
 	private CommandHandler handler;
 	
 	protected TCPHandler(Socket socket) throws IOException{
-		this.logger = Logger.getLogger(this.getClass());
+		this.logger = Logger.getLogger("Debug");
 		
 		this.socket = socket;
 		this.out = new PrintWriter(socket.getOutputStream());
 		this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+		socket.setSoTimeout(10000);
 		
 		
 		Runnable reader = () -> {
@@ -44,12 +45,12 @@ public class TCPHandler {
 			String indata = null;
 			while(running){
 				try {
-					indata = in.readLine();
+					indata = in.readLine();					
 					if(indata != null && !indata.equals("ping") && handler != null){
 						handler.commandReceived(indata);
 					}
 				} catch(SocketException e){
-					if(handler != null){
+					if(handler != null && running){
 						try {
 							JSONObject obj = new JSONObject();
 							obj.put("command", "lostconnection");
@@ -58,6 +59,8 @@ public class TCPHandler {
 							System.out.println("Could not notify connection lost");
 						}
 					}
+				} catch(SocketTimeoutException ste){
+					logger.info("Got no indata in 10sec. Keeping hope up though...");
 				} catch(IOException ioe){
 					logger.warning("IO Exception while reading object from TCP");
 				}
@@ -78,7 +81,7 @@ public class TCPHandler {
 	
 	public void send(String json){
 		if(out != null){
-			System.out.println("Sending "+json);
+			logger.info("Sending "+json);
 			out.println(json);
 			out.flush();
 		}

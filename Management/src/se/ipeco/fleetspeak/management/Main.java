@@ -22,7 +22,6 @@ public class Main extends Application{
         primaryStage.setTitle("Fleetspeak server");
         primaryStage.getIcons().add(ImageLoader.loadImage("fleetspeak.png"));
         primaryStage.setOnCloseRequest((WindowEvent event) -> {
-        	System.out.println("Wants to close");
         	MainController.disconnect();
         });
         

@@ -8,11 +8,14 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.Random;
+import java.util.logging.Logger;
 
 import javax.swing.Timer;
 
 public class UDPHandler extends Thread{
 
+	private Logger logger = Logger.getLogger("Debug");
+	
 	//Stun status
 	private StunStatus stunStatus = StunStatus.PENDING;
 	private StunListener listener;
@@ -57,12 +60,12 @@ public class UDPHandler extends Thread{
 		socket = null;
 		packet = null;
 		try {
-			System.out.println("Creating udp socket");
+			logger.info("Creating udp socket");
 			socket = new DatagramSocket(localPort);
 			socket.connect(serverIP, serverPort);
 			packet = new DatagramPacket(new byte[172], 172, serverIP, serverPort);
 			
-			System.out.println("Connected. Initiated read (udp)");
+			logger.info("Connected. Initiated read (udp)");
 			final DatagramSocket currentSocket = socket;
 			Thread udpListener = new Thread(new Runnable(){
 				@Override
@@ -83,13 +86,13 @@ public class UDPHandler extends Thread{
 						timeoutTimer.start();
 						while(!currentSocket.isClosed() && stunStatus==StunStatus.PENDING){
 							currentSocket.receive(p);
-							System.out.println("Got packet: "+p);
+							logger.fine("Got packet: "+p);
 							if(p.getData().length>0 && p.getData()[0]==controlCode){
 								setStunStatus(StunStatus.DONE);
 							}
 						}
 					}catch(IOException ioe){
-						System.out.println("Error receiving UDP.");
+						logger.severe("Error receiving UDP.");
 					}
 				}
 			});
@@ -102,12 +105,12 @@ public class UDPHandler extends Thread{
 				try {
 					socket.send(packet);
 				} catch (IOException e) {
-					System.out.println("UDPHandler could not connect");
+					logger.severe("UDPHandler could not connect");
 					System.exit(1);
 				}
 			}
 		} catch (SocketException e) {
-			System.out.println("Could not create UDP socket: "+e.getMessage());
+			logger.severe("Could not create UDP socket: "+e.getMessage());
 			System.exit(1);
 		}
 	}

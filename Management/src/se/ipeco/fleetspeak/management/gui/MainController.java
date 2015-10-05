@@ -1,5 +1,7 @@
 package se.ipeco.fleetspeak.management.gui;
 
+import java.util.logging.Logger;
+
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -15,6 +17,7 @@ import se.ipeco.fleetspeak.management.core.Building;
 public class MainController{
 	
 	private static MainController instance;
+	private static Logger logger = Logger.getLogger("Debug");
 	
 	@FXML
 	private AnchorPane root;
@@ -30,8 +33,6 @@ public class MainController{
 	}
 	
 	public void initialize(){
-		System.out.println("In admin client controller.");
-		
 		//Init menubar
 		toggleFedora();
 		
@@ -139,7 +140,7 @@ public class MainController{
 	}
 	
 	public static void disconnect(){
-		System.out.println("Disconnecting.");
+		logger.info("Disconnecting.");
 		Building.terminate();
 		ServerHandler.disconnect();
 	}

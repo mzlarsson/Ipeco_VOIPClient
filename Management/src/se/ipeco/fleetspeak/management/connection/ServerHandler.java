@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketException;
 import java.security.KeyStore;
+import java.util.logging.Logger;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
@@ -17,6 +18,7 @@ import se.ipeco.fleetspeak.management.connection.Authenticator.AuthenticatorList
 public class ServerHandler {
 	
 	private static ServerHandler server;
+	private static Logger logger = Logger.getLogger("Debug");
 	
 	private TCPHandler tcp;
 	private UDPHandler udp;
@@ -58,18 +60,18 @@ public class ServerHandler {
 			return;
 		}else{
 			try {
-				tlsSocket.setSoTimeout(5);
+				tlsSocket.setSoTimeout(5000);
 			} catch (SocketException e) {
-				System.out.println("Could not set timeout time");
+				logger.warning("Could not set timeout time");
 			}
 		}
-		System.out.println("Got socket");
+		logger.info("Got socket");
 		
-		System.out.println("Initiating data tests");
+		logger.info("Initiating data tests");
 		try {
-			System.out.println("starting tcp");
+			logger.info("starting tcp");
 			final TCPHandler tcp = new TCPHandler(tlsSocket);
-			System.out.println("Initiating auth");
+			logger.info("Initiating auth");
 			Authenticator authenticator = new Authenticator(tcp, username, password);
 			authenticator.setListener(new AuthenticatorListener() {
 				
@@ -97,7 +99,7 @@ public class ServerHandler {
 			try {
 				server.sendCommand(new JSONObject().put("command", "disconnect").toString());
 			} catch (JSONException e) {
-				System.out.println("Could not send disconnect: [JSONException] "+e.getMessage());
+				logger.severe("Could not send disconnect: [JSONException] "+e.getMessage());
 			}
 			server.terminate();
 			server = null;
@@ -115,7 +117,7 @@ public class ServerHandler {
 			
 			return ssl.getSocketFactory().createSocket(host, port);
 		}catch(Exception e){
-			System.out.println("Got an exception while creating TLS socket. ");
+			logger.severe("Got an exception while creating TLS socket. ");
 			return null;
 		}
 	}
