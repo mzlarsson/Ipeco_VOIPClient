@@ -69,7 +69,9 @@ class TCPBot extends Thread{
 			while (isRunning && in != null) {
 				try {
 					input = in.readLine();
-					processCommand(input);
+					if(!input.equals("ping")){
+						processCommand(input);
+					}
 				} catch (JSONException e) {
 					System.out.println("Got JSONException: "+e.getMessage());
 					System.out.println("\tJSON: "+input);
