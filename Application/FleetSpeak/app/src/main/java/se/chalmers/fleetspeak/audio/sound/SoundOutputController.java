@@ -41,26 +41,8 @@ public class SoundOutputController implements Runnable {
         if( audioTrack.getState() == AudioTrack.STATE_UNINITIALIZED) {
             throw new ExceptionInInitializerError("AudioTrack couldn't initialize");
         }
-        executor = Executors.newFixedThreadPool(2);
+        executor = Executors.newSingleThreadExecutor();
         executor.execute(this);
-       /* executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                soundIsPlaying = true;
-                while(soundIsPlaying) {
-                    try {
-                    byte[] bytes = audioOutputProcessor.readBuffer();
-                    synchronized (byteBuffer) {
-                        if(bytes != null && byteBuffer.remaining() > bytes.length){
-                            byteBuffer.put(bytes);
-                        }
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                }
-            }
-        });*/
     }
 
     public synchronized void destroy(){
@@ -94,6 +76,7 @@ public class SoundOutputController implements Runnable {
             }
 
         }
+        Log.i(Thread.currentThread().getName(),"Closing thread");
     }
 
 

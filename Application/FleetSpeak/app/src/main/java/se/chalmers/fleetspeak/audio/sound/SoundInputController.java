@@ -66,7 +66,6 @@ public class SoundInputController implements Runnable {
         }
         if(inputBuffer!= null){
             inputBuffer.clear();
-            inputBuffer = null;
         }
     }
 
@@ -87,6 +86,7 @@ public class SoundInputController implements Runnable {
 
 
         }
+        Log.i(Thread.currentThread().getName(),"Closing thread");
     }
 
 

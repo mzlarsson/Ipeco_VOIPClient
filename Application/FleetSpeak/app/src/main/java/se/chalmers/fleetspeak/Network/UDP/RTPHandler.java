@@ -61,6 +61,7 @@ public class RTPHandler implements Runnable, PacketReceiver, BufferedAudioStream
                 e.printStackTrace();
             }
         }
+        Log.i(Thread.currentThread().getName(),"Closing thread");
     }
 
     private long getNextTimestamp() {
@@ -75,7 +76,6 @@ public class RTPHandler implements Runnable, PacketReceiver, BufferedAudioStream
 
     public void terminate() {
         isRunning = false;
-        buffer = null;
         if(udpConnector != null)
             udpConnector.terminate();
         if(audioInputProcessor != null)

@@ -51,7 +51,7 @@ public class AudioOutputProcessor implements Runnable {
                 e.printStackTrace();
             }
         }
-
+        Log.i(Thread.currentThread().getName(),"Closing thread");
     }
 
 

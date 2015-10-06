@@ -72,7 +72,7 @@ public class AudioInputProcessor implements Runnable {
 
 
         }
-
+        Log.i(Thread.currentThread().getName(),"Closing thread");
     }
 
     public void terminate() {
