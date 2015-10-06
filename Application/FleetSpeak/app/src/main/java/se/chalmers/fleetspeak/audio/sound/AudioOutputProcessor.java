@@ -26,7 +26,7 @@ public class AudioOutputProcessor implements Runnable {
 
     public AudioOutputProcessor(RTPHandler rtpHandler) {
         this.rtpHandler = rtpHandler;
-        outputBuffer = new LinkedBlockingQueue(10);//FIXME Constants yada-yada
+        outputBuffer = new LinkedBlockingQueue(1);//FIXME Constants yada-yada
         opusDecoder = new OpusDecoder();
         executor = Executors.newSingleThreadExecutor();
         executor.execute(this);
@@ -46,15 +46,10 @@ public class AudioOutputProcessor implements Runnable {
         while (isProcessing) {
             encoded = outputStream.read();
             try {
-                if(encoded != null) {
-                    outputBuffer.put(opusDecoder.decode(encoded,0));
-                }else{
-                    Thread.sleep(19);
-                }
-            } catch (InterruptedException e) {
+                outputBuffer.put(opusDecoder.decode(encoded, 0));
+            } catch (InterruptedException e){
                 e.printStackTrace();
             }
-
         }
 
     }

@@ -3,32 +3,31 @@ package se.ipeco.fleetspeak.management.core;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import se.ipeco.fleetspeak.management.connection.CommandHandler;
 
-import com.sun.istack.internal.logging.Logger;
-
 public class Building implements CommandHandler{
 	
 	private static Building building;
 	
-	private Logger logger = Logger.getLogger(this.getClass());
+	private Logger logger = Logger.getLogger("Debug");
 	
 	private HashMap<Integer, Room> rooms;
 	private List<BuildingChangeListener> listeners;
 	
 	private Building(int id){
-		System.out.println("Starting Building for [ID "+id+"]");
+		logger.info("Starting Building for [ID "+id+"]");
 		rooms = new HashMap<Integer, Room>();
 		listeners = new ArrayList<BuildingChangeListener>();
 	}
 
 	@Override
 	public void commandReceived(String json){
-		System.out.println("Building got command: "+json);
+		logger.info("Building got command: "+json);
 		if(json == null){
 			logger.warning("Got empty command, ignored.");
 			return;
@@ -46,7 +45,7 @@ public class Building implements CommandHandler{
 				case "lostconnection":	lostConnection();break;
 			}
 		} catch (JSONException e) {
-			System.out.println("Caught json error: [JSONException] "+e.getMessage());
+			logger.warning("Caught json error: [JSONException] "+e.getMessage());
 		}
 	}
 	
@@ -101,7 +100,7 @@ public class Building implements CommandHandler{
 
 	private void removeUser(int userID, int currentRoomID) {
 		Room r = getRoom(currentRoomID);
-		System.out.println("removing user");
+		logger.info("Removing user");
 		if(r != null){
 			r.removeUser(userID);
 		}
@@ -121,13 +120,6 @@ public class Building implements CommandHandler{
 	private void lostConnection(){
 		for(BuildingChangeListener listener : listeners){
 			listener.lostConnection();
-		}
-	}
-	
-	public void printState(){
-		System.out.println("Building containing "+rooms.size()+" rooms");
-		for(Room room : rooms.values()){
-			room.printState();
 		}
 	}
 	

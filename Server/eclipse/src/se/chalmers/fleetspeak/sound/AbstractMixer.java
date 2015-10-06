@@ -20,6 +20,7 @@ public abstract class AbstractMixer implements Mixer{
 	private List<BlockingQueue<byte[]>> outStreams;
 	
 	private volatile boolean running;
+	private volatile boolean fetchingData;
 	private long nextMixTime;
 	private int mixingInterval;
 	
@@ -46,8 +47,11 @@ public abstract class AbstractMixer implements Mixer{
 			byte[][] data = getMixed();
 			for(int i = 0; i<data.length; i++){
 				try {
-					if(data[i]!=null){
-						outStreams.get(i).put(data[i]);
+					if(data[i]!=null && outStreams.size()>i){
+						BlockingQueue<byte[]> b = outStreams.get(i);
+						if(b != null){
+							b.put(data[i]);
+						}
 					}
 				} catch (InterruptedException e) {
 					e.printStackTrace();
@@ -89,6 +93,14 @@ public abstract class AbstractMixer implements Mixer{
 	@Override
 	public void removeStream(BufferedAudioStream stream) {
 		if(stream != null){
+			//Do not remove while fetching data
+			while(fetchingData){
+				try {
+					Thread.sleep(1);
+				} catch (InterruptedException e) {}
+			}
+			
+			//Remove
 			int index = streams.indexOf(stream);
 			if(index>=0){
 				streams.remove(stream);
@@ -103,10 +115,15 @@ public abstract class AbstractMixer implements Mixer{
 	 */
 	protected byte[][] getData(){
 		//Save data from streams
+		fetchingData = true;
 		byte[][] data = new byte[streams.size()][];
 		for(int i = 0; i<streams.size(); i++){
-			data[i] = streams.get(i).read();
+			BufferedAudioStream b = streams.get(i);
+			if(b != null){
+				data[i] = streams.get(i).read();
+			}
 		}
+		fetchingData = false;
 		
 		return data;
 	}

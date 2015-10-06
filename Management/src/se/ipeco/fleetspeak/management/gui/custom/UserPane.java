@@ -16,7 +16,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import se.ipeco.fleetspeak.management.core.User;
-import se.ipeco.fleetspeak.management.gui.IconLoader;
+import se.ipeco.fleetspeak.management.gui.ImageLoader;
 
 public class UserPane extends AnchorPane{
 	
@@ -126,7 +126,7 @@ public class UserPane extends AnchorPane{
 		
 		private Image image;
 		private LoginStatus(String imageName){
-			this.image = IconLoader.loadImage(imageName);
+			this.image = ImageLoader.loadImage(imageName);
 		}
 		
 		public Image getImage(){

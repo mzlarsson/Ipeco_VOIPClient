@@ -22,7 +22,7 @@ import se.chalmers.fleetspeak.core.CommandHandler;
 
 public class TCPHandler extends Thread{
 
-	private static final int TIMEOUT_TIME = 15000;
+	private static final int TIMEOUT_TIME = 10000;
 	
 	private Socket clientSocket;
 	private PrintWriter printWriter;
@@ -70,7 +70,7 @@ public class TCPHandler extends Thread{
 					read = bufferedReader.readLine();
 				} catch(SocketTimeoutException e){
 					long timeDiff = System.currentTimeMillis()-lastContact;
-					if (timeDiff > 2*TIMEOUT_TIME) {
+					if (timeDiff > 3*TIMEOUT_TIME) {
 						throw e;
 					} else if (timeDiff > TIMEOUT_TIME) {
 						new Thread() {
