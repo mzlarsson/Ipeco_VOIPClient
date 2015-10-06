@@ -23,7 +23,7 @@ public class AudioInputProcessor implements Runnable {
     final String LOGTAG = "AudioInputProcessor";
 
     private final Executor executor;
-    boolean isProcessing;
+    private volatile boolean isProcessing;
     private BlockingQueue<byte[]> processBuffer;
 
     EncoderInterface opusEncoder;

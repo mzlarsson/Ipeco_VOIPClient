@@ -17,7 +17,7 @@ public class RTPHandler implements Runnable, PacketReceiver, BufferedAudioStream
     private int frameSizeMs = 20;
 
     private final Executor executor;
-    private boolean isRunning;
+    private volatile boolean isRunning;
 
     private short sequenceNumber;
     private long timestamp;
@@ -75,10 +75,13 @@ public class RTPHandler implements Runnable, PacketReceiver, BufferedAudioStream
 
     public void terminate() {
         isRunning = false;
+        buffer = null;
         if(udpConnector != null)
             udpConnector.terminate();
         if(audioInputProcessor != null)
             audioInputProcessor.terminate();
+        if(udpConnector != null)
+            udpConnector.terminate();
     }
 
     @Override

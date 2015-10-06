@@ -20,7 +20,7 @@ public class SoundOutputController implements Runnable {
 
 
 
-    private boolean soundIsPlaying;
+    private volatile boolean soundIsPlaying;
     private AudioOutputProcessor audioOutputProcessor;
     private ByteBuffer echoBuffer;
 
@@ -67,7 +67,6 @@ public class SoundOutputController implements Runnable {
         soundIsPlaying = false;
         if(audioTrack != null){
             audioTrack.flush();
-            audioTrack.stop();
             audioTrack.release();
         }
         if(audioOutputProcessor != null)
@@ -87,19 +86,7 @@ public class SoundOutputController implements Runnable {
         soundIsPlaying = true;
         Log.i("SOC", "sound is playing on " + Thread.currentThread().getName());
         while(soundIsPlaying){
-/*
-            synchronized (byteBuffer){
-                byteBuffer.flip();
-                byte[] audioArray = new byte[byteBuffer.remaining()];
-                byteBuffer.get(audioArray);
-                audioTrack.write(audioArray, 0,audioArray.length);
-                if(byteBuffer.hasRemaining()){
-                    byteBuffer.compact();
-                }else{
-                    byteBuffer.clear();
-                }
-            }
-*/
+
             try {
                 writeAudio(audioOutputProcessor.readBuffer(), 0);
             } catch (InterruptedException e) {

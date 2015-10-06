@@ -128,6 +128,11 @@ public class Model {
                     state = State.not_connected;
                     if(rtpHandler != null)
                         rtpHandler.terminate();
+                    rtpHandler = null;
+                    if(soundOutputController != null)
+                        soundOutputController.destroy();
+                    soundOutputController = null;
+                    System.gc();
                     break;
                 case MessageValues.CONNECTIONFAILED:
 

@@ -19,7 +19,7 @@ public class SoundInputController implements Runnable {
     final String LOGTAG = "SoundInputController";
     private AudioRecord audioRecord;
     private BlockingQueue<byte[]> inputBuffer;
-    private boolean isRecording;
+    private volatile boolean isRecording;
 
     private Executor executor;
 
@@ -63,6 +63,10 @@ public class SoundInputController implements Runnable {
         isRecording = false;
         if (audioRecord != null) {
             audioRecord.release();
+        }
+        if(inputBuffer!= null){
+            inputBuffer.clear();
+            inputBuffer = null;
         }
     }
 
