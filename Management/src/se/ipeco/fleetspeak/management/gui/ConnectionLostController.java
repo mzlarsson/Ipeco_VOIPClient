@@ -8,6 +8,7 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.stage.Stage;
 
 import javax.swing.Timer;
 
@@ -28,6 +29,7 @@ public class ConnectionLostController {
 				countdownTimer.stop();
 				Platform.runLater(() -> {
 					MainController.disconnect();
+					FXUtil.switchLayout((Stage)timeLeftLabel.getScene().getWindow(), "login");
 				});
 			}else{
 				Platform.runLater(() -> {
