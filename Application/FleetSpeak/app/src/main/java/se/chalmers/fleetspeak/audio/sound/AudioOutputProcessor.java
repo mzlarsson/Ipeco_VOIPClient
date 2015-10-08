@@ -17,16 +17,16 @@ import se.chalmers.fleetspeak.audio.codec.opus.collection.OpusDecoder;
 public class AudioOutputProcessor implements Runnable {
 
     private final Executor executor;
-    private DecoderInterface opusDecoder;
+    private OpusDecoder opusDecoder;
     private RTPHandler rtpHandler;
-    private boolean isProcessing;
+    private volatile boolean isProcessing;
     private LinkedBlockingQueue<byte[]> outputBuffer;
     private BufferedAudioStream outputStream;
 
 
     public AudioOutputProcessor(RTPHandler rtpHandler) {
         this.rtpHandler = rtpHandler;
-        outputBuffer = new LinkedBlockingQueue(10);//FIXME Constants yada-yada
+        outputBuffer = new LinkedBlockingQueue(1);//FIXME Constants yada-yada
         opusDecoder = new OpusDecoder();
         executor = Executors.newSingleThreadExecutor();
         executor.execute(this);
@@ -46,23 +46,33 @@ public class AudioOutputProcessor implements Runnable {
         while (isProcessing) {
             encoded = outputStream.read();
             try {
-                if(encoded != null) {
-                    outputBuffer.put(opusDecoder.decode(encoded,0));
-                }else{
-                    //TODO cant process nulls takes way to much proccessing power
-                    Thread.sleep(1);
-                }
-            } catch (InterruptedException e) {
+                outputBuffer.put(opusDecoder.decode(encoded, 0));
+            } catch (InterruptedException e){
                 e.printStackTrace();
             }
-
         }
-
+        Log.i(Thread.currentThread().getName(),"Closing thread");
     }
 
 
     public void terminate() {
         isProcessing = false;
+
+        if(outputBuffer != null) {
+            outputBuffer.clear();
+            outputBuffer = null;
+        }
+        if(rtpHandler != null) {
+            rtpHandler.terminate();
+            rtpHandler = null;
+        }
+
+        if(opusDecoder!=null) {
+            opusDecoder.destroy();
+            opusDecoder = null;
+        }
+
+
     }
 
 }

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<fx:root fx:id="root" style="-fx-border-color: #ddd; -fx-border-width: 0 0 1 0; -fx-border-style: solid;" styleClass="container" stylesheets="@stylesheet.css" type="AnchorPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <HBox alignment="CENTER" layoutY="15.0" onMouseClicked="#sendToMainScreen" styleClass="clickable" stylesheets="@stylesheet.css" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <Label id="roomNameLabel" fx:id="roomNameLabel" stylesheets="@stylesheet.css" text="Room name" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="15.0">
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+            </Label>
+         </children>
+         <padding>
+            <Insets bottom="6.0" top="15.0" />
+         </padding>
+      </HBox>
+      <ImageView fx:id="expandIcon" fitHeight="32.0" fitWidth="32.0" onMouseClicked="#toggleExpand" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="9.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="9.0">
+         <image>
+            <Image url="@collapse_32x32.png" />
+         </image>
+      </ImageView>
+      <VBox fx:id="userContainer" layoutY="50.0" styleClass="vbox" stylesheets="@stylesheet.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
+         <padding>
+            <Insets bottom="12.0" left="20.0" />
+         </padding>
+      </VBox>
+   </children>
+</fx:root>

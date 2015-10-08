@@ -49,7 +49,7 @@ public class OptimizedShortMixer extends SimpleMixer{
 			byte[][] mixed = new byte[members][maxDataLength];
 			int mixedData;
 			for(int i = 0; i<members; i++){																//For every member
-				if(data[i] == null){
+				if(data[i] == null || data[i].length!=maxDataLength){
 					//User is silent
 					mixed[i] = silentMix;
 				}else{

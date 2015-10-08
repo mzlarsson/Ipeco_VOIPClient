@@ -1,5 +1,7 @@
 package se.ipeco.fleetspeak.management.connection;
 
+import java.util.logging.Logger;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -7,6 +9,8 @@ import se.ipeco.fleetspeak.management.connection.UDPHandler.StunListener;
 import se.ipeco.fleetspeak.management.connection.UDPHandler.StunStatus;
 
 public class Authenticator implements CommandHandler, StunListener{
+	
+	private Logger logger = Logger.getLogger("Debug");
 	
 	//Data
 	private TCPHandler tcp;
@@ -40,9 +44,9 @@ public class Authenticator implements CommandHandler, StunListener{
 
 	@Override
 	public void commandReceived(String json) {
-		System.out.println("Got command "+json);
+		logger.info("Got command "+json);
 		if(json == null){
-			System.out.println("Ignoring empty command.");
+			logger.info("Ignoring empty command.");
 			return;
 		}
 		
@@ -63,15 +67,14 @@ public class Authenticator implements CommandHandler, StunListener{
 				case "authenticationresult":		setResult(!obj.getBoolean("result"), (obj.has("rejection")?obj.getString("rejection"):null));break;
 			}
 		}catch(JSONException e){
-			System.out.println("Got invalid command: [JSONException] "+e.getMessage());
-			System.out.println("\tFrom JSON: "+json);
+			logger.warning("Got invalid command: [JSONException] "+e.getMessage()+"\tfrom JSON: "+json);
 		}
 	}
 
 	private void setResult(boolean failed, String msg){
 		if(listener != null){
 			if(failed){
-				listener.authenticationFailed("Authentification failed. "+msg);
+				listener.authenticationFailed(msg);
 			}else{
 				listener.authenticationDone();
 			}

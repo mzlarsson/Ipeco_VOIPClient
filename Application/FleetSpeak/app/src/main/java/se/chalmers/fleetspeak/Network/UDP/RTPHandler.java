@@ -17,7 +17,7 @@ public class RTPHandler implements Runnable, PacketReceiver, BufferedAudioStream
     private int frameSizeMs = 20;
 
     private final Executor executor;
-    private boolean isRunning;
+    private volatile boolean isRunning;
 
     private short sequenceNumber;
     private long timestamp;
@@ -61,11 +61,12 @@ public class RTPHandler implements Runnable, PacketReceiver, BufferedAudioStream
                 e.printStackTrace();
             }
         }
+        Log.i(Thread.currentThread().getName(),"Closing thread");
     }
 
     private long getNextTimestamp() {
         long curr = System.currentTimeMillis();
-        if(Math.abs(curr-timestamp)>(5* frameSizeMs)) {
+        if(Math.abs(curr-timestamp)>(2*frameSizeMs)) {
             timestamp = curr;
         } else {
             timestamp += frameSizeMs;
@@ -79,6 +80,8 @@ public class RTPHandler implements Runnable, PacketReceiver, BufferedAudioStream
             udpConnector.terminate();
         if(audioInputProcessor != null)
             audioInputProcessor.terminate();
+        if(udpConnector != null)
+            udpConnector.terminate();
     }
 
     @Override

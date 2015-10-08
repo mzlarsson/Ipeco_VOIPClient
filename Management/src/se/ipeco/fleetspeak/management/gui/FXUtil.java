@@ -6,7 +6,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 public class FXUtil {
 	
@@ -39,6 +42,17 @@ public class FXUtil {
             e.printStackTrace();
         }
     }
+	
+	public static void showModalWindow(Window parentWindow, Parent rootNode, String title, Image icon){
+		Stage stage = new Stage();
+		stage.setScene(new Scene(rootNode));
+		stage.setTitle(title);
+		stage.getIcons().add(icon);
+		stage.initModality(Modality.WINDOW_MODAL);
+		stage.initOwner(parentWindow);
+		stage.setResizable(false);
+		stage.show();
+	}
 	
 	public static Node getNode(String name){
 		return getNode(name, null);

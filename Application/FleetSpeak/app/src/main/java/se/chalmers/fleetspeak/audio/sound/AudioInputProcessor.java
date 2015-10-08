@@ -23,7 +23,7 @@ public class AudioInputProcessor implements Runnable {
     final String LOGTAG = "AudioInputProcessor";
 
     private final Executor executor;
-    boolean isProcessing;
+    private volatile boolean isProcessing;
     private BlockingQueue<byte[]> processBuffer;
 
     EncoderInterface opusEncoder;
@@ -59,9 +59,10 @@ public class AudioInputProcessor implements Runnable {
                 echo = new byte[1];
                 sound = soundInputController.readBuffer();
                 if(sound !=null) {
-                    //byte[] encoded = opusEncoder.encode(sound,0);
                     byte[] encoded = audioProcessor.process(sound,0, echo,0);
-                    processBuffer.put(encoded);
+                    if(encoded != null) {
+                        processBuffer.put(encoded);
+                    }
                 }else{
                     Thread.sleep(1);
                 }
@@ -71,7 +72,7 @@ public class AudioInputProcessor implements Runnable {
 
 
         }
-
+        Log.i(Thread.currentThread().getName(),"Closing thread");
     }
 
     public void terminate() {

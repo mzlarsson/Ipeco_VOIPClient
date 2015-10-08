@@ -20,7 +20,7 @@ public class SoundOutputController implements Runnable {
 
 
 
-    private boolean soundIsPlaying;
+    private volatile boolean soundIsPlaying;
     private AudioOutputProcessor audioOutputProcessor;
     private ByteBuffer echoBuffer;
 
@@ -41,31 +41,14 @@ public class SoundOutputController implements Runnable {
         if( audioTrack.getState() == AudioTrack.STATE_UNINITIALIZED) {
             throw new ExceptionInInitializerError("AudioTrack couldn't initialize");
         }
-        executor = Executors.newFixedThreadPool(2);
+        executor = Executors.newSingleThreadExecutor();
         executor.execute(this);
-       /* executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                soundIsPlaying = true;
-                while(soundIsPlaying) {
-                    try {
-                    byte[] bytes = audioOutputProcessor.readBuffer();
-                    synchronized (byteBuffer) {
-                        if(bytes != null && byteBuffer.remaining() > bytes.length){
-                            byteBuffer.put(bytes);
-                        }
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                }
-            }
-        });*/
     }
 
     public synchronized void destroy(){
         soundIsPlaying = false;
         if(audioTrack != null){
+            audioTrack.flush();
             audioTrack.release();
         }
         if(audioOutputProcessor != null)
@@ -85,19 +68,7 @@ public class SoundOutputController implements Runnable {
         soundIsPlaying = true;
         Log.i("SOC", "sound is playing on " + Thread.currentThread().getName());
         while(soundIsPlaying){
-/*
-            synchronized (byteBuffer){
-                byteBuffer.flip();
-                byte[] audioArray = new byte[byteBuffer.remaining()];
-                byteBuffer.get(audioArray);
-                audioTrack.write(audioArray, 0,audioArray.length);
-                if(byteBuffer.hasRemaining()){
-                    byteBuffer.compact();
-                }else{
-                    byteBuffer.clear();
-                }
-            }
-*/
+
             try {
                 writeAudio(audioOutputProcessor.readBuffer(), 0);
             } catch (InterruptedException e) {
@@ -105,6 +76,7 @@ public class SoundOutputController implements Runnable {
             }
 
         }
+        Log.i(Thread.currentThread().getName(),"Closing thread");
     }
 
 

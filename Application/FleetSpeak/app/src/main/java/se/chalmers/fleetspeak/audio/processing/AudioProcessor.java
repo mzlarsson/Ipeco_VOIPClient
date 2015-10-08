@@ -23,14 +23,14 @@ public class AudioProcessor {
         speexEchoState = NativeAudioProcessor.createSpeexEchoState(s.getFrameSize(), s.getFrameSize()*10);
         speexProcessorState = NativeAudioProcessor.createSpeexProcessor(s.getFrameSize(), s.getSampleRate());
 
-        //NativeAudioProcessor.setup(opusEncoder,speexEchoState,speexProcessorState);
+        NativeAudioProcessor.setup(opusEncoder,speexEchoState,speexProcessorState);
 
     }
 
 
     public byte[] process(byte[] input, int inputOffset, byte[] play,int playOffset){
         byte[] processed = new byte[1000];
-        byte[] tmp = new byte[0];
+        byte[] tmp = null;
 
         int read = NativeAudioProcessor.processAll(
                 s.getFrameSize(),
@@ -40,7 +40,7 @@ public class AudioProcessor {
         );
 
         if( read <=0){
-            Log.d("AudioProcess", "Failed to encode with :" + read);
+            //Log.d("AudioProcess", "Failed to encode with :" + read);
         }else{
             tmp =  new byte[read];
             System.arraycopy(processed, 0, tmp, 0, read);
