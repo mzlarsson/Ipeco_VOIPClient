@@ -4,37 +4,62 @@
 ===============
 
 ##Purpose
-Android application for VoIP communication specifically targeting truck drivers.
-The application allows multiple people create or join rooms and talk to everyone in that room.
+Android application for VoIP communication designed for use in vehicles.
+The application allows multiple people to create or join rooms and talk to everyone in that room.
 Everything is to be designed with safety in mind following the NHTSA-guidelines to reduce driver distraction.
 
 ##Structure
-The application consists of two parts, the application running on an android device supporting API 14 or above and a JAVA-based server running in a desktop environment.
+The project consists of:
+  A JAVA-based server running in a desktop environment.
+  A PostgreSQL database.
+  The application running on an android device supporting API 10 or above.
+  A management GUI for desktop clients.
 
 **Server:**
 
-The server keeps track of all connected clients, what name they have and in which room they are in. With this it handles which clients should hear each other and mixes the audiostreams to reduce the bandwidth required to the client.
-The server can be run with a GUI or through the console and provides some useful interactions such as changing names on clients and move clients between rooms.
+The server handles all clients and connections. One of its major responsibilities is the mixing of sound to reduce bandwidth usage for the clients. Can be run on Windows and MacOS.
 
-**Client:**
+**Database:**
 
-The client is responsible for recording the audio, send it to the server, receiving audio from the server and playing it. Most of the other features need to go through the server before they take effect such as changing or creating new rooms.
+Handles all information about the users and used to verify which ones are authorized to connect.
+
+**AndroidClient:**
+
+The android client is responsible for recording the audio, send it to the server, receiving audio from the server and playing it. Most of the other features need to go through the server before they take effect such as changing or creating new rooms.
+
+**ManagementClient:**
+
+Work in progress.
 
 ##Getting started
 **Server:**
 
 1. The server is an eclipse project in the fleetspeak/Server folder.
-2. Make sure the wanted port is forwarded in the network with the server (Default is port 8867).
-3. Start the ServerGUI if you want a GUI, ServerConsole if not.
-4. The server is now running, write help for a list of commands.
+   (You can also build the project with an ant build to start it withoput eclipse)
+2. Make sure all used ports are forwarded in the network with the server (Default is port 8867 for tcp and 8868+ for udp).
+3. Start the ServerConsole class. Make sure to add the VM-argument -Djava.library.path=libs/native/[your OS, see below].
+    Windows 32bit: win32-x86
+    Windows 64bit: win32-x86-64
+    MacOS: darwin
+4. The server is now running, all events on the server is written to the log file \log\fleetspeak.log and can be easily read with a good log reader (we use Gamut Log Viewer).
+
+**Database:**
+
+1. Create the PostgreSQL database.
+2. Run the tables.sql script.
+3. Run the data.sql script.
 
 **Client:**
 
 1. This is a Android Studio project.
-2. Start startActivity on an Android device of your choice supporting API 14 or higher.
+2. Requires an Android device of your choice supporting API 10 or higher.
+3. Input a valid username.
 3. Make sure the IP is the same as the servers IP.
-4. Make sure the selected port is the same as the servers.
-5. Press connect.
+4. Press connect.
+
+**ManagementClient:**
+
+1. Run main class.
 
 ##Troubleshooting
 **Client can't get connection to the server:**
