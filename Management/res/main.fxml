@@ -33,7 +33,7 @@
                   <Menu text="Window">
                      <items>
                         <CheckMenuItem onAction="#toggleMenubar" selected="true" text="Menu bar" />
-                        <CheckMenuItem onAction="#toggleFedora" text="Fedora" />
+                        <CheckMenuItem disable="true" onAction="#toggleFedora" text="[Window]" />
                      </items>
                   </Menu>
                 <Menu text="Help">
@@ -59,6 +59,24 @@
                         <ImageView fitHeight="42.0" fitWidth="42.0" pickOnBounds="true" preserveRatio="true" styleClass="container">
                            <image>
                               <Image url="@toolbaricon_speakmode.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
+                  <Button layoutX="77.0" layoutY="10.0" mnemonicParsing="false" onAction="#gotoUserManagement" styleClass="toolbarButton">
+                     <graphic>
+                        <ImageView fitHeight="42.0" fitWidth="42.0" pickOnBounds="true" preserveRatio="true" styleClass="container">
+                           <image>
+                              <Image url="@toolbaricon_manage.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
+                  <Button layoutX="144.0" layoutY="10.0" mnemonicParsing="false" onAction="#gotoStatistics" styleClass="toolbarButton">
+                     <graphic>
+                        <ImageView fitHeight="42.0" fitWidth="42.0" pickOnBounds="true" preserveRatio="true" styleClass="container">
+                           <image>
+                              <Image url="@toolbaricon_statistics.png" />
                            </image>
                         </ImageView>
                      </graphic>

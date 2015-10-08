@@ -44,20 +44,20 @@ public class MainController{
 		gotoHome();
 	}
 	
-	public void addAdmin(int id, String name){
-		SideMenuController.getInstance().addAdmin(id, name);
-	}
-	
-	public void removeAdmin(int id){
-		SideMenuController.getInstance().removeAdmin(id);
-	}
-	
 	public void gotoHome(){
 		setContent(FXUtil.getNode("home"));
 	}
 	
 	public void gotoSpeakMode(){
-		setContent(null);
+		setContent(FXUtil.getNode("speakmode"));
+	}
+	
+	public void gotoUserManagement(){
+		setContent(FXUtil.getNode("usermanagement"));
+	}
+	
+	public void gotoStatistics(){
+		setContent(FXUtil.getNode("statistics"));
 	}
 	
 	public void gotoFedora(){
