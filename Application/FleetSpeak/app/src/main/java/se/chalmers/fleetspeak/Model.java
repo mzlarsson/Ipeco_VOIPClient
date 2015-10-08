@@ -79,7 +79,6 @@ public class Model {
         }else{
             Log.d("Model", "Not connected, cannot send disconnect");
         }
-
     }
     public void move(int roomid){
         if(state == State.authenticated &&
@@ -128,6 +127,10 @@ public class Model {
                     state = State.not_connected;
                     if(rtpHandler != null)
                         rtpHandler.terminate();
+                    rtpHandler = null;
+                    if(soundOutputController != null)
+                        soundOutputController.destroy();
+                    soundOutputController = null;
                     break;
                 case MessageValues.CONNECTIONFAILED:
 

@@ -17,9 +17,9 @@ import se.chalmers.fleetspeak.audio.codec.opus.collection.OpusDecoder;
 public class AudioOutputProcessor implements Runnable {
 
     private final Executor executor;
-    private DecoderInterface opusDecoder;
+    private OpusDecoder opusDecoder;
     private RTPHandler rtpHandler;
-    private boolean isProcessing;
+    private volatile boolean isProcessing;
     private LinkedBlockingQueue<byte[]> outputBuffer;
     private BufferedAudioStream outputStream;
 
@@ -51,12 +51,28 @@ public class AudioOutputProcessor implements Runnable {
                 e.printStackTrace();
             }
         }
-
+        Log.i(Thread.currentThread().getName(),"Closing thread");
     }
 
 
     public void terminate() {
         isProcessing = false;
+
+        if(outputBuffer != null) {
+            outputBuffer.clear();
+            outputBuffer = null;
+        }
+        if(rtpHandler != null) {
+            rtpHandler.terminate();
+            rtpHandler = null;
+        }
+
+        if(opusDecoder!=null) {
+            opusDecoder.destroy();
+            opusDecoder = null;
+        }
+
+
     }
 
 }

@@ -62,7 +62,7 @@ public class UDPConnector implements Runnable{
             if(receiver != null)
                 receiver.handlePacket(receivePacket.getData());
         }
-
+        Log.i(Thread.currentThread().getName(),"Closing thread");
     }
 
     public void sendPacket(byte[] data){

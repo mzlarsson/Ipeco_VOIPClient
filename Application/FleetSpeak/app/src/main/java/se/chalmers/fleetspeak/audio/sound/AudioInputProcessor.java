@@ -23,7 +23,7 @@ public class AudioInputProcessor implements Runnable {
     final String LOGTAG = "AudioInputProcessor";
 
     private final Executor executor;
-    boolean isProcessing;
+    private volatile boolean isProcessing;
     private BlockingQueue<byte[]> processBuffer;
 
     EncoderInterface opusEncoder;
@@ -72,7 +72,7 @@ public class AudioInputProcessor implements Runnable {
 
 
         }
-
+        Log.i(Thread.currentThread().getName(),"Closing thread");
     }
 
     public void terminate() {
