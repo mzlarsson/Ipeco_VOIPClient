@@ -67,19 +67,17 @@ Work in progress.
 If it's for testing purposes make sure you are on the same network with the clients and the server, for example a mobile hotspot on a phone.
 Otherwise make sure the port and IP on the client is the one used by the server, its local IP if on the same network, its external IP if on different networks (google "whatsmyip").
 
+**Client gets IllegalStateException from LocationHandler:**
+
+Turn of the GPS on the phone.
+
 **Client is wonky:**
 
 Exit the application and close it completely before restarting it.
 
 ##Unimplemented features
-- Push-to-talk button is only implemented in the GUI, it only toggles the image.
-- Muting other users is only implemented in the GUI, it only toggles the image.
-- Changing the mic volume is only implemented in the GUI, it's only a visual change.
+- The password field is not implemented yet, it currently hold the IP address for ease of use while testing.
 
 ##Known problems
-- Reconnecting in the client after connecting once does not work, exit and kill the app to reset it.
-- Error message upon killing the app due to a service leak.
-- The app cannot be started in "Car mode", it has to be started in "Standstill mode" and then changed (wheel based speed > 0).
-- More than two people in a conversation at the same time lowers the sound quality exponentionally (3 hearable, 4 static).
-- No packet-loss-handling makes the soundquality drop significantly on bad connections.
-- Using the android built-in back button can cause problems. Use the in-app back button for more consistent results.
+- The automatic switching to carmode while GPS is enabled only works on a few phones.
+- Everyone in the room must have the same sound encoding.
