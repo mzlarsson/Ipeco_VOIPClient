@@ -20,12 +20,13 @@ import java.util.logging.Logger;
 public class JitterBuffer{
 
 	private static final int DEFAULT_TIME_BETWEEN_SAMPLES = 20;
-	private static final int TIME_IGNORE_MULTIPIER = 3;
+	private static final int TIME_IGNORE_MULTIPIER = 2;
 	
 	private JitterBufferQueue buffer;
 	private short lastReadSeqNbr = -1;
 	private long lastReadtimestamp = -1;
 	private boolean ready, buildMode;
+	private PacketCounter pc;
 	private Logger logger;
 
 	private int bufferTime;
@@ -45,6 +46,7 @@ public class JitterBuffer{
 	public JitterBuffer(int bufferTime, int frameSizeMs) {
 		logger = Logger.getLogger("Debug");
 		buffer = new JitterBufferQueue();
+		pc = new PacketCounter(logger);
 		this.bufferTime = bufferTime;
 		this.frameSizeMs = frameSizeMs;
 	}
@@ -61,17 +63,14 @@ public class JitterBuffer{
 					ready = true;					
 				}
 				buildMode = false;
-				if (buffer.getBufferedTime()>(bufferTime*2)) {
-					logger.log(Level.FINEST, "(" + Thread.currentThread().getName() + ")Buffer is too long, reducing delay");
+				if (buffer.getBufferedTime()>(bufferTime*2)) { // Buffer is too long, reducing delay
 					while(buffer.getBufferedTime()>(bufferTime)) {
+						pc.neverReadPacket();
 						buffer.poll();
 					}
 				}
 			}
-		} else {
-			logger.log(Level.WARNING,"(" + Thread.currentThread().getName() + ")Dropped a packet arriving to late, "
-					+ "sequence number: " + packet.seqNumber);
-		}
+		} // else we don't do anything (drop the packet)
 	}
 
 	/**
@@ -86,25 +85,26 @@ public class JitterBuffer{
 				if (!isFullyBuffered()) {
 					buildMode = true;
 				}
+				pc.normalPacket();
 				p = buffer.poll();
 			} else {
 				RTPPacket tmp = buffer.peek();
 				if (tmp != null) {
 					if (tmp.seqNumber == ((short)(lastReadSeqNbr + 1))) {
 						if (tmp.timestamp - TIME_IGNORE_MULTIPIER*frameSizeMs <= lastReadtimestamp) { // x*timestamp to compensate for variations.
+							pc.normalPacket();
 							p = buffer.poll();
 						} else {
-							logger.log(Level.FINEST, "(" + Thread.currentThread().getName() + ")[Buildmode] Returned null to reader due to too big of a time difference between package "
-									+ lastReadSeqNbr + "-" + (lastReadSeqNbr+1) + " (" + (tmp.timestamp-lastReadtimestamp) + ")");
+							pc.silentPacket();
 							lastReadtimestamp += frameSizeMs;
 						}
 					} else {
-						logger.log(Level.FINEST, "(" + Thread.currentThread().getName() + ")[Buildmode] Returned null to reader due to unmatching sequence numbers, expected "
-								+ (lastReadSeqNbr+1) + " but next was " + (tmp.seqNumber));
+						pc.lostPacket();
 						lastReadSeqNbr += 1;
 						lastReadtimestamp += frameSizeMs;
 					}
 				} else {
+					pc.notReadyPacket();
 					ready = false;
 				}
 			}
@@ -113,7 +113,7 @@ public class JitterBuffer{
 				lastReadtimestamp = p.timestamp;				
 			}
 		} else {
-			logger.log(Level.FINEST, "(" + Thread.currentThread().getName() + ")[Not Ready] Returned null due to the jitterbuffer not being ready, last packet was: " + lastReadSeqNbr);
+			pc.notReadyPacket();
 		}
 		return p;
 	}
@@ -146,5 +146,73 @@ public class JitterBuffer{
 	
 	private boolean isFullyBuffered() {
 		return buffer.getBufferedTime() >= bufferTime;
+	}
+	
+	private static class PacketCounter {
+		
+		private enum PacketStatus {
+			NORMAL, SILENT, LOST, NOT_READY, NEVER_READ;
+			
+			private static int[] counters = {100, 0, 0, 0, 0};
+			
+			public void increase() {
+				counters[this.ordinal()]++;
+			}
+			public void decrease() {
+				counters[this.ordinal()]--;
+			}
+			
+			public static int getSilentPercentage() {
+				return counters[SILENT.ordinal()]+counters[LOST.ordinal()]+counters[NOT_READY.ordinal()]+counters[NEVER_READ.ordinal()];
+			}
+			
+			public static int getErrorPercentage() {
+				return counters[LOST.ordinal()]+counters[NOT_READY.ordinal()]+counters[NEVER_READ.ordinal()];
+			}
+		}
+		
+		private PacketStatus[] statusArr = new PacketStatus[100];
+		private int psPointer = -1;
+		private Logger logger;
+
+		public PacketCounter(Logger logger) {
+			this.logger = logger;
+		}
+		
+		private PacketStatus next() {
+			psPointer %= ++psPointer%statusArr.length;
+			return statusArr[psPointer];
+		}
+		
+		private synchronized void update(PacketStatus ps) {
+			PacketStatus next = next();
+			if (!next.equals(ps)) {
+				next.decrease();
+				ps.increase();
+			}
+			if (psPointer == 0 && PacketStatus.getSilentPercentage() != 0) {
+				logger.log(Level.FINEST, "(" + Thread.currentThread().getName() + ") Silent packages: " + PacketStatus.getSilentPercentage() + "%");
+			}
+		}
+		
+		public void normalPacket() {
+			update(PacketStatus.NORMAL);
+		}
+		
+		public void silentPacket() {
+			update(PacketStatus.SILENT);
+		}
+		
+		public void lostPacket() {
+			update(PacketStatus.LOST);
+		}
+		
+		public void notReadyPacket() {
+			update(PacketStatus.NOT_READY);
+		}
+		
+		public void neverReadPacket() {
+			update(PacketStatus.NEVER_READ);
+		}
 	}
 }
