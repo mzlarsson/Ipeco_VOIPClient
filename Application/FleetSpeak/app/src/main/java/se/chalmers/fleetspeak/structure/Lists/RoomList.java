@@ -1,24 +1,18 @@
-package se.chalmers.fleetspeak.fragments.NewStructure.Lists;
+package se.chalmers.fleetspeak.structure.lists;
 
-import android.app.Activity;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.RelativeLayout;
 
 import java.util.List;
 
 import se.chalmers.fleetspeak.R;
 import se.chalmers.fleetspeak.Room;
-import se.chalmers.fleetspeak.fragments.NewStructure.ConnectedProcess.ConnectedCommunicator;
+import se.chalmers.fleetspeak.structure.connected.ConnectedCommunicator;
 
 
 public class RoomList extends Fragment {

@@ -1,6 +1,5 @@
-package se.chalmers.fleetspeak.fragments.NewStructure.LoginProcess;
+package se.chalmers.fleetspeak.structure.login;
 
-import android.content.res.Configuration;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -17,8 +16,8 @@ import android.widget.TextView;
 
 import se.chalmers.fleetspeak.Network.TCP.SocketFactory;
 import se.chalmers.fleetspeak.R;
-import se.chalmers.fleetspeak.fragments.NewStructure.ConnectedProcess.ConnectionActivity;
-import se.chalmers.fleetspeak.fragments.NewStructure.location.LocationHandler;
+import se.chalmers.fleetspeak.structure.connected.ConnectionActivity;
+import se.chalmers.fleetspeak.structure.location.LocationHandler;
 import se.chalmers.fleetspeak.truck.TruckDataHandler;
 import se.chalmers.fleetspeak.truck.TruckStateListener;
 

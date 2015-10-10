@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.fragments.NewStructure.LoginProcess;
+package se.chalmers.fleetspeak.structure.login;
 
 /**
  * Created by David Gustafsson on 2015-07-21.

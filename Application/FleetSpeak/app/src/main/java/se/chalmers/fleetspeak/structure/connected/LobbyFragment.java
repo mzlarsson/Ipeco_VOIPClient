@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.fragments.NewStructure.ConnectedProcess;
+package se.chalmers.fleetspeak.structure.connected;
 
 
 import android.app.Activity;
@@ -20,7 +20,7 @@ import java.util.List;
 
 import se.chalmers.fleetspeak.R;
 import se.chalmers.fleetspeak.Room;
-import se.chalmers.fleetspeak.fragments.NewStructure.Lists.RoomList;
+import se.chalmers.fleetspeak.structure.lists.RoomList;
 
 /**
  * A simple {@link Fragment} subclass.

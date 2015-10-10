@@ -1,6 +1,5 @@
-package se.chalmers.fleetspeak.fragments.NewStructure.LoginProcess;
+package se.chalmers.fleetspeak.structure.login;
 
-import android.app.Fragment;
 import android.util.Log;
 
 /**

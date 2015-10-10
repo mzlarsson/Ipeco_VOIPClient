@@ -1,6 +1,4 @@
-package se.chalmers.fleetspeak.fragments.NewStructure.ConnectedProcess;
-
-import android.app.Fragment;
+package se.chalmers.fleetspeak.structure.connected;
 
 /**
  * Created by David Gustafsson on 2015-07-23.

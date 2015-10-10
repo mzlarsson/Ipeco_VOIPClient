@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.fragments.NewStructure.location;
+package se.chalmers.fleetspeak.structure.location;
 
 import android.app.Activity;
 import android.content.Context;

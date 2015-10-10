@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.fragments.NewStructure.DummyModel;
+package se.chalmers.fleetspeak.structure.dummy;
 
 import android.os.Handler;
 import android.util.Log;

@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.fragments.NewStructure.LoginProcess;
+package se.chalmers.fleetspeak.structure.login;
 
 
 import android.app.Activity;
@@ -16,8 +16,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
 
 import se.chalmers.fleetspeak.R;
 

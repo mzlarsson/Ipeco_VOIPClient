@@ -1,6 +1,5 @@
-    package se.chalmers.fleetspeak.fragments.NewStructure.ConnectedProcess;
+    package se.chalmers.fleetspeak.structure.connected;
 
-    import android.content.res.Configuration;
     import android.content.res.Resources;
     import android.support.v7.app.ActionBar;
     import android.content.Intent;
@@ -22,9 +21,9 @@
     import se.chalmers.fleetspeak.R;
     import se.chalmers.fleetspeak.Room;
     import se.chalmers.fleetspeak.User;
-    import se.chalmers.fleetspeak.fragments.NewStructure.EstablishConnection.BackFragment;
-    import se.chalmers.fleetspeak.fragments.NewStructure.LoginProcess.LoginActivity;
-    import se.chalmers.fleetspeak.fragments.NewStructure.location.LocationHandler;
+    import se.chalmers.fleetspeak.structure.establish.BackFragment;
+    import se.chalmers.fleetspeak.structure.login.LoginActivity;
+    import se.chalmers.fleetspeak.structure.location.LocationHandler;
     import se.chalmers.fleetspeak.truck.TruckDataHandler;
     import se.chalmers.fleetspeak.truck.TruckStateListener;
     import se.chalmers.fleetspeak.util.MessageValues;

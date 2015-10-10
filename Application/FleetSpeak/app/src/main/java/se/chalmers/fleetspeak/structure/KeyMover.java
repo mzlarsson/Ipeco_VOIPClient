@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.fragments.NewStructure;
+package se.chalmers.fleetspeak.structure;
 
 /**
  * Created by David Gustafsson on 2015-08-11.

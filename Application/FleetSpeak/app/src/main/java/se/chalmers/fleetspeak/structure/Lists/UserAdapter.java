@@ -1,6 +1,5 @@
-package se.chalmers.fleetspeak.fragments.NewStructure.Lists;
+package se.chalmers.fleetspeak.structure.lists;
 
-import android.app.ActionBar;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -15,7 +14,7 @@ import java.util.List;
 
 import se.chalmers.fleetspeak.R;
 import se.chalmers.fleetspeak.User;
-import se.chalmers.fleetspeak.fragments.NewStructure.ConnectedProcess.ConnectedCommunicator;
+import se.chalmers.fleetspeak.structure.connected.ConnectedCommunicator;
 
 /**
  * Created by David Gustafsson on 2015-08-01.

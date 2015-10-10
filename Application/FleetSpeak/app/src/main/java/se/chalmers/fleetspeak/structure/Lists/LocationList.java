@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.fragments.NewStructure.Lists;
+package se.chalmers.fleetspeak.structure.lists;
 
 
 import android.os.Bundle;

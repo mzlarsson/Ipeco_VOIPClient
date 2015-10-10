@@ -20,7 +20,7 @@
             android:enabled="true" />
 
         <activity
-            android:name=".fragments.NewStructure.LoginProcess.LoginActivity"
+            android:name=".structure.login.LoginActivity"
             android:label="@string/title_activity_login"
             android:noHistory="true"
             >
@@ -30,7 +30,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".fragments.NewStructure.ConnectedProcess.ConnectionActivity"
+            android:name=".structure.connected.ConnectionActivity"
             android:label="@string/title_activity_connection"
             android:noHistory="true"
             android:configChanges="keyboardHidden|orientation|screenSize"

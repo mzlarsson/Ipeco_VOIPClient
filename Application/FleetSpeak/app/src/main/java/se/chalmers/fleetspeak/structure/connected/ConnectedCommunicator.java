@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.fragments.NewStructure.ConnectedProcess;
+package se.chalmers.fleetspeak.structure.connected;
 
 import android.content.res.Resources;
 
