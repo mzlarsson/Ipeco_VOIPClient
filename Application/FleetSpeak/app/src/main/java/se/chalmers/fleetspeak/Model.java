@@ -196,7 +196,7 @@ public class Model {
                     } catch (JSONException e) {
                        Log.e("Model", "JSONException " + e.getMessage()); 
                     } catch (NullPointerException e){
-                        Log.e("Model", "Probably failed to parse JSON " + msg.obj);
+                        Log.e("Model", "The message object " + msg.obj);
                     }
                     
                 

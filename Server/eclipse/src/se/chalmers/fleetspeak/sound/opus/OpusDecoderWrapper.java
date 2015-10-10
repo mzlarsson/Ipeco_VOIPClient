@@ -1,28 +1,28 @@
 package se.chalmers.fleetspeak.sound.opus;
 
-import org.jitsi.impl.neomedia.codec.audio.opus.Opus;
+import se.chalmers.fleetspeak.jni.OpusDecoder;
 
 import se.chalmers.fleetspeak.sound.Decoder;
 
-public class OpusDecoder implements Decoder{
+public class OpusDecoderWrapper implements Decoder{
 
 	private static final int MAX_DROPPED_IN_A_ROW = 2;
-	
+
 	private long decoder;
 	private int frameSize, nbr_predicted;
-	
-	public OpusDecoder() throws OpusException{
+
+	public OpusDecoderWrapper() throws OpusException{
 		this(Constants.DEFAULT_SAMPLE_RATE, Constants.DEFAULT_FRAME_SIZE);
 	}
-	
-	public OpusDecoder(int sampleRate, int frameSize) throws OpusException{
-		decoder = Opus.decoder_create(sampleRate, 1);
+
+	public OpusDecoderWrapper(int sampleRate, int frameSize) throws OpusException{
+		decoder = OpusDecoder.create(sampleRate, 1);
 		this.frameSize = frameSize;
 		if(decoder == 0){
 			throw new OpusException("Could not initiate decoder");
 		}
 	}
-	
+
 	public byte[] decode(byte[] indata){
 		int FEC = 0;
 		if (indata == null) {
@@ -36,16 +36,13 @@ public class OpusDecoder implements Decoder{
 			nbr_predicted = 0;
 		}
 		byte[] outdata = new byte[Constants.DEFAULT_MIXING_ARRAY_SIZE];
-		Opus.decode(decoder, indata, 0, indata.length, outdata, 0, frameSize, FEC);
-		return outdata;			
+		OpusDecoder.decode(decoder, indata, 0, indata.length, outdata, 0, frameSize, FEC);
+		return outdata;
 	}
-	
+
 	public void terminate(){
-		Opus.decoder_destroy(decoder);
+		OpusDecoder.destroy(decoder);
 	}
-	
-	
-	static{
-		Opus.assertOpusIsFunctional();
-	}
+
+
 }

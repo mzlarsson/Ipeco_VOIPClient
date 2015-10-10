@@ -32,7 +32,7 @@ endif
 
 EXESUFFIX =
 LIBPREFIX = lib
-LIBSUFFIX = .so
+LIBSUFFIX = .libjni
 OBJSUFFIX = .o
 
 CC     = $(TOOLCHAIN_PREFIX)cc$(TOOLCHAIN_SUFFIX)
@@ -47,7 +47,7 @@ ldlibs-from-libs        = $(addprefix -l,$(1))
 
 WARNINGS = -Wall -W -Wstrict-prototypes -Wextra -Wcast-align -Wnested-externs -Wshadow
 CFLAGS  += -O2 -g $(WARNINGS) -DOPUS_BUILD
-CINCLUDES = include silk celt native_fleetspeak /usr/lib/jvm/java-8-oracle/include /usr/lib/jvm/java-8-oracle/include/darwin
+CINCLUDES = include silk celt ../src/native /Library/Java/JavaVirtualMachines/jdk1.8.0_31.jdk/Contents/Home/include /Library/Java/JavaVirtualMachines/jdk1.8.0_31.jdk/Contents/Home/include/darwin
 
 ifdef FIXED_POINT
 CFLAGS += -DFIXED_POINT=1 -DDISABLE_FLOAT_API

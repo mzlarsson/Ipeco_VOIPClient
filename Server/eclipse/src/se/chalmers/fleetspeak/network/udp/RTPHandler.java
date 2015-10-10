@@ -14,14 +14,14 @@ import se.chalmers.fleetspeak.sound.Decoder;
 import se.chalmers.fleetspeak.sound.Encoder;
 import se.chalmers.fleetspeak.sound.PCMUDecoder;
 import se.chalmers.fleetspeak.sound.PCMUEncoder;
-import se.chalmers.fleetspeak.sound.opus.OpusDecoder;
-import se.chalmers.fleetspeak.sound.opus.OpusEncoder;
+import se.chalmers.fleetspeak.sound.opus.OpusDecoderWrapper;
+import se.chalmers.fleetspeak.sound.opus.OpusEncoderWrapper;
 import se.chalmers.fleetspeak.sound.opus.OpusException;
 
 /**
  * This class holds a udp connection and uses it to send and receive
  * RTP traffic.
- * 
+ *
  * It treats packets according to their payload type as defined in
  * the enum AudioType.
  * The RTPHandler also keeps AudioType currently in use and encodes
@@ -40,7 +40,7 @@ public class RTPHandler implements PacketReceiver, BufferedAudioStream{
 	private JitterBuffer jitter;
 	private Encoder encoder;
 	private Decoder decoder;
-	
+
 	private short seqNumber = 0;
 
 	/**
@@ -87,12 +87,12 @@ public class RTPHandler implements PacketReceiver, BufferedAudioStream{
 //				byte[] b = read();
 //				if (b!=null) {
 //					System.out.println("We are sending stuff");
-//					sendPacket(b);			
+//					sendPacket(b);
 //				} else {
 //					System.out.println("We are NOT sending stuff");
 //				}
 			}
-		}	
+		}
 	}
 
 	/**
@@ -110,8 +110,8 @@ public class RTPHandler implements PacketReceiver, BufferedAudioStream{
 		case OPUS_WB:
 			try {
 				terminateEncoders();
-				encoder = new OpusEncoder(at.getSampleRate(), at.getFrameSize());
-				decoder = new OpusDecoder(at.getSampleRate(), at.getFrameSize());
+				encoder = new OpusEncoderWrapper(at.getSampleRate(), at.getFrameSize());
+				decoder = new OpusDecoderWrapper(at.getSampleRate(), at.getFrameSize());
 			} catch (OpusException e) {
 				logger.log(Level.SEVERE, "OpusException while creating a OpusEncoder/-Decoder "
 						+ "for: " + at + " in thread: " + Thread.currentThread().getName());
@@ -121,8 +121,8 @@ public class RTPHandler implements PacketReceiver, BufferedAudioStream{
 		case OPUS_NB:
 			try {
 				terminateEncoders();
-				encoder = new OpusEncoder(at.getSampleRate(), at.getFrameSize());
-				decoder = new OpusDecoder(at.getSampleRate(), at.getFrameSize());
+				encoder = new OpusEncoderWrapper(at.getSampleRate(), at.getFrameSize());
+				decoder = new OpusDecoderWrapper(at.getSampleRate(), at.getFrameSize());
 			} catch (OpusException e) {
 				logger.log(Level.SEVERE, "OpusException while creating a OpusEncoder/-Decoder "
 						+ "for: " + at + " in thread: " + Thread.currentThread().getName());
@@ -134,13 +134,13 @@ public class RTPHandler implements PacketReceiver, BufferedAudioStream{
 					+ " RTP payload-type: " + at + " is not supported");
 		}
 	}
-	
+
 	private void terminateEncoders() {
-		if (encoder != null) {	
+		if (encoder != null) {
 			encoder.terminate();
 		}
 		if (decoder != null) {
-			decoder.terminate();	
+			decoder.terminate();
 		}
 	}
 
@@ -151,7 +151,7 @@ public class RTPHandler implements PacketReceiver, BufferedAudioStream{
 		jitter.flush();
 		jitter.setFrameSizeMs(at.getTimeBetweenSamples());
 	}
-	
+
 	/**
 	 * Encodes the data to the correct format, puts it into an RTP packet and
 	 * sends it to the connected client.
@@ -175,14 +175,14 @@ public class RTPHandler implements PacketReceiver, BufferedAudioStream{
 			}catch(InterruptedException e){
 				e.printStackTrace();
 			}
-			
+
 			if(b.length>0){
 				sendPacket(b);
 			}
 		}
 
 	};
-	
+
 	public void terminate(){
 		udp.terminate();
 	}
