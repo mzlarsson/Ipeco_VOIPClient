@@ -176,11 +176,14 @@ public class JitterBuffer{
 		private Logger logger;
 
 		public PacketCounter(Logger logger) {
+			for (int i=0; i< statusArr.length; i++) {
+				statusArr[i] = PacketStatus.NORMAL;
+			}
 			this.logger = logger;
 		}
 		
 		private PacketStatus next() {
-			psPointer %= ++psPointer%statusArr.length;
+			psPointer = ++psPointer%statusArr.length;
 			return statusArr[psPointer];
 		}
 		
