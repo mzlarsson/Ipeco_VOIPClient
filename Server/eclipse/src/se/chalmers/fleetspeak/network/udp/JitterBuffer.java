@@ -1,5 +1,6 @@
 package se.chalmers.fleetspeak.network.udp;
 
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -156,10 +157,10 @@ public class JitterBuffer{
 			private static int[] counters = {100, 0, 0, 0, 0};
 			
 			public void increase() {
-				counters[this.ordinal()]++;
+				counters[this.ordinal()] = counters[this.ordinal()]+1;
 			}
 			public void decrease() {
-				counters[this.ordinal()]--;
+				counters[this.ordinal()] = counters[this.ordinal()]-1;
 			}
 			
 			public static int getSilentPercentage() {
@@ -168,6 +169,12 @@ public class JitterBuffer{
 			
 			public static int getErrorPercentage() {
 				return counters[LOST.ordinal()]+counters[NOT_READY.ordinal()]+counters[NEVER_READ.ordinal()];
+			}
+			
+			public static String countersToString() {
+				return "["+NORMAL+":"+counters[NORMAL.ordinal()]+" "+SILENT+":"+counters[SILENT.ordinal()]
+						+" "+LOST+":"+counters[LOST.ordinal()]+" "+NOT_READY+":"+counters[NOT_READY.ordinal()]
+						+" "+NEVER_READ+":"+counters[NEVER_READ.ordinal()];
 			}
 		}
 		
@@ -192,9 +199,11 @@ public class JitterBuffer{
 			if (!next.equals(ps)) {
 				next.decrease();
 				ps.increase();
+				statusArr[psPointer] = ps;
 			}
 			if (psPointer == 0 && PacketStatus.getSilentPercentage() != 0) {
-				logger.log(Level.FINEST, "(" + Thread.currentThread().getName() + ") Silent packages: " + PacketStatus.getSilentPercentage() + "%");
+				logger.log(Level.FINEST, "(" + Thread.currentThread().getName() + ") Silent packages: "
+						+ PacketStatus.getSilentPercentage() + "% " + PacketStatus.countersToString());
 			}
 		}
 		
