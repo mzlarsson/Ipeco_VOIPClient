@@ -46,8 +46,8 @@ ldflags-from-ldlibdirs  = $(addprefix -L,$(1))
 ldlibs-from-libs        = $(addprefix -l,$(1))
 
 WARNINGS = -Wall -W -Wstrict-prototypes -Wextra -Wcast-align -Wnested-externs -Wshadow
-CFLAGS  += -O2 -g $(WARNINGS) -DOPUS_BUILD
-CINCLUDES = include silk celt ../src/native /usr/lib/jvm/java-8-oracle/include /usr/lib/jvm/java-8-oracle/include/darwin
+CFLAGS  += -O2 -g $(WARNINGS) -DOPUS_BUILD 
+CINCLUDES = include silk celt ../src/native /usr/lib/jvm/java-8-oracle/include /usr/lib/jvm/java-8-oracle/include/linux
 
 ifdef FIXED_POINT
 CFLAGS += -DFIXED_POINT=1 -DDISABLE_FLOAT_API
@@ -66,11 +66,11 @@ CFLAGS  += $(call cppflags-from-includes,$(CINCLUDES))
 LDFLAGS += $(call ldflags-from-ldlibdirs,$(LDLIBDIRS))
 LDLIBS  += $(call ldlibs-from-libs,$(LIBS))
 
-COMPILE.c.cmdline   = $(CC) -c $(CFLAGS) -o $@ $<
+COMPILE.c.cmdline   = $(CC) -fPIC -c $(CFLAGS) -o $@ $<
 LINK.o              = $(CC) $(LDPREFLAGS) $(LDFLAGS)
 LINK.o.cmdline      = $(LINK.o) $^ $(LDLIBS) -o $@$(EXESUFFIX)
 
-ARCHIVE.cmdline     = $(AR) $(ARFLAGS) $@ $^ && $(RANLIB) $@
+ARCHIVE.cmdline     = ld -shared -soname $@.1 -o $@ $^ -lc
 
 %$(OBJSUFFIX):%.c
 	$(COMPILE.c.cmdline)
@@ -96,7 +96,7 @@ OPUSCOMPARE_SRCS_C = src/opus_compare.c
 OPUSCOMPARE_OBJS := $(patsubst %.c,%$(OBJSUFFIX),$(OPUSCOMPARE_SRCS_C))
 
 # Rules
-all: lib opus_demo opus_compare
+all: lib 
 
 lib: $(TARGET)
 

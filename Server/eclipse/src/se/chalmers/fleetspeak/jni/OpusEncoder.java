@@ -3,9 +3,8 @@ package se.chalmers.fleetspeak.jni;
 
 public class OpusEncoder{
     static{
-        System.loadLibrary("NativeAudio");
-    }
-
+	System.loadLibrary("NativeAudio");
+}
     /**
      *
      * @param channels Number of channels. This must be 1 or 2.

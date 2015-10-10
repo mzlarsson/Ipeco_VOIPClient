@@ -1,2 +1,2 @@
-﻿tables.sql
+tables.sql
 data.sql

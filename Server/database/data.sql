@@ -1,4 +1,4 @@
-﻿ /*
+ /*
 	Admins or important persons.
  */
 INSERT INTO users (id, username, alias, password)

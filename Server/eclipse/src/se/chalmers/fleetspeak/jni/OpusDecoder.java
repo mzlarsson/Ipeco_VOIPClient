@@ -1,9 +1,6 @@
 package se.chalmers.fleetspeak.jni;
 
 public class OpusDecoder{
-	static{
-        System.loadLibrary("NativeAudio");
-    }
 
     /**
      *  Gets the size of an OpusDecoder structure.

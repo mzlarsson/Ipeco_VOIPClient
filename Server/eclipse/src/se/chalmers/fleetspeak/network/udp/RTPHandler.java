@@ -100,6 +100,7 @@ public class RTPHandler implements PacketReceiver, BufferedAudioStream{
 	 * @param at The new AudioType.
 	 */
 	private void setAudioType(AudioType at) {
+System.out.println("java.lib.path" + System.getProperty("java.library.path"));
 		switch(at) {
 		case PCMU:
 			terminateEncoders();
