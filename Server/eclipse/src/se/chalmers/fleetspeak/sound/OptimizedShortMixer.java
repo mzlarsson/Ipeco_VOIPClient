@@ -3,7 +3,7 @@ package se.chalmers.fleetspeak.sound;
 import java.util.Arrays;
 
 
-public class OptimizedShortMixer extends SimpleMixer{
+public class OptimizedShortMixer extends ShortMixer{
 
 	protected OptimizedShortMixer(int mixingInterval) {
 		super(mixingInterval);

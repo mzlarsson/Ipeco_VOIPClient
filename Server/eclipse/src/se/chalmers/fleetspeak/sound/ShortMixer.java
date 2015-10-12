@@ -3,7 +3,7 @@ package se.chalmers.fleetspeak.sound;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-public class ShortMixer extends SimpleMixer{
+public class ShortMixer extends AbstractMixer{
 
 	protected ShortMixer(int mixingInterval) {
 		super(mixingInterval);
@@ -47,6 +47,17 @@ public class ShortMixer extends SimpleMixer{
 		}else{
 			return new byte[data.length][0];
 		}
+	}
+	
+	protected int getMaxDataLength(byte[][] data){
+		int length = 0;
+		for(int i = 0; i<data.length; i++){
+			if(data[i] != null && data[i].length>length){
+				length = data[i].length;
+			}
+		}
+		
+		return length;
 	}
 	
 	private short bytesToShort(byte big, byte small){
