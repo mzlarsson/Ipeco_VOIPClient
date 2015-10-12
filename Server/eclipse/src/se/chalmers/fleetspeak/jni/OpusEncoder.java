@@ -3,7 +3,7 @@ package se.chalmers.fleetspeak.jni;
 
 public class OpusEncoder{
     static{
-	System.loadLibrary("NativeAudio");
+	System.loadLibrary("nativeaudio");
 }
     /**
      *

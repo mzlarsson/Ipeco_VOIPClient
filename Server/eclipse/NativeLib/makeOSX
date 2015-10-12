@@ -32,7 +32,7 @@ endif
 
 EXESUFFIX =
 LIBPREFIX = lib
-LIBSUFFIX = .libjni
+LIBSUFFIX = .jnilib
 OBJSUFFIX = .o
 
 CC     = $(TOOLCHAIN_PREFIX)cc$(TOOLCHAIN_SUFFIX)
@@ -66,11 +66,11 @@ CFLAGS  += $(call cppflags-from-includes,$(CINCLUDES))
 LDFLAGS += $(call ldflags-from-ldlibdirs,$(LDLIBDIRS))
 LDLIBS  += $(call ldlibs-from-libs,$(LIBS))
 
-COMPILE.c.cmdline   = $(CC) -c $(CFLAGS) -o $@ $<
+COMPILE.c.cmdline   = $(CC) -fPIC -c $(CFLAGS) -o $@ $<
 LINK.o              = $(CC) $(LDPREFLAGS) $(LDFLAGS)
 LINK.o.cmdline      = $(LINK.o) $^ $(LDLIBS) -o $@$(EXESUFFIX)
 
-ARCHIVE.cmdline     = $(AR) $(ARFLAGS) $@ $^ && $(RANLIB) $@
+ARCHIVE.cmdline     = gcc -dynamiclib -o $@ $^
 
 %$(OBJSUFFIX):%.c
 	$(COMPILE.c.cmdline)
@@ -82,7 +82,7 @@ ARCHIVE.cmdline     = $(AR) $(ARFLAGS) $@ $^ && $(RANLIB) $@
 
 
 # Variable definitions
-LIB_NAME = NativeAudio
+LIB_NAME = nativeaudio
 TARGET = $(LIBPREFIX)$(LIB_NAME)$(LIBSUFFIX)
 
 SRCS_C = $(SILK_SOURCES) $(CELT_SOURCES) $(OPUS_SOURCES) $(FLEETSPEAK_SOURCES)
@@ -96,7 +96,7 @@ OPUSCOMPARE_SRCS_C = src/opus_compare.c
 OPUSCOMPARE_OBJS := $(patsubst %.c,%$(OBJSUFFIX),$(OPUSCOMPARE_SRCS_C))
 
 # Rules
-all: lib opus_demo opus_compare
+all: lib
 
 lib: $(TARGET)
 

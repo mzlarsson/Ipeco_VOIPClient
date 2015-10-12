@@ -82,7 +82,7 @@ ARCHIVE.cmdline     = ld -shared -soname $@.1 -o $@ $^ -lc
 
 
 # Variable definitions
-LIB_NAME = NativeAudio
+LIB_NAME = nativeaudio
 TARGET = $(LIBPREFIX)$(LIB_NAME)$(LIBSUFFIX)
 
 SRCS_C = $(SILK_SOURCES) $(CELT_SOURCES) $(OPUS_SOURCES) $(FLEETSPEAK_SOURCES)
