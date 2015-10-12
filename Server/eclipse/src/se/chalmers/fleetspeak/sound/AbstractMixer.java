@@ -128,6 +128,17 @@ public abstract class AbstractMixer implements Mixer{
 		return data;
 	}
 	
+	protected int getMaxDataLength(byte[][] data){
+		int length = 0;
+		for(int i = 0; i<data.length; i++){
+			if(data[i] != null && data[i].length>length){
+				length = data[i].length;
+			}
+		}
+		
+		return length;
+	}
+	
 	
 	/**
 	 * Retrieves the current streams registered to the mixer. This method is recommended to use
