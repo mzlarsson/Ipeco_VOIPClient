@@ -6,9 +6,8 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import se.chalmers.fleetspeak.Network.UDP.BufferedAudioStream;
-import se.chalmers.fleetspeak.Network.UDP.RTPHandler;
-import se.chalmers.fleetspeak.audio.codec.DecoderInterface;
+import se.chalmers.fleetspeak.network_tmp.UDP.BufferedAudioStream;
+import se.chalmers.fleetspeak.network_tmp.UDP.RTPHandler;
 import se.chalmers.fleetspeak.audio.codec.opus.collection.OpusDecoder;
 
 /**

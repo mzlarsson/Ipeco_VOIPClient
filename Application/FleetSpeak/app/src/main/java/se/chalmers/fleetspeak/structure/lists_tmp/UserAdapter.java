@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.structure.lists;
+package se.chalmers.fleetspeak.structure.lists_tmp;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;

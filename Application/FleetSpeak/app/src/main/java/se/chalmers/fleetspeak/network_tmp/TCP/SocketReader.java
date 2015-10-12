@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.Network.TCP;
+package se.chalmers.fleetspeak.network_tmp.TCP;
 
 import android.os.Message;
 import android.os.Messenger;
