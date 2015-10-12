@@ -3,39 +3,39 @@
 <property name="target" value="1.8"/>
 <property name="source" value="1.8"/>
 <path id="DTServer.classpath">
-<pathelement location="bin"/>
-<pathelement location="libs/jna.jar"/>
-<pathelement location="libs/postgresql-9.4-1201.jdbc41.jar"/>
-<pathelement location="libs/richtextfx-fat-0.6.3.jar"/>
-<pathelement location="libs/java-json.jar"/>
+        <pathelement location="bin"/>
+        <pathelement location="libs/jna.jar"/>
+        <pathelement location="libs/postgresql-9.4-1201.jdbc41.jar"/>
+        <pathelement location="libs/richtextfx-fat-0.6.3.jar"/>
+        <pathelement location="libs/java-json.jar"/>
 </path>
 <target name="init">
-<mkdir dir="bin"/>
-<copy includeemptydirs="false" todir="bin">
-<fileset dir="src">
-<exclude name="**/*.launch"/>
-<exclude name="**/*.xtend"/>
-<exclude name="**/*.java"/>
-</fileset>
-</copy>
+        <mkdir dir="bin"/>
+        <copy includeemptydirs="false" todir="bin">
+                <fileset dir="src">
+                        <exclude name="**/*.launch"/>
+                        <exclude name="**/*.xtend"/>
+                        <exclude name="**/*.java"/>
+                </fileset>
+        </copy>
 </target>
 <target name="clean">
-<delete dir="bin"/>
+        <delete dir="bin"/>
 </target>
 <target depends="clean" name="cleanall"/>
 <target depends="build-subprojects,build-project" name="build"/>
 <target name="build-subprojects"/>
 <target depends="init" name="build-project">
-<echo message="${ant.project.name}: ${ant.file}"/>
-<javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
-<src path="src"/>
-<classpath refid="DTServer.classpath"/>
-</javac>
+        <echo message="${ant.project.name}: ${ant.file}"/>
+                <javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
+                <src path="src"/>
+        <classpath refid="DTServer.classpath"/>
+        </javac>
 </target>
 <target name="ServerConsole">
-<java classname="se.chalmers.fleetspeak.ServerConsole" failonerror="true" fork="yes">
-<jvmarg line="-Djava.library.path=NativeLib"/>
-<classpath refid="DTServer.classpath"/>
-</java>
+        <java classname="se.chalmers.fleetspeak.ServerConsole" failonerror="true" fork="yes">
+                <jvmarg line="-Djava.library.path=libs/native/linux-x86-64"/>
+                <classpath refid="DTServer.classpath"/>
+        </java>
 </target>
 </project>
