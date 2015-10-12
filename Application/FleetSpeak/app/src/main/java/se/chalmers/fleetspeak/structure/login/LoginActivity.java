@@ -49,6 +49,8 @@ public class LoginActivity extends ActionBarActivity implements TruckStateListen
         }
         String defaultUsername = this.getApplicationContext().getString(R.string.username_text);
         username = prefs.getString("username", defaultUsername);
+
+
         password = prefs.getString("password", "");
         TruckDataHandler.addListener(this);
         carmode = TruckDataHandler.getInstance().getTruckMode();
@@ -111,9 +113,13 @@ public class LoginActivity extends ActionBarActivity implements TruckStateListen
     public void startConnectionProcess(){
         SocketFactory.setContext(this);
         Intent newIntent = new Intent(this, ConnectionActivity.class);
+        username = username.replaceAll("\\s+","");
+        //FIXME remove strip when we actually use the password
+        password = password.replaceAll("\\s+","");
         newIntent.putExtra("username", username);
         newIntent.putExtra("password", password);
         newIntent.putExtra("carState", carmode);
+        Log.d("test", "asdf2 |" + password + "|");
         startActivity(newIntent);
     }
 
