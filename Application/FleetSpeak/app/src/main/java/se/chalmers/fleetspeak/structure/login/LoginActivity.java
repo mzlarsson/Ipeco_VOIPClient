@@ -14,7 +14,7 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import se.chalmers.fleetspeak.network_tmp.TCP.SocketFactory;
+import se.chalmers.fleetspeak.network.TCP.SocketFactory;
 import se.chalmers.fleetspeak.R;
 import se.chalmers.fleetspeak.structure.connected.ConnectionActivity;
 import se.chalmers.fleetspeak.structure.location.LocationHandler;

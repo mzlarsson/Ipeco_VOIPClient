@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.structure.lists_tmp;
+package se.chalmers.fleetspeak.structure.lists;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;

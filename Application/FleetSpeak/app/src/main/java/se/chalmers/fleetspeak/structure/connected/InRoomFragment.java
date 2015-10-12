@@ -13,7 +13,7 @@ import java.util.List;
 
 import se.chalmers.fleetspeak.R;
 import se.chalmers.fleetspeak.User;
-import se.chalmers.fleetspeak.structure.lists_tmp.UserList;
+import se.chalmers.fleetspeak.structure.lists.UserList;
 
 /**
  * A simple {@link Fragment} subclass.

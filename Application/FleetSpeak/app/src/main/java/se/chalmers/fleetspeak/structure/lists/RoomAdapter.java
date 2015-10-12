@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.structure.lists_tmp;
+package se.chalmers.fleetspeak.structure.lists;
 
 import android.content.Context;
 import android.graphics.Color;

@@ -8,7 +8,7 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-import se.chalmers.fleetspeak.network_tmp.UDP.RTPHandler;
+import se.chalmers.fleetspeak.network.UDP.RTPHandler;
 
 /**
  * A class for playing PCMU sound from a buffer

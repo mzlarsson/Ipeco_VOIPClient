@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.network_tmp.UDP;
+package se.chalmers.fleetspeak.network.UDP;
 
 /**
  * Created by Volt on 29/08/15.

@@ -9,10 +9,10 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-import se.chalmers.fleetspeak.network_tmp.TCP.TLSConnector;
-import se.chalmers.fleetspeak.network_tmp.UDP.RTPHandler;
-import se.chalmers.fleetspeak.network_tmp.UDP.STUNInitiator;
-import se.chalmers.fleetspeak.network_tmp.UDP.UDPConnector;
+import se.chalmers.fleetspeak.network.TCP.TLSConnector;
+import se.chalmers.fleetspeak.network.UDP.RTPHandler;
+import se.chalmers.fleetspeak.network.UDP.STUNInitiator;
+import se.chalmers.fleetspeak.network.UDP.UDPConnector;
 import se.chalmers.fleetspeak.audio.sound.SoundOutputController;
 import se.chalmers.fleetspeak.util.MessageValues;
 

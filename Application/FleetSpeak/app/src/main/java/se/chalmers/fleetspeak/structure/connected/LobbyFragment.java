@@ -20,7 +20,7 @@ import java.util.List;
 
 import se.chalmers.fleetspeak.R;
 import se.chalmers.fleetspeak.Room;
-import se.chalmers.fleetspeak.structure.lists_tmp.RoomList;
+import se.chalmers.fleetspeak.structure.lists.RoomList;
 
 /**
  * A simple {@link Fragment} subclass.

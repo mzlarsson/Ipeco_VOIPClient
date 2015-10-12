@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.network_tmp.UDP;
+package se.chalmers.fleetspeak.network.UDP;
 
 import android.os.Handler;
 import android.os.Message;

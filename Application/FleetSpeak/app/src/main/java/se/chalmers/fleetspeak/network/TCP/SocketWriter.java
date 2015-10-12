@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.network_tmp.TCP;
+package se.chalmers.fleetspeak.network.TCP;
 
 import android.os.Handler;
 import android.os.Looper;

@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.network_tmp.UDP;
+package se.chalmers.fleetspeak.network.UDP;
 
 /**
  * Created by Nieo on 25/08/15.
