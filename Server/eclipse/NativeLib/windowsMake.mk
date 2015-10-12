@@ -31,7 +31,7 @@ OPUS_SOURCES += $(OPUS_SOURCES_FLOAT)
 endif
 
 EXESUFFIX =
-LIBPREFIX = lib
+LIBPREFIX =
 LIBSUFFIX = .dll
 OBJSUFFIX = .o
 
@@ -83,7 +83,7 @@ ARCHIVE.cmdline     = gcc -shared -o $@ $^
 
 
 # Variable definitions	
-LIB_NAME = NativeAudio
+LIB_NAME = nativeaudio
 TARGET = $(LIBPREFIX)$(LIB_NAME)$(LIBSUFFIX)
 
 SRCS_C = $(SILK_SOURCES) $(CELT_SOURCES) $(OPUS_SOURCES) $(FLEETSPEAK_SOURCES)
