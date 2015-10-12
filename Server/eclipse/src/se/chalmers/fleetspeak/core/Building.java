@@ -84,8 +84,7 @@ public class Building {
 			json.put("username", client.getName());
 			json.put("roomid", roomid);
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.log(Level.WARNING, "Could not create JSON object (for some random reason)", e);
 		}
 
 
@@ -112,8 +111,7 @@ public class Building {
 					json.put("currentroom", sourceRoom);
 					json.put("destinationroom", destinationRoom);
 				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.log(Level.WARNING, "Could not create JSON object (for some random reason)", e);
 				}
 				postUpdate(json.toString());
 				logger.log(Level.INFO, "Moved client " + c.toString() + " to room " + destinationRoom);
@@ -134,7 +132,7 @@ public class Building {
 				json.put("userid", clientid);
 				json.put("roomid", roomid);
 			}catch(JSONException e){
-				e.printStackTrace();
+				logger.log(Level.WARNING, "Could not create JSON object (for some random reason)", e);
 			}
 			postUpdate(json.toString());
 			logger.log(Level.INFO, "Removed client id: " + clientid + " Alias: " + c.getName());
@@ -146,7 +144,7 @@ public class Building {
 					roomJson.put("command", "removedroom");
 					roomJson.put("roomid", roomid);
 				}catch(JSONException e){
-					e.printStackTrace();
+					logger.log(Level.WARNING, "Could not create JSON object (for some random reason)", e);
 				}
 				postUpdate(roomJson.toString());
 				logger.log(Level.INFO, "Removed room id: " + room.getId() + " name: " + room.getName());
@@ -174,8 +172,7 @@ public class Building {
 				json.put("roomname", room.getName());
 				c.sendCommand(json.toString());
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.log(Level.WARNING, "Could not create JSON object (for some random reason)", e);
 			}
 			room.sync(c);
 		});

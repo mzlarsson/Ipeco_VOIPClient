@@ -1,5 +1,7 @@
 package se.chalmers.fleetspeak.test;
 
+import java.util.logging.Logger;
+
 import se.chalmers.fleetspeak.sound.opus.OpusDecoder;
 import se.chalmers.fleetspeak.sound.opus.OpusEncoder;
 import se.chalmers.fleetspeak.sound.opus.OpusException;
@@ -14,8 +16,7 @@ public class OpusTester {
 			encoder = new OpusEncoder();
 			decoder = new OpusDecoder();
 		} catch (OpusException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger.getLogger("Debug").severe("Could not start opus. Dammit!");
 		}
 		
 		byte[] bytedata = new byte[160];

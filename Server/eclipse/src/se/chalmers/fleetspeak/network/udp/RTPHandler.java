@@ -173,7 +173,7 @@ public class RTPHandler implements PacketReceiver, BufferedAudioStream{
 			try{
 				b = outputBuffer.take();
 			}catch(InterruptedException e){
-				e.printStackTrace();
+				logger.warning("Rtp sender interrupted whilst waiting for data: "+e.getMessage());
 			}
 			
 			if(b.length>0){

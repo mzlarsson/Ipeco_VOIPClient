@@ -68,8 +68,7 @@ public class ClientCreator implements AuthenticatorListener{
 			json.put("rejection", errorMsg);
 			authenticator.getTCPHandler().sendCommand(json.toString());
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.log(Level.WARNING, "Could not create JSON object (for some random reason)", e);
 		} catch (IOException e) {
 			logger.log(Level.WARNING, "Caught IOException when sending authenticationresult, false. Message: "
 					+ e.getMessage() + " terminating client");

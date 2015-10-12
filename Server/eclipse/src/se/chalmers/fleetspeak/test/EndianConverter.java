@@ -36,11 +36,9 @@ public class EndianConverter {
 			out.close();
 			in.close();
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Could not find source file");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Error while reading source file: "+e.getMessage());
 		}
 	}
 	

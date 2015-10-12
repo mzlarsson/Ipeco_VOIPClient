@@ -53,6 +53,8 @@ public class TLSConnectionHandler{
 				logger.log(Level.INFO, "Starting server @LAN-IP "+InetAddress.getLocalHost().getHostAddress()+" on port "+port);
 			}catch(Exception e){
 				//I dont care that i cant print the local address
+				//BUT I DO!
+				logger.severe("CAN'T PRINT LOCALHOST IP ADDRESS");
 			}
 			running = true;
 		}else{
@@ -67,18 +69,19 @@ public class TLSConnectionHandler{
 					logger.log(Level.FINER, "Starting TLS handshake");
 					try{
 						clientSocket.startHandshake();
+						
+						//Handshake succeeded
+						logger.log(Level.FINER, "Finished TLS handshake");
+						logger.log(Level.INFO, "Created socket" + clientSocket.getSession().getProtocol());
+						clientCreator.addNewClient(clientSocket);
 					}catch (IOException e){
-						e.printStackTrace();
+						logger.log(Level.SEVERE, "Failed with TLS handshake", e);
 					}
-					logger.log(Level.FINER, "Finished TLS handshake");
-					logger.log(Level.INFO,"created socket" + clientSocket.getSession().getProtocol());
-					clientCreator.addNewClient(clientSocket);
 				});
 			}catch(SSLException e){
-				e.printStackTrace();
+				logger.log(Level.SEVERE, "Failed with TLS initialization", e);
 			}catch(IOException e){
-				e.printStackTrace();
-
+				logger.log(Level.SEVERE, "Failed with socket initialization", e);
 			}
 		}};
 
@@ -101,26 +104,19 @@ public class TLSConnectionHandler{
 				socket = factory.createServerSocket(port);
 
 			} catch (KeyStoreException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.log(Level.SEVERE, "Could not create SSLSocket: KeyStoreException.", e);
 			} catch (NoSuchAlgorithmException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.log(Level.SEVERE, "Could not create SSLSocket: NoSuchAlgorithmException.", e);
 			} catch (CertificateException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.log(Level.SEVERE, "Could not create SSLSocket: CertificateException.", e);
 			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.log(Level.SEVERE, "Could not create SSLSocket: FileNotFoundException.", e);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.log(Level.SEVERE, "Could not create SSLSocket: IOException.", e);
 			} catch (UnrecoverableKeyException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.log(Level.SEVERE, "Could not create SSLSocket: UnrecoverableKeyException.", e);
 			} catch (KeyManagementException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.log(Level.SEVERE, "Could not create SSLSocket: KeyManagementException.", e);
 			}
 
 
@@ -137,7 +133,7 @@ public class TLSConnectionHandler{
 				}
 				((ExecutorService)executor).shutdownNow();
 			}catch(IOException e){
-				e.printStackTrace();
+				logger.warning("Could not close server socket. Check if the software has been terminated correctly.");
 			}
 
 		}

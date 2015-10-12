@@ -51,8 +51,7 @@ public class Client implements CommandHandler, NetworkUser {
 			json.put("userid", clientID);
 			sendCommand(json.toString());
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.log(Level.WARNING, "Could not create JSON object (for some random reason)", e);
 		} catch (IOException e) {
 			logger.log(Level.WARNING, "Caught IOException when sending setinfo, userid. Message: "
 					+ e.getMessage());
@@ -144,8 +143,7 @@ public class Client implements CommandHandler, NetworkUser {
 			}
 
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.log(Level.WARNING, "Could not create JSON object (for some random reason)", e);
 		}
 	}
 }

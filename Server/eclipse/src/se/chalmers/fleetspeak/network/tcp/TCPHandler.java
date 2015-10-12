@@ -48,8 +48,7 @@ public class TCPHandler extends Thread{
 			logger.log(Level.FINE,"Got streams");
 		}
 		catch (IOException e) {
-			logger.log(Level.WARNING,e.getMessage());
-			e.printStackTrace();
+			logger.log(Level.WARNING, e.getMessage(), e);
 		}
 	}
 

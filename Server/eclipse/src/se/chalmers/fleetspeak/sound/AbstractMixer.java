@@ -3,6 +3,7 @@ package se.chalmers.fleetspeak.sound;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -54,18 +55,18 @@ public abstract class AbstractMixer implements Mixer{
 						}
 					}
 				} catch (InterruptedException e) {
-					e.printStackTrace();
+					logger.log(Level.WARNING, "Could not send mixer output because of an InterruptedException: "+e.getMessage(), e);
 				}
 			}
 			
-//			Fix timing
+			//Fix timing
 			if(nextMixTime>System.currentTimeMillis()){
 				try {
 					Thread.sleep(nextMixTime-System.currentTimeMillis());
 				} catch (InterruptedException e) {
-					e.printStackTrace();
+					logger.log(Level.WARNING, "The mixer could not sleep for the appropriate time (InterruptedException)");
 				} catch(IllegalArgumentException e){
-					e.printStackTrace();
+					logger.log(Level.WARNING, "The mixer sleep time is below 0 (A mixer is slightly behind)");
 				}
 			}else{
 				logger.severe("A mixer is behind!");

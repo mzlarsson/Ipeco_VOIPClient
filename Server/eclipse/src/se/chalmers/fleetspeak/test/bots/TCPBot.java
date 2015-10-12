@@ -197,8 +197,7 @@ class TCPBot extends Thread{
 			
 			return ssl.getSocketFactory().createSocket(host, port);
 		}catch(Exception e){
-			System.out.println("Got an exception while creating TLS socket. ");
-			e.printStackTrace();
+			System.out.println("Got an exception while creating TLS socket: "+e.getMessage());
 			return null;
 		}
 	}
