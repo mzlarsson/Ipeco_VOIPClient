@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Speed Tester</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="available">Available:</string>
+    <string name="provider_placeholder">[provider]</string>
+    <string name="currently_using">Currently using:</string>
+    <string name="defaultSpeed">0.00</string>
+    <string name="velocityMeasurement">m/s</string>
+
+    <string name="serious_error">A serious problem has occured. Contact ipeco.</string>
+    <string name="status_started">Waiting for data.</string>
+    <string name="status_nospeed">The provider does not support speed.</string>
+    <string name="status_disabled">The provider is disabled.</string>
+</resources>
