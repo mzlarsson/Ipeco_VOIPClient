@@ -1,6 +1,5 @@
 package se.chalmers.fleetspeak.network.udp;
 
-import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -21,7 +20,7 @@ import java.util.logging.Logger;
 public class JitterBuffer{
 
 	private static final int DEFAULT_TIME_BETWEEN_SAMPLES = 20;
-	private static final int TIME_IGNORE_MULTIPIER = 2;
+	private static final double TIME_IGNORE_MULTIPIER = 1.5;
 	
 	private JitterBufferQueue buffer;
 	private short lastReadSeqNbr = -1;
@@ -153,33 +152,11 @@ public class JitterBuffer{
 		
 		private enum PacketStatus {
 			NORMAL, SILENT, LOST, NOT_READY, NEVER_READ;
-			
-			private static int[] counters = {100, 0, 0, 0, 0};
-			
-			public void increase() {
-				counters[this.ordinal()] = counters[this.ordinal()]+1;
-			}
-			public void decrease() {
-				counters[this.ordinal()] = counters[this.ordinal()]-1;
-			}
-			
-			public static int getSilentPercentage() {
-				return counters[SILENT.ordinal()]+counters[LOST.ordinal()]+counters[NOT_READY.ordinal()]+counters[NEVER_READ.ordinal()];
-			}
-			
-			public static int getErrorPercentage() {
-				return counters[LOST.ordinal()]+counters[NOT_READY.ordinal()]+counters[NEVER_READ.ordinal()];
-			}
-			
-			public static String countersToString() {
-				return "["+NORMAL+":"+counters[NORMAL.ordinal()]+" "+SILENT+":"+counters[SILENT.ordinal()]
-						+" "+LOST+":"+counters[LOST.ordinal()]+" "+NOT_READY+":"+counters[NOT_READY.ordinal()]
-						+" "+NEVER_READ+":"+counters[NEVER_READ.ordinal()];
-			}
 		}
 		
 		private PacketStatus[] statusArr = new PacketStatus[100];
 		private int psPointer = -1;
+		private int[] counters = {100, 0, 0, 0, 0};
 		private Logger logger;
 
 		public PacketCounter(Logger logger) {
@@ -197,13 +174,13 @@ public class JitterBuffer{
 		private synchronized void update(PacketStatus ps) {
 			PacketStatus next = next();
 			if (!next.equals(ps)) {
-				next.decrease();
-				ps.increase();
+				decrease(next);
+				increase(ps);
 				statusArr[psPointer] = ps;
 			}
-			if (psPointer == 0 && PacketStatus.getSilentPercentage() != 0) {
+			if (psPointer == 0 && getSilentPercentage() != 0) {
 				logger.log(Level.FINEST, "(" + Thread.currentThread().getName() + ") Silent packages: "
-						+ PacketStatus.getSilentPercentage() + "% " + PacketStatus.countersToString());
+						+ getSilentPercentage() + "% " + countersToString());
 			}
 		}
 		
@@ -225,6 +202,28 @@ public class JitterBuffer{
 		
 		public void neverReadPacket() {
 			update(PacketStatus.NEVER_READ);
+		}
+		
+		private void increase(PacketStatus ps) {
+			counters[ps.ordinal()]++;
+		}
+		
+		private void decrease(PacketStatus ps) {
+			counters[ps.ordinal()]--;
+		}
+		
+		private int getSilentPercentage() {
+			return counters[PacketStatus.SILENT.ordinal()]+counters[PacketStatus.LOST.ordinal()]+counters[PacketStatus.NOT_READY.ordinal()]+counters[PacketStatus.NEVER_READ.ordinal()];
+		}
+		
+		private int getErrorPercentage() {
+			return counters[PacketStatus.LOST.ordinal()]+counters[PacketStatus.NOT_READY.ordinal()]+counters[PacketStatus.NEVER_READ.ordinal()];
+		}
+		
+		private String countersToString() {
+			return "[Normal:"+counters[PacketStatus.NORMAL.ordinal()]+" Silent:"+counters[PacketStatus.SILENT.ordinal()]
+					+" Lost:"+counters[PacketStatus.LOST.ordinal()]+" NotReady:"+counters[PacketStatus.NOT_READY.ordinal()]
+							+" NeverRead:"+counters[PacketStatus.NEVER_READ.ordinal()];
 		}
 	}
 }
