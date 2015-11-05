@@ -1,24 +1,24 @@
 package se.chalmers.fleetspeak.structure.login;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import se.chalmers.fleetspeak.network.TCP.SocketFactory;
 import se.chalmers.fleetspeak.R;
+import se.chalmers.fleetspeak.network.TCP.SocketFactory;
 import se.chalmers.fleetspeak.structure.connected.ConnectionActivity;
-import se.chalmers.fleetspeak.structure.location.LocationHandler;
-import se.chalmers.fleetspeak.truck.TruckDataHandler;
+import se.chalmers.fleetspeak.truck.TruckModeHandlerFactory;
+import se.chalmers.fleetspeak.truck.TruckModeHandler;
 import se.chalmers.fleetspeak.truck.TruckStateListener;
 
 public class LoginActivity extends ActionBarActivity implements TruckStateListener, StartCommunicator {
@@ -29,14 +29,10 @@ public class LoginActivity extends ActionBarActivity implements TruckStateListen
     private String username;
     private String password;
     private String error;
-    private LocationHandler locationHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        locationHandler = new LocationHandler(this);
-        locationHandler.addTruckListener(this);
-        carmode = locationHandler.getCarMode();
         setContentView(R.layout.activity_login);
         fragmentManager = getSupportFragmentManager();
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -52,18 +48,16 @@ public class LoginActivity extends ActionBarActivity implements TruckStateListen
 
 
         password = prefs.getString("password", "");
-        TruckDataHandler.addListener(this);
-        carmode = TruckDataHandler.getInstance().getTruckMode();
+        TruckModeHandler handler = TruckModeHandlerFactory.getCurrentHandler(this);
+        handler.addListener(this);
+        carmode = handler.truckModeActive();
         setStartFragment(carmode);
     }
-
-
 
     private void setStartFragment(boolean b){
         Fragment fragment;
 
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        Log.d("LoginActivity", "is locationhandler null?" + (locationHandler == null));
         if(b){
             fragment = fragmentManager.findFragmentByTag("CarStartLogin");
             if( fragment == null);

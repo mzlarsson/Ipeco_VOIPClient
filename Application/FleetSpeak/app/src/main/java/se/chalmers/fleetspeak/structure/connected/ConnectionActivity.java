@@ -1,33 +1,33 @@
     package se.chalmers.fleetspeak.structure.connected;
 
-    import android.content.res.Resources;
-    import android.support.v7.app.ActionBar;
     import android.content.Intent;
-    import android.os.Handler;
-    import android.os.Message;
-    import android.support.v4.app.FragmentManager;
-    import android.support.v4.app.FragmentPagerAdapter;
-    import android.support.v4.view.ViewPager;
-    import android.support.v7.app.ActionBarActivity;
-    import android.os.Bundle;
-    import android.util.Log;
-    import android.view.Menu;
-    import android.view.MenuItem;
+import android.content.res.Resources;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 
-    import java.util.ArrayList;
-    import java.util.List;
+import java.util.ArrayList;
+import java.util.List;
 
-    import se.chalmers.fleetspeak.Model;
-    import se.chalmers.fleetspeak.R;
-    import se.chalmers.fleetspeak.Room;
-    import se.chalmers.fleetspeak.User;
-    import se.chalmers.fleetspeak.structure.establish.BackFragment;
-    import se.chalmers.fleetspeak.structure.login.LoginActivity;
-    import se.chalmers.fleetspeak.structure.location.LocationHandler;
-    import se.chalmers.fleetspeak.truck.TruckDataHandler;
-    import se.chalmers.fleetspeak.truck.TruckStateListener;
-    import se.chalmers.fleetspeak.util.MessageValues;
-    import se.chalmers.fleetspeak.util.ModelFactory;
+import se.chalmers.fleetspeak.Model;
+import se.chalmers.fleetspeak.R;
+import se.chalmers.fleetspeak.Room;
+import se.chalmers.fleetspeak.User;
+import se.chalmers.fleetspeak.structure.establish.BackFragment;
+import se.chalmers.fleetspeak.structure.login.LoginActivity;
+import se.chalmers.fleetspeak.truck.TruckModeHandlerFactory;
+import se.chalmers.fleetspeak.truck.TruckModeHandler;
+import se.chalmers.fleetspeak.truck.TruckStateListener;
+import se.chalmers.fleetspeak.util.MessageValues;
+import se.chalmers.fleetspeak.util.ModelFactory;
 
     public class ConnectionActivity extends ActionBarActivity implements TruckStateListener, ActionBar.TabListener, ConnectedCommunicator {
             private Model model;
@@ -37,12 +37,9 @@
             private InRoomFragment inRoomFragment;
             private LobbyFragment lobbyFragment;
             private BackFragment backFragment;
-            private LocationHandler locationHandler;
-
 
             private String username;
             private String password;
-
 
             /**
              * A handler that handles update messages from the server connection
@@ -133,8 +130,9 @@
                 backFragment = new BackFragment();
                 Log.d("ConnectionActivity", " Checking if connected");
 
-                TruckDataHandler.addListener(this);
-                carMode = TruckDataHandler.getInstance().getTruckMode();
+                TruckModeHandler handler = TruckModeHandlerFactory.getCurrentHandler(this);
+                handler.addListener(this);
+                carMode = handler.truckModeActive();
 
                 actionBar = getSupportActionBar();
                 actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
@@ -151,11 +149,6 @@
                 inRoom.setText(chatroom);
                 inRoom.setTabListener(this);
                 actionBar.addTab(inRoom);
-
-                locationHandler = new LocationHandler(this);
-                locationHandler.addTruckListener(this);
-                carMode = locationHandler.getCarMode();
-
             }
             @Override
             public boolean onCreateOptionsMenu(Menu menu) {
@@ -335,6 +328,10 @@
         protected void onDestroy() {
             super.onDestroy();
             model.disconnect();
+
+            //Remove truck mode notifications
+            TruckModeHandler handler = TruckModeHandlerFactory.getCurrentHandler(this);
+            handler.removeListener(this);
         }
         public Resources getRecources(){
            return getResources();

@@ -8,9 +8,13 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -30,22 +34,64 @@ public class MainActivity extends Activity {
     private TextView speedLabel;
     private TextView providerNameDisplayer;
     private LinearLayout providerExampleWrapper;
+    private Button parameterApplyButton;
 
     private LocationProvider provider;
     private LocationListener locationListener;
+    private int minTime = 100;
+    private int minDistance = 3;
+    private int prevMinTime = -1;
+    private int prevMinDistance = -1;
 
-    private List<Toast> errorToasts = new ArrayList<Toast>();
+    private Toast errorToast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.context = this;
+        this.errorToast = Toast.makeText(context, "", Toast.LENGTH_SHORT);
+
         View view = LayoutInflater.from(context).inflate(R.layout.activity_main, null);
         providerStatusView = (ImageView)view.findViewById(R.id.providerStatus);
         speedLabel = (TextView)view.findViewById(R.id.speedLabel);
         providerNameDisplayer = (TextView)view.findViewById(R.id.providerNameDisplayer);
         providerExampleWrapper = (LinearLayout)view.findViewById(R.id.providerExampleWrapper);
+        parameterApplyButton = (Button)view.findViewById(R.id.parameterApplyButton);
         initProviderSwitches();
+        EditText inputMinTime = (EditText)view.findViewById(R.id.minTimeInput);
+        inputMinTime.setText(minTime+"");
+        inputMinTime.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.length() == 0) {
+                    minDistance = 0;
+                } else {
+                    minTime = Integer.parseInt(s.toString());
+                }
+                parameterApplyButton.setEnabled(minDistance != prevMinDistance || minTime != prevMinTime);
+            }
+        });
+        EditText inputMinDistance = (EditText)view.findViewById(R.id.minDistanceInput);
+        inputMinDistance.setText(minDistance+"");
+        inputMinDistance.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override
+            public void afterTextChanged(Editable s) {
+                if(s.length()==0){
+                    minDistance = 0;
+                }else {
+                    minDistance = Integer.parseInt(s.toString());
+                }
+                parameterApplyButton.setEnabled(minDistance != prevMinDistance || minTime != prevMinTime);
+            }
+        });
 
         setContentView(view);
         setupTracker(defaultProvider);
@@ -86,7 +132,7 @@ public class MainActivity extends Activity {
                 speedLabel.setText(location.getSpeed()+"");
 
                 if(firstData){
-                    showInfo("Retrieved first bunch of data.");
+                    providerStatusView.setImageDrawable(getResources().getDrawable(R.drawable.active));
                     firstData = false;
                 }
             }
@@ -110,20 +156,17 @@ public class MainActivity extends Activity {
     }
 
     private synchronized void showError(String error){
-        cancelErrors();
-        Toast errorToast = Toast.makeText(context, error, Toast.LENGTH_SHORT);
+        errorToast.cancel();
+        errorToast.setText(error);
         errorToast.show();
-        errorToasts.add(errorToast);
     }
 
     private void cancelErrors(){
-        for(Toast t : errorToasts){
-            t.cancel();
-            errorToasts.remove(t);
-        }
+        errorToast.cancel();
     }
 
     private void showInfo(String info){
+        cancelErrors();
         Toast.makeText(context, info, Toast.LENGTH_LONG).show();
     }
 
@@ -138,22 +181,40 @@ public class MainActivity extends Activity {
         return null;
     }
 
-    private void setupTracker(final String providerName){
-        // Acquire a reference to the system Location Manager
-        final LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-
-        //Init listener if not initiated
-        if(locationListener == null){
-            initListener();
-        }else{
-            try {
-                locationManager.removeUpdates(locationListener);
-            }catch(SecurityException se){
-                showError(getResources().getString(R.string.serious_error));
+    public void applyParameters(View view){
+        if(provider != null) {
+            if(setupTracker(provider.getName())) {
+                showInfo("Using new parameters!");
+                parameterApplyButton.setEnabled(false);
+            }else{
+                showError("An error occured while switching.");
             }
         }
 
-        if(provider == null || !provider.getName().equals(providerName)) {
+        //Hide keyboard
+        View v = this.getCurrentFocus();
+        if (v != null) {
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+        }
+    }
+
+    private boolean setupTracker(final String providerName){
+        if(provider == null || !provider.getName().equals(providerName) || prevMinDistance != minDistance || prevMinTime != minTime) {
+            // Acquire a reference to the system Location Manager
+            final LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+
+            //Init listener if not initiated
+            if(locationListener != null){
+                try {
+                    locationManager.removeUpdates(locationListener);
+                }catch(SecurityException se){
+                    showError(getResources().getString(R.string.serious_error));
+                }
+            }
+
+            initListener();
+
             //Delete options
             if(provider != null){
                 Button providerView = findProviderView(provider.getName());
@@ -165,7 +226,7 @@ public class MainActivity extends Activity {
             //Setup all stuff
             try {
                 providerNameDisplayer.setText(providerName);
-                locationManager.requestLocationUpdates(providerName, 100, 3, locationListener);
+                locationManager.requestLocationUpdates(providerName, minTime, minDistance, locationListener);
 
                 //Init error messages
                 provider = locationManager.getProvider(providerName);
@@ -189,9 +250,14 @@ public class MainActivity extends Activity {
                 if(providerView != null){
                     providerView.setVisibility(Button.GONE);
                 }
+
+                prevMinDistance = minDistance;
+                prevMinTime = minTime;
+                return true;
             } catch (SecurityException se) {
                 showError(getResources().getString(R.string.serious_error));
             }
         }
+        return false;
     }
 }

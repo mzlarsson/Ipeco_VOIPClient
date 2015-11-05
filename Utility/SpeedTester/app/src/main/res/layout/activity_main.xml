@@ -57,6 +57,34 @@
         </RelativeLayout>
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_weight="1"
+        android:layout_width="fill_parent"
+        android:layout_height="0px">
+        <EditText
+            android:id="@+id/minTimeInput"
+            android:layout_weight="2"
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:hint="time (ms)"/>
+        <EditText
+            android:id="@+id/minDistanceInput"
+            android:layout_weight="2"
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:hint="length (m)" />
+        <Button
+            android:id="@+id/parameterApplyButton"
+            android:layout_weight="1"
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:text="Apply"
+            android:enabled="false"
+            android:onClick="applyParameters" />
+    </LinearLayout>
+
     <RelativeLayout
         android:layout_weight="2"
         android:layout_width="fill_parent"
