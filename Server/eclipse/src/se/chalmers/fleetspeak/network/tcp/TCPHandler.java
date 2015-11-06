@@ -23,7 +23,7 @@ import se.chalmers.fleetspeak.core.CommandHandler;
 public class TCPHandler extends Thread{
 
 	private static final int TIMEOUT_TIME = 10000;
-	
+
 	private Socket clientSocket;
 	private PrintWriter printWriter;
 	private BufferedReader bufferedReader;
@@ -63,16 +63,17 @@ public class TCPHandler extends Thread{
 		try {
 			clientSocket.setSoTimeout(TIMEOUT_TIME); // Keep-alive messages is initiated if more than 15 seconds pass without contact.
 			while (isRunning && bufferedReader != null) {
-				logger.log(Level.FINER,"trying to read");
+				logger.log(Level.FINEST,"trying to read");
 
 				try {
 					read = bufferedReader.readLine();
 				} catch(SocketTimeoutException e){
 					long timeDiff = System.currentTimeMillis()-lastContact;
-					if (timeDiff > 3*TIMEOUT_TIME) {
+					if (timeDiff > 3*TIMEOUT_TIME)
 						throw e;
-					} else if (timeDiff > TIMEOUT_TIME) {
+					else if (timeDiff > TIMEOUT_TIME) {
 						new Thread() {
+							@Override
 							public void run() {
 								try {
 									sendCommand("ping"); // Sending ping in a new thread since it might block if something fails.
@@ -136,9 +137,9 @@ public class TCPHandler extends Thread{
 	public void sendCommand(String command) throws IOException{
 		logger.log(Level.FINER,command);
 		printWriter.println(command);
-		if(printWriter.checkError()){
+		if(printWriter.checkError())
 			throw new IOException("PrinterWriter got an error");
-		} else {
+		else {
 			lastContact = System.currentTimeMillis();
 		}
 	}
@@ -158,7 +159,7 @@ public class TCPHandler extends Thread{
 	public void setCommandHandler(CommandHandler ch) {
 		this.ch = ch;
 	}
-	
+
 	/**
 	 * Stops the TCPHandler
 	 * @return If the clientSocket was successfully closed returns true, else false.
