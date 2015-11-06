@@ -11,17 +11,22 @@ import android.widget.Button;
 
 import se.chalmers.fleetspeak.R;
 import se.chalmers.fleetspeak.structure.connected.AppConnectFragment;
-import se.chalmers.fleetspeak.structure.connected.ConnectedCommunicator;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class BackFragment extends AppConnectFragment {
-    ConnectedCommunicator communicator;
+
+    private BackFragmentHolder communicator;
+
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        communicator = (ConnectedCommunicator) activity;
+        try {
+            communicator = (BackFragmentHolder) activity;
+        }catch(ClassCastException cce){
+            throw new ClassCastException(activity.toString() + " must implement BackFragmentHolder");
+        }
     }
 
     @Override
@@ -47,5 +52,8 @@ public class BackFragment extends AppConnectFragment {
     }
 
 
-
+    public interface BackFragmentHolder{
+        void onBackYes();
+        void onBackNo();
+    }
 }

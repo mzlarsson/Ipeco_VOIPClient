@@ -1,6 +1,8 @@
 package se.chalmers.fleetspeak.structure.lists;
 
 
+import android.app.Activity;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -13,13 +15,25 @@ import java.util.List;
 
 import se.chalmers.fleetspeak.R;
 import se.chalmers.fleetspeak.User;
-import se.chalmers.fleetspeak.structure.connected.ConnectedCommunicator;
+import se.chalmers.fleetspeak.structure.connected.CarModeInteractive;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class UserList extends Fragment {
     private UserAdapter userAdapter;
+    private UserListHolder communicator;
+
+    @Override
+    public void onAttach(Activity activity){
+        try{
+            communicator = (UserListHolder)activity;
+        }catch(ClassCastException cce){
+            throw new ClassCastException(activity.toString() + " must implement UserListHolder");
+        }
+    }
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -27,7 +41,6 @@ public class UserList extends Fragment {
         RecyclerView rv = (RecyclerView)view.findViewById(R.id.rvUsers);
         GridLayoutManager gm = new GridLayoutManager(this.getActivity().getApplicationContext(),1);
         rv.setLayoutManager(gm);
-        ConnectedCommunicator communicator = (ConnectedCommunicator) this.getActivity();
         userAdapter = new UserAdapter(this.getActivity(), communicator);
         rv.setAdapter(userAdapter);
         return view;
@@ -55,6 +68,13 @@ public class UserList extends Fragment {
     }
     public void resetList(List<User> userList){
         userAdapter.resetList(userList);
+    }
+
+
+    public interface UserListHolder extends CarModeInteractive{
+        List<User> getCurrentRoomsUsers();
+        void sendUserClicked(User user);
+        Resources getResources();
     }
 }
 

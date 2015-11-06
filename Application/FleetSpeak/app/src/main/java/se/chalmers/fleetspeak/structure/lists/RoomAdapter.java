@@ -17,7 +17,6 @@ import java.util.List;
 import se.chalmers.fleetspeak.R;
 import se.chalmers.fleetspeak.Room;
 import se.chalmers.fleetspeak.User;
-import se.chalmers.fleetspeak.structure.connected.ConnectedCommunicator;
 
 /**
  * Created by David Gustafsson on 2015-07-31.
@@ -27,9 +26,9 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
     private boolean truckstate;
     private int highlightPos = -1;
     List<Room> rooms = Collections.emptyList();
-    private ConnectedCommunicator communicator;
+    private RoomList.RoomListHolder communicator;
 
-    public RoomAdapter(Context context, ConnectedCommunicator communicator) {
+    public RoomAdapter(Context context, RoomList.RoomListHolder communicator) {
         this.inflater = LayoutInflater.from(context);
         this.communicator = communicator;
         this.truckstate = communicator.getTruckState();
@@ -185,5 +184,4 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
             roomClicked(getAdapterPosition());
         }
     }
-
 }

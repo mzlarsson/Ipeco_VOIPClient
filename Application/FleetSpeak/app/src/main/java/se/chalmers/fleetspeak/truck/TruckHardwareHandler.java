@@ -1,5 +1,6 @@
 package se.chalmers.fleetspeak.truck;
 
+import android.app.Activity;
 import android.os.AsyncTask;
 import android.swedspot.automotiveapi.AutomotiveSignal;
 import android.swedspot.automotiveapi.AutomotiveSignalId;
@@ -24,32 +25,29 @@ import java.util.List;
  * Used for retrieving and decoding signals from the simulator.
  */
 
-class TruckCommunicator extends AsyncTask<Void, Void, Object> {
-    private static TruckCommunicator instance;
-    public static final String TAG = "simulatorDebug";
+class TruckHardwareHandler extends AsyncTask<Void, Void, Object> implements TruckModeHandler {
+
+    public static final String TAG = "TruckHardwareDebug";
 
     private static AutomotiveManager manager;
-    private List<TruckListener> listeners;
+    private List<TruckStateListener> listeners;
 
-    private TruckCommunicator(){
-        listeners = new ArrayList<TruckListener>();
+    private float speed = 0.0f;
+    private boolean parkingBrake;
+
+    protected TruckHardwareHandler(){
+        listeners = new ArrayList<TruckStateListener>();
     }
 
-    public static TruckCommunicator getInstance(){
-        if(instance == null){
-            instance = new TruckCommunicator();
-            instance.execute();
-        }
-        return instance;
-    }
-
-    public void addListener(TruckListener listener){
+    @Override
+    public void addListener(TruckStateListener listener){
         if(listener != null){
             listeners.add(listener);
         }
     }
 
-    public void removeListener(TruckListener listener){
+    @Override
+    public void removeListener(TruckStateListener listener){
         if(listener != null){
             listeners.remove(listener);
         }
@@ -117,14 +115,41 @@ class TruckCommunicator extends AsyncTask<Void, Void, Object> {
 
 
 
-    private void speedChanged(float speed){
-        for(TruckListener listener : listeners){
-            listener.speedChanged(speed);
-        }
+
+    public void speedChanged(float speed){
+        boolean oldMode = truckModeActive();
+        this.speed = speed;
+        evaluateTruckMode(oldMode);
     }
-    private void parkingBrakeChanged(boolean isOn){
-        for(TruckListener listener : listeners){
-            listener.parkingBrakeChanged(isOn);
+
+    public void parkingBrakeChanged(boolean isOn){
+        boolean oldMode = truckModeActive();
+        this.parkingBrake = isOn;
+        evaluateTruckMode(oldMode);
+    }
+
+    @Override
+    public boolean truckModeActive(){
+        return (this.speed != 0 && !this.parkingBrake);
+    }
+
+    private void evaluateTruckMode(boolean oldMode){
+        final boolean mode = truckModeActive();
+        if(oldMode != mode) {
+            for (int i = 0; i < listeners.size(); i++) {
+                final TruckStateListener l = listeners.get(i);
+                if(l instanceof Activity) {
+                    final Activity c = (Activity)l;
+                    c.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            l.truckModeChanged(mode);
+                        }
+                    });
+                }else{
+                    l.truckModeChanged(mode);
+                }
+            }
         }
     }
 }

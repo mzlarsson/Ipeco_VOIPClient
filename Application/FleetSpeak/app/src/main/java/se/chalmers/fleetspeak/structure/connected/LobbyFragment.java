@@ -16,18 +16,21 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import se.chalmers.fleetspeak.R;
 import se.chalmers.fleetspeak.Room;
+import se.chalmers.fleetspeak.User;
 import se.chalmers.fleetspeak.structure.lists.RoomList;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class LobbyFragment extends AppConnectFragment {
+
     private RoomList roomList;
-    private ConnectedCommunicator communicator;
+    private LobbyFragmentHolder communicator;
     private AlertDialog dialog;
     private View mainView;
     private View altView;
@@ -35,12 +38,15 @@ public class LobbyFragment extends AppConnectFragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        communicator = (ConnectedCommunicator) this.getActivity();
+        try {
+            communicator = (LobbyFragmentHolder)activity;
+        }catch(ClassCastException cce){
+            throw new ClassCastException(activity.toString() + " must implement LobbyFragmentHolder");
+        }
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
         View view =  inflater.inflate(R.layout.fragment_lobby, container, false);
@@ -55,7 +61,6 @@ public class LobbyFragment extends AppConnectFragment {
 
         altView.setVisibility(View.INVISIBLE);
         Button button = (Button) view.findViewById(R.id.reconnectButton);
-        communicator = (ConnectedCommunicator)this.getActivity();
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -147,5 +152,14 @@ public class LobbyFragment extends AppConnectFragment {
             mainView.setVisibility(View.INVISIBLE);
             altView.setVisibility(View.VISIBLE);
         }
+    }
+
+
+    public interface LobbyFragmentHolder extends RoomList.RoomListHolder{
+        List<Room> getRooms();
+        void reconnect();                                       //FIXME extract reconnection.
+        String getUsername();
+        void createAndMoveRoom(String newRoomName);
+        Resources getResources();
     }
 }
