@@ -19,18 +19,11 @@ import se.chalmers.fleetspeak.structure.lists.UserList;
  * A simple {@link Fragment} subclass.
  */
 public class InRoomFragment extends AppConnectFragment {
+
     private UserList userList;
-    private ConnectedCommunicator communicator;
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        communicator = (ConnectedCommunicator) activity;
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_in_room, container, false);
         userList = new UserList();
         FragmentTransaction ft = getFragmentManager().beginTransaction();
@@ -54,4 +47,7 @@ public class InRoomFragment extends AppConnectFragment {
     }
 
 
+    public interface InRoomFragmentHolder extends UserList.UserListHolder{
+
+    }
 }

@@ -14,7 +14,6 @@ import java.util.List;
 
 import se.chalmers.fleetspeak.R;
 import se.chalmers.fleetspeak.User;
-import se.chalmers.fleetspeak.structure.connected.ConnectedCommunicator;
 
 /**
  * Created by David Gustafsson on 2015-08-01.
@@ -23,9 +22,9 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     private final LayoutInflater inflater;
     List<User> userList = Collections.emptyList();
     private boolean truckstate;
-    private ConnectedCommunicator communicator;
+    private UserList.UserListHolder communicator;
 
-    public UserAdapter(Context context, ConnectedCommunicator communicator){
+    public UserAdapter(Context context, UserList.UserListHolder communicator){
         this.inflater = LayoutInflater.from(context);
         this.communicator = communicator;
         this.truckstate = communicator.getTruckState();
