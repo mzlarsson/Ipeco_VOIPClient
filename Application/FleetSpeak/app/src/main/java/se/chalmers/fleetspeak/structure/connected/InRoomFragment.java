@@ -31,22 +31,25 @@ public class InRoomFragment extends AppConnectFragment {
 
         return view;
     }
-    public void truckModeChanged(boolean b){
+
+    public void setOnUserClickedListener(UserList.OnUserClickedListener listener){
+        userList.setOnUserClickedListener(listener);
+    }
+
+    public void truckModeChanged(boolean b) {
         userList.changedTruckState(b);
     }
-    public void userAdded(User user){
+
+    public void userAdded(User user) {
         userList.addItem(user);
     }
-    public void userRemoved(User user){
+
+    public void userRemoved(User user) {
         userList.itemRemoved(user);
     }
-    public void resetList(List<User> list){
-        if(userList != null)
-        userList.resetList(list);
-    }
 
-
-    public interface InRoomFragmentHolder extends UserList.UserListHolder{
-
+    public void resetList(List<User> list) {
+        if (userList != null)
+            userList.resetList(list);
     }
 }

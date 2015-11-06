@@ -1,7 +1,6 @@
 package se.chalmers.fleetspeak.structure.connected;
 
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -14,22 +13,21 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import se.chalmers.fleetspeak.model.Model;
 import se.chalmers.fleetspeak.R;
+import se.chalmers.fleetspeak.model.Model;
+import se.chalmers.fleetspeak.model.ModelFactory;
 import se.chalmers.fleetspeak.model.Room;
 import se.chalmers.fleetspeak.model.User;
 import se.chalmers.fleetspeak.structure.establish.BackFragment;
+import se.chalmers.fleetspeak.structure.lists.RoomList.OnRoomClickedListener;
+import se.chalmers.fleetspeak.structure.lists.UserList.OnUserClickedListener;
 import se.chalmers.fleetspeak.structure.login.LoginActivity;
-import se.chalmers.fleetspeak.truck.TruckModeHandlerFactory;
 import se.chalmers.fleetspeak.truck.TruckModeHandler;
+import se.chalmers.fleetspeak.truck.TruckModeHandlerFactory;
 import se.chalmers.fleetspeak.truck.TruckStateListener;
 import se.chalmers.fleetspeak.util.MessageValues;
-import se.chalmers.fleetspeak.model.ModelFactory;
 
-public class ConnectionActivity extends ActionBarActivity implements TruckStateListener, ActionBar.TabListener, LobbyFragment.LobbyFragmentHolder, InRoomFragment.InRoomFragmentHolder, BackFragment.BackFragmentHolder{
+public class ConnectionActivity extends ActionBarActivity implements TruckStateListener, ActionBar.TabListener, LobbyFragment.LobbyFragmentHolder, OnRoomClickedListener, BackFragment.BackFragmentHolder{
     private Model model;
     private boolean carMode = true;
     private ActionBar actionBar;
@@ -130,7 +128,9 @@ public class ConnectionActivity extends ActionBarActivity implements TruckStateL
 
 
         lobbyFragment = new LobbyFragment();
+        lobbyFragment.setOnRoomClickedListener(this);
         inRoomFragment = new InRoomFragment();
+        inRoomFragment.setOnUserClickedListener(null);          //Add listener if any functionality is needed.
         backFragment = new BackFragment();
         Log.d("ConnectionActivity", " Checking if connected");
 
@@ -210,11 +210,7 @@ public class ConnectionActivity extends ActionBarActivity implements TruckStateL
     }
 
     @Override
-    public void sendUserClicked(User user) {
-    }
-
-    @Override
-    public void roomClicked(Room room) {
+    public void onRoomClicked(Room room) {
         model.move(room.getId());
         updateUsersView();
         lobbyFragment.movedToRoom(room.getId());

@@ -26,25 +26,34 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
 
     private Model model;
 
+    private Context context;
     private final LayoutInflater inflater;
     List<User> userList = Collections.emptyList();
     private boolean truckstate;
-    private UserList.UserListHolder communicator;
 
-    public UserAdapter(Context context, UserList.UserListHolder communicator){
+    private UserList.OnUserClickedListener onUserClickedListener;
+
+    public UserAdapter(Context context){
         this.model = ModelFactory.getCurrentModel();
+        this.context = context;
         this.inflater = LayoutInflater.from(context);
-        this.communicator = communicator;
         this.truckstate = TruckModeHandlerFactory.getCurrentHandler().truckModeActive();
         List<User> users = model.getUsers(model.getCurrentRoom());
         if(users != null) {
             this.userList = users;
         }
     }
+
+    public void setOnUserClickedListener(UserList.OnUserClickedListener listener){
+        this.onUserClickedListener = listener;
+    }
+
     public void UserClicked(int position){
         if(userList.get(position) != null) {
             Log.d("UserAdapter", " User clicked");
-            communicator.sendUserClicked(userList.get(position));
+            if(onUserClickedListener != null){
+                onUserClickedListener.onUserClicked(userList.get(position));
+            }
         }
     }
     public void changeTruckState(boolean b){
@@ -70,12 +79,11 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
         ViewGroup.LayoutParams params;
 
         //Valid since we retrieve the instance of the communicator via the inverse casting.
-        Activity a = (Activity)communicator;
         if(truckstate){
-            float car = a.getResources().getDimension(R.dimen.carsize);
+            float car = context.getResources().getDimension(R.dimen.carsize);
             holder.username.setTextSize(car);
         }else{
-            float normal = a.getResources().getDimension(R.dimen.normalsize);
+            float normal = context.getResources().getDimension(R.dimen.normalsize);
             holder.username.setTextSize(normal);
         }
     }

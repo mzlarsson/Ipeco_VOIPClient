@@ -19,24 +19,15 @@ public class RoomList extends Fragment {
 
     private RoomAdapter roomAdapter;
     private RecyclerView rv;
-    private RoomListHolder communicator;
-
-    @Override
-    public void onAttach(Activity activity){
-        try{
-            communicator = (RoomListHolder)activity;
-        }catch(ClassCastException cce){
-            throw new ClassCastException(activity.toString() + " must implement RoomListHolder");
-        }
-    }
+    private OnRoomClickedListener onRoomClickedListener;
 
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_room_list,container, false);
-        rv = (RecyclerView)view.findViewById(R.id.rvRooms);
+        View view = inflater.inflate(R.layout.fragment_room_list, container, false);
+        rv = (RecyclerView) view.findViewById(R.id.rvRooms);
         GridLayoutManager lm = new GridLayoutManager(this.getActivity().getApplicationContext(), 1);
         rv.setLayoutManager(lm);
-        roomAdapter = new RoomAdapter(this.getActivity(), communicator);
+        roomAdapter = new RoomAdapter(this.getActivity());
         rv.setAdapter(roomAdapter);
         return view;
     }
@@ -44,39 +35,50 @@ public class RoomList extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
     }
 
-    public void changedTruckState(boolean b){
+    public void setOnRoomClickedListener(OnRoomClickedListener listener) {
+        roomAdapter.setOnRoomClickedListener(listener);
+    }
+
+    public void changedTruckState(boolean b) {
         roomAdapter.notifyDataSetChanged(b);
     }
-    public void resetList(List<Room> roomList){
+
+    public void resetList(List<Room> roomList) {
         roomAdapter.resetList(roomList);
     }
-    public void itemChanged(int p){
+
+    public void itemChanged(int p) {
         roomAdapter.notifyItemChanged(p);
     }
-    public void itemChanged(Room room){
+
+    public void itemChanged(Room room) {
         roomAdapter.itemChanged(room);
     }
-    public void removeItem(int p){
+
+    public void removeItem(int p) {
         roomAdapter.deleteItem(p);
     }
-    public void removeItem(Room room){
+
+    public void removeItem(Room room) {
         roomAdapter.deleteItem(room);
     }
-    public void addItem(Room room, int p){
-        roomAdapter.addItem(room,p);
+
+    public void addItem(Room room, int p) {
+        roomAdapter.addItem(room, p);
     }
-    public void addItem(Room room){
+
+    public void addItem(Room room) {
         roomAdapter.addItem(room);
     }
-    public void hightLightItem(int roomId){
+
+    public void hightLightItem(int roomId) {
         roomAdapter.highlightRoom(roomId);
     }
 
 
-    public interface RoomListHolder{
-        void roomClicked(Room room);
+    public interface OnRoomClickedListener {
+        void onRoomClicked(Room room);
     }
 }

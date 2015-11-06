@@ -29,19 +29,20 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
 
     private Model model;
 
+    private Context context;
     private final LayoutInflater inflater;
     private boolean truckstate;
     private int highlightPos = -1;
     List<Room> rooms = Collections.emptyList();
-    private RoomList.RoomListHolder communicator;
+    private RoomList.OnRoomClickedListener onRoomClickedListener;
 
-    public RoomAdapter(Context context, RoomList.RoomListHolder communicator) {
+    public RoomAdapter(Context context) {
         this.model = ModelFactory.getCurrentModel();
+        this.context = context;
         this.inflater = LayoutInflater.from(context);
-        this.communicator = communicator;
         this.truckstate = TruckModeHandlerFactory.getCurrentHandler().truckModeActive();
-        Log.d("RoomAdapter", "is communicator.getRooms null? = " + (model.getRooms() == null ));
-        if(model.getRooms() != null) {
+        Log.d("RoomAdapter", "is communicator.getRooms null? = " + (model.getRooms() == null));
+        if (model.getRooms() != null) {
             this.rooms = model.getRooms();
             for (Room r : rooms) {
                 if (r.getId() == model.getCurrentRoom()) {
@@ -50,19 +51,29 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
             }
         }
     }
-    public void roomClicked(int position){
-        if(rooms.get(position) != null) {
-            communicator.roomClicked(rooms.get(position));
+
+    public void setOnRoomClickedListener(RoomList.OnRoomClickedListener listener) {
+        this.onRoomClickedListener = listener;
+    }
+
+    public void roomClicked(int position) {
+        if (rooms.get(position) != null) {
+            if (onRoomClickedListener != null) {
+                onRoomClickedListener.onRoomClicked(rooms.get(position));
+            }
         }
     }
-    public void notifyDataSetChanged(boolean b){
+
+    public void notifyDataSetChanged(boolean b) {
         changeTruckState(b);
         notifyDataSetChanged();
-    };
-    public void changeTruckState(boolean b){
+    }
+
+    public void changeTruckState(boolean b) {
         truckstate = b;
         updateAllItemInList();
     }
+
     @Override
     public RoomViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         View view;
@@ -70,26 +81,28 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
         RoomViewHolder viewHolder = new RoomViewHolder(view, truckstate);
         return viewHolder;
     }
+
     public void onBindViewHolder(RoomViewHolder holder, int position) {
         Room currentRoom = rooms.get(position);
-        if(position == highlightPos){
-            Log.d("RoomAdapter", "Highlighting room = "+ highlightPos );
+        if (position == highlightPos) {
+            Log.d("RoomAdapter", "Highlighting room = " + highlightPos);
             holder.roomname.setTextColor(Color.GREEN);
-        }else{
+        } else {
             holder.roomname.setTextColor(Color.WHITE);
         }
         holder.iv.setImageResource(R.drawable.ic_room);
         holder.roomname.setText(currentRoom.getName());
         ArrayList<User> users = model.getUsers(currentRoom.getId());
         StringBuilder builder = new StringBuilder();
-        if(users != null && users.size() > 0) {
-            Log.d("RoomAdapter","Viewholder start user list ");
+        if (users != null && users.size() > 0) {
+            Log.d("RoomAdapter", "Viewholder start user list ");
             if (truckstate) {
                 builder.append(("(" + users.size() + ")"));
-            } else {                for(int i = 0; i < users.size(); i++) {
+            } else {
+                for (int i = 0; i < users.size(); i++) {
                     builder.append(users.get(i).getName() + ",");
                 }
-                if(builder.lastIndexOf(",") > 0)
+                if (builder.lastIndexOf(",") > 0)
                     builder.deleteCharAt(builder.lastIndexOf(","));
             }
         }
@@ -98,62 +111,70 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
         holder.userListText.setText(builder.toString());
 
     }
+
     @Override
     public int getItemCount() {
         return rooms.size();
     }
-    public void updateAllItemInList(){
+
+    public void updateAllItemInList() {
         notifyDataSetChanged();
     }
-    public void resetList(List<Room> list){
-        if(list != null){
+
+    public void resetList(List<Room> list) {
+        if (list != null) {
             rooms = list;
-        }else{
+        } else {
             rooms = Collections.emptyList();
         }
         highlightPos = model.getCurrentRoom();
         notifyDataSetChanged();
     }
-    public void addItem(Room room){
+
+    public void addItem(Room room) {
         rooms.add(room);
-        notifyItemInserted(rooms.size()-1);
+        notifyItemInserted(rooms.size() - 1);
     }
-    public void addItem(Room room , int pos){
+
+    public void addItem(Room room, int pos) {
         rooms.add(pos, room);
         notifyItemInserted(pos);
     }
-    public void deleteItem(int pos){
+
+    public void deleteItem(int pos) {
         rooms.remove(pos);
         notifyItemRemoved(pos);
     }
-    public void deleteItem(Room room){
+
+    public void deleteItem(Room room) {
         int pos = rooms.indexOf(room);
-        if(pos > 0)
-        deleteItem(pos);
+        if (pos > 0)
+            deleteItem(pos);
 
     }
-    public void highlightRoom(int roomID){
-       int oldPos = highlightPos;
-       for(Room r: rooms){
-           if(r.getId() == roomID){
-               highlightPos = rooms.indexOf(r);
-           }
-       }
-       notifyItemChanged(oldPos);
-       notifyItemChanged(highlightPos);
-    }
-    public Room acessItem(int pos){
-        if(!rooms.isEmpty() && pos >= 0 && pos < getItemCount()){
-            return rooms.get(pos);
+
+    public void highlightRoom(int roomID) {
+        int oldPos = highlightPos;
+        for (Room r : rooms) {
+            if (r.getId() == roomID) {
+                highlightPos = rooms.indexOf(r);
+            }
         }
-        else
+        notifyItemChanged(oldPos);
+        notifyItemChanged(highlightPos);
+    }
+
+    public Room acessItem(int pos) {
+        if (!rooms.isEmpty() && pos >= 0 && pos < getItemCount()) {
+            return rooms.get(pos);
+        } else
             return null;
     }
 
     public void itemChanged(Room room) {
         int pos = rooms.indexOf(room);
-        if(pos > 0){
-           notifyItemChanged(pos);
+        if (pos > 0) {
+            notifyItemChanged(pos);
         }
     }
 
@@ -168,27 +189,27 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
             iv = (ImageView) viewItem.findViewById(R.id.roomIcon);
             roomname = (TextView) viewItem.findViewById(R.id.roomName);
             userListText = (TextView) viewItem.findViewById(R.id.list_item_users);
-            if(userListText == null){
+            if (userListText == null) {
                 Log.d("RoomAdapter", "userListText is null");
             }
 
         }
-        public void truckModeChanged(boolean b){
+
+        public void truckModeChanged(boolean b) {
             //Valid since we retrieve the instance of the communicator via the inverse casting.
-            Activity a = (Activity)communicator;
-            if(b) {
-                float car = a.getResources().getDimension(R.dimen.carsize);
+            if (b) {
+                float car = context.getResources().getDimension(R.dimen.carsize);
                 roomname.setTextSize(car);
-                userListText.setTextSize(car-5);
+                userListText.setTextSize(car - 5);
                 userListText.setSingleLine(true);
-            }
-            else{
-                float normal = a.getResources().getDimension(R.dimen.normalsize);
+            } else {
+                float normal = context.getResources().getDimension(R.dimen.normalsize);
                 roomname.setTextSize(normal);
-                userListText.setTextSize(normal-5);
+                userListText.setTextSize(normal - 5);
                 userListText.setSingleLine(false);
             }
         }
+
         @Override
         public void onClick(View view) {
             roomClicked(getAdapterPosition());
