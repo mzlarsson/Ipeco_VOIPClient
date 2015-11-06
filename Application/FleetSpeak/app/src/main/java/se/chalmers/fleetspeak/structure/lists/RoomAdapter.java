@@ -1,5 +1,6 @@
 package se.chalmers.fleetspeak.structure.lists;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
@@ -166,14 +167,16 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
 
         }
         public void truckModeChanged(boolean b){
+            //Valid since we retrieve the instance of the communicator via the inverse casting.
+            Activity a = (Activity)communicator;
             if(b) {
-                float car = communicator.getResources().getDimension(R.dimen.carsize);
+                float car = a.getResources().getDimension(R.dimen.carsize);
                 roomname.setTextSize(car);
                 userListText.setTextSize(car-5);
                 userListText.setSingleLine(true);
             }
             else{
-                float normal = communicator.getResources().getDimension(R.dimen.normalsize);
+                float normal = a.getResources().getDimension(R.dimen.normalsize);
                 roomname.setTextSize(normal);
                 userListText.setTextSize(normal-5);
                 userListText.setSingleLine(false);

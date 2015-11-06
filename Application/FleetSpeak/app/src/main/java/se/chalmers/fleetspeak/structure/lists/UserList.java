@@ -74,7 +74,6 @@ public class UserList extends Fragment {
     public interface UserListHolder extends CarModeInteractive{
         List<User> getCurrentRoomsUsers();
         void sendUserClicked(User user);
-        Resources getResources();
     }
 }
 

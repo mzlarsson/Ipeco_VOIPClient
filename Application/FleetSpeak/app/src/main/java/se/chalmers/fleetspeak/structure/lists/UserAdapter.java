@@ -1,5 +1,6 @@
 package se.chalmers.fleetspeak.structure.lists;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -59,11 +60,14 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
         holder.iv.setImageResource(R.drawable.ic_user);
         holder.username.setText(current.getName());
         ViewGroup.LayoutParams params;
+
+        //Valid since we retrieve the instance of the communicator via the inverse casting.
+        Activity a = (Activity)communicator;
         if(truckstate){
-            float car = communicator.getResources().getDimension(R.dimen.carsize);
+            float car = a.getResources().getDimension(R.dimen.carsize);
             holder.username.setTextSize(car);
         }else{
-            float normal = communicator.getResources().getDimension(R.dimen.normalsize);
+            float normal = a.getResources().getDimension(R.dimen.normalsize);
             holder.username.setTextSize(normal);
         }
     }

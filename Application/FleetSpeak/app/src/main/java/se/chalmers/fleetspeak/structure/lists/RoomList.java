@@ -86,6 +86,5 @@ public class RoomList extends Fragment {
         int getCurrentRoomId();
         void roomClicked(Room room);
         ArrayList<User> getUsersForRoom(int roomID);
-        Resources getResources();
     }
 }

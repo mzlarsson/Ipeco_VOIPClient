@@ -93,7 +93,7 @@ public class LobbyFragment extends AppConnectFragment {
                     LinearLayout.LayoutParams.MATCH_PARENT);
             input.setLayoutParams(lp);
             alertDialog.setView(input);
-            Resources res = communicator.getResources();
+            Resources res = getContext().getResources();
             alertDialog.setPositiveButton(res.getString(R.string.OK), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -160,6 +160,5 @@ public class LobbyFragment extends AppConnectFragment {
         void reconnect();                                       //FIXME extract reconnection.
         String getUsername();
         void createAndMoveRoom(String newRoomName);
-        Resources getResources();
     }
 }
