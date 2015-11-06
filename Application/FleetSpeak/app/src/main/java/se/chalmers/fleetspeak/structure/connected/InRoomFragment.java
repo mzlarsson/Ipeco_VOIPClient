@@ -21,10 +21,13 @@ public class InRoomFragment extends AppConnectFragment {
 
     private UserList userList;
 
+    public InRoomFragment(){
+        userList = new UserList();
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_in_room, container, false);
-        userList = new UserList();
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.replace(R.id.fragment_holder_user, userList);
         ft.commit();

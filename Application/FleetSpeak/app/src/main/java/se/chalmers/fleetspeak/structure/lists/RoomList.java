@@ -28,6 +28,9 @@ public class RoomList extends Fragment {
         GridLayoutManager lm = new GridLayoutManager(this.getActivity().getApplicationContext(), 1);
         rv.setLayoutManager(lm);
         roomAdapter = new RoomAdapter(this.getActivity());
+        if(onRoomClickedListener != null){
+            roomAdapter.setOnRoomClickedListener(onRoomClickedListener);
+        }
         rv.setAdapter(roomAdapter);
         return view;
     }
@@ -38,7 +41,10 @@ public class RoomList extends Fragment {
     }
 
     public void setOnRoomClickedListener(OnRoomClickedListener listener) {
-        roomAdapter.setOnRoomClickedListener(listener);
+        this.onRoomClickedListener = listener;
+        if(roomAdapter != null) {
+            roomAdapter.setOnRoomClickedListener(listener);
+        }
     }
 
     public void changedTruckState(boolean b) {

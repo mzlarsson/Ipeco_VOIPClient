@@ -221,7 +221,7 @@ public class Model {
                     } catch (JSONException e) {
                        Log.e("Model", "JSONException " + e.getMessage()); 
                     } catch (NullPointerException e){
-                        Log.e("CommandHandler", e.getMessage());
+                        Log.e("CommandHandler", String.valueOf(e.getMessage()));
                         e.printStackTrace();
                     }
                     

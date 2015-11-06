@@ -37,6 +37,13 @@ public class LobbyFragment extends AppConnectFragment {
     private View mainView;
     private View altView;
 
+    private RoomList.OnRoomClickedListener onRoomClickedListener;
+
+    public LobbyFragment(){
+        super();
+        roomList = new RoomList();
+    }
+
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -53,7 +60,6 @@ public class LobbyFragment extends AppConnectFragment {
         // Inflate the layout for this fragment
 
         View view = inflater.inflate(R.layout.fragment_lobby, container, false);
-        roomList = new RoomList();
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.replace(R.id.fragment_holder_room, roomList);
         ft.commit();
