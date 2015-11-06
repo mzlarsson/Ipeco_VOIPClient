@@ -9,7 +9,15 @@ public class TruckModeHandlerFactory {
 
     private static TruckModeHandler handler;
 
-    public static TruckModeHandler getCurrentHandler(Context context){
+    public static TruckModeHandler getCurrentHandler(){
+        if(handler != null){
+            return handler;
+        }else{
+            throw new IllegalStateException("Invalid call: No truck mode handler has been started.");
+        }
+    }
+
+    public static TruckModeHandler getHandler(Context context){
         if(handler == null) {
             if (canAccessHardware()) {
                 handler = new TruckHardwareHandler();

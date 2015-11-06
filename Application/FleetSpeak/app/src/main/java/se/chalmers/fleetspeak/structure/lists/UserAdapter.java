@@ -14,23 +14,31 @@ import java.util.Collections;
 import java.util.List;
 
 import se.chalmers.fleetspeak.R;
-import se.chalmers.fleetspeak.User;
+import se.chalmers.fleetspeak.model.Model;
+import se.chalmers.fleetspeak.model.ModelFactory;
+import se.chalmers.fleetspeak.model.User;
+import se.chalmers.fleetspeak.truck.TruckModeHandlerFactory;
 
 /**
  * Created by David Gustafsson on 2015-08-01.
  */
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder> {
+
+    private Model model;
+
     private final LayoutInflater inflater;
     List<User> userList = Collections.emptyList();
     private boolean truckstate;
     private UserList.UserListHolder communicator;
 
     public UserAdapter(Context context, UserList.UserListHolder communicator){
+        this.model = ModelFactory.getCurrentModel();
         this.inflater = LayoutInflater.from(context);
         this.communicator = communicator;
-        this.truckstate = communicator.getTruckState();
-        if(communicator.getCurrentRoomsUsers() != null) {
-            this.userList = communicator.getCurrentRoomsUsers();
+        this.truckstate = TruckModeHandlerFactory.getCurrentHandler().truckModeActive();
+        List<User> users = model.getUsers(model.getCurrentRoom());
+        if(users != null) {
+            this.userList = users;
         }
     }
     public void UserClicked(int position){

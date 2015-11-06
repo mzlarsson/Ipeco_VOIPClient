@@ -1,7 +1,6 @@
 package se.chalmers.fleetspeak.structure.connected;
 
 
-import android.app.Activity;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -12,7 +11,7 @@ import android.view.ViewGroup;
 import java.util.List;
 
 import se.chalmers.fleetspeak.R;
-import se.chalmers.fleetspeak.User;
+import se.chalmers.fleetspeak.model.User;
 import se.chalmers.fleetspeak.structure.lists.UserList;
 
 /**

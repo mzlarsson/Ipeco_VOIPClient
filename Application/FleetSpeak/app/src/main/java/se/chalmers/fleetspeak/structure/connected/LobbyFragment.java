@@ -16,19 +16,21 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import se.chalmers.fleetspeak.R;
-import se.chalmers.fleetspeak.Room;
-import se.chalmers.fleetspeak.User;
+import se.chalmers.fleetspeak.model.Model;
+import se.chalmers.fleetspeak.model.ModelFactory;
+import se.chalmers.fleetspeak.model.Room;
 import se.chalmers.fleetspeak.structure.lists.RoomList;
+import se.chalmers.fleetspeak.truck.TruckModeHandlerFactory;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class LobbyFragment extends AppConnectFragment {
 
+    private Model model;
     private RoomList roomList;
     private LobbyFragmentHolder communicator;
     private AlertDialog dialog;
@@ -40,6 +42,7 @@ public class LobbyFragment extends AppConnectFragment {
         super.onAttach(activity);
         try {
             communicator = (LobbyFragmentHolder)activity;
+            model = ModelFactory.getCurrentModel();
         }catch(ClassCastException cce){
             throw new ClassCastException(activity.toString() + " must implement LobbyFragmentHolder");
         }
@@ -83,11 +86,12 @@ public class LobbyFragment extends AppConnectFragment {
     private void createNewRoomOnClick() {
         // If the user is not driving create a dialog that promts the user to select a room name and
         // create a room with that name if the user don't put in a room name default to the users name + "'s room"
-        if(!communicator.getTruckState()){
+        boolean truckMode = TruckModeHandlerFactory.getCurrentHandler().truckModeActive();
+        if(!truckMode){
             AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
             alertDialog.setTitle("Choose a name for your room");
             final EditText input = new EditText(getActivity());
-            input.setHint(communicator.getUsername() + "'s room");
+            input.setHint(model.getCurrentUserAlias() + "'s room");
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.MATCH_PARENT);
@@ -117,12 +121,12 @@ public class LobbyFragment extends AppConnectFragment {
 
         } else{ //When the car is driving and the user have selected "Create room" the user won't be
             //allowed to pick a name since it will take to much time.
-            String newRoomName = (communicator.getUsername() + getResources().getString(R.string.sRoom));
+            String newRoomName = (model.getCurrentUserAlias() + getResources().getString(R.string.sRoom));
             createAndMoveRoom(newRoomName);
         }
     }
     private void createAndMoveRoom(String newRoomName){
-        communicator.createAndMoveRoom(newRoomName);
+        model.moveNewRoom(newRoomName);
     }
     public void closeDialog(){
         if(dialog != null){
@@ -156,9 +160,6 @@ public class LobbyFragment extends AppConnectFragment {
 
 
     public interface LobbyFragmentHolder extends RoomList.RoomListHolder{
-        List<Room> getRooms();
         void reconnect();                                       //FIXME extract reconnection.
-        String getUsername();
-        void createAndMoveRoom(String newRoomName);
     }
 }

@@ -1,8 +1,6 @@
 package se.chalmers.fleetspeak.structure.lists;
 
 import android.app.Activity;
-import android.app.Notification;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -11,13 +9,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import se.chalmers.fleetspeak.R;
-import se.chalmers.fleetspeak.Room;
-import se.chalmers.fleetspeak.User;
-import se.chalmers.fleetspeak.structure.connected.CarModeInteractive;
+import se.chalmers.fleetspeak.model.Room;
 
 
 public class RoomList extends Fragment {
@@ -81,10 +76,7 @@ public class RoomList extends Fragment {
     }
 
 
-    public interface RoomListHolder extends CarModeInteractive{
-        List<Room> getRooms();
-        int getCurrentRoomId();
+    public interface RoomListHolder{
         void roomClicked(Room room);
-        ArrayList<User> getUsersForRoom(int roomID);
     }
 }

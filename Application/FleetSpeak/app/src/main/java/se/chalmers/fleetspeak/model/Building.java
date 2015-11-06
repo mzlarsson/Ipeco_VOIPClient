@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak;
+package se.chalmers.fleetspeak.model;
 
 import android.os.Handler;
 import android.util.Log;
@@ -17,10 +17,9 @@ public class Building {
     private Handler handler;
 
     private int activeUserid;
-
     private int currentRoom;
 
-    public Building(Handler handler) {
+    protected Building(Handler handler) {
         rooms = new ConcurrentHashMap<>();
         this.handler = handler;
     }
@@ -74,9 +73,11 @@ public class Building {
         return list;
     }
 
-    public ArrayList getUsers(int roomid) {
-        if (rooms.keySet().contains(roomid))
+    public ArrayList<User> getUsers(int roomid) {
+        if (rooms.keySet().contains(roomid)) {
             return rooms.get(roomid).getUsers();
+        }
+
         return null;
     }
 

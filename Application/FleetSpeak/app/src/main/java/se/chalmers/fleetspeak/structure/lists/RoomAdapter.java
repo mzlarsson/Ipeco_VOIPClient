@@ -16,13 +16,19 @@ import java.util.Collections;
 import java.util.List;
 
 import se.chalmers.fleetspeak.R;
-import se.chalmers.fleetspeak.Room;
-import se.chalmers.fleetspeak.User;
+import se.chalmers.fleetspeak.model.Model;
+import se.chalmers.fleetspeak.model.ModelFactory;
+import se.chalmers.fleetspeak.model.Room;
+import se.chalmers.fleetspeak.model.User;
+import se.chalmers.fleetspeak.truck.TruckModeHandlerFactory;
 
 /**
  * Created by David Gustafsson on 2015-07-31.
  */
 public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder> {
+
+    private Model model;
+
     private final LayoutInflater inflater;
     private boolean truckstate;
     private int highlightPos = -1;
@@ -30,14 +36,15 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
     private RoomList.RoomListHolder communicator;
 
     public RoomAdapter(Context context, RoomList.RoomListHolder communicator) {
+        this.model = ModelFactory.getCurrentModel();
         this.inflater = LayoutInflater.from(context);
         this.communicator = communicator;
-        this.truckstate = communicator.getTruckState();
-        Log.d("RoomAdapter", "is communicator.getRooms null? = " + (communicator.getRooms() == null ));
-        if(communicator.getRooms() != null) {
-            this.rooms = communicator.getRooms();
+        this.truckstate = TruckModeHandlerFactory.getCurrentHandler().truckModeActive();
+        Log.d("RoomAdapter", "is communicator.getRooms null? = " + (model.getRooms() == null ));
+        if(model.getRooms() != null) {
+            this.rooms = model.getRooms();
             for (Room r : rooms) {
-                if (r.getId() == communicator.getCurrentRoomId()) {
+                if (r.getId() == model.getCurrentRoom()) {
                     highlightPos = rooms.indexOf(r);
                 }
             }
@@ -64,7 +71,7 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
         return viewHolder;
     }
     public void onBindViewHolder(RoomViewHolder holder, int position) {
-        Room current = rooms.get(position);
+        Room currentRoom = rooms.get(position);
         if(position == highlightPos){
             Log.d("RoomAdapter", "Highlighting room = "+ highlightPos );
             holder.roomname.setTextColor(Color.GREEN);
@@ -72,8 +79,8 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
             holder.roomname.setTextColor(Color.WHITE);
         }
         holder.iv.setImageResource(R.drawable.ic_room);
-        holder.roomname.setText(current.getName());
-        ArrayList<User> users = communicator.getUsersForRoom(current.getId());
+        holder.roomname.setText(currentRoom.getName());
+        ArrayList<User> users = model.getUsers(currentRoom.getId());
         StringBuilder builder = new StringBuilder();
         if(users != null && users.size() > 0) {
             Log.d("RoomAdapter","Viewholder start user list ");
@@ -104,7 +111,7 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
         }else{
             rooms = Collections.emptyList();
         }
-        highlightPos = communicator.getCurrentRoomId();
+        highlightPos = model.getCurrentRoom();
         notifyDataSetChanged();
     }
     public void addItem(Room room){

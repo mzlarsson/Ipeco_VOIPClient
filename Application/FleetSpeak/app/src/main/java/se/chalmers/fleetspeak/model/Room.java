@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak;
+package se.chalmers.fleetspeak.model;
 
 import android.util.Log;
 

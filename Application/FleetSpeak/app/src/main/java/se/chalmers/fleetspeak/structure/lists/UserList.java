@@ -2,7 +2,6 @@ package se.chalmers.fleetspeak.structure.lists;
 
 
 import android.app.Activity;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -14,8 +13,7 @@ import android.view.ViewGroup;
 import java.util.List;
 
 import se.chalmers.fleetspeak.R;
-import se.chalmers.fleetspeak.User;
-import se.chalmers.fleetspeak.structure.connected.CarModeInteractive;
+import se.chalmers.fleetspeak.model.User;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -71,8 +69,7 @@ public class UserList extends Fragment {
     }
 
 
-    public interface UserListHolder extends CarModeInteractive{
-        List<User> getCurrentRoomsUsers();
+    public interface UserListHolder{
         void sendUserClicked(User user);
     }
 }

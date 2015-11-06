@@ -48,7 +48,7 @@ public class LoginActivity extends ActionBarActivity implements TruckStateListen
 
 
         password = prefs.getString("password", "");
-        TruckModeHandler handler = TruckModeHandlerFactory.getCurrentHandler(this);
+        TruckModeHandler handler = TruckModeHandlerFactory.getHandler(this);
         handler.addListener(this);
         carmode = handler.truckModeActive();
         setStartFragment(carmode);

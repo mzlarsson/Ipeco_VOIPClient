@@ -17,17 +17,17 @@ import android.view.MenuItem;
 import java.util.ArrayList;
 import java.util.List;
 
-import se.chalmers.fleetspeak.Model;
+import se.chalmers.fleetspeak.model.Model;
 import se.chalmers.fleetspeak.R;
-import se.chalmers.fleetspeak.Room;
-import se.chalmers.fleetspeak.User;
+import se.chalmers.fleetspeak.model.Room;
+import se.chalmers.fleetspeak.model.User;
 import se.chalmers.fleetspeak.structure.establish.BackFragment;
 import se.chalmers.fleetspeak.structure.login.LoginActivity;
 import se.chalmers.fleetspeak.truck.TruckModeHandlerFactory;
 import se.chalmers.fleetspeak.truck.TruckModeHandler;
 import se.chalmers.fleetspeak.truck.TruckStateListener;
 import se.chalmers.fleetspeak.util.MessageValues;
-import se.chalmers.fleetspeak.util.ModelFactory;
+import se.chalmers.fleetspeak.model.ModelFactory;
 
 public class ConnectionActivity extends ActionBarActivity implements TruckStateListener, ActionBar.TabListener, LobbyFragment.LobbyFragmentHolder, InRoomFragment.InRoomFragmentHolder, BackFragment.BackFragmentHolder{
     private Model model;
@@ -134,7 +134,7 @@ public class ConnectionActivity extends ActionBarActivity implements TruckStateL
         backFragment = new BackFragment();
         Log.d("ConnectionActivity", " Checking if connected");
 
-        TruckModeHandler handler = TruckModeHandlerFactory.getCurrentHandler(this);
+        TruckModeHandler handler = TruckModeHandlerFactory.getHandler(this);
         handler.addListener(this);
         carMode = handler.truckModeActive();
 
@@ -149,7 +149,7 @@ public class ConnectionActivity extends ActionBarActivity implements TruckStateL
 
         ActionBar.Tab inRoom = actionBar.newTab();
         inRoom.setIcon(R.drawable.ic_room);
-        String chatroom = getRecources().getString(R.string.Chatroom);
+        String chatroom = getResources().getString(R.string.Chatroom);
         inRoom.setText(chatroom);
         inRoom.setTabListener(this);
         actionBar.addTab(inRoom);
@@ -205,52 +205,12 @@ public class ConnectionActivity extends ActionBarActivity implements TruckStateL
     }
 
     @Override
-    public List<Room> getRooms() {
-        return model.getRooms();
-    }
-
-    @Override
     public void reconnect() {
         model.connect(username, password);
     }
 
     @Override
-    public boolean getTruckState() {
-        return carMode;
-    }
-
-    @Override
-    public String getUsername() {
-        return username;
-    }
-
-    @Override
-    public void createAndMoveRoom(String newRoomName) {
-        lobbyFragment.closeDialog();
-        model.moveNewRoom(newRoomName);
-        updateView();
-        lobbyFragment.movedToRoom(getCurrentRoomId());
-        viewPager.setCurrentItem(1);
-        actionBar.setSelectedNavigationItem(1);
-    }
-
-    @Override
-    public List<User> getCurrentRoomsUsers() {
-        return model.getUsers(model.getCurrentRoom());
-    }
-
-    @Override
     public void sendUserClicked(User user) {
-
-    }
-    @Override
-    public ArrayList<User> getUsersForRoom(int RoomID) {
-        return model.getUsers(RoomID);
-    }
-
-    @Override
-    public int getCurrentRoomId() {
-        return model.getCurrentRoom();
     }
 
     @Override
@@ -336,11 +296,7 @@ public class ConnectionActivity extends ActionBarActivity implements TruckStateL
         model.disconnect();
 
         //Remove truck mode notifications
-        TruckModeHandler handler = TruckModeHandlerFactory.getCurrentHandler(this);
+        TruckModeHandler handler = TruckModeHandlerFactory.getHandler(this);
         handler.removeListener(this);
-    }
-
-    public Resources getRecources() {
-        return getResources();
     }
 }

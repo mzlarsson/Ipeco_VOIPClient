@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak;
+package se.chalmers.fleetspeak.model;
 
 import android.os.Handler;
 import android.os.Message;
@@ -34,7 +34,7 @@ public class Model {
 
     private int roomVersion;
 
-    public Model(Handler callbackHandler){
+    protected Model(Handler callbackHandler){
         state = State.not_connected;
         building = new Building(callbackHandler);
         commandHandler = new CommandHandler();
@@ -51,6 +51,16 @@ public class Model {
     public ArrayList<User> getUsers(int roomid){
         if(state == State.authenticated)
             return building.getUsers(roomid);
+        return null;
+    }
+    public String getCurrentUserAlias(){
+        int clientID = building.getUserid();
+        for(User u : building.getUsers(building.getCurrentRoom())){
+            if(u.getId() == clientID){
+                return u.getName();
+            }
+        }
+
         return null;
     }
 
