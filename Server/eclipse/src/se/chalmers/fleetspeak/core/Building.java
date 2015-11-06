@@ -1,5 +1,6 @@
 package se.chalmers.fleetspeak.core;
 
+import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -7,11 +8,15 @@ import java.util.logging.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import se.chalmers.fleetspeak.util.ChangeTracker;
+
 public class Building {
 
 	private Logger logger = Logger.getLogger("Debug");
 
 	private ConcurrentHashMap<Integer, IRoom> rooms;
+
+	private ChangeTracker changeTracker;
 
 	private BuildingManager manager = (cmd, id) -> {
 		try{
@@ -29,6 +34,13 @@ public class Building {
 			case "disconnect":
 				removeClient(command.getInt("userid"),id);
 				break;
+			case "requestchangehistory":
+				LinkedList<JSONObject> changes = changeTracker.getChanges(command.getInt("fromversion"));
+				IRoom r = rooms.get(command.getInt("roomid"));
+				while(!changes.isEmpty()){
+					r.sendCommandToClient(command.getInt("clientid"), changes.removeFirst().toString());
+				}
+				break;
 			default:
 				logger.log(Level.WARNING, "Unknown command: " + cmd );
 			}
@@ -38,9 +50,8 @@ public class Building {
 	};
 
 	public Building() {
-		super();
 		rooms = new ConcurrentHashMap<Integer, IRoom>();
-
+		changeTracker = new ChangeTracker();
 		//TODO this should not be static move to config;
 		this.addRoom("Lobby", true);
 	}
@@ -53,9 +64,15 @@ public class Building {
 	public int addRoom(String name, boolean permanent){
 		IRoom newRoom = new AudioRoom(name, manager, permanent);
 		rooms.put(newRoom.getId(), newRoom);
-		postUpdate("{\"command\":\"createdroom\","
-				+ "\"roomid\":" + newRoom.getId() + ","
-				+ "\"roomname\":\"" + newRoom.getName() + "\"}");
+		JSONObject json = new JSONObject();
+		try{
+			json.put("command", "createdroom");
+			json.put("roomid", newRoom.getId());
+			json.put("roomname", newRoom.getName());
+		}catch(JSONException e){
+			logger.log(Level.WARNING, "Could not create JSON object (for some random reason)", e);
+		}
+		postUpdate(json);
 		logger.log(Level.INFO, "Added a room "+ newRoom.getId() +", "+ newRoom.getName());
 		return newRoom.getId();
 	}
@@ -63,8 +80,14 @@ public class Building {
 		IRoom room = rooms.remove(roomid);
 		if(room != null){
 			room.terminate();
-			postUpdate("{\"command\":\"removedroom\","
-					+ "\"roomid\":" + roomid + "}");
+			JSONObject json = new JSONObject();
+			try{
+				json.put("command", "removedroom");
+				json.put("roomid", roomid);
+			}catch(JSONException e){
+				logger.log(Level.WARNING, "Could not create JSON object (for some random reason)", e);
+			}
+			postUpdate(json);
 			logger.log(Level.INFO, "Removed room " + roomid);
 		}
 	}
@@ -76,6 +99,7 @@ public class Building {
 	public void addClient(Client client, int roomid){
 		//TODO error handling if invalid roomid
 
+		sync(client);
 		rooms.get(roomid).addClient(client);
 		JSONObject json = new JSONObject();
 		try {
@@ -88,9 +112,9 @@ public class Building {
 		}
 
 
-		postUpdate(json.toString());
+		postUpdate(json);
 		logger.log(Level.INFO, "Added client " + client.toString() + " to room " + roomid);
-		sync(client);
+
 	}
 	/**
 	 * Move a Client between rooms
@@ -113,7 +137,7 @@ public class Building {
 				} catch (JSONException e) {
 					logger.log(Level.WARNING, "Could not create JSON object (for some random reason)", e);
 				}
-				postUpdate(json.toString());
+				postUpdate(json);
 				logger.log(Level.INFO, "Moved client " + c.toString() + " to room " + destinationRoom);
 				if(r.canDelete()){
 					removeRoom(sourceRoom);
@@ -134,7 +158,7 @@ public class Building {
 			}catch(JSONException e){
 				logger.log(Level.WARNING, "Could not create JSON object (for some random reason)", e);
 			}
-			postUpdate(json.toString());
+			postUpdate(json);
 			logger.log(Level.INFO, "Removed client id: " + clientid + " Alias: " + c.getName());
 
 			if(rooms.get(roomid).canDelete()){
@@ -146,7 +170,7 @@ public class Building {
 				}catch(JSONException e){
 					logger.log(Level.WARNING, "Could not create JSON object (for some random reason)", e);
 				}
-				postUpdate(roomJson.toString());
+				postUpdate(roomJson);
 				logger.log(Level.INFO, "Removed room id: " + room.getId() + " name: " + room.getName());
 			}
 		}
@@ -156,9 +180,10 @@ public class Building {
 	 * Sends a command to all Clients in the Building
 	 * @param c Command to send
 	 */
-	public void postUpdate(String c){
+	public void postUpdate(JSONObject c){
+		JSONObject command = changeTracker.addEntry(c);
 		//TODO This should be done in a separate thread to improve responsiveness
-		rooms.forEach((id,room)-> room.postUpdate(c));
+		rooms.forEach((id,room)-> room.postUpdate(command.toString()));
 	}
 
 	private void sync(Client c){

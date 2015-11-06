@@ -20,6 +20,7 @@ import java.util.logging.Logger;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSocket;
 
@@ -69,11 +70,25 @@ public class TLSConnectionHandler{
 					logger.log(Level.FINER, "Starting TLS handshake");
 					try{
 						clientSocket.startHandshake();
-						
+
 						//Handshake succeeded
 						logger.log(Level.FINER, "Finished TLS handshake");
-						logger.log(Level.INFO, "Created socket" + clientSocket.getSession().getProtocol());
-						clientCreator.addNewClient(clientSocket);
+						if(clientSocket.getSession().getProtocol() != "NONE"){
+							logger.log(Level.INFO, "Created socket" + clientSocket.getSession().getProtocol());
+							clientCreator.addNewClient(clientSocket);
+						}else{
+							logger.log(Level.INFO, "Discarding connection to " + clientSocket.toString());
+						}
+
+
+					}catch (SSLHandshakeException e){
+						logger.log(Level.SEVERE, "Handshake error. Closing socket");
+						try{
+							clientSocket.close();
+						}catch(IOException ioe){
+							logger.log(Level.FINE, "Socket crashed during close()");
+						}
+
 					}catch (IOException e){
 						logger.log(Level.SEVERE, "Failed with TLS handshake", e);
 					}

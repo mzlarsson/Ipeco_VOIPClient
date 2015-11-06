@@ -119,5 +119,16 @@ public class Room implements CommandHandler, IRoom{
 		clients.forEach((id, client) -> client.terminate());
 	}
 
+	@Override
+	public void sendCommandToClient(int clientid, String message) {
+		try {
+			clients.get(clientid).sendCommand(message);
+		} catch (IOException e) {
+			// TODO Connection broken remove client or something
+			e.printStackTrace();
+		}
+
+	}
+
 
 }

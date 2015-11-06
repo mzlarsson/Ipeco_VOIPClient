@@ -9,11 +9,11 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import se.chalmers.fleetspeak.audio.sound.SoundOutputController;
 import se.chalmers.fleetspeak.network.TCP.TLSConnector;
 import se.chalmers.fleetspeak.network.UDP.RTPHandler;
 import se.chalmers.fleetspeak.network.UDP.STUNInitiator;
 import se.chalmers.fleetspeak.network.UDP.UDPConnector;
-import se.chalmers.fleetspeak.audio.sound.SoundOutputController;
 import se.chalmers.fleetspeak.util.MessageValues;
 
 /**
@@ -29,10 +29,10 @@ public class Model {
     private RTPHandler rtpHandler;
     private SoundOutputController soundOutputController;
 
-    String username ="";
-    String password ="";
+    private String username ="";
+    private String password ="";
 
-
+    private int roomVersion;
 
     public Model(Handler callbackHandler){
         state = State.not_connected;
@@ -40,6 +40,7 @@ public class Model {
         commandHandler = new CommandHandler();
         connector = new TLSConnector(commandHandler);
         this.callbackHandler = callbackHandler;
+        roomVersion = 0;
     }
 
     public ArrayList<Room> getRooms(){
@@ -117,7 +118,7 @@ public class Model {
     }
     class CommandHandler extends Handler {
         public void handleMessage(Message msg) {
-            Log.d("Model", "Commandhandler " + msg.what);
+            Log.d("Model", "Commandhandler, messagecode " + msg.what);
             switch(msg.what) {
                 case MessageValues.CONNECTED:
                     state = State.connected;
@@ -146,13 +147,27 @@ public class Model {
                 case MessageValues.COMMAND:                    
                     try {
                         JSONObject json = new JSONObject((String)msg.obj);
+                        try{
+                            int v = json.getInt("structurestate");
+                            Log.d("CommandHandler", v + " structurestate");
+                            if(roomVersion != 0 && v - 1 > roomVersion){
+                                requestSync();
+                                break;
+                            }else{
+                                roomVersion = v;
+                            }
+                        }catch(JSONException e){
+
+                        }
+
                         Log.d("Model", "Command recieved" + json.getString("command"));
                         switch (json.getString("command").toLowerCase()) {
                             case "setinfo":
                                 building.setUserid(json.getInt("userid"));
                                 break;
                             case "addeduser":
-                                building.addUser(json.getInt("userid"),json.getString("username"), json.getInt("roomid"));
+                                Log.d("commandhandler", json.toString());
+                                building.addUser(json.getInt("userid"), json.getString("username"), json.getInt("roomid"));
                                 break;
                             case "changedroomname":
                                 building.changeRoomName(json.getInt("roomid"), json.getString("roomname"));
@@ -196,7 +211,8 @@ public class Model {
                     } catch (JSONException e) {
                        Log.e("Model", "JSONException " + e.getMessage()); 
                     } catch (NullPointerException e){
-                        Log.e("Model", "Probably failed to parse JSON " + msg.obj);
+                        Log.e("CommandHandler", e.getMessage());
+                        e.printStackTrace();
                     }
                     
                 
@@ -206,6 +222,21 @@ public class Model {
 
         }
     }
+
+    private void requestSync(){
+        try {
+            JSONObject request = new JSONObject();
+            request.put("command", "requestchangehistory");
+            request.put("fromversion", roomVersion);
+            request.put("userid", building.getUserid());
+            request.put("roomid", building.getCurrentRoom());
+            connector.sendMessage(request.toString());
+        }catch(JSONException e){
+            Log.e("Model", "failed to send requestSync command because of JSON");
+        }
+    }
+
+
     private enum State{
         not_connected, connecting, connected, authenticated;
     }
