@@ -107,6 +107,18 @@
 				<td><b>longitude</b><br>[Double]</td>
 				<td colspan='1'>&nbsp;</td>
 			</tr>
+			<tr class='light'>
+				<td class='info'>Client requesting the location of all other users</td>
+				<td><b>command</b><br>requestuserlocations</td>
+				<td><b>userid</b><br>[Integer]</td>
+				<td colspan='3'>&nbsp;</td>
+			</tr>
+			<tr class='dark'>
+				<td class='info'>Server responds to with the location of all users</td>
+				<td><b>command</b><br>locationsupdate</td>
+				<td><b>locations</b><br>[{"userid":[Integer],"roomid":[Integer],"latitude":[Double],"longitude":[Double]}...]</td>
+				<td colspan='3'>&nbsp;</td>
+			</tr>
 		</table>
 	</body>
 </html>

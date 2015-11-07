@@ -12,6 +12,7 @@ import org.json.JSONObject;
 import se.chalmers.fleetspeak.network.tcp.TCPHandler;
 import se.chalmers.fleetspeak.network.udp.RTPHandler;
 import se.chalmers.fleetspeak.sound.BufferedAudioStream;
+import se.chalmers.fleetspeak.util.Location;
 
 /**
  * A class that handles all connectors with the app
@@ -27,6 +28,7 @@ public class Client implements CommandHandler, NetworkUser {
 	private RTPHandler rtp;
 	private int clientID;
 
+	private Location location;	
 	private InetAddress ip;	//TODO Is it necessary for the client to hold it IP?
 
 	private Logger logger;
@@ -45,6 +47,7 @@ public class Client implements CommandHandler, NetworkUser {
 		this.ip = ip;
 		this.tcp = tcph;
 		this.tcp.setCommandHandler(this);
+		location = new Location(0,0);
 		JSONObject json = new JSONObject();
 		try {
 			json.put("command" , "setinfo");
@@ -83,7 +86,15 @@ public class Client implements CommandHandler, NetworkUser {
 	public String getName() {
 		return alias;
 	}
-
+	
+	/**
+	 * Gets the location of this client.
+	 * @return The location of the client.
+	 */
+	public Location getLocation() {
+		return location;
+	}
+	
 	/**
 	 * Set the name of this client.
 	 * @param name The new name of the client.
@@ -146,6 +157,10 @@ public class Client implements CommandHandler, NetworkUser {
 			case "disconnect":
 				json.put("userid", this.clientID);
 				ch.handleCommand(json.toString());
+				break;
+			case "updatelocation":
+				location = new Location(json.getDouble("latitude"), json.getDouble("longitude"));
+				ch.handleCommand(string);
 				break;
 			default:
 				ch.handleCommand(string);

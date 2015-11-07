@@ -87,4 +87,13 @@ Client sending updates on its current location
 "latitude":[Double],
 "longitude":[Double]
 }
-
+Client requesting the location of all other users
+{
+"command":"requestuserlocations",
+"userid":[Integer]
+}
+Server responds to with the location of all users
+{
+"command":"locationsupdate",
+"locations":[{"userid":[Integer],"roomid":[Integer],"latitude":[Double],"longitude":[Double]}...]
+}

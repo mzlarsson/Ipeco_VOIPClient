@@ -5,6 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -40,6 +41,9 @@ public class Building {
 				while(!changes.isEmpty()){
 					r.sendCommandToClient(command.getInt("clientid"), changes.removeFirst().toString());
 				}
+				break;
+			case "requestuserlocations":
+				syncLocations(command.getInt("userid"), id);
 				break;
 			default:
 				logger.log(Level.WARNING, "Unknown command: " + cmd );
@@ -180,7 +184,7 @@ public class Building {
 			}
 		}
 	}
-
+	
 	protected Client findClient(int id) {
 		Client tmp = null;
 		for(IRoom room : rooms.values()) {
@@ -219,4 +223,18 @@ public class Building {
 		});
 	}
 
+	private void syncLocations(int clientID, int roomID) {
+		JSONObject json = new JSONObject();
+		JSONArray jsonarr = new JSONArray();
+		rooms.forEach((id,room)-> {
+			room.getLocations(jsonarr);
+		});
+		try {
+			json.put("command", "locationsupdate");
+			json.put("locations", jsonarr);
+			rooms.get(roomID).sendCommandToClient(clientID, json.toString());
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, "Error while gathering locations", e);
+		}
+	}
 }

@@ -22,7 +22,7 @@ import se.chalmers.fleetspeak.core.CommandHandler;
 
 public class TCPHandler extends Thread{
 
-	private static final int TIMEOUT_TIME = 10000, RECONNECT_WINDOW = 30000;
+	private static final int TIMEOUT_TIME = 10000, RECONNECT_WINDOW = 1;
 
 	private Socket clientSocket;
 	private PrintWriter printWriter;

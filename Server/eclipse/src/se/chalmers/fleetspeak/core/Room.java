@@ -5,11 +5,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import se.chalmers.fleetspeak.util.IDFactory;
-
 
 public class Room implements CommandHandler, IRoom{
 	private Logger logger = Logger.getLogger("Debug");
@@ -98,7 +98,7 @@ public class Room implements CommandHandler, IRoom{
 	@Override
 	public void sync(Client c){
 		logger.log(Level.FINE, name + " " + clients.size());
-		clients.forEach((id,client)->{
+		clients.forEach((clientId,client)->{
 			JSONObject json = new JSONObject();
 			try {
 				json.put("command", "addeduser");
@@ -135,5 +135,19 @@ public class Room implements CommandHandler, IRoom{
 
 	}
 
-
+	@Override
+	public void getLocations(JSONArray jsonarr) {
+		clients.forEach((clientID,client)-> {
+			JSONObject json = new JSONObject();
+			try {
+				json.put("roomid", id);
+				json.put("userid", clientID);
+				json.put("latitude", client.getLocation().getLatitude());
+				json.put("longitude", client.getLocation().getLongitude());
+			} catch (Exception e) {
+				logger.log(Level.SEVERE, "Parsing error while gathering locations", e);
+			}
+			jsonarr.put(json);
+		});
+	}
 }

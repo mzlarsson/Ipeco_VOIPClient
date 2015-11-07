@@ -3,6 +3,8 @@ package se.chalmers.fleetspeak.core;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.json.JSONArray;
+
 import se.chalmers.fleetspeak.sound.Mixer;
 import se.chalmers.fleetspeak.sound.MixerFactory;
 
@@ -102,6 +104,11 @@ public class AudioRoom implements IRoom {
 	public void sendCommandToClient(int clientid, String message) {
 		room.sendCommandToClient(clientid, message);
 
+	}
+
+	@Override
+	public void getLocations(JSONArray jsonarr) {
+		room.getLocations(jsonarr);
 	}
 
 }
