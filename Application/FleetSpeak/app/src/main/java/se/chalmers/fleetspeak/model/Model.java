@@ -1,5 +1,7 @@
 package se.chalmers.fleetspeak.model;
 
+import android.content.Context;
+import android.location.Location;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -14,6 +16,7 @@ import se.chalmers.fleetspeak.network.TCP.TLSConnector;
 import se.chalmers.fleetspeak.network.UDP.RTPHandler;
 import se.chalmers.fleetspeak.network.UDP.STUNInitiator;
 import se.chalmers.fleetspeak.network.UDP.UDPConnector;
+import se.chalmers.fleetspeak.util.LocationUtil;
 import se.chalmers.fleetspeak.util.MessageValues;
 
 /**
@@ -29,6 +32,11 @@ public class Model {
     private RTPHandler rtpHandler;
     private SoundOutputController soundOutputController;
 
+    private LocationUtil locationUtil;
+    private LocationUtil.LocationChangeListener locationChangeListener;
+    private long lastLocationUpdate = -1;
+    private final long TIME_BETWEEN_LOCATION_UPDATES = 3*60*1000;
+
     private String username ="";
     private String password ="";
 
@@ -41,6 +49,23 @@ public class Model {
         connector = new TLSConnector(commandHandler);
         this.callbackHandler = callbackHandler;
         roomVersion = 0;
+    }
+
+    public void startLocationTracking(Context context){
+        if(locationUtil == null && locationChangeListener == null) {
+            locationUtil = LocationUtil.getInstance(context, false);
+            locationChangeListener = new LocationUtil.LocationChangeListener() {
+                @Override
+                public void speedChanged(float speed) {
+                }
+
+                @Override
+                public void locationChanged(double latitude, double longitude) {
+                    updateLocation(latitude, longitude);
+                }
+            };
+            locationUtil.addListener(locationChangeListener);
+        }
     }
 
     public ArrayList<Room> getRooms(){
@@ -113,6 +138,18 @@ public class Model {
                     "\"roomname\":\"" + roomname + "\"}");
         }
     }
+    public void updateLocation(double latitude, double longitude){
+        Log.d("Model", "Sending position update");
+        if(lastLocationUpdate < 0 || System.currentTimeMillis()-lastLocationUpdate>TIME_BETWEEN_LOCATION_UPDATES) {
+            connector.sendMessage("{\"command\":\"updatelocation\"," +
+                    "\"userid\":\"" + building.getUserid() + "\"," +
+                    "\"latitude\":\"" + latitude + "\"," +
+                    "\"longitude\":\"" + longitude + "\"}");
+            lastLocationUpdate = System.currentTimeMillis();
+        }
+    }
+
+
     public void setNewHandler(Handler handler){
         callbackHandler = handler;
         building.setHandler(handler);
@@ -142,6 +179,9 @@ public class Model {
                     if(soundOutputController != null)
                         soundOutputController.destroy();
                     soundOutputController = null;
+                    if(locationUtil != null && locationChangeListener != null){
+                        locationUtil.removeListener(locationChangeListener);
+                    }
                     break;
                 case MessageValues.CONNECTIONFAILED:
 
