@@ -3,6 +3,7 @@ package se.chalmers.fleetspeak.structure.connected;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.res.Resources;
 import android.support.v4.app.FragmentTransaction;
 import android.content.DialogInterface;
@@ -28,12 +29,12 @@ import se.chalmers.fleetspeak.truck.TruckModeHandlerFactory;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class LobbyFragment extends AppConnectFragment {
+public class LobbyFragment extends AppConnectFragment implements createRoomDialog.cRDListener {
 
     private Model model;
     private RoomList roomList;
     private LobbyFragmentHolder communicator;
-    private AlertDialog dialog;
+    private Dialog dialog;
     private View mainView;
     private View altView;
 
@@ -96,34 +97,8 @@ public class LobbyFragment extends AppConnectFragment {
         // create a room with that name if the user don't put in a room name default to the users name + "'s room"
         boolean truckMode = TruckModeHandlerFactory.getCurrentHandler().truckModeActive();
         if (!truckMode) {
-            AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
-            alertDialog.setTitle("Choose a name for your room");
-            final EditText input = new EditText(getActivity());
-            input.setHint(model.getCurrentUserAlias() + "'s room");
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-            input.setLayoutParams(lp);
-            alertDialog.setView(input);
-            Resources res = getContext().getResources();
-            alertDialog.setPositiveButton(res.getString(R.string.OK), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    String newRoomName;
-                    if (input.getText().length() == 0) {
-                        newRoomName = input.getHint().toString();
-                    } else {
-                        newRoomName = input.getText().toString();
-                    }
-                    Log.d("LobbyFragment", "Create and move new room");
-                    createAndMoveRoom(newRoomName);
-                }
-            });
-            alertDialog.setNegativeButton(res.getString(R.string.cancel), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.cancel();
-                }
-            });
-            dialog = alertDialog.show();
+            dialog = new createRoomDialog(getContext(), this, model.getCurrentUserAlias() + "'s room" );
+            dialog.show();
 
         } else { //When the car is driving and the user have selected "Create room" the user won't be
             //allowed to pick a name since it will take to much time.
@@ -172,6 +147,11 @@ public class LobbyFragment extends AppConnectFragment {
             mainView.setVisibility(View.INVISIBLE);
             altView.setVisibility(View.VISIBLE);
         }
+    }
+
+    @Override
+    public void okClick(String newRoomName) {
+        createAndMoveRoom(newRoomName);
     }
 
 
