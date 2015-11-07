@@ -51,8 +51,8 @@ public class RoomList extends Fragment {
         roomAdapter.notifyDataSetChanged(b);
     }
 
-    public void resetList(List<Room> roomList) {
-        roomAdapter.resetList(roomList);
+    public void refreshData(List<Room> roomList) {
+        roomAdapter.refreshData(roomList);
     }
 
     public void itemChanged(int p) {

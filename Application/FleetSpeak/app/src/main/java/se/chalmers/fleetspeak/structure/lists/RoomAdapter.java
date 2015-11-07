@@ -121,7 +121,7 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
         notifyDataSetChanged();
     }
 
-    public void resetList(List<Room> list) {
+    public void refreshData(List<Room> list) {
         if (list != null) {
             rooms = list;
         } else {

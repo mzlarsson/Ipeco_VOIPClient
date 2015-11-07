@@ -80,4 +80,11 @@ Client requesting to move
 "currentroom":[Integer], current room of user
 "destinationroom":[Integer] destination of 
 }
+Client sending updates on its current location
+{
+"command":"updatelocation",
+"userid":[Integer],
+"latitude":[Double],
+"longitude":[Double]
+}
 

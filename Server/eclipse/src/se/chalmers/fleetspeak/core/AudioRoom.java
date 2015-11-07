@@ -81,6 +81,11 @@ public class AudioRoom implements IRoom {
 	}
 
 	@Override
+	public Client findClient(int id) {
+		return room.findClient(id);
+	}
+	
+	@Override
 	public void sync(Client c) {
 		room.sync(c);
 	}

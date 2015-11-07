@@ -2,11 +2,11 @@
 	border-spacing:0;
 }
 #dataTable tr.dark{
-	background-color:#000000;
-	color:#00FF00;
+	background-color:#AAAAAA;
+	color:#000000;
 }
 #dataTable tr.light{
-	background-color:#EEEE50;
+	background-color:#EEEEEE;
 	color:#000000;
 }
 #dataTable td{

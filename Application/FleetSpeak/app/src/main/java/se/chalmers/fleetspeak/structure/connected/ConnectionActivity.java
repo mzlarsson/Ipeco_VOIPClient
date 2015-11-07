@@ -78,11 +78,11 @@ public class ConnectionActivity extends ActionBarActivity implements TruckStateL
     };
 
     public void updateUsersView() {
-        inRoomFragment.resetList(model.getUsers(model.getCurrentRoom()));
+        inRoomFragment.refresh();
     }
 
     public void updateRoomView() {
-        lobbyFragment.resetList(model.getRooms());
+        lobbyFragment.refresh();
     }
 
     public void updateView() {
@@ -96,6 +96,7 @@ public class ConnectionActivity extends ActionBarActivity implements TruckStateL
         Bundle extras = this.getIntent().getExtras();
         setContentView(R.layout.activity_connection);
         model = ModelFactory.getModel(updateHandler);
+        model.startLocationTracking(this);
         password = extras.getString("password");
         username = extras.getString("username");
         if (!model.isAuthenticated()) {

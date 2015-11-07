@@ -106,7 +106,17 @@ public class Client implements CommandHandler, NetworkUser {
 		}
 	}
 
+	public void setTCPHandler(TCPHandler tcp) {
+		if (this.tcp != null) {
+			this.tcp.terminate();
+		}
+		this.tcp = tcp;
+	}
+	
 	public void setRTPHandler(RTPHandler rtp) {
+		if (this.rtp != null) {
+			this.rtp.terminate();
+		}
 		this.rtp = rtp;
 	}
 

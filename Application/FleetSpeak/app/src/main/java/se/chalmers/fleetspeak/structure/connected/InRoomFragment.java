@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import java.util.List;
 
 import se.chalmers.fleetspeak.R;
+import se.chalmers.fleetspeak.model.Model;
+import se.chalmers.fleetspeak.model.ModelFactory;
 import se.chalmers.fleetspeak.model.User;
 import se.chalmers.fleetspeak.structure.lists.UserList;
 
@@ -51,8 +53,10 @@ public class InRoomFragment extends AppConnectFragment {
         userList.itemRemoved(user);
     }
 
-    public void resetList(List<User> list) {
+    public void refresh() {
+        Model m = ModelFactory.getCurrentModel();
+        List<User> users = m.getUsers(m.getCurrentRoom());
         if (userList != null)
-            userList.resetList(list);
+            userList.refreshData(users);
     }
 }

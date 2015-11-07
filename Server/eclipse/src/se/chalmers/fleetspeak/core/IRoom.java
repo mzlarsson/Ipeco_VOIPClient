@@ -13,5 +13,6 @@ public interface IRoom {
 	void sync(Client c);
 	void terminate();
 	void postUpdate(String c);
+	Client findClient(int id);
 
 }
