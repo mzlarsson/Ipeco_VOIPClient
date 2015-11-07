@@ -78,11 +78,11 @@ public class ConnectionActivity extends ActionBarActivity implements TruckStateL
     };
 
     public void updateUsersView() {
-        inRoomFragment.resetList(model.getUsers(model.getCurrentRoom()));
+        inRoomFragment.refresh();
     }
 
     public void updateRoomView() {
-        lobbyFragment.resetList(model.getRooms());
+        lobbyFragment.refresh();
     }
 
     public void updateView() {

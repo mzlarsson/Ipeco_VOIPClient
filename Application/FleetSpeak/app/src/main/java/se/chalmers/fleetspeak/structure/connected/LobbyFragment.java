@@ -158,9 +158,11 @@ public class LobbyFragment extends AppConnectFragment {
         roomList.removeItem(room);
     }
 
-    public void resetList(List<Room> list) {
+    public void refresh() {
         if (roomList != null) {
-            roomList.resetList(list);
+            Model m = ModelFactory.getCurrentModel();
+            List<Room> rooms = m.getRooms();
+            roomList.refreshData(rooms);
         }
     }
 

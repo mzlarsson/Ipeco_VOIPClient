@@ -72,8 +72,8 @@ public class UserList extends Fragment {
         return userAdapter.acessItem(pos);
     }
 
-    public void resetList(List<User> userList) {
-        userAdapter.resetList(userList);
+    public void refreshData(List<User> userList) {
+        userAdapter.refreshData(userList);
     }
 
 
