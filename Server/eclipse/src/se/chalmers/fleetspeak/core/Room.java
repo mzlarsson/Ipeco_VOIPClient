@@ -89,6 +89,11 @@ public class Room implements CommandHandler, IRoom{
 			}
 		}
 	}
+	
+	@Override
+	public Client findClient(int id) {
+		return clients.get(id);
+	}
 
 	@Override
 	public void sync(Client c){

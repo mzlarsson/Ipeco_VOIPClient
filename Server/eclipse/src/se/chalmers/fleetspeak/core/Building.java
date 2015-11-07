@@ -116,6 +116,11 @@ public class Building {
 		logger.log(Level.INFO, "Added client " + client.toString() + " to room " + roomid);
 
 	}
+
+	public void addReconnectedClient(Client client) {
+		
+	}
+	
 	/**
 	 * Move a Client between rooms
 	 * @param clientid Client to move
@@ -176,6 +181,17 @@ public class Building {
 		}
 	}
 
+	protected Client findClient(int id) {
+		Client tmp = null;
+		for(IRoom room : rooms.values()) {
+			tmp = room.findClient(id);
+			if (tmp!=null) {
+				return tmp;
+			}
+		}
+		return null;
+	}
+	
 	/**
 	 * Sends a command to all Clients in the Building
 	 * @param c Command to send
