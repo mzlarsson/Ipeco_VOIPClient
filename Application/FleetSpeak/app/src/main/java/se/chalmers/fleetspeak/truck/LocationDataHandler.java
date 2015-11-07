@@ -1,6 +1,8 @@
 package se.chalmers.fleetspeak.truck;
 
+import android.app.Activity;
 import android.content.Context;
+import android.widget.Toast;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -24,8 +26,11 @@ public class LocationDataHandler implements LocationChangeListener, TruckModeHan
     private Timer nodataTimer;
     private TimerTask nodataTimerTask;
 
+    private Context context;
+
     public LocationDataHandler(Context context) {
         stateListeners = new LinkedList<TruckStateListener>();
+        this.context = context;
 
         locationUtil = LocationUtil.getInstance(context, false);
         locationUtil.addListener(this);
@@ -35,7 +40,7 @@ public class LocationDataHandler implements LocationChangeListener, TruckModeHan
             @Override
             public void run() {
                 //No data received, meaning you do not move fast enough -> Not driving.
-                truckMode = false;
+                setTruckMode(false);
             }
         };
     }
@@ -54,6 +59,29 @@ public class LocationDataHandler implements LocationChangeListener, TruckModeHan
         }
     }
 
+    private boolean setTruckMode(final boolean truckMode){
+        if(this.truckMode != truckMode){
+            this.truckMode = truckMode;
+
+            for(final TruckStateListener listener : stateListeners){
+                if(listener instanceof Activity){
+                    ((Activity)listener).runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.truckModeChanged(truckMode);
+                        }
+                    });
+                }else {
+                    listener.truckModeChanged(truckMode);
+                }
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
     @Override
     public boolean truckModeActive(){
         return truckMode;
@@ -61,16 +89,11 @@ public class LocationDataHandler implements LocationChangeListener, TruckModeHan
 
     @Override
     public void speedChanged(float speed){
+        Toast.makeText(context, "Got an speed update: "+speed, Toast.LENGTH_LONG).show();
         boolean newTruckMode = speed<LOWER_SPEED_BOUNDARY;
-        if(newTruckMode != truckMode){
-            truckMode = newTruckMode;
-            for(TruckStateListener listener : stateListeners){
-                listener.truckModeChanged(truckMode);
-            }
-
-            if(truckMode){
-                nodataTimer.schedule(nodataTimerTask, locationUtil.getMinTime()*2);
-            }
+        setTruckMode(newTruckMode);
+        if(truckMode){
+            nodataTimer.schedule(nodataTimerTask, locationUtil.getMinTime()*2);
         }
     }
 
