@@ -48,8 +48,12 @@ public class DocMarkupUtility {
 						currentArguments = 0;
 					}else if(cmdContent){
 						String[] cmd = input.split(":");
-						cmd[0] = cleanUp(cmd[0]);
-						cmd[1] = cleanUp(cmd[1]);
+						int inputDivider = input.indexOf(":");
+						if(inputDivider < 0){
+							throw new IllegalArgumentException("File contains errors: At least one line lacking of colons");
+						}
+						cmd[0] = cleanUp(input.substring(0, inputDivider));
+						cmd[1] = cleanUp(input.substring(inputDivider+1, input.length()));
 						out.append("\t\t\t\t<td>");
 						out.append("<b>").append(cmd[0]).append("</b>").append("<br>").append(cmd[1]);
 						out.append("</td>\n");
