@@ -4,6 +4,7 @@ package se.chalmers.fleetspeak.structure.connected;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,9 +55,13 @@ public class InRoomFragment extends AppConnectFragment {
     }
 
     public void refresh() {
+        Log.d("inroom", "refresh");
         Model m = ModelFactory.getCurrentModel();
         List<User> users = m.getUsers(m.getCurrentRoom());
-        if (userList != null)
-            userList.refreshData(users);
+        if(users != null) {
+            Log.d("Inroom", users.size() + "");
+            if (userList != null)
+                userList.refreshData(users);
+        }
     }
 }

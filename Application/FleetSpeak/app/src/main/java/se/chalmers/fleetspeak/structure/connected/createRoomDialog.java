@@ -13,7 +13,7 @@ import se.chalmers.fleetspeak.R;
  * Created by David Gustafsson on 2015-11-07.
  */
 public class createRoomDialog extends Dialog {
-   public createRoomDialog(Context context, final cRDListener listener, String hint){
+   public createRoomDialog(Context context, final cRDListener listener, final String hint){
        super(context);
        requestWindowFeature(Window.FEATURE_NO_TITLE);
        this.setContentView(R.layout.dialog);
@@ -24,7 +24,12 @@ public class createRoomDialog extends Dialog {
        ok.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View v) {
-               listener.okClick(edit.getText().toString());
+               if ((edit.getText().toString()).length() == 0) {
+                   listener.okClick(hint);
+               } else {
+                   listener.okClick(edit.getText().toString());
+               }
+               cancel();
            }
        });
        Button cancel = (Button)findViewById(R.id.btn_cancel);

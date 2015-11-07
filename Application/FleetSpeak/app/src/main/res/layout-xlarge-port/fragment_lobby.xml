@@ -34,29 +34,5 @@
             />
     </RelativeLayout>
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/altView"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true">
 
-        <TextView
-            android:layout_width="500dp"
-            android:layout_height="wrap_content"
-            android:text="@string/unable_to_connect"
-            android:id="@+id/textView"
-            android:textSize="50sp"
-            android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true" />
-        <Button
-            android:layout_width="200dp"
-            android:layout_height="100dp"
-            android:background="@drawable/special_button_shape2"
-            android:text="@string/reconnect"
-            android:id="@+id/reconnectButton"
-            android:layout_alignParentBottom="true"
-            android:layout_alignRight="@+id/textView"
-            android:layout_alignLeft="@+id/textView" />
-    </RelativeLayout>
 </RelativeLayout>
