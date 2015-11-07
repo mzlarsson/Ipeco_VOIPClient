@@ -1,9 +1,9 @@
 package se.chalmers.fleetspeak.sound;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
+import java.util.Arrays;
 
-public class ShortMixer extends SimpleMixer{
+
+public class ShortMixer extends AbstractMixer{
 
 	protected ShortMixer(int mixingInterval) {
 		super(mixingInterval);
@@ -23,24 +23,48 @@ public class ShortMixer extends SimpleMixer{
 			return new byte[][]{data[1], data[0]};
 		}else if(data.length>2){
 			int maxDataLength = getMaxDataLength(data);
+			
+			int[] talking = new int[data.length];
+			int nbrOfTalking = 0;
+			for(int i = 0; i<data.length; i++){
+				if(data[i] != null && data[i].length==maxDataLength){
+					talking[nbrOfTalking++] = i;
+				}
+			}
+			
+			//Adjust length
+			talking = Arrays.copyOf(talking, nbrOfTalking);
+			
+			//Preprocess
+			int[] baseMix = new int[maxDataLength/2];
+			byte[] silentMix = new byte[maxDataLength];
+			for(int i = 0; i<baseMix.length; i++){
+				//Add all talkers
+				for(int currentTalker : talking){
+					baseMix[i] += bytesToShort(data[currentTalker][2*i+1], data[currentTalker][2*i]);				//Uses little endian
+				}
+				insertLittleEndianShort(silentMix, 2*i, setShortRoof(baseMix[i]));
+			}
+			
 			byte[][] mixed = new byte[members][maxDataLength];
-			ByteBuffer mixedBuffer = ByteBuffer.allocate(maxDataLength);
-			mixedBuffer.order(ByteOrder.LITTLE_ENDIAN);
 			int mixedData;
 			for(int i = 0; i<members; i++){																//For every member
-				for(int j = 0; j+1<maxDataLength; j+=2){												//Mix every other byte (every short). (Make sure we have a complete pair.)
-					mixedData = 0;
-					for(int k = 0; k<members; k++){														//By traversing all members sound
-						if(data[k] != null && data[k].length>j+1 && k != i){												//Except themself (or empty signals)
-							mixedData += bytesToShort(data[k][j+1], data[k][j]);						//And perform a+b on the signal
+				if(data[i] == null || data[i].length!=maxDataLength){
+					//User is silent
+					mixed[i] = silentMix;
+				}else{
+					//User sounds in any way
+					int byteIndex;
+					for(int j = 0; 2*j+1<maxDataLength; j++){												//Mix every other byte (every short). (Make sure we have a complete pair.)
+						byteIndex = 2*j;
+						if(data[i].length>byteIndex){
+							mixedData = baseMix[j]-bytesToShort(data[i][byteIndex+1], data[i][byteIndex]);
+						}else{
+							mixedData = baseMix[j];
 						}
+						insertLittleEndianShort(mixed[i], byteIndex, setShortRoof(mixedData));
 					}
-					mixedBuffer.putShort((short)(Math.min(Short.MAX_VALUE, Math.max(Short.MIN_VALUE, mixedData))));		//Make sure Short.MIN < signal < Short.MAX
 				}
-				
-				mixedBuffer.flip();
-				mixedBuffer.get(mixed[i]);
-				mixedBuffer.clear();
 			}
 			
 			return mixed;
@@ -49,8 +73,23 @@ public class ShortMixer extends SimpleMixer{
 		}
 	}
 	
+	private short setShortRoof(int mix){
+		return (short)(Math.min(Short.MAX_VALUE, Math.max(Short.MIN_VALUE, mix)));
+	}
+	
 	private short bytesToShort(byte big, byte small){
 		return (short) ((big << 8) | (small & 0xff));
+	}
+	
+	private void insertLittleEndianShort(byte[] b, int offset, short value){
+		b[offset] = (byte)(value & 0x00FF); 							//Should be little endian conversion.
+	    b[offset+1] = (byte)((value & 0xFF00) >> 8);
+	}
+	
+	@SuppressWarnings("unused")
+	private void insertBigEndianShort(byte[] b, int offset, short value){
+		b[offset] = (byte)((value & 0xFF00) >> 8);						//Should be big endian
+		b[offset+1] = (byte)(value & 0x00FF); 
 	}
 
 }

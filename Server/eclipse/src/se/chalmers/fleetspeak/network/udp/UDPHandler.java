@@ -69,8 +69,7 @@ public class UDPHandler extends Thread{
 				logger.log(Level.WARNING, "UDP-socket " + this.getName() + " tried to send when the socket is closed");
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.log(Level.WARNING, "Could not send UDP packet ("+(packet!=null?"not ":"")+" null) : "+e.getMessage());
 		}
 	}
 	

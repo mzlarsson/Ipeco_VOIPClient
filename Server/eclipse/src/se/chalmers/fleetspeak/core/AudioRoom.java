@@ -93,4 +93,10 @@ public class AudioRoom implements IRoom {
 		room.terminate();
 	}
 
+	@Override
+	public void sendCommandToClient(int clientid, String message) {
+		room.sendCommandToClient(clientid, message);
+
+	}
+
 }

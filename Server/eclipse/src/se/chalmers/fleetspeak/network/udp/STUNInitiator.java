@@ -48,7 +48,7 @@ public class STUNInitiator extends Thread implements CommandHandler{
 		try {
 			udp = new DatagramSocket(PortFactory.getInstance().getPort());
 		} catch (SocketException e) {
-			e.printStackTrace();
+			logger.severe("Could not create DatagramSocket: "+e.getMessage());
 		}
 	}
 
@@ -63,8 +63,7 @@ public class STUNInitiator extends Thread implements CommandHandler{
 			json.put("port", udp.getLocalPort());
 			json.put("controlcode", "" + ctrlCode);
 		} catch (JSONException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			logger.log(Level.WARNING, "Could not create JSONObject (for some reason)", e1);
 		}
 
 		try {
@@ -90,10 +89,9 @@ public class STUNInitiator extends Thread implements CommandHandler{
 		} catch (SocketTimeoutException e) {	// The UDP-packet from the client never made it to the server.
 			logger.log(Level.WARNING, "Timed out while waiting for udp response from client.");
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.log(Level.SEVERE, "Server broke in STUN phase with IOException: "+e.getMessage(), e);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.log(Level.SEVERE, "STUN phase got InterruptedException: "+e.getMessage(), e);
 		}
 		if (udpVerified && isWaitingForResponse) { // UDP-connection correctly established.
 			logger.log(Level.FINER, "UDP-connection successfully established on port: " + udp.getLocalPort()

@@ -1,6 +1,7 @@
 package se.chalmers.fleetspeak.test;
 
 import java.util.Scanner;
+import java.util.logging.Logger;
 
 import se.chalmers.fleetspeak.util.PasswordHash;
 
@@ -19,7 +20,7 @@ public class PasswordGenerator {
 				try {
 					System.out.println(PasswordHash.createHash(pass));
 				} catch (Exception e) {
-					e.printStackTrace();
+					Logger.getLogger("Debug").warning("Could not create password hash.");
 				}
 			}
 		}

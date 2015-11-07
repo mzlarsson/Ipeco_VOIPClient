@@ -8,6 +8,7 @@ public interface IRoom {
 	boolean canDelete();
 	Integer getId();
 	String getName();
+	void sendCommandToClient(int clientid, String command);
 	void setName(String name);
 	void sync(Client c);
 	void terminate();

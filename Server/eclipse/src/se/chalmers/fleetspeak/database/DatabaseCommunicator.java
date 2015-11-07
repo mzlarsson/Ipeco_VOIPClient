@@ -71,7 +71,7 @@ public class DatabaseCommunicator {
 		try {
 			st.close();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			logger.warning("Could not close statement when adding user");
 		}
 		return error;
 	}
@@ -121,7 +121,7 @@ public class DatabaseCommunicator {
 		try {
 			st.close();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			logger.warning("Could not close statement when deleting user");
 		}
 		return error;
 	}
@@ -151,12 +151,11 @@ public class DatabaseCommunicator {
 			rs.close();
 		} catch (SQLException e) {
 			logger.log(Level.SEVERE, "[DatabaseCommunicator]: Failed to read result from the found user in .findUser().");
-			e.printStackTrace();
 		}
 		try {
 			st.close();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			logger.warning("Could not close statement when locating user");
 		}
 		return user;
 	}
@@ -172,7 +171,6 @@ public class DatabaseCommunicator {
 			instance = null;
 		} catch (SQLException e) {
 			logger.log(Level.SEVERE, "[DatabaseCommunicator]: Failed to close the connection to the database.");
-			e.printStackTrace();
 		}
 	}
 
@@ -194,7 +192,6 @@ public class DatabaseCommunicator {
 				connection = DriverManager.getConnection(url, props);
 			} catch (SQLException e) {
 				Logger.getLogger("Debug").log(Level.SEVERE, "[DatabaseConnector]: Failed to establish a connection to the database.");
-				e.printStackTrace();
 			}
 			return connection;
 		}

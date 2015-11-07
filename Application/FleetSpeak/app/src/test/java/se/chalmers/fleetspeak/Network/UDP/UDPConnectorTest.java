@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.Network.UDP;
+package se.chalmers.fleetspeak.network.UDP;
 
 import org.junit.After;
 import org.junit.Before;

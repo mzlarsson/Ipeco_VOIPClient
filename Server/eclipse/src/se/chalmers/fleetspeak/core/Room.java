@@ -83,8 +83,7 @@ public class Room implements CommandHandler, IRoom{
 					json.put("command", "disconnect");
 					json.put("userid", client.getClientID());
 				} catch (JSONException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					logger.log(Level.WARNING, "Could not create JSON object (for some random reason)", e1);
 				}
 				handleCommand(json.toString());
 			}
@@ -102,9 +101,10 @@ public class Room implements CommandHandler, IRoom{
 				json.put("username", client.getName());
 				json.put("roomid", this.id);
 				c.sendCommand(json.toString());
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			} catch (JSONException e) {
+				logger.log(Level.WARNING, "Could not create JSON object (for some random reason)", e);
+			} catch(IOException e){
+				logger.log(Level.WARNING, "Could not send sync command (IOException)", e);
 			}
 		});
 	}
@@ -117,6 +117,17 @@ public class Room implements CommandHandler, IRoom{
 	@Override
 	public void terminate(){
 		clients.forEach((id, client) -> client.terminate());
+	}
+
+	@Override
+	public void sendCommandToClient(int clientid, String message) {
+		try {
+			clients.get(clientid).sendCommand(message);
+		} catch (IOException e) {
+			// TODO Connection broken remove client or something
+			e.printStackTrace();
+		}
+
 	}
 
 
