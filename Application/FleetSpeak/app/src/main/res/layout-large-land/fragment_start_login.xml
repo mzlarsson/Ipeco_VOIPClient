@@ -29,7 +29,8 @@
             android:id="@+id/usernameField"
             android:inputType="text"
             android:imeOptions="actionNext"
-            android:autoText="true" />
+            android:autoText="true"
+            android:layout_marginTop="75dp" />
 
         <EditText
             android:layout_marginTop="50dp"
@@ -50,17 +51,18 @@
             android:layout_height="wrap_content"
             android:text="@string/save_preferences"
             android:id="@+id/saveUserPref"
-            android:textSize="25sp" />
+            android:textSize="25sp"
+            android:layout_marginTop="50dp" />
 
         <TextView
-            android:layout_width="737dp"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
             android:text="@string/error_code"
             android:id="@+id/error_text"
-            android:layout_weight="0.25"
+            android:layout_weight="0.11"
             android:textColor="#fffff5ff"
             android:textSize="40sp"
-            android:layout_marginTop="20dp" />
+            android:layout_marginTop="50dp" />
 
     </LinearLayout>
 
@@ -69,8 +71,8 @@
         android:id="@+id/connectionButton"
         android:textColor="#FFFFFF"
         android:textSize="30sp"
-        android:layout_width="250dp"
-        android:layout_height="70dp"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
         android:background="@drawable/special_button_shape"
         android:shadowColor="#A8A8A8"
         android:shadowDx="0"
