@@ -3,6 +3,8 @@ package se.chalmers.fleetspeak.structure.login;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -11,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -34,14 +37,27 @@ public class StartLogin extends AppStartFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_start_login, container, false);
-        Button connectButton = (Button) view.findViewById(R.id.connectionButton);
+        final Button connectButton = (Button) view.findViewById(R.id.connectionButton);
         connectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.d("StartLogin", "connection request sent");
+                connectButton.setBackgroundResource(R.drawable.special_button_clicked);
                 connect();
             }
         });
+        connectButton.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (v.hasFocus()) {//Focus is on current button
+                    connectButton.setBackgroundResource(R.drawable.special_button_focused);
+                } else {
+                    connectButton.setBackgroundResource(R.drawable.special_button_shape);
+                }
+            }
+        });
+
+
         final EditText userNameField = (EditText) view.findViewById(R.id.usernameField);
         String username;
         String password;
