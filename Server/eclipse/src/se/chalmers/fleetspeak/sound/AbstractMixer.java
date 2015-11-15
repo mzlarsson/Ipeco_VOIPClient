@@ -121,7 +121,7 @@ public abstract class AbstractMixer implements Mixer{
 		for(int i = 0; i<streams.size(); i++){
 			BufferedAudioStream b = streams.get(i);
 			if(b != null){
-				data[i] = streams.get(i).read();
+				data[i] = b.read();
 			}
 		}
 		fetchingData = false;
