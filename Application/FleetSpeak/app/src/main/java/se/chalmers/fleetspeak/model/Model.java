@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -21,6 +22,7 @@ import se.chalmers.fleetspeak.util.MessageValues;
 
 /**
  * Created by Nieo on 08/03/15.
+ * Updated by Patrik on 2015-11-14
  */
 public class Model {
     private Building building;
@@ -73,11 +75,39 @@ public class Model {
             return building.getRooms();
         return null;
     }
+
+    /**
+     * Finds all rooms with a user within a given radius of a location.
+     * Requests an update of the location on outdated users.
+     * @param location The center of the circle area to search in.
+     * @param distance The radius of the circle in meters.
+     * @return All rooms found. Array is empty if no rooms were found. Array is null if no authenticated.
+     */
+    public ArrayList<Room> getRoomsCloserThan(Location location, int distance) {
+        if(state == State.authenticated)
+            return building.getRoomsCloserThan(location, distance);
+        return null;
+    }
+
     public ArrayList<User> getUsers(int roomid){
         if(state == State.authenticated)
             return building.getUsers(roomid);
         return null;
     }
+
+    /**
+     * Finds all users in this room within a given radius of a location.
+     * Includes outdated user-locations but requests an update from the server.
+     * @param location The center of the circle area to search in.
+     * @param distance The radius of the circle in meters.
+     * @return All users found, including outdated ones. Array is empty if no users were found. Array is null if no authenticated.
+     */
+    public ArrayList<User> getUsersCloserThan(Location location, int distance) {
+        if(state == State.authenticated)
+            return building.getUsersCloserThan(location, distance);
+        return null;
+    }
+
     public String getCurrentUserAlias(){
         int clientID = building.getUserid();
         for(User u : building.getUsers(building.getCurrentRoom())){
@@ -257,6 +287,9 @@ public class Model {
                                     callbackHandler.sendMessage(Message.obtain(null, MessageValues.AUTHENTICATIONFAILED, json.getString("rejection"))); // .getValue contains the reason for rejection
                                 }
                                 break;
+                            case "all_locations_update":
+                                updateAllUserLocations(json.getJSONArray("locations"));
+                                break;
                         }
                     } catch (JSONException e) {
                        Log.e("Model", "JSONException " + e.getMessage()); 
@@ -286,6 +319,35 @@ public class Model {
         }
     }
 
+    /**
+     * Updates all the given user's locations.
+     * @param userarr A JSONArray containing the new information of the users.
+     */
+    private void updateAllUserLocations(JSONArray userarr) {
+        try {
+            for (int i=0; i<userarr.length(); i++) {
+                updateUserLocation(userarr.getJSONObject(i));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * Updates the location of the given user.
+     * @param json The JSONObject containing the new information of the user.
+     */
+    private void updateUserLocation(JSONObject json) {
+        try {
+            building.updateLocation(json.getInt("userid"),
+                    json.getInt("roomid"),
+                    json.getDouble("latitude"),
+                    json.getDouble("longitude"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
 
     private enum State{
         not_connected, connecting, connected, authenticated;

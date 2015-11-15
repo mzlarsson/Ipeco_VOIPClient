@@ -85,7 +85,7 @@ public class Room implements CommandHandler, IRoom{
 				} catch (JSONException e1) {
 					logger.log(Level.WARNING, "Could not create JSON object (for some random reason)", e1);
 				}
-				handleCommand(json.toString());
+				handleCommand(json.toString(), client);
 			}
 		}
 	}
@@ -115,8 +115,12 @@ public class Room implements CommandHandler, IRoom{
 	}
 
 	@Override
-	public void handleCommand(String c) {
-		buildingManager.handleCommand(c, id);
+	public void handleCommand(String command, Object sender) {
+		if (sender.getClass() == Client.class) {
+			buildingManager.handleCommand(command, this, (Client)sender);			
+		} else {
+			logger.log(Level.SEVERE, "Expected a Client but got a " + sender.getClass());
+		}
 	}
 
 	@Override

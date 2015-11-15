@@ -150,25 +150,25 @@ public class Client implements CommandHandler, NetworkUser {
 
 
 	@Override
-	public void handleCommand(String string) {
+	public void handleCommand(String string, Object sender) {
 		try {
 			JSONObject json = new JSONObject(string);
 			switch(json.getString("command")){
 			case "disconnect":
 				json.put("userid", this.clientID);
-				ch.handleCommand(json.toString());
+				ch.handleCommand(json.toString(), this);
 				break;
 			case "updatelocation":
 				location = new Location(json.getDouble("latitude"), json.getDouble("longitude"));
-				ch.handleCommand(string);
+				ch.handleCommand(string, this);
 				break;
 			default:
-				ch.handleCommand(string);
+				ch.handleCommand(string, this);
 				break;
 			}
 
 		} catch (JSONException e) {
-			logger.log(Level.WARNING, "Could not create JSON object (for some random reason)", e);
+			logger.log(Level.WARNING, "Could not create JSON object of: " + string, e);
 		}
 	}
 }
