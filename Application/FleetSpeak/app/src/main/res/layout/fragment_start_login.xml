@@ -77,7 +77,8 @@
         android:shadowRadius="5"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        />
+        android:focusable="true"
+        android:focusableInTouchMode="false" />
 
 </RelativeLayout>
 
