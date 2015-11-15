@@ -21,14 +21,26 @@ public class CarStartLogin extends AppStartFragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_car_start_login, container, false);
-        Button connect = (Button)view.findViewById(R.id.connectionButton);
-        connect.setOnClickListener(new View.OnClickListener() {
+        final Button connectButton = (Button)view.findViewById(R.id.connectionButton);
+        connectButton.requestFocus();//Set to focus so that the user only need to press enter to connect
+        connectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                connectButton.setBackgroundResource(R.drawable.special_button_clicked);
                 startConnection();
             }
         });
 
+        connectButton.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (v.hasFocus()) {//Focus is on current button
+                    connectButton.setBackgroundResource(R.drawable.special_button_focused);
+                } else {
+                    connectButton.setBackgroundResource(R.drawable.special_button_shape);
+                }
+            }
+        });
 
         Bundle savedInformation = this.getArguments();
         String username = savedInformation.getString("username");
