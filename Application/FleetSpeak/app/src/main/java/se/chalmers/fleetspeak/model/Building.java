@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import se.chalmers.fleetspeak.util.MessageValues;
@@ -92,35 +93,22 @@ public class Building {
     }
 
     /**
-     * Finds all rooms with a user within a given radius of a location.
+     * Finds all users within a given radius of a location and the rooms they are in.
      * Requests an update of the location on outdated users.
      * @param location The center of the circle area to search in.
      * @param distance The radius of the circle in meters.
-     * @return All rooms found, array is empty if no rooms were found.
+     * @return A map with the rooms as key and a list with the users of that room within the
+     * distance as the values.
      */
-    public ArrayList<Room> getRoomsCloserThan(Location location, int distance) {
-        ArrayList<Room> foundRooms = new ArrayList<>();
+    public HashMap<Room, ArrayList<User>> getRoomsCloserThan(Location location, int distance) {
+        HashMap<Room, ArrayList<User>> foundRooms = new HashMap<>();
         for (Room room : rooms.values()) {
-            if (!room.getUserCloserThan(location, distance).isEmpty()) {
-                foundRooms.add(room);
+            ArrayList<User> users = room.getUserCloserThan(location, distance);
+            if (!users.isEmpty()) {
+                foundRooms.put(room, users);
             }
         }
         return foundRooms;
-    }
-
-    /**
-     * Finds all users in this room within a given radius of a location.
-     * Includes outdated user-locations but requests an update from the server.
-     * @param location The center of the circle area to search in.
-     * @param distance The radius of the circle in meters.
-     * @return All users found, including outdated ones. Array is empty if no users were found.
-     */
-    public ArrayList<User> getUsersCloserThan(Location location, int distance) {
-        ArrayList<User> foundUsers = new ArrayList<>();
-        for (Room room : rooms.values()) {
-            foundUsers.addAll(room.getUserCloserThan(location, distance));
-        }
-        return foundUsers;
     }
 
     public ArrayList<User> getUsers(int roomid) {
