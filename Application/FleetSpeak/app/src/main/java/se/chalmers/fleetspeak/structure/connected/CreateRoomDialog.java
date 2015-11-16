@@ -12,8 +12,8 @@ import se.chalmers.fleetspeak.R;
 /**
  * Created by David Gustafsson on 2015-11-07.
  */
-public class CCreateRoomDialog extends Dialog {
-   public CCreateRoomDialog(Context context, final CRDListener listener, final String hint){
+public class CreateRoomDialog extends Dialog {
+   public CreateRoomDialog(Context context, final CRDListener listener, final String hint){
        super(context);
        requestWindowFeature(Window.FEATURE_NO_TITLE);
        this.setContentView(R.layout.dialog);
