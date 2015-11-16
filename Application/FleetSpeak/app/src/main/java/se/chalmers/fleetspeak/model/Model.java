@@ -20,6 +20,7 @@ import se.chalmers.fleetspeak.network.UDP.STUNInitiator;
 import se.chalmers.fleetspeak.network.UDP.UDPConnector;
 import se.chalmers.fleetspeak.util.LocationUtil;
 import se.chalmers.fleetspeak.util.MessageValues;
+import se.chalmers.fleetspeak.util.RoomHistory;
 
 /**
  * Created by Nieo on 08/03/15.
@@ -45,6 +46,8 @@ public class Model {
     private String password ="";
 
     private int roomVersion;
+    private RoomHistory roomHistory;
+
 
     protected Model(Handler callbackHandler){
         state = State.not_connected;
@@ -54,7 +57,20 @@ public class Model {
         this.callbackHandler = callbackHandler;
         proximityChangeListeners = new ArrayList<>();
         roomVersion = 0;
+        roomHistory = new RoomHistory();
+        //TODO load history from disk
     }
+    public ArrayList<Room> getHistory(){
+        ArrayList<Room> history = new ArrayList<>();
+        for(Integer i: roomHistory.getPastRooms()){
+            Room r = building.getRooom(i);
+            if(r != null) {
+                history.add(r);
+            }
+        }
+        return history;
+    }
+
 
     public void startLocationTracking(Context context){
         if(locationUtil == null && locationChangeListener == null) {
@@ -139,13 +155,8 @@ public class Model {
     public void disconnect(){
         if(state == State.authenticated || state == State.connected){
             Log.i("Model", "Disconnecting");
-            state = State.not_connected;
             connector.disconnect();
-            if(soundOutputController != null)
-                soundOutputController.destroy();
-            if(rtpHandler != null)
-                rtpHandler.terminate();
-            state = State.not_connected;
+            terminate();
             Log.d("Model", " set state to not connected");
         }else{
             Log.d("Model", "Not connected, cannot send disconnect");
@@ -198,6 +209,19 @@ public class Model {
         Log.d("Model", " State is autenticacted = " + ((state ==State.authenticated)));
         return (state ==State.authenticated);
     }
+    private void terminate(){
+        state = State.not_connected;
+        if(rtpHandler != null)
+            rtpHandler.terminate();
+        rtpHandler = null;
+        if(soundOutputController != null)
+            soundOutputController.destroy();
+        soundOutputController = null;
+        if(locationUtil != null && locationChangeListener != null){
+            locationUtil.removeListener(locationChangeListener);
+        }
+        //TODO save roomhistory to disk
+    }
     class CommandHandler extends Handler {
         public void handleMessage(Message msg) {
             Log.d("Model", "Commandhandler, messagecode " + msg.what);
@@ -207,16 +231,7 @@ public class Model {
                     break;
                 case MessageValues.DISCONNECTED:
                     callbackHandler.sendEmptyMessage(MessageValues.DISCONNECTED);
-                    state = State.not_connected;
-                    if(rtpHandler != null)
-                        rtpHandler.terminate();
-                    rtpHandler = null;
-                    if(soundOutputController != null)
-                        soundOutputController.destroy();
-                    soundOutputController = null;
-                    if(locationUtil != null && locationChangeListener != null){
-                        locationUtil.removeListener(locationChangeListener);
-                    }
+                    terminate();
                     break;
                 case MessageValues.CONNECTIONFAILED:
 
@@ -258,6 +273,9 @@ public class Model {
                                 building.changeRoomName(json.getInt("roomid"), json.getString("roomname"));
                             case "moveduser":
                                 building.moveUser(json.getInt("userid"), json.getInt("currentroom"), json.getInt("destinationroom"));
+                                if(json.getInt("userid") == building.getUserid()){ //Update history if local user is moved
+                                    roomHistory.addRoom(json.getInt("currentroom"));
+                                }
                                 break;
                             case "createdroom":
                                 building.addRoom(json.getInt("roomid"), json.getString("roomname"));
