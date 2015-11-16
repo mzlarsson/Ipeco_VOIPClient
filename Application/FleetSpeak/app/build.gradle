@@ -29,7 +29,7 @@ android {
 
 }
 
-repositories{
+repositories {
     mavenCentral()
 }
 
@@ -37,14 +37,14 @@ dependencies {
     compile files('libs/Automotive-API-1.3-SNAPSHOT.jar')
     compile files('libs/SDP-1.3-SNAPSHOT.jar')
     compile files('libs/VIL-1.3-SNAPSHOT.jar')
+
+
+    testCompile 'junit:junit:4.12'
     compile 'com.android.support:cardview-v7:23.0.0'
     compile 'com.android.support:appcompat-v7:23.0.0'
     compile 'com.android.support:recyclerview-v7:23.0.0'
     compile 'org.slf4j:slf4j-android:1.7.7'
-
     compile 'com.android.support:support-v4:23.0.0'
-
-    testCompile 'junit:junit:4.12'
 }
 
 task downloadSDP(type: MyDownload) {

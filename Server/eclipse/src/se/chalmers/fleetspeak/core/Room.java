@@ -5,11 +5,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import se.chalmers.fleetspeak.util.IDFactory;
-
 
 public class Room implements CommandHandler, IRoom{
 	private Logger logger = Logger.getLogger("Debug");
@@ -85,15 +85,20 @@ public class Room implements CommandHandler, IRoom{
 				} catch (JSONException e1) {
 					logger.log(Level.WARNING, "Could not create JSON object (for some random reason)", e1);
 				}
-				handleCommand(json.toString());
+				handleCommand(json.toString(), client);
 			}
 		}
+	}
+	
+	@Override
+	public Client findClient(int id) {
+		return clients.get(id);
 	}
 
 	@Override
 	public void sync(Client c){
 		logger.log(Level.FINE, name + " " + clients.size());
-		clients.forEach((id,client)->{
+		clients.forEach((clientId,client)->{
 			JSONObject json = new JSONObject();
 			try {
 				json.put("command", "addeduser");
@@ -110,8 +115,12 @@ public class Room implements CommandHandler, IRoom{
 	}
 
 	@Override
-	public void handleCommand(String c) {
-		buildingManager.handleCommand(c, id);
+	public void handleCommand(String command, Object sender) {
+		if (sender.getClass() == Client.class) {
+			buildingManager.handleCommand(command, this, (Client)sender);			
+		} else {
+			logger.log(Level.SEVERE, "Expected a Client but got a " + sender.getClass());
+		}
 	}
 
 	@Override
@@ -130,5 +139,19 @@ public class Room implements CommandHandler, IRoom{
 
 	}
 
-
+	@Override
+	public void getLocations(JSONArray jsonarr) {
+		clients.forEach((clientID,client)-> {
+			JSONObject json = new JSONObject();
+			try {
+				json.put("roomid", id);
+				json.put("userid", clientID);
+				json.put("latitude", client.getLocation().getLatitude());
+				json.put("longitude", client.getLocation().getLongitude());
+			} catch (Exception e) {
+				logger.log(Level.SEVERE, "Parsing error while gathering locations", e);
+			}
+			jsonarr.put(json);
+		});
+	}
 }

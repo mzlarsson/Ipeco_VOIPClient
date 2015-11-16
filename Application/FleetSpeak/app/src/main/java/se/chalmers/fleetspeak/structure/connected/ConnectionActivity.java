@@ -19,6 +19,7 @@ import se.chalmers.fleetspeak.model.ModelFactory;
 import se.chalmers.fleetspeak.model.Room;
 import se.chalmers.fleetspeak.model.User;
 import se.chalmers.fleetspeak.structure.establish.BackFragment;
+import se.chalmers.fleetspeak.structure.establish.ReconnectFragment;
 import se.chalmers.fleetspeak.structure.lists.RoomList.OnRoomClickedListener;
 import se.chalmers.fleetspeak.structure.lists.UserList.OnUserClickedListener;
 import se.chalmers.fleetspeak.structure.login.LoginActivity;
@@ -27,7 +28,8 @@ import se.chalmers.fleetspeak.truck.TruckModeHandlerFactory;
 import se.chalmers.fleetspeak.truck.TruckStateListener;
 import se.chalmers.fleetspeak.util.MessageValues;
 
-public class ConnectionActivity extends ActionBarActivity implements TruckStateListener, ActionBar.TabListener, LobbyFragment.LobbyFragmentHolder, OnRoomClickedListener, BackFragment.BackFragmentHolder{
+public class ConnectionActivity extends ActionBarActivity implements
+        TruckStateListener, ActionBar.TabListener, LobbyFragment.LobbyFragmentHolder, OnRoomClickedListener, BackFragment.BackFragmentHolder, ReconnectFragment.ReconnectFragmentHolder{
     private Model model;
     private boolean carMode = true;
     private ActionBar actionBar;
@@ -35,6 +37,7 @@ public class ConnectionActivity extends ActionBarActivity implements TruckStateL
     private InRoomFragment inRoomFragment;
     private LobbyFragment lobbyFragment;
     private BackFragment backFragment;
+    private ReconnectFragment reconnectFragment;
 
     private String username;
     private String password;
@@ -49,12 +52,11 @@ public class ConnectionActivity extends ActionBarActivity implements TruckStateL
             switch (msg.what) {
                 case MessageValues.CONNECTED:
                     Log.d("UpdateHandler", "Connected");
-                    lobbyFragment.isConnected(true);
                     updateView();
                     break;
                 case MessageValues.DISCONNECTED:
                     Log.d("UpdateHandler", " Disconnected");
-                    lobbyFragment.isConnected(false);
+                    viewPager.setCurrentItem(3);
                     updateView();
                     break;
                 case MessageValues.MODELCHANGED:
@@ -62,12 +64,13 @@ public class ConnectionActivity extends ActionBarActivity implements TruckStateL
                     break;
                 case MessageValues.CONNECTIONFAILED:
                     Log.d("UpdateHandler", "Connection failed");
-                    lobbyFragment.isConnected(false);
+                    viewPager.setCurrentItem(3);
                     updateView();
                     break;
                 case MessageValues.AUTHENTICATED:
+                    Log.d("UpdateHandler", "Authenticated");
+                    viewPager.setCurrentItem(0);
                     updateView();
-                    lobbyFragment.isConnected(true);
                     break;
                 case MessageValues.AUTHENTICATIONFAILED:
                     model.disconnect();
@@ -78,11 +81,11 @@ public class ConnectionActivity extends ActionBarActivity implements TruckStateL
     };
 
     public void updateUsersView() {
-        inRoomFragment.resetList(model.getUsers(model.getCurrentRoom()));
+        inRoomFragment.refresh();
     }
 
     public void updateRoomView() {
-        lobbyFragment.resetList(model.getRooms());
+        lobbyFragment.refresh();
     }
 
     public void updateView() {
@@ -96,15 +99,13 @@ public class ConnectionActivity extends ActionBarActivity implements TruckStateL
         Bundle extras = this.getIntent().getExtras();
         setContentView(R.layout.activity_connection);
         model = ModelFactory.getModel(updateHandler);
+        model.startLocationTracking(this);
         password = extras.getString("password");
         username = extras.getString("username");
         if (!model.isAuthenticated()) {
             Log.d("ConnectionActivity", " Connected");
             model.connect(username, password);
-        } else {
-            lobbyFragment.isConnected(true);
         }
-
         viewPager = (CViewPager) findViewById(R.id.pager);
         viewPager.setId(R.id.pager);
         viewPager.setAdapter(new PagerAdapter(getSupportFragmentManager()));
@@ -116,9 +117,9 @@ public class ConnectionActivity extends ActionBarActivity implements TruckStateL
 
             @Override
             public void onPageSelected(int position) {
-                if (position != 2) {
-                    actionBar.setSelectedNavigationItem(position);
-                }
+                if (position != 2 && position != 3) {
+                        actionBar.setSelectedNavigationItem(position);
+                    }
             }
 
             @Override
@@ -132,6 +133,7 @@ public class ConnectionActivity extends ActionBarActivity implements TruckStateL
         inRoomFragment = new InRoomFragment();
         inRoomFragment.setOnUserClickedListener(null);          //Add listener if any functionality is needed.
         backFragment = new BackFragment();
+        reconnectFragment = new ReconnectFragment();
         Log.d("ConnectionActivity", " Checking if connected");
 
         TruckModeHandler handler = TruckModeHandlerFactory.getHandler(this);
@@ -206,6 +208,7 @@ public class ConnectionActivity extends ActionBarActivity implements TruckStateL
 
     @Override
     public void reconnect() {
+        Log.d("ConnectionActivity", " reconnect");
         model.connect(username, password);
     }
 
@@ -233,10 +236,11 @@ public class ConnectionActivity extends ActionBarActivity implements TruckStateL
 
     @Override
     public void onBackPressed() {
-        if (viewPager.getCurrentItem() == 1) {
+        int curItem = viewPager.getCurrentItem();
+        if (curItem == 1) {
             Log.d("ConnectionActivity", " current item on back is 1");
             onBackNo();
-        } else if (viewPager.getCurrentItem() == 2) {
+        } else if (curItem == 2 || curItem  == 3) {
             onBackYes();
         } else {
             viewPager.setCurrentItem(2);
@@ -246,7 +250,9 @@ public class ConnectionActivity extends ActionBarActivity implements TruckStateL
     @Override
     public void onTabSelected(ActionBar.Tab tab, android.support.v4.app.FragmentTransaction fragmentTransaction) {
         Log.d("ConnectionActivity", " clicked tab" + tab.getPosition());
-        viewPager.setCurrentItem(tab.getPosition());
+        if(viewPager.getCurrentItem() != 3) {
+            viewPager.setCurrentItem(tab.getPosition());
+        }
     }
 
     @Override
@@ -259,6 +265,11 @@ public class ConnectionActivity extends ActionBarActivity implements TruckStateL
 
     }
 
+    @Override
+    public void moveToRoom() {
+        viewPager.setCurrentItem(1);
+    }
+
     public class PagerAdapter extends FragmentPagerAdapter {
         public PagerAdapter(FragmentManager fragmentManager) {
             super(fragmentManager);
@@ -267,6 +278,7 @@ public class ConnectionActivity extends ActionBarActivity implements TruckStateL
         @Override
         public android.support.v4.app.Fragment getItem(int arg) {
             Log.d("ConnectionActivity", " getItem called");
+
             if (arg == 0) {
                 Log.d("ConnectionActivity", " Lobby called");
                 return lobbyFragment;
@@ -276,13 +288,15 @@ public class ConnectionActivity extends ActionBarActivity implements TruckStateL
             } else if (arg == 2) {
                 Log.d("ConnectionActivity", " Back called");
                 return backFragment;
+            } else if(arg == 3){
+                return reconnectFragment;
             }
             return null;
         }
 
         @Override
         public int getCount() {
-            return 3;
+            return 4;
         }
     }
 

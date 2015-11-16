@@ -114,9 +114,10 @@ public class ClientAuthenticator implements Authenticator, CommandHandler{
 		this.listener = listener;
 	}
 	
-	public void handleCommand(String c) {
-		if(c != null) {
-			authenticate(c);
+	@Override
+	public void handleCommand(String command, Object sender) {
+		if(command != null) {
+			authenticate(command);
 		}
 	}
 }

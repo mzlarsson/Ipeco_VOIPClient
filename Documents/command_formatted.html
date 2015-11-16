@@ -99,6 +99,42 @@
 				<td><b>destinationroom</b><br>[Integer] destination of </td>
 				<td colspan='1'>&nbsp;</td>
 			</tr>
+			<tr class='dark'>
+				<td class='info'>Client sending updates on its current location</td>
+				<td><b>command</b><br>updatelocation</td>
+				<td><b>userid</b><br>[Integer]</td>
+				<td><b>latitude</b><br>[Double]</td>
+				<td><b>longitude</b><br>[Double]</td>
+				<td colspan='1'>&nbsp;</td>
+			</tr>
+			<tr class='light'>
+				<td class='info'>Client requesting the location of a specific user</td>
+				<td><b>command</b><br>request_user_location</td>
+				<td><b>targetroomid</b><br>[Integer]</td>
+				<td><b>targetuserid</b><br>[Integer]</td>
+				<td colspan='2'>&nbsp;</td>
+			</tr>
+			<tr class='dark'>
+				<td class='info'>Client requesting the location of all other users</td>
+				<td><b>command</b><br>request_all_user_locations</td>
+				<td><b>userid</b><br>[Integer]</td>
+				<td colspan='3'>&nbsp;</td>
+			</tr>
+			<tr class='light'>
+				<td class='info'>Update of the location of a user</td>
+				<td><b>command</b><br>user_location_update</td>
+				<td><b>userid</b><br>[Integer]</td>
+				<td><b>roomid</b><br>[Integer]</td>
+				<td><b>latitude</b><br>[Double]</td>
+				<td><b>longitude</b><br>[Double]</td>
+				<td colspan='0'>&nbsp;</td>
+			</tr>
+			<tr class='dark'>
+				<td class='info'>Server responds to with the location of all users</td>
+				<td><b>command</b><br>all_locations_update</td>
+				<td><b>locations</b><br>[{"userid":[Integer],"roomid":[Integer],"latitude":[Double],"longitude":[Double]}...]</td>
+				<td colspan='3'>&nbsp;</td>
+			</tr>
 		</table>
 	</body>
 </html>

@@ -11,20 +11,19 @@
         android:id="@+id/textView2"
         android:textColor="#ffffffff"
         android:textSize="50sp"
-        android:layout_alignParentTop="true"
-        android:layout_toRightOf="@+id/noButton"
-        android:layout_marginTop="113dp" />
+        android:layout_above="@+id/yesButton"
+        android:layout_marginBottom="64dp"
+        android:layout_centerInParent="true" />
 
     <Button
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:background="@drawable/special_button_shape2"
         android:text="@string/yes"
-        android:layout_marginRight="88dp"
         android:id="@+id/yesButton"
+        android:textSize="30sp"
         android:layout_alignTop="@+id/noButton"
-        android:layout_alignParentRight="true"
-        android:textSize="30sp" />
+        android:layout_alignRight="@+id/textView2" />
 
     <Button
         android:layout_width="150dp"
@@ -32,9 +31,8 @@
         android:background="@drawable/special_button_shape2"
         android:text="@string/no"
         android:id="@+id/noButton"
-        android:layout_marginBottom="133dp"
-        android:layout_marginLeft="109dp"
+        android:layout_marginBottom="137dp"
+        android:textSize="30sp"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:textSize="30sp" />
+        android:layout_alignLeft="@+id/textView2" />
 </RelativeLayout>

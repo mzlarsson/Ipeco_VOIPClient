@@ -5,7 +5,7 @@
     android:gravity="left|top"
     android:orientation="vertical"
     android:weightSum="1"
-    android:focusable="true"
+    android:focusable="false"
     android:clickable="true"
     android:focusableInTouchMode="true"
     xmlns:android="http://schemas.android.com/apk/res/android">
@@ -42,7 +42,7 @@
             android:id="@+id/passwordField"
             android:inputType="text"
             android:imeOptions="actionDone"
-            android:password="false" />
+            android:password="false"/>
 
         <CheckBox
             android:paddingLeft="@dimen/padding_checkbox"
@@ -76,7 +76,9 @@
         android:shadowDy="0"
         android:shadowRadius="5"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:focusable="true"
+        android:focusableInTouchMode="false" />
 
 </RelativeLayout>
 

@@ -2,19 +2,13 @@ package se.chalmers.fleetspeak.structure.connected;
 
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.res.Resources;
-import android.support.v4.app.FragmentTransaction;
-import android.content.DialogInterface;
+import android.app.Dialog;
 import android.os.Bundle;
-import android.app.Fragment;
-import android.util.Log;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.LinearLayout;
 
 import java.util.List;
 
@@ -25,17 +19,11 @@ import se.chalmers.fleetspeak.model.Room;
 import se.chalmers.fleetspeak.structure.lists.RoomList;
 import se.chalmers.fleetspeak.truck.TruckModeHandlerFactory;
 
-/**
- * A simple {@link Fragment} subclass.
- */
-public class LobbyFragment extends AppConnectFragment {
+public class LobbyFragment extends AppConnectFragment implements CreateRoomDialog.CRDListener {
 
-    private Model model;
     private RoomList roomList;
     private LobbyFragmentHolder communicator;
-    private AlertDialog dialog;
-    private View mainView;
-    private View altView;
+    private Dialog dialog;
 
     private RoomList.OnRoomClickedListener onRoomClickedListener;
 
@@ -49,7 +37,6 @@ public class LobbyFragment extends AppConnectFragment {
         super.onAttach(activity);
         try {
             communicator = (LobbyFragmentHolder) activity;
-            model = ModelFactory.getCurrentModel();
         } catch (ClassCastException cce) {
             throw new ClassCastException(activity.toString() + " must implement LobbyFragmentHolder");
         }
@@ -58,24 +45,13 @@ public class LobbyFragment extends AppConnectFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-
         View view = inflater.inflate(R.layout.fragment_lobby, container, false);
+        roomList = new RoomList();
+        roomList.setOnRoomClickedListener(onRoomClickedListener);
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.replace(R.id.fragment_holder_room, roomList);
         ft.commit();
 
-        mainView = view.findViewById(R.id.mainView);
-        Log.d("LobyFragment", " MainView is null = " + (null == mainView));
-        altView = view.findViewById(R.id.altView);
-
-        altView.setVisibility(View.INVISIBLE);
-        Button button = (Button) view.findViewById(R.id.reconnectButton);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                communicator.reconnect();
-            }
-        });
         Button createButton = (Button) view.findViewById(R.id.buttonCreateRoom);
         createButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -95,35 +71,10 @@ public class LobbyFragment extends AppConnectFragment {
         // If the user is not driving create a dialog that promts the user to select a room name and
         // create a room with that name if the user don't put in a room name default to the users name + "'s room"
         boolean truckMode = TruckModeHandlerFactory.getCurrentHandler().truckModeActive();
+        Model model = ModelFactory.getCurrentModel();
         if (!truckMode) {
-            AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
-            alertDialog.setTitle("Choose a name for your room");
-            final EditText input = new EditText(getActivity());
-            input.setHint(model.getCurrentUserAlias() + "'s room");
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-            input.setLayoutParams(lp);
-            alertDialog.setView(input);
-            Resources res = getContext().getResources();
-            alertDialog.setPositiveButton(res.getString(R.string.OK), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    String newRoomName;
-                    if (input.getText().length() == 0) {
-                        newRoomName = input.getHint().toString();
-                    } else {
-                        newRoomName = input.getText().toString();
-                    }
-                    Log.d("LobbyFragment", "Create and move new room");
-                    createAndMoveRoom(newRoomName);
-                }
-            });
-            alertDialog.setNegativeButton(res.getString(R.string.cancel), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.cancel();
-                }
-            });
-            dialog = alertDialog.show();
+            dialog = new CreateRoomDialog(getContext(), this, model.getCurrentUserAlias() + "'s room" );
+            dialog.show();
 
         } else { //When the car is driving and the user have selected "Create room" the user won't be
             //allowed to pick a name since it will take to much time.
@@ -133,49 +84,34 @@ public class LobbyFragment extends AppConnectFragment {
     }
 
     public void setOnRoomClickedListener(RoomList.OnRoomClickedListener listener){
-        roomList.setOnRoomClickedListener(listener);
+        this.onRoomClickedListener = listener;
+        if(roomList != null){
+            roomList.setOnRoomClickedListener(listener);
+        }
     }
 
     private void createAndMoveRoom(String newRoomName) {
-        model.moveNewRoom(newRoomName);
-    }
-
-    public void closeDialog() {
-        if (dialog != null) {
-            dialog.cancel();
-        }
+        ModelFactory.getCurrentModel().moveNewRoom(newRoomName);
+        communicator.moveToRoom();
     }
 
     public void movedToRoom(int roomID) {
         roomList.hightLightItem(roomID);
     }
 
-    public void roomAdded(Room room) {
-        roomList.addItem(room);
-    }
-
-    public void roomRemoved(Room room) {
-        roomList.removeItem(room);
-    }
-
-    public void resetList(List<Room> list) {
-        if (roomList != null) {
-            roomList.resetList(list);
+    public void refresh() {
+        Model m = ModelFactory.getCurrentModel();
+        List<Room> rooms = m.getRooms();
+        if(rooms != null && roomList != null) {
+            roomList.refreshData(rooms);
         }
     }
 
-    public void isConnected(boolean b) {
-        if (b) {
-            mainView.setVisibility(View.VISIBLE);
-            altView.setVisibility(View.INVISIBLE);
-        } else {
-            mainView.setVisibility(View.INVISIBLE);
-            altView.setVisibility(View.VISIBLE);
-        }
+    @Override
+    public void okClick(String newRoomName) {
+        createAndMoveRoom(newRoomName);
     }
-
-
-    public interface LobbyFragmentHolder {
-        void reconnect();                                       //FIXME extract reconnection.
+    public interface LobbyFragmentHolder{
+        void moveToRoom();
     }
 }

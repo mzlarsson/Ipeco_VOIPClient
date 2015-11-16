@@ -1,0 +1,28 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="se.chalmers.fleetspeak.structure.establish.ReconnectFragment">
+
+    <TextView
+        android:layout_width="800dp"
+        android:layout_height="wrap_content"
+        android:text="@string/unable_to_connect"
+        android:id="@+id/textView"
+        android:textSize="50sp"
+        android:layout_gravity="center_horizontal|top"
+        android:layout_marginBottom="54dp"
+        android:layout_above="@+id/reconnectButton"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:background="@drawable/special_button_shape2"
+        android:text="@string/reconnect"
+        android:id="@+id/reconnectButton"
+        android:layout_gravity="center"
+        android:textSize="30sp"
+        android:layout_marginBottom="41dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
+</RelativeLayout>

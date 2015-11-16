@@ -22,7 +22,7 @@ import se.chalmers.fleetspeak.core.CommandHandler;
 
 public class TCPHandler extends Thread{
 
-	private static final int TIMEOUT_TIME = 10000;
+	private static final int TIMEOUT_TIME = 10000, RECONNECT_WINDOW = 1;
 
 	private Socket clientSocket;
 	private PrintWriter printWriter;
@@ -86,24 +86,24 @@ public class TCPHandler extends Thread{
 				if(read != null){
 					receivedCommand(read);
 				}else{
-					receivedCommand("{\"command\":\"disconnect\"}");
+					unexpectedDisconnect();
 					isRunning = false;
 				}
 
 			}
 		} catch(EOFException eofe){
-			receivedCommand("{\"command\":\"disconnect\"}");
+			unexpectedDisconnect();
 		} catch(SocketTimeoutException e){
 			logger.log(Level.SEVERE, "Got Socket Timeout. Removing client");
-			receivedCommand("{\"command\":\"disconnect\"}");
+			unexpectedDisconnect();
 		} catch(SocketException e){
 			//Only log if the handler is not terminated
 			if(isRunning){
 				logger.log(Level.SEVERE, e.getMessage());
 			}
-			receivedCommand("{\"command\":\"disconnect\"}");
+			unexpectedDisconnect();
 		}catch (IOException e) {
-			receivedCommand("{\"command\":\"disconnect\"}");
+			unexpectedDisconnect();
 			logger.log(Level.SEVERE,e.getMessage());
 		}finally{
 			try {
@@ -117,12 +117,23 @@ public class TCPHandler extends Thread{
 		}
 	}
 
+	private void unexpectedDisconnect() {
+		try {
+			Thread.sleep(RECONNECT_WINDOW);
+		} catch (InterruptedException e) {
+			logger.log(Level.WARNING, "Unexpected thread interruption", e);
+		}
+		if (isRunning) {
+			receivedCommand("{\"command\":\"disconnect\"}");
+		}
+	}
+	
 	private void receivedCommand(String command) {
 		lastContact = System.currentTimeMillis();
 		if (!command.equals("pong")) { // TODO Ignores pong responses but there might not be a need for the client to respond at all, the server should fail to send the ping message if not reachable.
 			if (ch != null) {
 				logger.log(Level.FINE,  command);
-				ch.handleCommand(command);
+				ch.handleCommand(command, this);
 			} else {
 				logger.log(Level.SEVERE, "Received a Command without a set CommandHandler");
 			}

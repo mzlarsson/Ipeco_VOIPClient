@@ -12,6 +12,7 @@ import org.json.JSONObject;
 import se.chalmers.fleetspeak.network.tcp.TCPHandler;
 import se.chalmers.fleetspeak.network.udp.RTPHandler;
 import se.chalmers.fleetspeak.sound.BufferedAudioStream;
+import se.chalmers.fleetspeak.util.Location;
 
 /**
  * A class that handles all connectors with the app
@@ -27,6 +28,7 @@ public class Client implements CommandHandler, NetworkUser {
 	private RTPHandler rtp;
 	private int clientID;
 
+	private Location location;	
 	private InetAddress ip;	//TODO Is it necessary for the client to hold it IP?
 
 	private Logger logger;
@@ -45,6 +47,7 @@ public class Client implements CommandHandler, NetworkUser {
 		this.ip = ip;
 		this.tcp = tcph;
 		this.tcp.setCommandHandler(this);
+		location = new Location(0,0);
 		JSONObject json = new JSONObject();
 		try {
 			json.put("command" , "setinfo");
@@ -83,7 +86,15 @@ public class Client implements CommandHandler, NetworkUser {
 	public String getName() {
 		return alias;
 	}
-
+	
+	/**
+	 * Gets the location of this client.
+	 * @return The location of the client.
+	 */
+	public Location getLocation() {
+		return location;
+	}
+	
 	/**
 	 * Set the name of this client.
 	 * @param name The new name of the client.
@@ -106,7 +117,17 @@ public class Client implements CommandHandler, NetworkUser {
 		}
 	}
 
+	public void setTCPHandler(TCPHandler tcp) {
+		if (this.tcp != null) {
+			this.tcp.terminate();
+		}
+		this.tcp = tcp;
+	}
+	
 	public void setRTPHandler(RTPHandler rtp) {
+		if (this.rtp != null) {
+			this.rtp.terminate();
+		}
 		this.rtp = rtp;
 	}
 
@@ -129,21 +150,25 @@ public class Client implements CommandHandler, NetworkUser {
 
 
 	@Override
-	public void handleCommand(String string) {
+	public void handleCommand(String string, Object sender) {
 		try {
 			JSONObject json = new JSONObject(string);
 			switch(json.getString("command")){
 			case "disconnect":
 				json.put("userid", this.clientID);
-				ch.handleCommand(json.toString());
+				ch.handleCommand(json.toString(), this);
+				break;
+			case "updatelocation":
+				location = new Location(json.getDouble("latitude"), json.getDouble("longitude"));
+				ch.handleCommand(string, this);
 				break;
 			default:
-				ch.handleCommand(string);
+				ch.handleCommand(string, this);
 				break;
 			}
 
 		} catch (JSONException e) {
-			logger.log(Level.WARNING, "Could not create JSON object (for some random reason)", e);
+			logger.log(Level.WARNING, "Could not create JSON object of: " + string, e);
 		}
 	}
 }

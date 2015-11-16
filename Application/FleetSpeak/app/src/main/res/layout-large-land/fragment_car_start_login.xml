@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     >
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="400dp"
         android:textSize="60sp"
         android:id="@+id/userName"
         android:text="@string/username_text"
@@ -13,7 +13,8 @@
         android:singleLine="true"
         android:layout_above="@+id/error_text"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="68dp" />
+        android:layout_marginBottom="68dp"
+        android:gravity="center_horizontal" />
     <TextView
         android:layout_width="310dp"
         android:layout_height="wrap_content"
@@ -31,14 +32,12 @@
         android:textColor="#FFFFFF"
         android:textSize="30sp"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
+        android:layout_height="120dp"
         android:background="@drawable/special_button_shape"
         android:shadowColor="#A8A8A8"
         android:shadowDx="0"
         android:shadowDy="0"
-        android:shadowRadius="5" android:layout_alignParentBottom="true"
-        android:layout_alignRight="@+id/error_text"
-        android:layout_alignLeft="@+id/error_text" />
+        android:shadowRadius="5" android:layout_alignParentBottom="true" />
     />
 
 

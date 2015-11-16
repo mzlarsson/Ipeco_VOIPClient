@@ -29,7 +29,14 @@ public class AndroidClientCreator implements STUNListener {
 	}
 	
 	public void newAndroidClient(UserInfo ui, TCPHandler tcp) {
-		Client client = new Client(ui.getID(), ui.getAlias(), tcp.getInetAddress(), tcp);
+		Client client = building.findClient(ui.getID());
+		if (client == null) {
+//			client = new Client(ui.getID(), ui.getAlias(), tcp.getInetAddress(), tcp);
+		} else {
+			//FIXME Unimplemented, when reconnecting we can match it to the correct client without having to resynch the entire structure.
+//			client.setTCPHandler(tcp);
+		}
+		client = new Client(ui.getID(), ui.getAlias(), tcp.getInetAddress(), tcp);
 		establishUDPConnection(client);
 	}
 	

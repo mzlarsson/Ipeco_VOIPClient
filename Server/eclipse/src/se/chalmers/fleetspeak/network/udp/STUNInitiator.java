@@ -109,7 +109,7 @@ public class STUNInitiator extends Thread implements CommandHandler{
 	}
 
 	@Override
-	public void handleCommand(String string) {
+	public void handleCommand(String string, Object sender) {
 		try {
 			JSONObject command = new JSONObject(string);
 			if(command.getString("command").equalsIgnoreCase("clientudptestok")) {

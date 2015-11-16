@@ -1,9 +1,9 @@
 package se.chalmers.fleetspeak.structure.connected;
 
 
-import android.support.v4.app.FragmentTransaction;
-import android.os.Bundle;
 import android.app.Fragment;
+import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import java.util.List;
 
 import se.chalmers.fleetspeak.R;
+import se.chalmers.fleetspeak.model.Model;
+import se.chalmers.fleetspeak.model.ModelFactory;
 import se.chalmers.fleetspeak.model.User;
 import se.chalmers.fleetspeak.structure.lists.UserList;
 
@@ -20,14 +22,13 @@ import se.chalmers.fleetspeak.structure.lists.UserList;
 public class InRoomFragment extends AppConnectFragment {
 
     private UserList userList;
-
-    public InRoomFragment(){
-        userList = new UserList();
-    }
+    private UserList.OnUserClickedListener onUserClickedListener;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_in_room, container, false);
+        this.userList = new UserList();
+        this.userList.setOnUserClickedListener(onUserClickedListener);
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.replace(R.id.fragment_holder_user, userList);
         ft.commit();
@@ -36,7 +37,10 @@ public class InRoomFragment extends AppConnectFragment {
     }
 
     public void setOnUserClickedListener(UserList.OnUserClickedListener listener){
-        userList.setOnUserClickedListener(listener);
+        this.onUserClickedListener = listener;
+        if(userList != null) {
+            userList.setOnUserClickedListener(listener);
+        }
     }
 
     public void truckModeChanged(boolean b) {
@@ -51,8 +55,11 @@ public class InRoomFragment extends AppConnectFragment {
         userList.itemRemoved(user);
     }
 
-    public void resetList(List<User> list) {
-        if (userList != null)
-            userList.resetList(list);
+    public void refresh() {
+        Model m = ModelFactory.getCurrentModel();
+        List<User> users = m.getUsers(m.getCurrentRoom());
+        if(users != null && userList != null) {
+            userList.refreshData(users);
+        }
     }
 }

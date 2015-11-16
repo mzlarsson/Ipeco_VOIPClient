@@ -4,27 +4,25 @@
     tools:context="se.chalmers.fleetspeak.structure.establish.BackFragment">
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="700dp"
         android:layout_height="150dp"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/AboutToDisconnect"
         android:id="@+id/textView2"
         android:textColor="#ffffffff"
         android:textSize="50sp"
-        android:layout_marginTop="412dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerInParent="true"
+        android:gravity="center" />
 
     <Button
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:background="@drawable/special_button_shape2"
         android:text="@string/yes"
-        android:layout_marginRight="88dp"
         android:id="@+id/yesButton"
+        android:textSize="30sp"
         android:layout_alignTop="@+id/noButton"
-        android:layout_alignParentRight="true"
-        android:textSize="30sp" />
+        android:layout_alignRight="@+id/textView2" />
 
     <Button
         android:layout_width="150dp"
@@ -32,9 +30,8 @@
         android:background="@drawable/special_button_shape2"
         android:text="@string/no"
         android:id="@+id/noButton"
-        android:layout_marginBottom="133dp"
-        android:layout_marginLeft="109dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:textSize="30sp" />
+        android:textSize="30sp"
+        android:layout_marginTop="125dp"
+        android:layout_below="@+id/textView2"
+        android:layout_alignLeft="@+id/textView2" />
 </RelativeLayout>
