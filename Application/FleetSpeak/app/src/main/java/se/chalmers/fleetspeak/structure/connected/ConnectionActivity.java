@@ -238,10 +238,11 @@ public class ConnectionActivity extends ActionBarActivity implements
 
     @Override
     public void onBackPressed() {
-        if (viewPager.getCurrentItem() == 1) {
+        int curItem = viewPager.getCurrentItem();
+        if (curItem == 1) {
             Log.d("ConnectionActivity", " current item on back is 1");
             onBackNo();
-        } else if (viewPager.getCurrentItem() == 2) {
+        } else if (curItem == 2 || curItem  == 3) {
             onBackYes();
         } else {
             viewPager.setCurrentItem(2);

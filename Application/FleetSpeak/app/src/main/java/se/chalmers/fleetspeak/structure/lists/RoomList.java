@@ -48,7 +48,8 @@ public class RoomList extends Fragment {
     }
 
     public void changedTruckState(boolean b) {
-        roomAdapter.notifyDataSetChanged(b);
+        if(roomAdapter != null)
+            roomAdapter.notifyDataSetChanged(b);
     }
 
     public void refreshData(List<Room> roomList) {
