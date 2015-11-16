@@ -19,7 +19,7 @@ import se.chalmers.fleetspeak.model.Room;
 import se.chalmers.fleetspeak.structure.lists.RoomList;
 import se.chalmers.fleetspeak.truck.TruckModeHandlerFactory;
 
-public class LobbyFragment extends AppConnectFragment implements createRoomDialog.cRDListener {
+public class LobbyFragment extends AppConnectFragment implements CreateRoomDialog.CRDListener {
 
     private RoomList roomList;
     private LobbyFragmentHolder communicator;
@@ -73,7 +73,7 @@ public class LobbyFragment extends AppConnectFragment implements createRoomDialo
         boolean truckMode = TruckModeHandlerFactory.getCurrentHandler().truckModeActive();
         Model model = ModelFactory.getCurrentModel();
         if (!truckMode) {
-            dialog = new createRoomDialog(getContext(), this, model.getCurrentUserAlias() + "'s room" );
+            dialog = new CreateRoomDialog(getContext(), this, model.getCurrentUserAlias() + "'s room" );
             dialog.show();
 
         } else { //When the car is driving and the user have selected "Create room" the user won't be
