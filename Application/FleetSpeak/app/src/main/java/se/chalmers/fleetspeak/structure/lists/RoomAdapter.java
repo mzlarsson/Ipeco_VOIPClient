@@ -27,8 +27,6 @@ import se.chalmers.fleetspeak.truck.TruckModeHandlerFactory;
  */
 public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder> {
 
-    private Model model;
-
     private Context context;
     private final LayoutInflater inflater;
     private boolean truckstate;
@@ -37,15 +35,17 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
     private RoomList.OnRoomClickedListener onRoomClickedListener;
 
     public RoomAdapter(Context context) {
-        this.model = ModelFactory.getCurrentModel();
         this.context = context;
         this.inflater = LayoutInflater.from(context);
         this.truckstate = TruckModeHandlerFactory.getCurrentHandler().truckModeActive();
-        Log.d("RoomAdapter", "is communicator.getRooms null? = " + (model.getRooms() == null));
-        if (model.getRooms() != null) {
-            this.rooms = model.getRooms();
+
+        Model model = ModelFactory.getCurrentModel();
+        List<Room> rooms = model.getRooms();
+        if (rooms != null) {
+            this.rooms = rooms;
+            int currentRoom = model.getCurrentRoom();
             for (Room r : rooms) {
-                if (r.getId() == model.getCurrentRoom()) {
+                if (r.getId() == currentRoom) {
                     highlightPos = rooms.indexOf(r);
                 }
             }
@@ -82,6 +82,7 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
         return viewHolder;
     }
 
+    @Override
     public void onBindViewHolder(RoomViewHolder holder, int position) {
         Room currentRoom = rooms.get(position);
         if (position == highlightPos) {
@@ -92,7 +93,7 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
         }
         holder.iv.setImageResource(R.drawable.ic_room);
         holder.roomname.setText(currentRoom.getName());
-        ArrayList<User> users = model.getUsers(currentRoom.getId());
+        ArrayList<User> users = ModelFactory.getCurrentModel().getUsers(currentRoom.getId());
         StringBuilder builder = new StringBuilder();
         if (users != null && users.size() > 0) {
             Log.d("RoomAdapter", "Viewholder start user list ");
@@ -127,7 +128,8 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
         } else {
             rooms = Collections.emptyList();
         }
-        highlightPos = model.getCurrentRoom();
+        highlightPos = ModelFactory.getCurrentModel().getCurrentRoom();
+
         notifyDataSetChanged();
     }
 

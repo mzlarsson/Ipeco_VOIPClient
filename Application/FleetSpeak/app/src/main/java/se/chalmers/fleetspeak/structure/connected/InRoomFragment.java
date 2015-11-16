@@ -1,10 +1,9 @@
 package se.chalmers.fleetspeak.structure.connected;
 
 
-import android.support.v4.app.FragmentTransaction;
-import android.os.Bundle;
 import android.app.Fragment;
-import android.util.Log;
+import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,14 +22,13 @@ import se.chalmers.fleetspeak.structure.lists.UserList;
 public class InRoomFragment extends AppConnectFragment {
 
     private UserList userList;
-
-    public InRoomFragment(){
-        userList = new UserList();
-    }
+    private UserList.OnUserClickedListener onUserClickedListener;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_in_room, container, false);
+        this.userList = new UserList();
+        this.userList.setOnUserClickedListener(onUserClickedListener);
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.replace(R.id.fragment_holder_user, userList);
         ft.commit();
@@ -39,7 +37,10 @@ public class InRoomFragment extends AppConnectFragment {
     }
 
     public void setOnUserClickedListener(UserList.OnUserClickedListener listener){
-        userList.setOnUserClickedListener(listener);
+        this.onUserClickedListener = listener;
+        if(userList != null) {
+            userList.setOnUserClickedListener(listener);
+        }
     }
 
     public void truckModeChanged(boolean b) {
@@ -55,13 +56,10 @@ public class InRoomFragment extends AppConnectFragment {
     }
 
     public void refresh() {
-        Log.d("inroom", "refresh");
         Model m = ModelFactory.getCurrentModel();
         List<User> users = m.getUsers(m.getCurrentRoom());
-        if(users != null) {
-            Log.d("Inroom", users.size() + "");
-            if (userList != null)
-                userList.refreshData(users);
+        if(users != null && userList != null) {
+            userList.refreshData(users);
         }
     }
 }

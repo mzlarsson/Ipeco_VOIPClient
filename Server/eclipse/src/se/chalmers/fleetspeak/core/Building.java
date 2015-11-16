@@ -44,9 +44,8 @@ public class Building {
 				break;
 			case "requestchangehistory":
 				LinkedList<JSONObject> changes = changeTracker.getChanges(command.getInt("fromversion"));
-				IRoom r = rooms.get(command.getInt("roomid"));
 				while(!changes.isEmpty()){
-					r.sendCommandToClient(client.getClientID(), changes.removeFirst().toString());
+					room.sendCommandToClient(client.getClientID(), changes.removeFirst().toString());
 				}
 				break;
 			case "request_user_location":
