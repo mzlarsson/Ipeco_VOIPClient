@@ -34,7 +34,7 @@
 </target>
 <target name="ServerConsole">
 <java classname="se.chalmers.fleetspeak.ServerConsole" failonerror="true" fork="yes">
-<jvmarg line="-Djava.library.path=libs/native/linux-x86-64"/>
+<jvmarg line="-Djava.library.path=libs/native/darwin"/>
 <classpath refid="DTServer.classpath"/>
 </java>
 </target>

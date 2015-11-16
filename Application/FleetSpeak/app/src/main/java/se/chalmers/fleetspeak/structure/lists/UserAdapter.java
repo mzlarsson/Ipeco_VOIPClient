@@ -104,6 +104,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
         } else {
             userList = Collections.emptyList();
         }
+
         notifyDataSetChanged();
     }
 

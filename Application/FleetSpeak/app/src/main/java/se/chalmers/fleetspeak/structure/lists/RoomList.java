@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,9 +29,7 @@ public class RoomList extends Fragment {
         GridLayoutManager lm = new GridLayoutManager(this.getActivity().getApplicationContext(), 1);
         rv.setLayoutManager(lm);
         roomAdapter = new RoomAdapter(this.getActivity());
-        if(onRoomClickedListener != null){
-            roomAdapter.setOnRoomClickedListener(onRoomClickedListener);
-        }
+        roomAdapter.setOnRoomClickedListener(onRoomClickedListener);
         rv.setAdapter(roomAdapter);
         return view;
     }
@@ -48,12 +47,15 @@ public class RoomList extends Fragment {
     }
 
     public void changedTruckState(boolean b) {
-        if(roomAdapter != null)
+        if(roomAdapter != null) {
             roomAdapter.notifyDataSetChanged(b);
+        }
     }
 
     public void refreshData(List<Room> roomList) {
-        roomAdapter.refreshData(roomList);
+        if(roomAdapter != null) {
+            roomAdapter.refreshData(roomList);
+        }
     }
 
     public void itemChanged(int p) {

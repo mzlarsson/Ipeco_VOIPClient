@@ -12,8 +12,8 @@ import se.chalmers.fleetspeak.R;
 /**
  * Created by David Gustafsson on 2015-11-07.
  */
-public class createRoomDialog extends Dialog {
-   public createRoomDialog(Context context, final cRDListener listener, final String hint){
+public class CreateRoomDialog extends Dialog {
+   public CreateRoomDialog(Context context, final CRDListener listener, final String hint){
        super(context);
        requestWindowFeature(Window.FEATURE_NO_TITLE);
        this.setContentView(R.layout.dialog);
@@ -25,9 +25,13 @@ public class createRoomDialog extends Dialog {
            @Override
            public void onClick(View v) {
                if ((edit.getText().toString()).length() == 0) {
-                   listener.okClick(hint);
+                   if (listener != null) {
+                       listener.okClick(hint);
+                   }
                } else {
-                   listener.okClick(edit.getText().toString());
+                   if (listener != null) {
+                       listener.okClick(edit.getText().toString());
+                   }
                }
                cancel();
            }
@@ -41,7 +45,7 @@ public class createRoomDialog extends Dialog {
        });
 
    }
-    public interface cRDListener {
+    public interface CRDListener {
         public void okClick(String name);
     }
 }

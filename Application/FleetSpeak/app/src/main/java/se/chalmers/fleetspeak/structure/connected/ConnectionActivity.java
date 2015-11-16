@@ -81,12 +81,10 @@ public class ConnectionActivity extends ActionBarActivity implements
     };
 
     public void updateUsersView() {
-        Log.d("Connection", "Inroom refresh");
         inRoomFragment.refresh();
     }
 
     public void updateRoomView() {
-        Log.d("Connection", "lobby refresh");
         lobbyFragment.refresh();
     }
 
