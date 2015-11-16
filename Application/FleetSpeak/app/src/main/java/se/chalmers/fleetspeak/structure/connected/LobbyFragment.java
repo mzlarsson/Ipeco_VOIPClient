@@ -2,20 +2,13 @@ package se.chalmers.fleetspeak.structure.connected;
 
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.res.Resources;
-import android.support.v4.app.FragmentTransaction;
-import android.content.DialogInterface;
 import android.os.Bundle;
-import android.app.Fragment;
-import android.util.Log;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.LinearLayout;
 
 import java.util.List;
 
@@ -31,7 +24,6 @@ public class LobbyFragment extends AppConnectFragment implements createRoomDialo
     private RoomList roomList;
     private LobbyFragmentHolder communicator;
     private Dialog dialog;
-
 
     private RoomList.OnRoomClickedListener onRoomClickedListener;
 
@@ -53,8 +45,9 @@ public class LobbyFragment extends AppConnectFragment implements createRoomDialo
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-
         View view = inflater.inflate(R.layout.fragment_lobby, container, false);
+        roomList = new RoomList();
+        roomList.setOnRoomClickedListener(onRoomClickedListener);
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.replace(R.id.fragment_holder_room, roomList);
         ft.commit();
@@ -91,7 +84,10 @@ public class LobbyFragment extends AppConnectFragment implements createRoomDialo
     }
 
     public void setOnRoomClickedListener(RoomList.OnRoomClickedListener listener){
-        roomList.setOnRoomClickedListener(listener);
+        this.onRoomClickedListener = listener;
+        if(roomList != null){
+            roomList.setOnRoomClickedListener(listener);
+        }
     }
 
     private void createAndMoveRoom(String newRoomName) {
@@ -99,33 +95,15 @@ public class LobbyFragment extends AppConnectFragment implements createRoomDialo
         communicator.moveToRoom();
     }
 
-    public void closeDialog() {
-        if (dialog != null) {
-            dialog.cancel();
-        }
-    }
-
     public void movedToRoom(int roomID) {
         roomList.hightLightItem(roomID);
     }
 
-    public void roomAdded(Room room) {
-        roomList.addItem(room);
-    }
-
-    public void roomRemoved(Room room) {
-        roomList.removeItem(room);
-    }
-
     public void refresh() {
-        Log.d("Lobby", "refresh");
-        if (roomList != null) {
-            Model m = ModelFactory.getCurrentModel();
-            List<Room> rooms = m.getRooms();
-            if(rooms != null) {
-                Log.d("Lobby", rooms.size() + "");
-                roomList.refreshData(rooms);
-            }
+        Model m = ModelFactory.getCurrentModel();
+        List<Room> rooms = m.getRooms();
+        if(rooms != null && roomList != null) {
+            roomList.refreshData(rooms);
         }
     }
 
@@ -134,6 +112,6 @@ public class LobbyFragment extends AppConnectFragment implements createRoomDialo
         createAndMoveRoom(newRoomName);
     }
     public interface LobbyFragmentHolder{
-        public void moveToRoom();
+        void moveToRoom();
     }
 }

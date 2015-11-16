@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,7 +46,9 @@ public class UserList extends Fragment {
     }
 
     public void changedTruckState(boolean b) {
-        userAdapter.notifyDataSetChanged(b);
+        if(userAdapter != null){
+            userAdapter.notifyDataSetChanged(b);
+        }
     }
 
     public void itemChanged(int p) {
@@ -73,7 +76,9 @@ public class UserList extends Fragment {
     }
 
     public void refreshData(List<User> userList) {
-        userAdapter.refreshData(userList);
+        if(userAdapter != null){
+            userAdapter.refreshData(userList);
+        }
     }
 
 
