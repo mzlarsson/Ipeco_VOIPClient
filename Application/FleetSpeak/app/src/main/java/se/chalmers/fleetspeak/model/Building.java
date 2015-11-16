@@ -32,6 +32,13 @@ public class Building {
         rooms.put(roomid, new Room(roomname, roomid));
         postUpdate();
     }
+    public Room getRooom(int roomid){
+        if(rooms.containsKey(roomid)){
+            return rooms.get(roomid);
+        }else{
+            return null;
+        }
+    }
 
     public void removeRoom(int roomid) {
         rooms.remove(roomid);
