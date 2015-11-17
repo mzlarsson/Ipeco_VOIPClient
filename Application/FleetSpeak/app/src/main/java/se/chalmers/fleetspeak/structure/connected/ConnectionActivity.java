@@ -17,11 +17,9 @@ import se.chalmers.fleetspeak.R;
 import se.chalmers.fleetspeak.model.Model;
 import se.chalmers.fleetspeak.model.ModelFactory;
 import se.chalmers.fleetspeak.model.Room;
-import se.chalmers.fleetspeak.model.User;
 import se.chalmers.fleetspeak.structure.establish.BackFragment;
 import se.chalmers.fleetspeak.structure.establish.ReconnectFragment;
 import se.chalmers.fleetspeak.structure.lists.RoomList.OnRoomClickedListener;
-import se.chalmers.fleetspeak.structure.lists.UserList.OnUserClickedListener;
 import se.chalmers.fleetspeak.structure.login.LoginActivity;
 import se.chalmers.fleetspeak.truck.TruckModeHandler;
 import se.chalmers.fleetspeak.truck.TruckModeHandlerFactory;
@@ -33,7 +31,7 @@ public class ConnectionActivity extends ActionBarActivity implements
     private Model model;
     private boolean carMode = true;
     private ActionBar actionBar;
-    private CViewPager viewPager;
+    private CustomViewPager viewPager;
     private InRoomFragment inRoomFragment;
     private LobbyFragment lobbyFragment;
     private BackFragment backFragment;
@@ -106,7 +104,7 @@ public class ConnectionActivity extends ActionBarActivity implements
             Log.d("ConnectionActivity", " Connected");
             model.connect(username, password);
         }
-        viewPager = (CViewPager) findViewById(R.id.pager);
+        viewPager = (CustomViewPager) findViewById(R.id.pager);
         viewPager.setId(R.id.pager);
         viewPager.setAdapter(new PagerAdapter(getSupportFragmentManager()));
 
