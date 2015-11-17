@@ -57,9 +57,11 @@ public class ConnectionActivity extends ActionBarActivity implements
                     updateView();
                     break;
                 case MessageValues.DISCONNECTED:
-                    Log.d("UpdateHandler", " Disconnected");
-                    viewPager.setCurrentItem(4);
-                    updateView();
+                    if(!isFinishing()) {
+                        Log.d("UpdateHandler", " Disconnected");
+                        viewPager.setCurrentItem(4);
+                        updateView();
+                    }
                     break;
                 case MessageValues.MODELCHANGED:
                     updateView();
@@ -248,7 +250,7 @@ public class ConnectionActivity extends ActionBarActivity implements
     @Override
     public void onBackPressed() {
         int curItem = viewPager.getCurrentItem();
-        if (curItem <=1 && curItem < 3) {
+        if (curItem >=1 && curItem < 3) {
             Log.d("ConnectionActivity", " current item on back is 1");
             onBackNo();
         } else if (curItem >= 3) {
