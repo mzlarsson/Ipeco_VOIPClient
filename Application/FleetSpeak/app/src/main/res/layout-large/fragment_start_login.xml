@@ -42,7 +42,7 @@
             android:id="@+id/passwordField"
             android:inputType="text"
             android:imeOptions="actionDone"
-            android:password="true" />
+            android:password="false" />
 
         <CheckBox
             android:paddingLeft="@dimen/padding_checkbox"
