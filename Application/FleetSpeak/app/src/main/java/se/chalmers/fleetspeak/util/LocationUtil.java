@@ -24,6 +24,8 @@ public class LocationUtil {
     private LocationListener locationListener;
     private LocationManager locationManager;
 
+    private Location currentLocation;
+
     private final List<LocationChangeListener> changeListeners = new LinkedList<LocationChangeListener>();
 
     private LocationUtil(Context context){
@@ -53,6 +55,10 @@ public class LocationUtil {
         }
     }
 
+    public Location getCurrentLocation(){
+        return currentLocation;
+    }
+
     public int getMinTime(){
         return minTime;
     }
@@ -66,6 +72,7 @@ public class LocationUtil {
             locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
             locationListener = new LocationListener() {
                 public void onLocationChanged(Location location) {
+                    LocationUtil.this.currentLocation = location;
                     for(LocationChangeListener listener : changeListeners){
                         //Announce change of position
                         listener.locationChanged(location.getLatitude(), location.getLongitude());

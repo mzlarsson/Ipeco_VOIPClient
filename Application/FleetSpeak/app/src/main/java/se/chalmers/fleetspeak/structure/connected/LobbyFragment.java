@@ -3,10 +3,8 @@ package se.chalmers.fleetspeak.structure.connected;
 
 import android.app.Activity;
 import android.app.Dialog;
-
-import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
-
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,11 +27,6 @@ public class LobbyFragment extends AppConnectFragment implements CreateRoomDialo
 
     private RoomList.OnRoomClickedListener onRoomClickedListener;
 
-    public LobbyFragment(){
-        super();
-        roomList = new RoomList();
-    }
-
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -49,9 +42,15 @@ public class LobbyFragment extends AppConnectFragment implements CreateRoomDialo
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_lobby, container, false);
         roomList = new RoomList();
+        roomList.setRoomKeeper(new RoomList.RoomKeeper() {
+            @Override
+            public List<Room> getRooms() {
+                return ModelFactory.getCurrentModel().getRooms();
+            }
+        });
         roomList.setOnRoomClickedListener(onRoomClickedListener);
         FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.replace(R.id.fragment_holder_room, roomList);
+        ft.replace(R.id.fragment_holder_room_lobby, roomList);
         ft.commit();
 
         Button createButton = (Button) view.findViewById(R.id.buttonCreateRoom);

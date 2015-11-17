@@ -34,15 +34,15 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
     List<Room> rooms = Collections.emptyList();
     private RoomList.OnRoomClickedListener onRoomClickedListener;
 
-    public RoomAdapter(Context context) {
+
+    public RoomAdapter(Context context, List<Room> initRooms) {
         this.context = context;
         this.inflater = LayoutInflater.from(context);
         this.truckstate = TruckModeHandlerFactory.getCurrentHandler().truckModeActive();
 
         Model model = ModelFactory.getCurrentModel();
-        List<Room> rooms = model.getRooms();
-        if (rooms != null) {
-            this.rooms = rooms;
+        if (initRooms != null) {
+            this.rooms = initRooms;
             int currentRoom = model.getCurrentRoom();
             for (Room r : rooms) {
                 if (r.getId() == currentRoom) {
@@ -76,8 +76,7 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
 
     @Override
     public RoomViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        View view;
-        view = inflater.inflate(R.layout.room_item_row, viewGroup, false);
+        View view = inflater.inflate(R.layout.room_item_row, viewGroup, false);
         RoomViewHolder viewHolder = new RoomViewHolder(view, truckstate);
         return viewHolder;
     }

@@ -27,8 +27,7 @@ import se.chalmers.fleetspeak.truck.TruckStateListener;
 import se.chalmers.fleetspeak.util.MessageValues;
 
 public class ConnectionActivity extends ActionBarActivity implements
-        TruckStateListener, ActionBar.TabListener, LobbyFragment.LobbyFragmentHolder, OnRoomClickedListener, BackFragment.BackFragmentHolder, ReconnectFragment.ReconnectFragmentHolder
-        , HistoryFragment.HistoryFragmentHolder{
+        TruckStateListener, ActionBar.TabListener, LobbyFragment.LobbyFragmentHolder, OnRoomClickedListener, BackFragment.BackFragmentHolder, ReconnectFragment.ReconnectFragmentHolder {
     private Model model;
     private boolean carMode = true;
     private ActionBar actionBar;
@@ -138,6 +137,7 @@ public class ConnectionActivity extends ActionBarActivity implements
         backFragment = new BackFragment();
         reconnectFragment = new ReconnectFragment();
         historyFragment = new HistoryFragment();
+        historyFragment.setOnRoomClickedListener(this);
         Log.d("ConnectionActivity", " Checking if connected");
 
         TruckModeHandler handler = TruckModeHandlerFactory.getHandler(this);
@@ -195,10 +195,12 @@ public class ConnectionActivity extends ActionBarActivity implements
     private void changeCarModeTabs(boolean b) {
         if (lobbyFragment != null) {
             lobbyFragment.truckModeChanged(b);
-
         }
         if (inRoomFragment != null) {
             inRoomFragment.truckModeChanged(b);
+        }
+        if(historyFragment != null){
+            historyFragment.truckModeChanged(b);
         }
     }
 

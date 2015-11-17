@@ -1,12 +1,10 @@
 package se.chalmers.fleetspeak.structure.lists;
 
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,36 +49,11 @@ public class UserList extends Fragment {
         }
     }
 
-    public void itemChanged(int p) {
-        userAdapter.notifyItemChanged(p);
-    }
-
-    public void itemRemoved(int p) {
-        userAdapter.deleteItem(p);
-    }
-
-    public void itemRemoved(User user) {
-        userAdapter.deleteItem(user);
-    }
-
-    public void addItem(User user) {
-        userAdapter.addItem(user);
-    }
-
-    public void addItem(User user, int pos) {
-        userAdapter.addItem(user, pos);
-    }
-
-    public User accessItem(int pos) {
-        return userAdapter.acessItem(pos);
-    }
-
     public void refreshData(List<User> userList) {
         if(userAdapter != null){
             userAdapter.refreshData(userList);
         }
     }
-
 
     public interface OnUserClickedListener {
         void onUserClicked(User user);

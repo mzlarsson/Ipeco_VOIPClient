@@ -46,6 +46,6 @@ public class CreateRoomDialog extends Dialog {
 
    }
     public interface CRDListener {
-        public void okClick(String name);
+        void okClick(String name);
     }
 }

@@ -7,7 +7,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:name="se.chalmers.fleetspeak.fragments.NewStructure.ConnectedProcess.InRoomFragment"
-        android:id="@+id/fragment_holder_room"
+        android:id="@+id/fragment_holder_room_proximity"
         android:layout_gravity="center_vertical"
          />
 

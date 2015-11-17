@@ -4,6 +4,7 @@ package se.chalmers.fleetspeak.structure.connected;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,14 +46,6 @@ public class InRoomFragment extends AppConnectFragment {
 
     public void truckModeChanged(boolean b) {
         userList.changedTruckState(b);
-    }
-
-    public void userAdded(User user) {
-        userList.addItem(user);
-    }
-
-    public void userRemoved(User user) {
-        userList.itemRemoved(user);
     }
 
     public void refresh() {

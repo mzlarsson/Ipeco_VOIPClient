@@ -1,6 +1,5 @@
 package se.chalmers.fleetspeak.structure.lists;
 
-import android.app.Activity;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -104,18 +103,12 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
         } else {
             userList = Collections.emptyList();
         }
-
         notifyDataSetChanged();
     }
 
     public void addItem(User user) {
         userList.add(user);
         notifyItemInserted(userList.size() - 1);
-    }
-
-    public void addItem(User user, int pos) {
-        userList.add(pos, user);
-        notifyItemInserted(pos);
     }
 
     public void deleteItem(User user) {
@@ -129,14 +122,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
         userList.remove(pos);
         notifyItemRemoved(pos);
     }
-
-    public User acessItem(int pos) {
-        if (!userList.isEmpty() && pos >= 0 && pos < getItemCount()) {
-            return userList.get(pos);
-        } else
-            return null;
-    }
-
 
     public class UserViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private ImageView iv;
