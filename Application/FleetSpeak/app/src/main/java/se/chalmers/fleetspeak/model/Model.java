@@ -11,6 +11,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import se.chalmers.fleetspeak.audio.sound.SoundOutputController;
 import se.chalmers.fleetspeak.network.TCP.TLSConnector;
@@ -35,6 +36,7 @@ public class Model {
     private RTPHandler rtpHandler;
     private SoundOutputController soundOutputController;
 
+    private ArrayList<ProximityChangeListener> proximityChangeListeners;
     private LocationUtil locationUtil;
     private LocationUtil.LocationChangeListener locationChangeListener;
     private long lastLocationUpdate = -1;
@@ -53,6 +55,7 @@ public class Model {
         commandHandler = new CommandHandler();
         connector = new TLSConnector(commandHandler);
         this.callbackHandler = callbackHandler;
+        proximityChangeListeners = new ArrayList<>();
         roomVersion = 0;
         roomHistory = new RoomHistory();
         //TODO load history from disk
@@ -93,34 +96,37 @@ public class Model {
     }
 
     /**
-     * Finds all rooms with a user within a given radius of a location.
+     * Sends a request to update the locations of all users and attempt to find users within
+     * a specific radius of a location.
+     * Will request the location and distance from the ProximityChangeListener and respond
+     * with the search result.
+     * @param proximityChangeListener The ProximityChangeListener to receive the update.
+     */
+    public void requestProximityUpdate(ProximityChangeListener proximityChangeListener) {
+        proximityChangeListeners.add(proximityChangeListener);
+        connector.sendMessage("{\"command\":\"request_all_user_locations\"," +
+                "\"userid\":\"" + building.getUserid() + "\"}");
+    }
+
+    /**
+     * Finds all users within a given radius of a location and the rooms they are in.
      * Requests an update of the location on outdated users.
      * @param location The center of the circle area to search in.
      * @param distance The radius of the circle in meters.
-     * @return All rooms found. Array is empty if no rooms were found. Array is null if no authenticated.
+     * @return A map with the rooms as key and a list with the users of that room within the
+     * distance as the values.
      */
-    public ArrayList<Room> getRoomsCloserThan(Location location, int distance) {
-        if(state == State.authenticated)
+    private HashMap<Room,ArrayList<User>> getRoomsCloserThan(Location location, int distance) {
+        if (location!=null) {
             return building.getRoomsCloserThan(location, distance);
-        return null;
+        } else {
+            return null;
+        }
     }
 
     public ArrayList<User> getUsers(int roomid){
         if(state == State.authenticated)
             return building.getUsers(roomid);
-        return null;
-    }
-
-    /**
-     * Finds all users in this room within a given radius of a location.
-     * Includes outdated user-locations but requests an update from the server.
-     * @param location The center of the circle area to search in.
-     * @param distance The radius of the circle in meters.
-     * @return All users found, including outdated ones. Array is empty if no users were found. Array is null if no authenticated.
-     */
-    public ArrayList<User> getUsersCloserThan(Location location, int distance) {
-        if(state == State.authenticated)
-            return building.getUsersCloserThan(location, distance);
         return null;
     }
 
@@ -131,7 +137,6 @@ public class Model {
                 return u.getName();
             }
         }
-
         return null;
     }
 
@@ -349,7 +354,11 @@ public class Model {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
+        for (ProximityChangeListener pcl : proximityChangeListeners) {
+            pcl.roomProximityUpdate(
+                    getRoomsCloserThan(pcl.getRequestedLocation(), pcl.getRequestedDistance()));
+        }
+        proximityChangeListeners.clear();
     }
 
     /**
