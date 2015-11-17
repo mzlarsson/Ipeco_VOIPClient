@@ -94,6 +94,8 @@ public class LocationDataHandler implements LocationChangeListener, TruckModeHan
         setTruckMode(newTruckMode);
         if(truckMode){
             nodataTimer.schedule(nodataTimerTask, (int)(Math.max(locationUtil.getMinTime(), locationUtil.getMinDistance()/LOWER_SPEED_BOUNDARY)*2));
+        }else{
+            nodataTimer.cancel();
         }
     }
 
