@@ -18,7 +18,7 @@ import se.chalmers.fleetspeak.model.ModelFactory;
 import se.chalmers.fleetspeak.model.Room;
 import se.chalmers.fleetspeak.structure.lists.RoomList;
 
-public class ProximityFragment extends AppConnectFragment implements createRoomDialog.cRDListener {
+public class ProximityFragment extends AppConnectFragment {
 
     private RoomList roomList;
     private LobbyFragmentHolder communicator;
@@ -60,11 +60,6 @@ public class ProximityFragment extends AppConnectFragment implements createRoomD
         roomList.setOnRoomClickedListener(listener);
     }
 
-    private void createAndMoveRoom(String newRoomName) {
-        ModelFactory.getCurrentModel().moveNewRoom(newRoomName);
-        communicator.moveToRoom();
-    }
-
     public void movedToRoom(int roomID) {
         roomList.hightLightItem(roomID);
     }
@@ -87,11 +82,6 @@ public class ProximityFragment extends AppConnectFragment implements createRoomD
                 roomList.refreshData(rooms);
             }
         }
-    }
-
-    @Override
-    public void okClick(String newRoomName) {
-        createAndMoveRoom(newRoomName);
     }
     public interface LobbyFragmentHolder{
         public void moveToRoom();

@@ -24,8 +24,6 @@ public class HistoryFragment extends AppConnectFragment {
     private RoomList roomList;
     private HistoryFragmentHolder communicator;
 
-    private RoomList.OnRoomClickedListener onRoomClickedListener;
-
     public HistoryFragment(){
         super();
         roomList = new RoomList();
@@ -78,7 +76,7 @@ public class HistoryFragment extends AppConnectFragment {
         Log.d("Proxmity", "refresh");
         if (roomList != null) {
             Model m = ModelFactory.getCurrentModel();
-            List<Room> rooms = m.getRooms();
+            List<Room> rooms = m.getHistory();
             if(rooms != null) {
                 Log.d("Proximity", rooms.size() + "");
                 roomList.refreshData(rooms);

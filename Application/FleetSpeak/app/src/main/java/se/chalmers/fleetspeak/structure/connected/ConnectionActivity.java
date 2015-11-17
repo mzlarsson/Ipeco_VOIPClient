@@ -29,15 +29,17 @@ import se.chalmers.fleetspeak.truck.TruckStateListener;
 import se.chalmers.fleetspeak.util.MessageValues;
 
 public class ConnectionActivity extends ActionBarActivity implements
-        TruckStateListener, ActionBar.TabListener, LobbyFragment.LobbyFragmentHolder, OnRoomClickedListener, BackFragment.BackFragmentHolder, ReconnectFragment.ReconnectFragmentHolder{
+        TruckStateListener, ActionBar.TabListener, LobbyFragment.LobbyFragmentHolder, OnRoomClickedListener, BackFragment.BackFragmentHolder, ReconnectFragment.ReconnectFragmentHolder
+        , HistoryFragment.HistoryFragmentHolder{
     private Model model;
     private boolean carMode = true;
     private ActionBar actionBar;
-    private CViewPager viewPager;
+    private CustomViewPager viewPager;
     private InRoomFragment inRoomFragment;
     private LobbyFragment lobbyFragment;
     private BackFragment backFragment;
     private ReconnectFragment reconnectFragment;
+    private HistoryFragment historyFragment;
 
     private String username;
     private String password;
@@ -56,7 +58,7 @@ public class ConnectionActivity extends ActionBarActivity implements
                     break;
                 case MessageValues.DISCONNECTED:
                     Log.d("UpdateHandler", " Disconnected");
-                    viewPager.setCurrentItem(3);
+                    viewPager.setCurrentItem(4);
                     updateView();
                     break;
                 case MessageValues.MODELCHANGED:
@@ -64,7 +66,7 @@ public class ConnectionActivity extends ActionBarActivity implements
                     break;
                 case MessageValues.CONNECTIONFAILED:
                     Log.d("UpdateHandler", "Connection failed");
-                    viewPager.setCurrentItem(3);
+                    viewPager.setCurrentItem(4);
                     updateView();
                     break;
                 case MessageValues.AUTHENTICATED:
@@ -87,10 +89,11 @@ public class ConnectionActivity extends ActionBarActivity implements
     public void updateRoomView() {
         lobbyFragment.refresh();
     }
-
+    public void updateHistory() {historyFragment.refresh();}
     public void updateView() {
         updateRoomView();
         updateUsersView();
+        updateHistory();
     }
 
     @Override
@@ -106,7 +109,7 @@ public class ConnectionActivity extends ActionBarActivity implements
             Log.d("ConnectionActivity", " Connected");
             model.connect(username, password);
         }
-        viewPager = (CViewPager) findViewById(R.id.pager);
+        viewPager = (CustomViewPager) findViewById(R.id.pager);
         viewPager.setId(R.id.pager);
         viewPager.setAdapter(new PagerAdapter(getSupportFragmentManager()));
 
@@ -117,7 +120,7 @@ public class ConnectionActivity extends ActionBarActivity implements
 
             @Override
             public void onPageSelected(int position) {
-                if (position != 2 && position != 3) {
+                if (position < 3) {
                         actionBar.setSelectedNavigationItem(position);
                     }
             }
@@ -134,6 +137,7 @@ public class ConnectionActivity extends ActionBarActivity implements
         inRoomFragment.setOnUserClickedListener(null);          //Add listener if any functionality is needed.
         backFragment = new BackFragment();
         reconnectFragment = new ReconnectFragment();
+        historyFragment = new HistoryFragment();
         Log.d("ConnectionActivity", " Checking if connected");
 
         TruckModeHandler handler = TruckModeHandlerFactory.getHandler(this);
@@ -155,6 +159,13 @@ public class ConnectionActivity extends ActionBarActivity implements
         inRoom.setText(chatroom);
         inRoom.setTabListener(this);
         actionBar.addTab(inRoom);
+
+        ActionBar.Tab history = actionBar.newTab();
+        history.setIcon(R.drawable.ic_history);
+        String historyText = getResources().getString(R.string.history);
+        history.setText(historyText);
+        history.setTabListener(this);
+        actionBar.addTab(history);
     }
 
     @Override
@@ -237,20 +248,20 @@ public class ConnectionActivity extends ActionBarActivity implements
     @Override
     public void onBackPressed() {
         int curItem = viewPager.getCurrentItem();
-        if (curItem == 1) {
+        if (curItem <=1 && curItem < 3) {
             Log.d("ConnectionActivity", " current item on back is 1");
             onBackNo();
-        } else if (curItem == 2 || curItem  == 3) {
+        } else if (curItem >= 3) {
             onBackYes();
         } else {
-            viewPager.setCurrentItem(2);
+            viewPager.setCurrentItem(3);
         }
     }
 
     @Override
     public void onTabSelected(ActionBar.Tab tab, android.support.v4.app.FragmentTransaction fragmentTransaction) {
         Log.d("ConnectionActivity", " clicked tab" + tab.getPosition());
-        if(viewPager.getCurrentItem() != 3) {
+        if(viewPager.getCurrentItem() < 3) {
             viewPager.setCurrentItem(tab.getPosition());
         }
     }
@@ -285,10 +296,12 @@ public class ConnectionActivity extends ActionBarActivity implements
             } else if (arg == 1) {
                 Log.d("ConnectionActivity", " InRoom called");
                 return inRoomFragment;
-            } else if (arg == 2) {
+            }else if(arg == 2){
+                return historyFragment;
+            } else if (arg == 3) {
                 Log.d("ConnectionActivity", " Back called");
                 return backFragment;
-            } else if(arg == 3){
+            } else if(arg == 4){
                 return reconnectFragment;
             }
             return null;
@@ -296,7 +309,7 @@ public class ConnectionActivity extends ActionBarActivity implements
 
         @Override
         public int getCount() {
-            return 4;
+            return 5;
         }
     }
 
