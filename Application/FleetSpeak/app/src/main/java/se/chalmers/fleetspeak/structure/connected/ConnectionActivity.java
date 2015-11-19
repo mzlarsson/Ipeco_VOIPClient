@@ -318,7 +318,7 @@ public class ConnectionActivity extends ActionBarActivity implements
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        model.disconnect();
+        //model.disconnect();
 
         //Remove truck mode notifications
         TruckModeHandler handler = TruckModeHandlerFactory.getHandler(this);
