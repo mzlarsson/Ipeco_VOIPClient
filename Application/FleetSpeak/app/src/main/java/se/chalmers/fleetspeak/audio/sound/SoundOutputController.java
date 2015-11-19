@@ -57,7 +57,9 @@ public class SoundOutputController implements Runnable {
 
 
     public void writeAudio(byte[] b,int offset){
-        audioTrack.write(b,offset,b.length);
+        if(soundIsPlaying) {
+            audioTrack.write(b, offset, b.length);
+        }
     }
 
     @Override
