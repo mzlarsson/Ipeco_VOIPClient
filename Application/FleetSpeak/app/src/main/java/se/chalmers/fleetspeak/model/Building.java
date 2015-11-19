@@ -125,7 +125,7 @@ public class Building {
             return rooms.get(roomid).getUsers();
         }
 
-        return null;
+        return new ArrayList<>();
     }
 
     public int getCurrentRoom() {
