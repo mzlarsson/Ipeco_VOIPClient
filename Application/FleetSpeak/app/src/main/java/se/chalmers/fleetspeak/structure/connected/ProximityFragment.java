@@ -4,6 +4,7 @@ package se.chalmers.fleetspeak.structure.connected;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +25,7 @@ import se.chalmers.fleetspeak.util.LocationUtil;
  * Created by Matz Larsson on 2015-11-17.
  */
 
-public class ProximityFragment extends AppConnectFragment {
+public class ProximityFragment extends AppConnectFragment implements ProximityChangeListener{
 
     private RoomList roomList;
     private RoomList.OnRoomClickedListener onRoomClickedListener;
@@ -58,20 +59,25 @@ public class ProximityFragment extends AppConnectFragment {
 
     private void loadContents() {
         final Model m = ModelFactory.getCurrentModel();
-        m.requestProximityUpdate(new ProximityChangeListener() {
-            @Override
-            public Location getRequestedLocation() {
-                return LocationUtil.getInstance(ProximityFragment.this.getContext(), false).getCurrentLocation();
-            }
+        m.requestProximityUpdate(this);
+    }
 
-            @Override
-            public int getRequestedDistance() {
-                return 5000;                            //5 km by default
-            }
+    @Override
+    public Location getRequestedLocation() {
+        return LocationUtil.getInstance(ProximityFragment.this.getContext(), false).getCurrentLocation();
+    }
 
+    @Override
+    public int getRequestedDistance() {
+        return 50000;                            //50 km by default
+    }
+
+    @Override
+    public void roomProximityUpdate(final HashMap<Room, ArrayList<User>> roomMap) {
+        this.getActivity().runOnUiThread(new Runnable() {
             @Override
-            public void roomProximityUpdate(HashMap<Room, ArrayList<User>> roomMap) {
-                if (roomList != null) {
+            public void run() {
+                if (roomList != null && roomMap != null) {
                     roomList.refreshData(new ArrayList<>(roomMap.keySet()));
                 }
             }
