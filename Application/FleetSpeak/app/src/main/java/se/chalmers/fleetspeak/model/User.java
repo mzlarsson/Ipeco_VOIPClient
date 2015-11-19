@@ -1,6 +1,7 @@
 package se.chalmers.fleetspeak.model;
 
 import android.location.Location;
+import android.util.Log;
 
 /**
  * A class for representing a user.
@@ -19,23 +20,28 @@ public class User {
         this.name = name;
         this.id = id;
         location = new Location(getName()+":"+id);
-        double latitude = 57.716697, longitude = 11.920601;
+        double latitude = 57.716897, longitude = 11.920721;
+        location.setProvider("Volvo");
         switch (id) {
             case 10000: //Karl johan väst   Malmö   55*36'36''N, 13*1'12''E
-                latitude = 55.3636;
-                longitude = 13.112;
+                latitude = 55.592920;
+                longitude = 13.013890;
+                location.setProvider("Malmö");
                 break;
             case 10001: //John Matrix   Malmö
-                latitude = 55.3636;
-                longitude = 13.112;
+                latitude = 55.592920;
+                longitude = 13.013890;
+                location.setProvider("Malmö");
                 break;
             case 10003: //Anders Andersson  Borås   57*43'33'' N,  12*52'22.1''E
-                latitude = 55.4333;
-                longitude = 13.52221;
+                latitude = 57.721406;
+                longitude = 12.918319;
+                location.setProvider("Borås");
                 break;
             case 10008: //Pac Man   Mölndal 57*36'1''N, 12*5'35.5''E
-                latitude = 55.361;
-                longitude = 13.5355;
+                latitude = 57.655292;
+                longitude = 12.017968;
+                location.setProvider("Mölndal");
                 break;
         }
         location.setLatitude(latitude);
@@ -91,6 +97,7 @@ public class User {
      * @return The distance in meters.
      */
     public int getDistanceTo(Location targetLocation) {
+        Log.d("Volt", "Distance from "+location.getProvider()+" to "+targetLocation.getProvider()+ " is: " +((int)location.distanceTo(targetLocation)));
         return (int)location.distanceTo(targetLocation);
     }
 

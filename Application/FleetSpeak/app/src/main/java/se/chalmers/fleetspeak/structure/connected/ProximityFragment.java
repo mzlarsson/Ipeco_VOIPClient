@@ -94,7 +94,7 @@ public class ProximityFragment extends AppConnectFragment implements ProximityCh
             Location loc = new Location("current user: Volvo");
             loc.setLongitude(11.920601);
             loc.setLatitude(57.716697);
-            refreshData(new ArrayList<Room>(m.getRoomsCloserThan(loc, 500000).keySet()));
+            refreshData(new ArrayList<Room>(m.getRoomsCloserThan(loc, 50000).keySet()));
         } else {
             m.requestProximityUpdate(this);
         }

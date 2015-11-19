@@ -110,9 +110,11 @@ public class Building {
     public HashMap<Room, ArrayList<User>> getRoomsCloserThan(Location location, int distance) {
         HashMap<Room, ArrayList<User>> foundRooms = new HashMap<>();
         for (Room room : rooms.values()) {
-            ArrayList<User> users = room.getUserCloserThan(location, distance);
-            if (!users.isEmpty()) {
-                foundRooms.put(room, users);
+            if (room.getId() != currentRoom) {  //Does not search in the room the user currently is in.
+                ArrayList<User> users = room.getUserCloserThan(location, distance);
+                if (!users.isEmpty()) {
+                    foundRooms.put(room, users);
+                }
             }
         }
         return foundRooms;
