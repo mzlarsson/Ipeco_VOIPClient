@@ -45,6 +45,7 @@ public class HistoryFragment extends AppConnectFragment {
     }
 
     public void truckModeChanged(boolean b) {
+        if(roomList != null)
         roomList.changedTruckState(b);
     }
 

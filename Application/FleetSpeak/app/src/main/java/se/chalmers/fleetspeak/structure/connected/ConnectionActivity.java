@@ -37,6 +37,7 @@ public class ConnectionActivity extends ActionBarActivity implements
     private BackFragment backFragment;
     private ReconnectFragment reconnectFragment;
     private HistoryFragment historyFragment;
+    private ProximityFragment proximityFragment;
 
     private String username;
     private String password;
@@ -56,7 +57,7 @@ public class ConnectionActivity extends ActionBarActivity implements
                 case MessageValues.DISCONNECTED:
                     if(!isFinishing()) {
                         Log.d("UpdateHandler", " Disconnected");
-                        viewPager.setCurrentItem(4);
+                        viewPager.setCurrentItem(5);
                         updateView();
                     }
                     break;
@@ -65,7 +66,7 @@ public class ConnectionActivity extends ActionBarActivity implements
                     break;
                 case MessageValues.CONNECTIONFAILED:
                     Log.d("UpdateHandler", "Connection failed");
-                    viewPager.setCurrentItem(4);
+                    viewPager.setCurrentItem(5);
                     updateView();
                     break;
                 case MessageValues.AUTHENTICATED:
@@ -119,9 +120,9 @@ public class ConnectionActivity extends ActionBarActivity implements
 
             @Override
             public void onPageSelected(int position) {
-                if (position < 3) {
-                        actionBar.setSelectedNavigationItem(position);
-                    }
+                if (position < 4) {
+                    actionBar.setSelectedNavigationItem(position);
+                }
             }
 
             @Override
@@ -138,6 +139,9 @@ public class ConnectionActivity extends ActionBarActivity implements
         reconnectFragment = new ReconnectFragment();
         historyFragment = new HistoryFragment();
         historyFragment.setOnRoomClickedListener(this);
+        proximityFragment = new ProximityFragment();
+        proximityFragment.setOnRoomClickedListener(this);
+
         Log.d("ConnectionActivity", " Checking if connected");
 
         TruckModeHandler handler = TruckModeHandlerFactory.getHandler(this);
@@ -166,6 +170,13 @@ public class ConnectionActivity extends ActionBarActivity implements
         history.setText(historyText);
         history.setTabListener(this);
         actionBar.addTab(history);
+
+        ActionBar.Tab proximity = actionBar.newTab();
+        proximity.setIcon(R.drawable.ic_location);
+        String proximityText = getResources().getString(R.string.proximity);
+        proximity.setText(proximityText);
+        proximity.setTabListener(this);
+        actionBar.addTab(proximity);
     }
 
     @Override
@@ -250,20 +261,20 @@ public class ConnectionActivity extends ActionBarActivity implements
     @Override
     public void onBackPressed() {
         int curItem = viewPager.getCurrentItem();
-        if (curItem >=1 && curItem < 3) {
+        if (curItem >=1 && curItem < 4) {
             Log.d("ConnectionActivity", " current item on back is 1");
             onBackNo();
-        } else if (curItem >= 3) {
+        } else if (curItem >= 4) {
             onBackYes();
         } else {
-            viewPager.setCurrentItem(3);
+            viewPager.setCurrentItem(4);
         }
     }
 
     @Override
     public void onTabSelected(ActionBar.Tab tab, android.support.v4.app.FragmentTransaction fragmentTransaction) {
         Log.d("ConnectionActivity", " clicked tab" + tab.getPosition());
-        if(viewPager.getCurrentItem() < 3) {
+        if(viewPager.getCurrentItem() < 4) {
             viewPager.setCurrentItem(tab.getPosition());
         }
     }
@@ -298,12 +309,14 @@ public class ConnectionActivity extends ActionBarActivity implements
             } else if (arg == 1) {
                 Log.d("ConnectionActivity", " InRoom called");
                 return inRoomFragment;
-            }else if(arg == 2){
+            }else if(arg == 2) {
                 return historyFragment;
-            } else if (arg == 3) {
+            }else if (arg == 3){
+                return proximityFragment;
+            } else if (arg == 4) {
                 Log.d("ConnectionActivity", " Back called");
                 return backFragment;
-            } else if(arg == 4){
+            } else if(arg == 5){
                 return reconnectFragment;
             }
             return null;
@@ -311,14 +324,14 @@ public class ConnectionActivity extends ActionBarActivity implements
 
         @Override
         public int getCount() {
-            return 5;
+            return 6;
         }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        model.disconnect();
+        //model.disconnect();
 
         //Remove truck mode notifications
         TruckModeHandler handler = TruckModeHandlerFactory.getHandler(this);

@@ -1,9 +1,11 @@
 package se.chalmers.fleetspeak.model;
 
+import android.app.Activity;
 import android.content.Context;
 import android.location.Location;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -11,13 +13,16 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import se.chalmers.fleetspeak.audio.sound.SoundOutputController;
 import se.chalmers.fleetspeak.network.TCP.TLSConnector;
 import se.chalmers.fleetspeak.network.UDP.RTPHandler;
 import se.chalmers.fleetspeak.network.UDP.STUNInitiator;
 import se.chalmers.fleetspeak.network.UDP.UDPConnector;
+import se.chalmers.fleetspeak.structure.connected.ProximityFragment;
 import se.chalmers.fleetspeak.util.LocationUtil;
 import se.chalmers.fleetspeak.util.MessageValues;
 import se.chalmers.fleetspeak.util.RoomHistory;
@@ -354,9 +359,11 @@ public class Model {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        for (ProximityChangeListener pcl : proximityChangeListeners) {
-            pcl.roomProximityUpdate(
-                    getRoomsCloserThan(pcl.getRequestedLocation(), pcl.getRequestedDistance()));
+
+        for (final ProximityChangeListener pcl : proximityChangeListeners) {
+            Location loc = pcl.getRequestedLocation();
+            final HashMap<Room, ArrayList<User>> response = (loc==null?null:getRoomsCloserThan(loc, pcl.getRequestedDistance()));
+            pcl.roomProximityUpdate(response);
         }
         proximityChangeListeners.clear();
     }
