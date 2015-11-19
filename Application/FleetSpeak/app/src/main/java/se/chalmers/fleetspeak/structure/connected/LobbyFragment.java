@@ -5,10 +5,12 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import java.util.List;
 
@@ -22,8 +24,11 @@ import se.chalmers.fleetspeak.truck.TruckModeHandlerFactory;
 public class LobbyFragment extends AppConnectFragment implements CreateRoomDialog.CRDListener {
 
     private RoomList roomList;
+    private TextView infoView;
     private LobbyFragmentHolder communicator;
     private Dialog dialog;
+    private boolean carmode = false;
+    private boolean firstLoad = true;
 
     private RoomList.OnRoomClickedListener onRoomClickedListener;
 
@@ -39,6 +44,8 @@ public class LobbyFragment extends AppConnectFragment implements CreateRoomDialo
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        carmode = TruckModeHandlerFactory.getCurrentHandler().truckModeActive();
+
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_lobby, container, false);
         roomList = new RoomList();
@@ -49,6 +56,10 @@ public class LobbyFragment extends AppConnectFragment implements CreateRoomDialo
             }
         });
         roomList.setOnRoomClickedListener(onRoomClickedListener);
+
+        infoView = (TextView)view.findViewById(R.id.info_lobby_fragment);
+        updateInfoLabel();
+
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.replace(R.id.fragment_holder_room_lobby, roomList);
         ft.commit();
@@ -64,8 +75,27 @@ public class LobbyFragment extends AppConnectFragment implements CreateRoomDialo
         return view;
     }
 
+    private void updateInfoLabel(){
+        if(infoView != null) {
+            boolean hasItems = (roomList != null && roomList.getRoomCount() > 0);
+            infoView.setVisibility(hasItems ? View.GONE : View.VISIBLE);
+            if (!firstLoad) {
+                infoView.setText(getResources().getText(R.string.no_rooms_found));
+            }
+            infoView.setTextSize(getResources().getDimension(carmode ? R.dimen.carsize : R.dimen.normalsize));
+        }else{
+            Log.d("Nano", "Got an uninitiated info view");
+        }
+        firstLoad = false;
+    }
+
     public void truckModeChanged(boolean b) {
-        roomList.changedTruckState(b);
+        if(roomList != null) {
+            roomList.changedTruckState(b);
+        }
+
+        carmode = b;
+        updateInfoLabel();
     }
 
     private void createNewRoomOnClick() {
@@ -106,6 +136,8 @@ public class LobbyFragment extends AppConnectFragment implements CreateRoomDialo
         if(rooms != null && roomList != null) {
             roomList.refreshData(rooms);
         }
+
+        updateInfoLabel();
     }
 
     @Override

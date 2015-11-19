@@ -27,6 +27,19 @@ public class RoomList extends Fragment {
         this.keeper = keeper;
     }
 
+    public int getRoomCount(){
+        if(roomAdapter != null){
+            return roomAdapter.getItemCount();
+        }else{
+            if(keeper != null){
+                List<Room> rooms = keeper.getRooms();
+                return (rooms==null?0:rooms.size());
+            }else{
+                return 0;
+            }
+        }
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_room_list, container, false);

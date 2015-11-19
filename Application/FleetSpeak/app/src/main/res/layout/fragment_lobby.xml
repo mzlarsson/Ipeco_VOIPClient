@@ -3,6 +3,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="se.chalmers.fleetspeak.structure.connected.LobbyFragment">
+
+    <TextView
+        android:id="@+id/info_lobby_fragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/room_not_loaded"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp" />
+
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="500dp"

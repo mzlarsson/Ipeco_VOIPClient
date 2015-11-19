@@ -3,6 +3,14 @@
     android:layout_height="match_parent"
     tools:context="se.chalmers.fleetspeak.structure.connected.HistoryFragment">
 
+    <TextView
+        android:id="@+id/info_history_fragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/room_not_loaded"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp" />
+
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"

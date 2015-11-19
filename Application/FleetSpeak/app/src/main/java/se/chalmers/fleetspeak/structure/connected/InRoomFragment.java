@@ -45,7 +45,9 @@ public class InRoomFragment extends AppConnectFragment {
     }
 
     public void truckModeChanged(boolean b) {
-        userList.changedTruckState(b);
+        if(userList != null) {
+            userList.changedTruckState(b);
+        }
     }
 
     public void refresh() {
