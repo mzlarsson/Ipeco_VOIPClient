@@ -116,7 +116,7 @@ public class Model {
      * @return A map with the rooms as key and a list with the users of that room within the
      * distance as the values.
      */
-    private HashMap<Room,ArrayList<User>> getRoomsCloserThan(Location location, int distance) {
+    public HashMap<Room,ArrayList<User>> getRoomsCloserThan(Location location, int distance) {
         if (location!=null) {
             return building.getRoomsCloserThan(location, distance);
         } else {

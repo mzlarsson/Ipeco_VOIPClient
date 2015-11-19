@@ -19,6 +19,27 @@ public class User {
         this.name = name;
         this.id = id;
         location = new Location(getName()+":"+id);
+        double latitude = 57.716697, longitude = 11.920601;
+        switch (id) {
+            case 10000: //Karl johan väst   Malmö   55*36'36''N, 13*1'12''E
+                latitude = 55.3636;
+                longitude = 13.112;
+                break;
+            case 10001: //John Matrix   Malmö
+                latitude = 55.3636;
+                longitude = 13.112;
+                break;
+            case 10003: //Anders Andersson  Borås   57*43'33'' N,  12*52'22.1''E
+                latitude = 55.4333;
+                longitude = 13.52221;
+                break;
+            case 10008: //Pac Man   Mölndal 57*36'1''N, 12*5'35.5''E
+                latitude = 55.361;
+                longitude = 13.5355;
+                break;
+        }
+        location.setLatitude(latitude);
+        location.setLongitude(longitude);
     }
 
     public User(int id){
@@ -45,10 +66,12 @@ public class User {
      * @param longitude The new longitude.
      */
     public void updateLocation(double latitude, double longitude) {
-        location.setLatitude(latitude);
-        location.setLongitude(longitude);
-        location.setTime(System.currentTimeMillis());
-        //location.setProvider(String); TODO It might be beneficial in the future to store the server which sent the location.
+        if (false) {    //FIXME Temp for demo 24/11
+            location.setLatitude(latitude);
+            location.setLongitude(longitude);
+            location.setTime(System.currentTimeMillis());
+            //location.setProvider(String); TODO It might be beneficial in the future to store the server which sent the location.
+        }
     }
 
     /**
@@ -57,7 +80,8 @@ public class User {
      * @return true if recently updated, false if not.
      */
     public boolean isLocationUpdated() {
-        return (System.currentTimeMillis()-location.getTime()) < UPDATE_INTERVAL;
+        return true;    //FIXME Temp for demo 24/11
+        //return (System.currentTimeMillis()-location.getTime()) < UPDATE_INTERVAL;
     }
 
     /**

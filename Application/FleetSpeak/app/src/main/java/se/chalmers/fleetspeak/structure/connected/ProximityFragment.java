@@ -58,23 +58,30 @@ public class ProximityFragment extends AppConnectFragment {
 
     private void loadContents() {
         final Model m = ModelFactory.getCurrentModel();
-        m.requestProximityUpdate(new ProximityChangeListener() {
-            @Override
-            public Location getRequestedLocation() {
-                return LocationUtil.getInstance(ProximityFragment.this.getContext(), false).getCurrentLocation();
-            }
-
-            @Override
-            public int getRequestedDistance() {
-                return 5000;                            //5 km by default
-            }
-
-            @Override
-            public void roomProximityUpdate(HashMap<Room, ArrayList<User>> roomMap) {
-                if (roomList != null) {
-                    roomList.refreshData(new ArrayList<>(roomMap.keySet()));
+        if (true) {
+            Location loc = new Location("current user: Volvo");
+            loc.setLongitude(11.920601);
+            loc.setLatitude(57.716697);
+            roomList.refreshData(new ArrayList<Room>(m.getRoomsCloserThan(loc, 10000).keySet()));
+        } else {
+            m.requestProximityUpdate(new ProximityChangeListener() {
+                @Override
+                public Location getRequestedLocation() {
+                    return LocationUtil.getInstance(ProximityFragment.this.getContext(), false).getCurrentLocation();
                 }
-            }
-        });
+
+                @Override
+                public int getRequestedDistance() {
+                    return 5000;                            //5 km by default
+                }
+
+                @Override
+                public void roomProximityUpdate(HashMap<Room, ArrayList<User>> roomMap) {
+                    if (roomList != null) {
+                        roomList.refreshData(new ArrayList<>(roomMap.keySet()));
+                    }
+                }
+            });
+        }
     }
 }
