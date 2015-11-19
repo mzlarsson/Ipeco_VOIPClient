@@ -38,6 +38,7 @@
     <string name="reconnect">Reconnect</string>
     <string name="sRoom">s room</string>
     <string name="history">History</string>
+    <string name="room_not_loaded">Loading room data...</string>
 
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
