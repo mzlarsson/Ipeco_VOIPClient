@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="350dp" android:layout_height="250dp"
+    android:gravity="center_horizontal"
+    android:background="#000000">
+    <EditText
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:id="@+id/dia_edit"
+        android:textColor="#ffffff"
+        android:textSize="15sp"
+        android:layout_centerInParent="true" />
+<View
+    android:id="@+id/dia_line"
+    android:layout_width="match_parent"
+    android:layout_height="1dp"
+    android:background="#09c"
+    android:layout_below="@+id/dia_text"
+    android:layout_alignParentLeft="true" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/choose_room_name"
+        android:id="@+id/dia_text"
+        android:gravity="center_horizontal"
+        android:focusable="true"
+        android:textColor="#ffffff"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:textSize="20sp" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="175dp"
+        android:layout_height="50dp"
+        android:id="@+id/btn_ok"
+        android:text="@string/OK"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/button_dialog_shape_left"
+         />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="175dp"
+        android:layout_height="50dp"
+        android:text="@string/cancel"
+        android:id="@+id/btn_cancel"
+        android:layout_alignTop="@+id/btn_ok"
+        android:layout_alignParentLeft="true"
+        android:background="@drawable/button_dialog_shape_right"
+        />
+</RelativeLayout>
