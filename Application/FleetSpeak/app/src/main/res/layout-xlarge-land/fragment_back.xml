@@ -1,0 +1,38 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="se.chalmers.fleetspeak.structure.establish.BackFragment">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="150dp"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/AboutToDisconnect"
+        android:id="@+id/textView2"
+        android:textColor="#ffffffff"
+        android:textSize="50sp"
+        android:layout_above="@+id/yesButton"
+        android:layout_marginBottom="64dp"
+        android:layout_centerInParent="true" />
+
+    <Button
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:background="@drawable/special_button_shape2"
+        android:text="@string/yes"
+        android:id="@+id/yesButton"
+        android:textSize="30sp"
+        android:layout_alignTop="@+id/noButton"
+        android:layout_alignRight="@+id/textView2" />
+
+    <Button
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:background="@drawable/special_button_shape2"
+        android:text="@string/no"
+        android:id="@+id/noButton"
+        android:layout_marginBottom="137dp"
+        android:textSize="30sp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignLeft="@+id/textView2" />
+</RelativeLayout>
