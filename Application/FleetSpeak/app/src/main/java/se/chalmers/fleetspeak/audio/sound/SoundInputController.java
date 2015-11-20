@@ -1,5 +1,7 @@
 package se.chalmers.fleetspeak.audio.sound;
 
+import android.content.Context;
+import android.media.AudioManager;
 import android.media.AudioRecord;
 import android.util.Log;
 

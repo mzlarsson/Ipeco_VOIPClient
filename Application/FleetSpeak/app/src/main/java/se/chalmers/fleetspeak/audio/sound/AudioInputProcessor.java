@@ -1,6 +1,8 @@
 package se.chalmers.fleetspeak.audio.sound;
 
 
+import android.content.Context;
+import android.media.AudioManager;
 import android.util.Log;
 
 import java.util.concurrent.BlockingQueue;
@@ -10,9 +12,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import se.chalmers.fleetspeak.audio.FleetspeakAudioException;
 import se.chalmers.fleetspeak.audio.codec.EncoderInterface;
-import se.chalmers.fleetspeak.audio.codec.opus.collection.OpusDecoder;
-import se.chalmers.fleetspeak.audio.codec.opus.collection.OpusEncoder;
 import se.chalmers.fleetspeak.audio.processing.AudioProcessor;
+import se.chalmers.fleetspeak.structure.connected.ConnectionActivity;
 
 
 /**
@@ -32,6 +33,16 @@ public class AudioInputProcessor implements Runnable {
 
 
     public AudioInputProcessor() throws FleetspeakAudioException {
+        //Fix BT options
+        Context context = ConnectionActivity.getCurrentActivity();
+        if(context != null) {
+            AudioManager manager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+            manager.setBluetoothScoOn(true);
+            manager.startBluetoothSco();
+        }else{
+            Log.d("Nano", "Nope, no activity found yet.");
+        }
+
         //opusEncoder = new OpusEncoder();
         audioProcessor = new AudioProcessor();
         soundInputController = new SoundInputController();

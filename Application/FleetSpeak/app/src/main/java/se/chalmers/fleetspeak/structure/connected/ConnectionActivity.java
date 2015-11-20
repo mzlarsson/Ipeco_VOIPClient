@@ -1,5 +1,6 @@
 package se.chalmers.fleetspeak.structure.connected;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -42,6 +43,8 @@ public class ConnectionActivity extends ActionBarActivity implements
     private String username;
     private String password;
 
+    private static Activity currentActivity;
+
     /**
      * A handler that handles update messages from the server connection
      */
@@ -81,6 +84,14 @@ public class ConnectionActivity extends ActionBarActivity implements
             }
         }
     };
+
+    public ConnectionActivity(){
+        currentActivity = this;
+    }
+
+    public static Activity getCurrentActivity(){
+        return currentActivity;
+    }
 
     public void updateUsersView() {
         inRoomFragment.refresh();
