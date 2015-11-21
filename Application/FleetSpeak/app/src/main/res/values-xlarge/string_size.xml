@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="normalsize">25sp</dimen>
-    <dimen name="carsize">30dp</dimen>
+    <dimen name="normalsize">20sp</dimen>
+    <dimen name="carsize">25sp</dimen>
 </resources>
