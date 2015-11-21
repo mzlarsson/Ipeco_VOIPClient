@@ -80,7 +80,6 @@ public class LocationDataHandler implements LocationChangeListener, TruckModeHan
 
     @Override
     public void speedChanged(float speed){
-        Toast.makeText(context, "Got an speed update: "+speed, Toast.LENGTH_LONG).show();
         boolean newTruckMode = speed>LOWER_SPEED_BOUNDARY;
         setTruckMode(newTruckMode);
 

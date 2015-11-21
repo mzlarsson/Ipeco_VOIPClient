@@ -348,7 +348,7 @@ public class ConnectionActivity extends ActionBarActivity implements
         //model.disconnect();
 
         //Remove truck mode notifications
-        TruckModeHandler handler = TruckModeHandlerFactory.getHandler(this);
+        TruckModeHandler handler = TruckModeHandlerFactory.getCurrentHandler();
         handler.removeListener(this);
     }
 }

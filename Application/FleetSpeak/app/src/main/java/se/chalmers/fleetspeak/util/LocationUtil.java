@@ -95,14 +95,19 @@ public class LocationUtil {
         }
     }
 
-    private void stopTracking(){
-        if(locationListener != null) {
-            locationManager.removeUpdates(locationListener);
+    public static synchronized void stopTracking(){
+        if(instance != null) {
+            if (instance.locationListener != null && instance.locationManager != null) {
+                instance.locationManager.removeUpdates(instance.locationListener);
+                instance.locationListener = null;
+                instance.locationManager = null;
+                instance = null;
+            }
         }
     }
 
     public interface LocationChangeListener{
-        public void speedChanged(float speed);
-        public void locationChanged(double latitude, double longitude);
+        void speedChanged(float speed);
+        void locationChanged(double latitude, double longitude);
     }
 }

@@ -56,7 +56,6 @@ public class LoginActivity extends ActionBarActivity implements TruckStateListen
 
     private void setStartFragment(boolean b){
         Fragment fragment;
-
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         if(b){
             fragment = fragmentManager.findFragmentByTag("CarStartLogin");
@@ -83,7 +82,8 @@ public class LoginActivity extends ActionBarActivity implements TruckStateListen
             fragment.setArguments(bundle);
             fragmentTransaction.replace(R.id.fragment_container, fragment, "Start");
         }
-        fragmentTransaction.commit();
+        Log.d("NanoDebug", "Well now we do the commit the redneck way");
+        fragmentTransaction.commitAllowingStateLoss();
     }
     public void saveUserSettings(){
         Fragment fragment = fragmentManager.findFragmentByTag("Start");
@@ -171,5 +171,14 @@ public class LoginActivity extends ActionBarActivity implements TruckStateListen
 
     protected void onSaveInstanceState(Bundle outState) {
         //No call for super(). Bug on API Level > 11.
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        //Remove truck mode notifications
+        TruckModeHandler handler = TruckModeHandlerFactory.getCurrentHandler();
+        handler.removeListener(this);
     }
 }
