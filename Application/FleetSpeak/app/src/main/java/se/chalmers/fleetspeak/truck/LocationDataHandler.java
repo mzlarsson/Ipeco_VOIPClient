@@ -92,10 +92,11 @@ public class LocationDataHandler implements LocationChangeListener, TruckModeHan
         Toast.makeText(context, "Got an speed update: "+speed, Toast.LENGTH_LONG).show();
         boolean newTruckMode = speed<LOWER_SPEED_BOUNDARY;
         setTruckMode(newTruckMode);
-        if(truckMode){
-            nodataTimer.schedule(nodataTimerTask, (int)(Math.max(locationUtil.getMinTime(), locationUtil.getMinDistance()/LOWER_SPEED_BOUNDARY)*2));
-        }else{
-            nodataTimer.cancel();
+
+        nodataTimer.cancel();
+        if(truckMode) {
+            //Schedule countdown - if no data arrives in a while carmode is set to false
+            nodataTimer.schedule(nodataTimerTask, (int) (Math.max(locationUtil.getMinTime(), locationUtil.getMinDistance() / LOWER_SPEED_BOUNDARY) * 2));
         }
     }
 
