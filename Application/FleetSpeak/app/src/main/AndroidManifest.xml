@@ -16,7 +16,7 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/Theme.Dark_theme"
-        android:screenOrientation="portrait"
+        android:screenOrientation="landscape"
         >
         <service
             android:name=".SocketService"
@@ -35,7 +35,7 @@
         <activity
             android:name=".gui.connected.ConnectionActivity"
             android:label="@string/title_activity_connection"
-            android:screenOrientation="portrait"
+            android:screenOrientation="landscape"
             >
         </activity>
 
