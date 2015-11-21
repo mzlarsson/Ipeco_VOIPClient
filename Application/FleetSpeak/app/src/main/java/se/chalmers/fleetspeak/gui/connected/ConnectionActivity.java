@@ -31,16 +31,14 @@ import se.chalmers.fleetspeak.truck.TruckStateListener;
 import se.chalmers.fleetspeak.util.MessageValues;
 
 public class ConnectionActivity extends ActionBarActivity implements
-        TruckStateListener, ActionBar.TabListener, LobbyFragment.LobbyFragmentHolder, OnRoomClickedListener, BackFragment.BackFragmentHolder, ReconnectFragment.ReconnectFragmentHolder {
+        TruckStateListener, LobbyFragment.LobbyFragmentHolder, OnRoomClickedListener, BackFragment.BackFragmentHolder, ReconnectFragment.ReconnectFragmentHolder {
     private Model model;
     private boolean carMode = true;
-    private ActionBar actionBar;
     private CustomViewPager viewPager;
     private BackFragment backFragment;
     private ReconnectFragment reconnectFragment;
 
     private List<AppConnectFragment> tabFragments;
-    private static final int INROOM_FRAGMENT_INDEX = 1;
 
     private String username;
     private String password;
@@ -118,81 +116,47 @@ public class ConnectionActivity extends ActionBarActivity implements
 
         //Setup view pager
         viewPager = (CustomViewPager) findViewById(R.id.pager);
-        viewPager.setAdapter(new PagerAdapter(getSupportFragmentManager()));
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                if (position < tabFragments.size()) {
-                    actionBar.setSelectedNavigationItem(position);
-                }
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-            }
-        });
+        viewPager.setHostActivity(this);
 
         //Lobby fragment
         LobbyFragment lobbyFragment = new LobbyFragment();
         lobbyFragment.setOnRoomClickedListener(this);
+        tabFragments.add(lobbyFragment);
 
         //In room fragment
         InRoomFragment inRoomFragment = new InRoomFragment();
         inRoomFragment.setOnUserClickedListener(null);
+        tabFragments.add(inRoomFragment);
 
         //History fragment
         HistoryFragment historyFragment = new HistoryFragment();
         historyFragment.setOnRoomClickedListener(this);
+        tabFragments.add(historyFragment);
 
         //Proximity fragment
         ProximityFragment proximityFragment = new ProximityFragment();
         proximityFragment.setOnRoomClickedListener(this);
-
-        //Fetch actionbar and setup tabs
-        actionBar = getSupportActionBar();
-        actionBar.setDisplayShowTitleEnabled(false);
+        tabFragments.add(proximityFragment);
 
         //Add fragments to tabs
-        addTab(lobbyFragment, R.drawable.ic_house, R.string.lobby);
-        addTab(inRoomFragment, R.drawable.ic_room, R.string.Chatroom);
-        addTab(historyFragment, R.drawable.ic_history, R.string.history);
-        addTab(proximityFragment, R.drawable.ic_location, R.string.proximity);
-
-        //Display. NOTE: Place after addTabs.
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        viewPager.addTab(lobbyFragment, R.drawable.ic_house, R.string.lobby, "Lobby");
+        viewPager.addTab(inRoomFragment, R.drawable.ic_room, R.string.Chatroom, "InRoom");
+        viewPager.addTab(historyFragment, R.drawable.ic_history, R.string.history, "History");
+        viewPager.addTab(proximityFragment, R.drawable.ic_location, R.string.proximity, "Proximity");
 
         //Loose fragments
         backFragment = new BackFragment();
+        viewPager.addSpecialTab(backFragment, "Back");
         reconnectFragment = new ReconnectFragment();
+        viewPager.addSpecialTab(reconnectFragment, "Reconnect");
 
-        //Update view pager
-        viewPager.getAdapter().notifyDataSetChanged();
+        //Finalize
+        viewPager.displayTabs();
 
         //Setup truckmode stuffelistuff
         TruckModeHandler handler = TruckModeHandlerFactory.getHandler(this);
         handler.addListener(this);
         carMode = handler.truckModeActive();
-    }
-
-    private void addTab(AppConnectFragment fragment, int drawableIcon, int nameResource){
-        if(actionBar == null){
-            throw new IllegalStateException("Cannot add tabs without an initiated actionbar.");
-        }
-
-        //Add fragment to list
-        tabFragments.add(fragment);
-
-        //Setup tab
-        ActionBar.Tab tab = actionBar.newTab();
-        tab.setIcon(drawableIcon);
-        String name = getResources().getString(nameResource);
-        tab.setText(name);
-        tab.setTabListener(this);
-        actionBar.addTab(tab);
     }
 
     @Override
@@ -241,15 +205,13 @@ public class ConnectionActivity extends ActionBarActivity implements
     public void onRoomClicked(Room room) {
         model.move(room.getId());
         updateView();
-        viewPager.setCurrentItem(INROOM_FRAGMENT_INDEX);
-        actionBar.setSelectedNavigationItem(INROOM_FRAGMENT_INDEX);
+        viewPager.setCurrentItem(viewPager.getTabIndex("InRoom", false));
     }
 
     @Override
     public void onBackNo() {
         //Go to default screen
         viewPager.setCurrentItem(0);
-        actionBar.setSelectedNavigationItem(0);
     }
 
     @Override
@@ -276,44 +238,8 @@ public class ConnectionActivity extends ActionBarActivity implements
     }
 
     @Override
-    public void onTabSelected(ActionBar.Tab tab, android.support.v4.app.FragmentTransaction fragmentTransaction) {
-        Log.d("ConnectionActivity", " clicked tab" + tab.getPosition());
-        if(viewPager.getCurrentItem() < tabFragments.size()) {
-            viewPager.setCurrentItem(tab.getPosition());
-        }
-    }
-
-    @Override
-    public void onTabUnselected(ActionBar.Tab tab, android.support.v4.app.FragmentTransaction fragmentTransaction) {}
-    @Override
-    public void onTabReselected(ActionBar.Tab tab, android.support.v4.app.FragmentTransaction fragmentTransaction) {}
-
-    @Override
     public void moveToRoom() {
-        viewPager.setCurrentItem(INROOM_FRAGMENT_INDEX);
-    }
-
-    public class PagerAdapter extends FragmentPagerAdapter {
-        public PagerAdapter(FragmentManager fragmentManager) {
-            super(fragmentManager);
-        }
-
-        @Override
-        public android.support.v4.app.Fragment getItem(int index) {
-            if (index < tabFragments.size()) {
-                return tabFragments.get(index);
-            } else if (index == tabFragments.size()) {
-                return backFragment;
-            } else if(index == tabFragments.size()+1){
-                return reconnectFragment;
-            }
-            return null;
-        }
-
-        @Override
-        public int getCount() {
-            return tabFragments.size()+2;
-        }
+        viewPager.setCurrentItem(viewPager.getTabIndex("InRoom", false));
     }
 
     @Override
