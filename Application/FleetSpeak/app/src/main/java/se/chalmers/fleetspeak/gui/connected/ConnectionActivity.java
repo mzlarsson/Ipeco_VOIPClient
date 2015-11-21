@@ -121,7 +121,8 @@ public class ConnectionActivity extends ActionBarActivity implements
         viewPager.setAdapter(new PagerAdapter(getSupportFragmentManager()));
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
 
             @Override
             public void onPageSelected(int position) {
@@ -131,7 +132,8 @@ public class ConnectionActivity extends ActionBarActivity implements
             }
 
             @Override
-            public void onPageScrollStateChanged(int state) {}
+            public void onPageScrollStateChanged(int state) {
+            }
         });
 
         //Lobby fragment
@@ -152,13 +154,16 @@ public class ConnectionActivity extends ActionBarActivity implements
 
         //Fetch actionbar and setup tabs
         actionBar = getSupportActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        actionBar.setDisplayShowTitleEnabled(false);
 
         //Add fragments to tabs
         addTab(lobbyFragment, R.drawable.ic_house, R.string.lobby);
         addTab(inRoomFragment, R.drawable.ic_room, R.string.Chatroom);
         addTab(historyFragment, R.drawable.ic_history, R.string.history);
         addTab(proximityFragment, R.drawable.ic_location, R.string.proximity);
+
+        //Display. NOTE: Place after addTabs.
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
         //Loose fragments
         backFragment = new BackFragment();
