@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/card_view"
     android:layout_width="match_parent"
-    android:layout_height="150dp"
+    android:layout_height="100dp"
     card_view:cardBackgroundColor="#ff2d2d2d"
     card_view:cardPreventCornerOverlap="true"
     card_view:cardElevation="1dp"
@@ -15,11 +15,11 @@
     >
         <ImageView
             android:id="@+id/userItemIcon"
-            android:layout_height="100dp"
-            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_width="50dp"
             android:layout_gravity="center_vertical"
             android:background="@drawable/ic_user"
-            android:layout_marginLeft="10dp"
+            android:layout_marginLeft="50dp"
             android:baselineAlignBottom="false" />
 
         <TextView

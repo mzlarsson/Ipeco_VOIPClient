@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/card_view"
     android:layout_width="match_parent"
-    android:layout_height="150dp"
+    android:layout_height="100dp"
     card_view:cardBackgroundColor="#ff2d2d2d"
     card_view:cardPreventCornerOverlap="true"
     card_view:cardElevation="1dp"
@@ -15,16 +15,16 @@
     >
 
     <ImageView
-        android:layout_height="100dp"
-        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_width="50dp"
         android:id="@+id/roomIcon"
-        android:layout_marginLeft="10dp"
+        android:layout_marginLeft="50dp"
         android:background="@drawable/ic_room"
         android:layout_gravity="center_vertical" />
 
     <TextView
         android:id="@+id/list_item_users"
-        android:textSize="25sp"
+        android:textSize="20sp"
         android:layout_width="210dp"
         android:layout_height="wrap_content"
         android:paddingTop="15dp"
@@ -38,7 +38,7 @@
         android:layout_width="210dp"
         android:layout_height="wrap_content"
         android:singleLine="true"
-        android:textSize="40sp"
+        android:textSize="30sp"
         android:text="Roomname"
         android:layout_gravity="center_horizontal"
         android:autoText="false"
