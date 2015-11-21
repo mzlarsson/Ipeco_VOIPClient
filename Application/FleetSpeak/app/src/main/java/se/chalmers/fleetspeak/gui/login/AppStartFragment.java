@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.structure.login;
+package se.chalmers.fleetspeak.gui.login;
 
 import android.util.Log;
 

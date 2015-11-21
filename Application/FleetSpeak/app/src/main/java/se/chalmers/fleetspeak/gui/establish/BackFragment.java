@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.structure.establish;
+package se.chalmers.fleetspeak.gui.establish;
 
 
 import android.app.Activity;
@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import se.chalmers.fleetspeak.R;
-import se.chalmers.fleetspeak.structure.connected.AppConnectFragment;
 
 /**
  * A simple {@link Fragment} subclass.

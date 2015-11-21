@@ -1,10 +1,9 @@
-package se.chalmers.fleetspeak.structure.connected;
+package se.chalmers.fleetspeak.gui.connected;
 
 
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +14,7 @@ import se.chalmers.fleetspeak.R;
 import se.chalmers.fleetspeak.model.Model;
 import se.chalmers.fleetspeak.model.ModelFactory;
 import se.chalmers.fleetspeak.model.User;
-import se.chalmers.fleetspeak.structure.lists.UserList;
+import se.chalmers.fleetspeak.gui.lists.UserList;
 
 /**
  * A simple {@link Fragment} subclass.

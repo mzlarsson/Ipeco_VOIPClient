@@ -22,7 +22,7 @@
             android:name=".SocketService"
             android:enabled="true" />
         <activity
-            android:name=".structure.login.LoginActivity"
+            android:name=".gui.login.LoginActivity"
             android:label="@string/title_activity_login"
             android:noHistory="true"
             android:screenOrientation="portrait"
@@ -33,7 +33,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".structure.connected.ConnectionActivity"
+            android:name=".gui.connected.ConnectionActivity"
             android:label="@string/title_activity_connection"
             android:screenOrientation="portrait"
             >

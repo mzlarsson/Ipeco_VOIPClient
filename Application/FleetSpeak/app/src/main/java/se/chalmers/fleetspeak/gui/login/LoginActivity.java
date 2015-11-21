@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.structure.login;
+package se.chalmers.fleetspeak.gui.login;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,7 +16,7 @@ import android.widget.TextView;
 
 import se.chalmers.fleetspeak.R;
 import se.chalmers.fleetspeak.network.TCP.SocketFactory;
-import se.chalmers.fleetspeak.structure.connected.ConnectionActivity;
+import se.chalmers.fleetspeak.gui.connected.ConnectionActivity;
 import se.chalmers.fleetspeak.truck.TruckModeHandlerFactory;
 import se.chalmers.fleetspeak.truck.TruckModeHandler;
 import se.chalmers.fleetspeak.truck.TruckStateListener;

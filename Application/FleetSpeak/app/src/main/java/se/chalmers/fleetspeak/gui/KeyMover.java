@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.structure;
+package se.chalmers.fleetspeak.gui;
 
 /**
  * Created by David Gustafsson on 2015-08-11.

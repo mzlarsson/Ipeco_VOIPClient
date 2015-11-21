@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.structure.connected;
+package se.chalmers.fleetspeak.gui.connected;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -21,10 +21,10 @@ import se.chalmers.fleetspeak.R;
 import se.chalmers.fleetspeak.model.Model;
 import se.chalmers.fleetspeak.model.ModelFactory;
 import se.chalmers.fleetspeak.model.Room;
-import se.chalmers.fleetspeak.structure.establish.BackFragment;
-import se.chalmers.fleetspeak.structure.establish.ReconnectFragment;
-import se.chalmers.fleetspeak.structure.lists.RoomList.OnRoomClickedListener;
-import se.chalmers.fleetspeak.structure.login.LoginActivity;
+import se.chalmers.fleetspeak.gui.establish.BackFragment;
+import se.chalmers.fleetspeak.gui.establish.ReconnectFragment;
+import se.chalmers.fleetspeak.gui.lists.RoomList.OnRoomClickedListener;
+import se.chalmers.fleetspeak.gui.login.LoginActivity;
 import se.chalmers.fleetspeak.truck.TruckModeHandler;
 import se.chalmers.fleetspeak.truck.TruckModeHandlerFactory;
 import se.chalmers.fleetspeak.truck.TruckStateListener;

@@ -1,8 +1,7 @@
-package se.chalmers.fleetspeak.structure.connected;
+package se.chalmers.fleetspeak.gui.connected;
 
 
 import android.location.Location;
-import android.opengl.Visibility;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
@@ -10,8 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,7 +20,7 @@ import se.chalmers.fleetspeak.model.ModelFactory;
 import se.chalmers.fleetspeak.model.ProximityChangeListener;
 import se.chalmers.fleetspeak.model.Room;
 import se.chalmers.fleetspeak.model.User;
-import se.chalmers.fleetspeak.structure.lists.RoomList;
+import se.chalmers.fleetspeak.gui.lists.RoomList;
 import se.chalmers.fleetspeak.truck.TruckModeHandlerFactory;
 import se.chalmers.fleetspeak.util.LocationUtil;
 

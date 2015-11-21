@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.structure.connected;
+package se.chalmers.fleetspeak.gui.connected;
 
 import android.content.Context;
 import android.support.v4.view.ViewPager;

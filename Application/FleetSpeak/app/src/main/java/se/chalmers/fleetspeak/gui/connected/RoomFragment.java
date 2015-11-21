@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.structure.connected;
+package se.chalmers.fleetspeak.gui.connected;
 
 import android.app.Activity;
 import android.net.Uri;

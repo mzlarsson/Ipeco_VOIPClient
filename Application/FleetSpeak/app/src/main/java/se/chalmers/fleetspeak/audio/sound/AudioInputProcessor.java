@@ -13,7 +13,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import se.chalmers.fleetspeak.audio.FleetspeakAudioException;
 import se.chalmers.fleetspeak.audio.codec.EncoderInterface;
 import se.chalmers.fleetspeak.audio.processing.AudioProcessor;
-import se.chalmers.fleetspeak.structure.connected.ConnectionActivity;
+import se.chalmers.fleetspeak.gui.connected.ConnectionActivity;
 
 
 /**

@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.structure.connected;
+package se.chalmers.fleetspeak.gui.connected;
 
 /**
  * Created by David Gustafsson on 2015-07-23.

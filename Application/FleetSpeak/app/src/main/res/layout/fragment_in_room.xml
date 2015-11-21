@@ -1,11 +1,10 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="se.chalmers.fleetspeak.structure.connected.InRoomFragment">
+    tools:context="se.chalmers.fleetspeak.gui.connected.InRoomFragment">
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:name="se.chalmers.fleetspeak.fragments.NewStructure.ConnectedProcess.InRoomFragment"
         android:id="@+id/fragment_holder_user"
         android:layout_gravity="center_vertical"
         android:layout_alignParentEnd="true"

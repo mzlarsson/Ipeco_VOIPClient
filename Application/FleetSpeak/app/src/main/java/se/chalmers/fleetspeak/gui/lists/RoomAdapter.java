@@ -1,6 +1,5 @@
-package se.chalmers.fleetspeak.structure.lists;
+package se.chalmers.fleetspeak.gui.lists;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;

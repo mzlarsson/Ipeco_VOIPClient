@@ -1,4 +1,4 @@
-package se.chalmers.fleetspeak.structure.connected;
+package se.chalmers.fleetspeak.gui.connected;
 
 
 import android.app.Activity;
@@ -18,7 +18,7 @@ import se.chalmers.fleetspeak.R;
 import se.chalmers.fleetspeak.model.Model;
 import se.chalmers.fleetspeak.model.ModelFactory;
 import se.chalmers.fleetspeak.model.Room;
-import se.chalmers.fleetspeak.structure.lists.RoomList;
+import se.chalmers.fleetspeak.gui.lists.RoomList;
 import se.chalmers.fleetspeak.truck.TruckModeHandlerFactory;
 
 public class LobbyFragment extends AppConnectFragment implements CreateRoomDialog.CRDListener {
