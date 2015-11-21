@@ -4,7 +4,7 @@
     >
 <item android:title="menuCon"
       android:id="@+id/changeTruck"
-      android:icon="@drawable/ic_day_night_mode"
+      android:icon="@drawable/ic_distance_driver_green"
       app:showAsAction="always">
 </item>
 
