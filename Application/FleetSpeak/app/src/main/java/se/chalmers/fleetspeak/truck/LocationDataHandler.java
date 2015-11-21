@@ -34,15 +34,6 @@ public class LocationDataHandler implements LocationChangeListener, TruckModeHan
 
         locationUtil = LocationUtil.getInstance(context, false);
         locationUtil.addListener(this);
-
-        nodataTimer = new Timer("No Data Timer");
-        nodataTimerTask = new TimerTask() {
-            @Override
-            public void run() {
-                //No data received, meaning you do not move fast enough -> Not driving.
-                setTruckMode(false);
-            }
-        };
     }
 
     @Override
@@ -90,13 +81,38 @@ public class LocationDataHandler implements LocationChangeListener, TruckModeHan
     @Override
     public void speedChanged(float speed){
         Toast.makeText(context, "Got an speed update: "+speed, Toast.LENGTH_LONG).show();
-        boolean newTruckMode = speed<LOWER_SPEED_BOUNDARY;
+        boolean newTruckMode = speed>LOWER_SPEED_BOUNDARY;
         setTruckMode(newTruckMode);
 
-        nodataTimer.cancel();
         if(truckMode) {
-            //Schedule countdown - if no data arrives in a while carmode is set to false
-            nodataTimer.schedule(nodataTimerTask, (int) (Math.max(locationUtil.getMinTime(), locationUtil.getMinDistance() / LOWER_SPEED_BOUNDARY) * 2));
+            startCountdownTimer();
+        }else{
+            cancelTimer();
+        }
+    }
+
+    private void startCountdownTimer(){
+        cancelTimer();
+
+        nodataTimer = new Timer("No Data Timer");
+        nodataTimerTask = new TimerTask() {
+            @Override
+            public void run() {
+                //No data received, meaning you do not move fast enough -> Not driving.
+                setTruckMode(false);
+            }
+        };
+
+        //Schedule countdown - if no data arrives in a while carmode is set to false
+        nodataTimer.schedule(nodataTimerTask, (int) (Math.max(locationUtil.getMinTime(), locationUtil.getMinDistance() / LOWER_SPEED_BOUNDARY) * 2));
+    }
+
+    private void cancelTimer(){
+        if(nodataTimer != null) {
+            nodataTimer.cancel();
+        }
+        if(nodataTimerTask != null) {
+            nodataTimerTask.cancel();
         }
     }
 
