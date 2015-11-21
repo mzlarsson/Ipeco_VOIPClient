@@ -15,7 +15,7 @@ import se.chalmers.fleetspeak.structure.connected.AppConnectFragment;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class BackFragment extends AppConnectFragment {
+public class BackFragment extends android.support.v4.app.Fragment {
 
     private BackFragmentHolder communicator;
 
@@ -30,8 +30,7 @@ public class BackFragment extends AppConnectFragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_back, container, false);
         Button yes = (Button) view.findViewById(R.id.yesButton);

@@ -100,8 +100,14 @@ public class ProximityFragment extends AppConnectFragment implements ProximityCh
         }
     }
 
+    public void refresh(){
+        loadContents();
+    }
+
     private void refreshData(List<Room> rooms){
-        roomList.refreshData(rooms);
+        if(roomList != null) {
+            roomList.refreshData(rooms);
+        }
         updateInfoLabel(false);
     }
 

@@ -14,6 +14,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import se.chalmers.fleetspeak.R;
 import se.chalmers.fleetspeak.model.Model;
 import se.chalmers.fleetspeak.model.ModelFactory;
@@ -33,12 +36,11 @@ public class ConnectionActivity extends ActionBarActivity implements
     private boolean carMode = true;
     private ActionBar actionBar;
     private CustomViewPager viewPager;
-    private InRoomFragment inRoomFragment;
-    private LobbyFragment lobbyFragment;
     private BackFragment backFragment;
     private ReconnectFragment reconnectFragment;
-    private HistoryFragment historyFragment;
-    private ProximityFragment proximityFragment;
+
+    private List<AppConnectFragment> tabFragments;
+    private static final int INROOM_FRAGMENT_INDEX = 1;
 
     private String username;
     private String password;
@@ -60,7 +62,7 @@ public class ConnectionActivity extends ActionBarActivity implements
                 case MessageValues.DISCONNECTED:
                     if(!isFinishing()) {
                         Log.d("UpdateHandler", " Disconnected");
-                        viewPager.setCurrentItem(5);
+                        viewPager.setCurrentItem(tabFragments.size()+1);
                         updateView();
                     }
                     break;
@@ -69,7 +71,7 @@ public class ConnectionActivity extends ActionBarActivity implements
                     break;
                 case MessageValues.CONNECTIONFAILED:
                     Log.d("UpdateHandler", "Connection failed");
-                    viewPager.setCurrentItem(5);
+                    viewPager.setCurrentItem(tabFragments.size()+1);
                     updateView();
                     break;
                 case MessageValues.AUTHENTICATED:
@@ -87,24 +89,17 @@ public class ConnectionActivity extends ActionBarActivity implements
 
     public ConnectionActivity(){
         currentActivity = this;
+        tabFragments = new ArrayList<>();
     }
 
     public static Activity getCurrentActivity(){
         return currentActivity;
     }
 
-    public void updateUsersView() {
-        inRoomFragment.refresh();
-    }
-
-    public void updateRoomView() {
-        lobbyFragment.refresh();
-    }
-    public void updateHistory() {historyFragment.refresh();}
     public void updateView() {
-        updateRoomView();
-        updateUsersView();
-        updateHistory();
+        for(AppConnectFragment fragment : tabFragments){
+            fragment.refresh();
+        }
     }
 
     @Override
@@ -120,74 +115,79 @@ public class ConnectionActivity extends ActionBarActivity implements
             Log.d("ConnectionActivity", " Connected");
             model.connect(username, password);
         }
-        viewPager = (CustomViewPager) findViewById(R.id.pager);
-        viewPager.setId(R.id.pager);
-        viewPager.setAdapter(new PagerAdapter(getSupportFragmentManager()));
 
+        //Setup view pager
+        viewPager = (CustomViewPager) findViewById(R.id.pager);
+        viewPager.setAdapter(new PagerAdapter(getSupportFragmentManager()));
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-            }
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
 
             @Override
             public void onPageSelected(int position) {
-                if (position < 4) {
+                if (position < tabFragments.size()) {
                     actionBar.setSelectedNavigationItem(position);
                 }
             }
 
             @Override
-            public void onPageScrollStateChanged(int state) {
-            }
+            public void onPageScrollStateChanged(int state) {}
         });
 
-
-        lobbyFragment = new LobbyFragment();
+        //Lobby fragment
+        LobbyFragment lobbyFragment = new LobbyFragment();
         lobbyFragment.setOnRoomClickedListener(this);
-        inRoomFragment = new InRoomFragment();
-        inRoomFragment.setOnUserClickedListener(null);          //Add listener if any functionality is needed.
-        backFragment = new BackFragment();
-        reconnectFragment = new ReconnectFragment();
-        historyFragment = new HistoryFragment();
+
+        //In room fragment
+        InRoomFragment inRoomFragment = new InRoomFragment();
+        inRoomFragment.setOnUserClickedListener(null);
+
+        //History fragment
+        HistoryFragment historyFragment = new HistoryFragment();
         historyFragment.setOnRoomClickedListener(this);
-        proximityFragment = new ProximityFragment();
+
+        //Proximity fragment
+        ProximityFragment proximityFragment = new ProximityFragment();
         proximityFragment.setOnRoomClickedListener(this);
 
-        Log.d("ConnectionActivity", " Checking if connected");
+        //Fetch actionbar and setup tabs
+        actionBar = getSupportActionBar();
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
+        //Add fragments to tabs
+        addTab(lobbyFragment, R.drawable.ic_house, R.string.lobby);
+        addTab(inRoomFragment, R.drawable.ic_room, R.string.Chatroom);
+        addTab(historyFragment, R.drawable.ic_history, R.string.history);
+        addTab(proximityFragment, R.drawable.ic_location, R.string.proximity);
+
+        //Loose fragments
+        backFragment = new BackFragment();
+        reconnectFragment = new ReconnectFragment();
+
+        //Update view pager
+        viewPager.getAdapter().notifyDataSetChanged();
+
+        //Setup truckmode stuffelistuff
         TruckModeHandler handler = TruckModeHandlerFactory.getHandler(this);
         handler.addListener(this);
         carMode = handler.truckModeActive();
+    }
 
-        actionBar = getSupportActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        ActionBar.Tab rooms = actionBar.newTab();
-        rooms.setIcon(R.drawable.ic_house);
-        String lobby = getResources().getString(R.string.lobby);
-        rooms.setText(lobby);
-        rooms.setTabListener(this);
-        actionBar.addTab(rooms);
+    private void addTab(AppConnectFragment fragment, int drawableIcon, int nameResource){
+        if(actionBar == null){
+            throw new IllegalStateException("Cannot add tabs without an initiated actionbar.");
+        }
 
-        ActionBar.Tab inRoom = actionBar.newTab();
-        inRoom.setIcon(R.drawable.ic_room);
-        String chatroom = getResources().getString(R.string.Chatroom);
-        inRoom.setText(chatroom);
-        inRoom.setTabListener(this);
-        actionBar.addTab(inRoom);
+        //Add fragment to list
+        tabFragments.add(fragment);
 
-        ActionBar.Tab history = actionBar.newTab();
-        history.setIcon(R.drawable.ic_history);
-        String historyText = getResources().getString(R.string.history);
-        history.setText(historyText);
-        history.setTabListener(this);
-        actionBar.addTab(history);
-
-        ActionBar.Tab proximity = actionBar.newTab();
-        proximity.setIcon(R.drawable.ic_location);
-        String proximityText = getResources().getString(R.string.proximity);
-        proximity.setText(proximityText);
-        proximity.setTabListener(this);
-        actionBar.addTab(proximity);
+        //Setup tab
+        ActionBar.Tab tab = actionBar.newTab();
+        tab.setIcon(drawableIcon);
+        String name = getResources().getString(nameResource);
+        tab.setText(name);
+        tab.setTabListener(this);
+        actionBar.addTab(tab);
     }
 
     @Override
@@ -199,10 +199,6 @@ public class ConnectionActivity extends ActionBarActivity implements
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        // home id seems overwritten write out number
         int id = item.getItemId();
         //noinspection SimplifiableIfStatement
         if (id == R.id.changeTruck) {
@@ -210,23 +206,7 @@ public class ConnectionActivity extends ActionBarActivity implements
             return true;
         }
 
-
         return super.onOptionsItemSelected(item);
-    }
-
-    private void changeCarModeTabs(boolean b) {
-        if (lobbyFragment != null) {
-            lobbyFragment.truckModeChanged(b);
-        }
-        if (inRoomFragment != null) {
-            inRoomFragment.truckModeChanged(b);
-        }
-        if(historyFragment != null){
-            historyFragment.truckModeChanged(b);
-        }
-        if(proximityFragment != null){
-            proximityFragment.truckModeChanged(b);
-        }
     }
 
     private void returnToLogin(String errorMessage) {
@@ -241,7 +221,9 @@ public class ConnectionActivity extends ActionBarActivity implements
     @Override
     public void truckModeChanged(boolean mode) {
         carMode = mode;
-        changeCarModeTabs(mode);
+        for(AppConnectFragment fragment : tabFragments){
+            fragment.truckModeChanged(carMode);
+        }
     }
 
     @Override
@@ -253,14 +235,14 @@ public class ConnectionActivity extends ActionBarActivity implements
     @Override
     public void onRoomClicked(Room room) {
         model.move(room.getId());
-        updateUsersView();
-        lobbyFragment.movedToRoom(room.getId());
-        viewPager.setCurrentItem(1);
-        actionBar.setSelectedNavigationItem(1);
+        updateView();
+        viewPager.setCurrentItem(INROOM_FRAGMENT_INDEX);
+        actionBar.setSelectedNavigationItem(INROOM_FRAGMENT_INDEX);
     }
 
     @Override
     public void onBackNo() {
+        //Go to default screen
         viewPager.setCurrentItem(0);
         actionBar.setSelectedNavigationItem(0);
     }
@@ -275,37 +257,35 @@ public class ConnectionActivity extends ActionBarActivity implements
     @Override
     public void onBackPressed() {
         int curItem = viewPager.getCurrentItem();
-        if (curItem >=1 && curItem < 4) {
-            Log.d("ConnectionActivity", " current item on back is 1");
+        //In which fragment?
+        if (curItem >=1 && curItem < tabFragments.size()) {
+            //If in any other than lobby, go to default screen
             onBackNo();
-        } else if (curItem >= 4) {
+        } else if (curItem >= tabFragments.size()) {
+            //If any non-tabfragment, go to login
             onBackYes();
         } else {
-            viewPager.setCurrentItem(4);
+            //If in default screen, go to "really disconnect" screen
+            viewPager.setCurrentItem(tabFragments.size());
         }
     }
 
     @Override
     public void onTabSelected(ActionBar.Tab tab, android.support.v4.app.FragmentTransaction fragmentTransaction) {
         Log.d("ConnectionActivity", " clicked tab" + tab.getPosition());
-        if(viewPager.getCurrentItem() < 4) {
+        if(viewPager.getCurrentItem() < tabFragments.size()) {
             viewPager.setCurrentItem(tab.getPosition());
         }
     }
 
     @Override
-    public void onTabUnselected(ActionBar.Tab tab, android.support.v4.app.FragmentTransaction fragmentTransaction) {
-
-    }
-
+    public void onTabUnselected(ActionBar.Tab tab, android.support.v4.app.FragmentTransaction fragmentTransaction) {}
     @Override
-    public void onTabReselected(ActionBar.Tab tab, android.support.v4.app.FragmentTransaction fragmentTransaction) {
-
-    }
+    public void onTabReselected(ActionBar.Tab tab, android.support.v4.app.FragmentTransaction fragmentTransaction) {}
 
     @Override
     public void moveToRoom() {
-        viewPager.setCurrentItem(1);
+        viewPager.setCurrentItem(INROOM_FRAGMENT_INDEX);
     }
 
     public class PagerAdapter extends FragmentPagerAdapter {
@@ -314,23 +294,12 @@ public class ConnectionActivity extends ActionBarActivity implements
         }
 
         @Override
-        public android.support.v4.app.Fragment getItem(int arg) {
-            Log.d("ConnectionActivity", " getItem called");
-
-            if (arg == 0) {
-                Log.d("ConnectionActivity", " Lobby called");
-                return lobbyFragment;
-            } else if (arg == 1) {
-                Log.d("ConnectionActivity", " InRoom called");
-                return inRoomFragment;
-            }else if(arg == 2) {
-                return historyFragment;
-            }else if (arg == 3){
-                return proximityFragment;
-            } else if (arg == 4) {
-                Log.d("ConnectionActivity", " Back called");
+        public android.support.v4.app.Fragment getItem(int index) {
+            if (index < tabFragments.size()) {
+                return tabFragments.get(index);
+            } else if (index == tabFragments.size()) {
                 return backFragment;
-            } else if(arg == 5){
+            } else if(index == tabFragments.size()+1){
                 return reconnectFragment;
             }
             return null;
@@ -338,7 +307,7 @@ public class ConnectionActivity extends ActionBarActivity implements
 
         @Override
         public int getCount() {
-            return 6;
+            return tabFragments.size()+2;
         }
     }
 
