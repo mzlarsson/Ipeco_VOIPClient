@@ -18,9 +18,7 @@
         android:theme="@style/Theme.Dark_theme"
         android:screenOrientation="landscape"
         >
-        <service
-            android:name=".SocketService"
-            android:enabled="true" />
+
         <activity
             android:name=".gui.login.LoginActivity"
             android:label="@string/title_activity_login"
