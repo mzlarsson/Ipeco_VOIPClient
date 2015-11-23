@@ -15,22 +15,22 @@
     >
         <ImageView
             android:id="@+id/userItemIcon"
-            android:layout_height="50dp"
-            android:layout_width="50dp"
+            android:layout_height="80dp"
+            android:layout_width="80dp"
             android:layout_gravity="center_vertical"
             android:background="@drawable/ic_user"
-            android:layout_marginLeft="50dp"
+            android:layout_marginLeft="25dp"
             android:baselineAlignBottom="false" />
 
         <TextView
             android:id="@+id/userName"
-            android:paddingTop="10dp"
-            android:layout_width="210dp"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginStart="125dp"
+            android:layout_marginEnd="10dp"
             android:textSize="30sp"
             android:textStyle="bold"
-            android:layout_gravity="center_horizontal"
+            android:layout_gravity="center_vertical|start"
             android:text="Username">
             </TextView>
 
