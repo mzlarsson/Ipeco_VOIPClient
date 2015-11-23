@@ -43,6 +43,16 @@ public class User {
                 longitude = 12.017968;
                 location.setProvider("Mölndal");
                 break;
+            case 10015:    //Erik Pihl
+                latitude = 55.592920;
+                longitude = 13.013890;
+                location.setProvider("Malmö");
+                break;
+            case 10016:     //David Michaëlsson
+                latitude = 57.655292;
+                longitude = 12.017968;
+                location.setProvider("Mölndal");
+                break;
         }
         location.setLatitude(latitude);
         location.setLongitude(longitude);
