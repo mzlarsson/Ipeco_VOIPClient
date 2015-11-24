@@ -113,7 +113,7 @@ public class LoginActivity extends ActionBarActivity implements TruckStateListen
         newIntent.putExtra("username", username);
         newIntent.putExtra("password", password);
         newIntent.putExtra("carState", carmode);
-        Log.d("test", "asdf2 |" + password + "|");
+        Log.d("LoginActivity", "asdf2 |" + password + "|");
         startActivity(newIntent);
     }
 

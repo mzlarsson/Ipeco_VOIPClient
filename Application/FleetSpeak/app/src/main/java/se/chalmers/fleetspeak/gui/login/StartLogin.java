@@ -39,18 +39,7 @@ public class StartLogin extends AppStartFragment {
             @Override
             public void onClick(View view) {
                 Log.d("StartLogin", "connection request sent");
-                connectButton.setBackgroundResource(R.drawable.special_button_clicked);
                 connect();
-            }
-        });
-        connectButton.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (v.hasFocus()) {//Focus is on current button
-                    connectButton.setBackgroundResource(R.drawable.special_button_focused);
-                } else {
-                    connectButton.setBackgroundResource(R.drawable.special_button_shape);
-                }
             }
         });
 

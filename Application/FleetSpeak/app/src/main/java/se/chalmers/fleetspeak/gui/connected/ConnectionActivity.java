@@ -110,7 +110,7 @@ public class ConnectionActivity extends ActionBarActivity implements
         password = extras.getString("password");
         username = extras.getString("username");
         if (!model.isAuthenticated()) {
-            Log.d("ConnectionActivity", " Connected");
+            Log.d("ConnectionActivity", "Not Connected, connecting...");
             model.connect(username, password);
         }
 

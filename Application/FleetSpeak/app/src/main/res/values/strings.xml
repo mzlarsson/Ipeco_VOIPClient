@@ -41,6 +41,7 @@
     <string name="proximity">Proximity</string>
     <string name="room_not_loaded">Loading room data...</string>
     <string name="no_rooms_found">Oops, no rooms found!</string>
+    <string name="connecting">Waiting for connection...</string>
 
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

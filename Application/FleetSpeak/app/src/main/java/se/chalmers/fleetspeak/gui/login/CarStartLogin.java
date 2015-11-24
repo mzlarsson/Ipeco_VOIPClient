@@ -26,19 +26,7 @@ public class CarStartLogin extends AppStartFragment {
         connectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                connectButton.setBackgroundResource(R.drawable.special_button_clicked);
                 startConnection();
-            }
-        });
-
-        connectButton.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (v.hasFocus()) {//Focus is on current button
-                    connectButton.setBackgroundResource(R.drawable.special_button_focused);
-                } else {
-                    connectButton.setBackgroundResource(R.drawable.special_button_shape);
-                }
             }
         });
 

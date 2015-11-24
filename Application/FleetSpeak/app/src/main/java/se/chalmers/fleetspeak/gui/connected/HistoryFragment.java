@@ -56,7 +56,7 @@ public class HistoryFragment extends AppConnectFragment {
     }
 
     private void updateInfoLabel(){
-        if(infoView != null) {
+        if(infoView != null && isAdded()) {
             boolean hasItems = (roomList != null && roomList.getRoomCount() > 0);
             infoView.setVisibility(hasItems ? View.GONE : View.VISIBLE);
             infoView.setText(getResources().getText(R.string.no_rooms_found));

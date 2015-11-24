@@ -71,15 +71,20 @@ public class LobbyFragment extends AppConnectFragment implements CreateRoomDialo
                 createNewRoomOnClick();
             }
         });
+        Model m = ModelFactory.getCurrentModel();
+        createButton.setEnabled(m != null && m.isAuthenticated());
 
         return view;
     }
 
     private void updateInfoLabel(){
-        if(infoView != null) {
+        if(infoView != null && isAdded()) {
             boolean hasItems = (roomList != null && roomList.getRoomCount() > 0);
             infoView.setVisibility(hasItems ? View.GONE : View.VISIBLE);
-            if (!firstLoad) {
+            Model model = ModelFactory.getCurrentModel();
+            if(model == null || !model.isAuthenticated()){
+                infoView.setText(getResources().getText(R.string.connecting));
+            }else if (!firstLoad) {
                 infoView.setText(getResources().getText(R.string.no_rooms_found));
             }
             infoView.setTextSize(getResources().getDimension(carmode ? R.dimen.carsize : R.dimen.normalsize));
@@ -135,6 +140,13 @@ public class LobbyFragment extends AppConnectFragment implements CreateRoomDialo
         List<Room> rooms = m.getRooms();
         if(rooms != null && roomList != null) {
             roomList.refreshData(rooms);
+        }
+
+        if(getActivity() != null) {
+            Button createButton = (Button) getActivity().findViewById(R.id.buttonCreateRoom);
+            if(createButton != null) {
+                createButton.setEnabled(m != null && m.isAuthenticated());
+            }
         }
 
         updateInfoLabel();
