@@ -20,42 +20,6 @@ public class User {
         this.name = name;
         this.id = id;
         location = new Location(getName()+":"+id);
-        double latitude = 57.716897, longitude = 11.920721;
-        location.setProvider("Volvo");
-        switch (id) {
-            case 10000: //Karl johan väst   Malmö   55*36'36''N, 13*1'12''E
-                latitude = 55.592920;
-                longitude = 13.013890;
-                location.setProvider("Malmö");
-                break;
-            case 10001: //John Matrix   Malmö
-                latitude = 55.592920;
-                longitude = 13.013890;
-                location.setProvider("Malmö");
-                break;
-            case 10003: //Anders Andersson  Borås   57*43'33'' N,  12*52'22.1''E
-                latitude = 57.721406;
-                longitude = 12.918319;
-                location.setProvider("Borås");
-                break;
-            case 10008: //Pac Man   Mölndal 57*36'1''N, 12*5'35.5''E
-                latitude = 57.655292;
-                longitude = 12.017968;
-                location.setProvider("Mölndal");
-                break;
-            case 10015:    //Erik Pihl
-                latitude = 55.592920;
-                longitude = 13.013890;
-                location.setProvider("Malmö");
-                break;
-            case 10016:     //David Michaëlsson
-                latitude = 57.655292;
-                longitude = 12.017968;
-                location.setProvider("Mölndal");
-                break;
-        }
-        location.setLatitude(latitude);
-        location.setLongitude(longitude);
     }
 
     public User(int id){
@@ -82,12 +46,10 @@ public class User {
      * @param longitude The new longitude.
      */
     public void updateLocation(double latitude, double longitude) {
-        if (false) {    //FIXME Temp for demo 24/11
-            location.setLatitude(latitude);
-            location.setLongitude(longitude);
-            location.setTime(System.currentTimeMillis());
-            //location.setProvider(String); TODO It might be beneficial in the future to store the server which sent the location.
-        }
+        location.setLatitude(latitude);
+        location.setLongitude(longitude);
+        location.setTime(System.currentTimeMillis());
+        //location.setProvider(String); TODO It might be beneficial in the future to store the server which sent the location.
     }
 
     /**
@@ -96,8 +58,7 @@ public class User {
      * @return true if recently updated, false if not.
      */
     public boolean isLocationUpdated() {
-        return true;    //FIXME Temp for demo 24/11
-        //return (System.currentTimeMillis()-location.getTime()) < UPDATE_INTERVAL;
+        return (System.currentTimeMillis()-location.getTime()) < UPDATE_INTERVAL;
     }
 
     /**
