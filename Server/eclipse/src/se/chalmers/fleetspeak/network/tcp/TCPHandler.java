@@ -29,6 +29,7 @@ public class TCPHandler extends Thread{
 	private BufferedReader bufferedReader;
 	private boolean isRunning = false;
 	private long lastContact;
+	private Thread pinger;
 	private CommandHandler ch;
 	private Logger logger;
 
@@ -41,6 +42,14 @@ public class TCPHandler extends Thread{
 		super("TCPHandler:port"+clientSocket.getRemoteSocketAddress());
 		logger = Logger.getLogger("Debug");
 		this.clientSocket = clientSocket;
+		pinger = new Thread() {
+			@Override
+			public void run() {
+				try {
+					sendCommand("ping"); // Sending ping in a new thread since it might block if something fails.
+				} catch (IOException e) {}
+			}
+		};
 		try {
 			logger.log(Level.FINE,"Trying to get streams");
 			printWriter = new PrintWriter(clientSocket.getOutputStream());
@@ -72,14 +81,7 @@ public class TCPHandler extends Thread{
 					if (timeDiff > 3*TIMEOUT_TIME)
 						throw e;
 					else if (timeDiff > TIMEOUT_TIME) {
-						new Thread() {
-							@Override
-							public void run() {
-								try {
-									sendCommand("ping"); // Sending ping in a new thread since it might block if something fails.
-								} catch (IOException e) {}
-							}
-						}.start();
+						pinger.start();
 					}
 					continue;
 				}
