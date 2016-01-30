@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 3.4)
+cmake_minimum_required(VERSION 2.6)
 
-project(opus C)
+project(opus)
 
 SET(EXECUTABLE_OUTPUT_PATH ${opus_SOURCE_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${opus_SOURCE_DIR}/lib)
@@ -10,8 +10,8 @@ SET(opus_BIN ${opus_SOURCE_DIR}/bin)
 
 message("Source Dir:" ${opus_SOURCE_DIR})
 
-add_definitions(/DHAVE_CONFIG_H)
-
+add_definitions(/DHAVE_CONFIG_H /DFIXED_POINT)
+#/DDISABLE_FLOAT_API /DFIXED_POINT=1 /DOPUS_BUILD
 IF(WIN32)
 IF(MSVC12)
 message("Detected MSVC12 compiler")
@@ -30,6 +30,7 @@ ENDIF(WIN32)
 
 
 IF(WIN32)
+Set(CMAKE_C_COMPILER cl)
 SET(opusIncludes
 ${opus_SOURCE_DIR}
 ${opus_SOURCE_DIR}/include
@@ -65,8 +66,7 @@ add_subdirectory(silk)
 add_subdirectory(src)
 
 # Allow the developer to select if Dynamic or Static libraries are built
-OPTION (BUILD_SHARED_LIBS "Build Shared Libraries" OFF)
-# Set the LIB_TYPE variable to STATIC
+OPTION (BUILD_SHARED_LIBS "Build Shared Libraries" ON)
 SET (LIB_TYPE STATIC)
 IF (BUILD_SHARED_LIBS)
   # User wants to build Dynamic Libraries, so change the LIB_TYPE variable to CMake keyword 'SHARED'
@@ -75,8 +75,9 @@ ENDIF (BUILD_SHARED_LIBS)
 
 set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--export-all-symbols")
 
-add_library(${PROJECT_NAME} SHARED $<TARGET_OBJECTS:celt>
+add_library(NativeAudio SHARED $<TARGET_OBJECTS:celt>
                                    $<TARGET_OBJECTS:silk>
+                                   $<TARGET_OBJECTS:silk_fixed>
                                    $<TARGET_OBJECTS:opus_lib>)
 
 

@@ -45,4 +45,4 @@ ${opusIncludes}
 ../../celt
 )
 
-ADD_LIBRARY( silk_float STATIC ${SILK_FLOAT_HEADERS} ${SILK_FLOAT_SRCS})
+ADD_LIBRARY(silk_float OBJECT  ${SILK_FLOAT_HEADERS} ${SILK_FLOAT_SRCS})

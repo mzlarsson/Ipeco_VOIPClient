@@ -88,6 +88,7 @@ Inlines.h
 MacroCount.h
 MacroDebug.h
 macros.h
+main
 main.h
 pitch_est_defines.h
 PLC.h
@@ -111,5 +112,5 @@ ${opusIncludes}
 
 ADD_LIBRARY( silk OBJECT  ${SILK_HEADERS} ${SILK_SRCS})
 
-ADD_SUBDIRECTORY( fixed )
-#ADD_SUBDIRECTORY( float ) 
+ADD_SUBDIRECTORY( ./fixed )
+#ADD_SUBDIRECTORY( ./float ) 
