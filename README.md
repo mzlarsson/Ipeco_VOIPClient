@@ -1,5 +1,4 @@
 # FleetSpeak (by Ipeco, prev. DeadliestTrucks)
-===============
 
 ## Purpose
 Android application for VoIP communication designed for use in vehicles.
