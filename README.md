@@ -1,14 +1,12 @@
-#FleetSpeak
-
-######by DeadliestTrucks
+# FleetSpeak (by Ipeco, prev. DeadliestTrucks)
 ===============
 
-##Purpose
+## Purpose
 Android application for VoIP communication designed for use in vehicles.
 The application allows multiple people to create or join rooms and talk to everyone in that room.
 Everything is to be designed with safety in mind following the NHTSA-guidelines to reduce driver distraction.
 
-##Structure
+## Structure
 The project consists of:
   A JAVA-based server running in a desktop environment.
   A PostgreSQL database.
@@ -31,7 +29,7 @@ The android client is responsible for recording the audio, send it to the server
 
 Work in progress.
 
-##Getting started
+## Getting started
 **Server:**
 
 1. The server is an eclipse project in the fleetspeak/Server folder.
@@ -61,7 +59,7 @@ Work in progress.
 
 1. Run main class.
 
-##Troubleshooting
+## Troubleshooting
 **Client can't get connection to the server:**
 
 If it's for testing purposes make sure you are on the same network with the clients and the server, for example a mobile hotspot on a phone.
@@ -75,9 +73,9 @@ Turn of the GPS on the phone.
 
 Exit the application and close it completely before restarting it.
 
-##Unimplemented features
+## Unimplemented features
 - The password field is not implemented yet, it currently hold the IP address for ease of use while testing.
 
-##Known problems
+## Known problems
 - The automatic switching to carmode while GPS is enabled only works on a few phones.
 - Everyone in the room must have the same sound encoding.
